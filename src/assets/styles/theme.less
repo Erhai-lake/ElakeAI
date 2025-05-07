@@ -1,0 +1,30 @@
+/* 白昼主题 */
+:root {
+  --background-color: #ffffff;
+  --text-color: #434344;
+  --scrollbar-track-color: rgba(255, 255, 255, 0.5);
+  --scrollbar-thumb-color: rgba(193, 193, 193, 0.6);
+  --scrollbar-thumb-hover-color: rgba(168, 168, 168, 0.78);
+  --sidebar-expand-container-background-color: #F9FBFF;
+  --sidebar-expand-container-text-color: #868788;
+  --sidebar-item-hover-background-color: #dadada;
+  --border-right-color: #6C787F;
+}
+
+/* 深夜主题 */
+[data-theme="dark"] {
+  --background-color: #292A2D;
+  --text-color: #E4E4E7;
+  --scrollbar-track-color: rgba(255, 255, 255, 0.8);
+  --scrollbar-thumb-color: rgba(93, 93, 93, 0.8);
+  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.6);
+  --sidebar-expand-container-background-color: #212327;
+  --sidebar-expand-container-text-color: #a9abad;
+  --sidebar-item-hover-background-color: #9D9DA0;
+  --border-right-color: #b9bdbe;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}

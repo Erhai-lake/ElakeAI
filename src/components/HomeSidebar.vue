@@ -1,4 +1,3 @@
-<!--suppress TypeScriptValidateTypes -->
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {ChatDB} from '@/services/ChatDB'
@@ -184,7 +183,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="SidebarExpandContainer" v-if="SidebarStatus === 1">
+    <div class="SidebarContainer SidebarExpandContainer" v-if="SidebarStatus === 1">
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
@@ -231,35 +230,28 @@ export default defineComponent({
             <p>设置</p>
         </div>
     </div>
-    <div class="SidebarStowContainer" v-if="SidebarStatus === 0">
-        <div class="SidebarTop">
-            <div class="SidebarTopLogo"></div>
-            <p>ElakeAI</p>
-            <div class="SidebarNew">
-                <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-New"></use>
-                </svg>
-            </div>
-            <div class="SidebarStow" @click="sidebarSwitch">
-                <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Stow"></use>
-                </svg>
-            </div>
+    <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
+        <div class="SidebarTopLogo"></div>
+        <div class="SidebarNew">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-New"></use>
+            </svg>
         </div>
-        <div class="SidebarConversationList">
-            对话框列表
+        <div class="SidebarStow" @click="sidebarSwitch">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-Stow"></use>
+            </svg>
         </div>
         <div class="SidebarPreset">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
-            <p>预设</p>
         </div>
+        <div></div>
         <div class="SidebarSetup">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
-            <p>设置</p>
         </div>
     </div>
 </template>
@@ -273,44 +265,47 @@ export default defineComponent({
     overflow: hidden;
 }
 
-.SidebarExpandContainer {
-    width: 256px;
+.SidebarContainer {
     height: 100%;
-    background-color: rgba(128, 206, 255, 30%);
-    border-right: 1px solid rgba(0, 0, 0, 50%);
+    background-color: var(--sidebar-expand-container-background-color);
+    border-right: 1px solid var(--border-right-color);
     display: grid;
-    grid-template-rows: auto 1fr auto auto;
     user-select: none;
     transform: translateX(0%);
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+
+    .SidebarTopLogo {
+        width: 48px;
+        height: 48px;
+        background-image: url("~@/assets/images/logo.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .SidebarNew, .SidebarStow, .SidebarPreset, .SidebarSetup {
+        cursor: pointer;
+    }
+}
+
+.SidebarExpandContainer {
+    width: 256px;
+    grid-template-rows: auto 1fr auto auto;
 
     .SidebarTop {
         padding: 0 8px;
-        border-bottom: 1px solid rgba(0, 0, 0, 50%);
+        border-bottom: 1px solid var(--border-right-color);
         display: grid;
-        grid-template-columns: 48px 1fr repeat(2, 32px);
         grid-template-rows: 64px;
         align-items: center;
         justify-items: center;
+        grid-template-columns: 48px 1fr repeat(2, 32px);
 
         p {
             margin: 0 20px;
             font-size: 18px;
-            color: rgba(0, 0, 0, 60%);
+            color: var(--text-color);
         }
-
-        .SidebarTopLogo {
-            width: 48px;
-            height: 48px;
-            background-image: url("~@/assets/img/logo.png");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-    }
-
-    .SidebarNew, .SidebarStow {
-        cursor: pointer;
     }
 
     .SidebarConversationList {
@@ -318,10 +313,10 @@ export default defineComponent({
         white-space: nowrap;
         overflow: hidden auto;
 
-        .SidebarConversationListTimeRangeLabel{
-            p{
+        .SidebarConversationListTimeRangeLabel {
+            p {
                 padding: 10px 5px;
-                color: rgba(0, 0, 0, 60%);
+                color: var(--sidebar-expand-container-text-color);
             }
 
             .SidebarConversationListTitle {
@@ -335,7 +330,7 @@ export default defineComponent({
 
                 p {
                     overflow: hidden;
-                    color: rgba(0, 0, 0, 100%);
+                    color: var(--text-color);
                 }
 
                 .SidebarConversationListTitleMore {
@@ -343,7 +338,7 @@ export default defineComponent({
                 }
 
                 &:hover {
-                    background-color: rgba(255, 255, 255, 50%);
+                    background-color: var(--sidebar-item-hover-background-color);
 
                     .SidebarConversationListTitleMore {
                         display: block;
@@ -355,67 +350,31 @@ export default defineComponent({
 
     .SidebarPreset, .SidebarSetup {
         padding: 0 8px;
-        border-top: 1px solid rgba(0, 0, 0, 50%);
+        border-top: 1px solid var(--border-right-color);
         display: grid;
         grid-template-columns: 48px 1fr;
         grid-template-rows: 64px;
-        gap: 8px;
         align-items: center;
         justify-items: center;
-        cursor: pointer;
     }
 }
 
 .SidebarStowContainer {
-    height: 100%;
-    background-color: rgba(128, 206, 255, 30%);
-    display: grid;
-    border-right: 1px solid rgba(0, 0, 0, 50%);
-    grid-template-rows: auto 1fr auto auto auto;
-    user-select: none;
-    transform: translateX(0%);
+    width: 64px;
+    grid-template-rows: auto auto auto auto 1fr auto;
+    justify-items: center;
 
-    .SidebarTop {
-        display: grid;
-        grid-template-rows: 64px;
-        align-items: center;
-        justify-items: center;
-
-        p {
-            display: none;
-        }
-
-        .SidebarTopLogo {
-            width: 48px;
-            height: 48px;
-            background-image: url("~@/assets/img/logo.png");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .SidebarNew, .SidebarStow {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
+    .SidebarTopLogo{
+        margin: 15px 0;
     }
 
-    .SidebarConversationList {
-        display: none;
-    }
+    .SidebarNew, .SidebarStow, .SidebarPreset, .SidebarSetup {
+        padding: 5px;
+        margin: 10px 0;
+        border-radius: 10px;
 
-    .SidebarPreset, .SidebarSetup {
-        padding: 16px;
-        gap: 8px;
-        align-items: center;
-        justify-items: center;
-        cursor: pointer;
-
-        p {
-            display: none;
+        &:hover {
+            background-color: var(--sidebar-item-hover-background-color);
         }
     }
 }
