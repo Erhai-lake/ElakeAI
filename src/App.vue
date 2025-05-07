@@ -1,30 +1,34 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+    <!--    <HomeSidebar>-->
+    <!--        <template #SidebarConversationList>-->
+    <!--            SidebarConversationList-->
+    <!--        </template>-->
+    <!--    </HomeSidebar>-->
+    <HomeSidebar/>
+    <!--  <nav>-->
+    <!--    <router-link to="/">Home</router-link>-->
+    <!--  </nav>-->
+    <!--  <router-view/>-->
 </template>
 
 <style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+* {
+    margin: 0;
+    padding: 0;
 }
 
-nav {
-  padding: 30px;
+#app {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+@media (max-width: 768px) {
+    #app {
+        //flex-direction: column;
     }
-  }
 }
 </style>
+<script setup lang="ts">
+import HomeSidebar from "@/components/HomeSidebar.vue";
+</script>
