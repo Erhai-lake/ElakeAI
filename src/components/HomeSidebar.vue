@@ -344,7 +344,6 @@ export default defineComponent({
 
                 &:hover {
                     background-color: rgba(255, 255, 255, 50%);
-                    transition: background-color 0.3s ease;
 
                     .SidebarConversationListTitleMore {
                         display: block;
@@ -375,7 +374,6 @@ export default defineComponent({
     grid-template-rows: auto 1fr auto auto auto;
     user-select: none;
     transform: translateX(0%);
-    transition: transform 0.3s ease;
 
     .SidebarTop {
         display: grid;
