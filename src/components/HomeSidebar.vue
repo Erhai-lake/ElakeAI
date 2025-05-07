@@ -212,7 +212,7 @@ export default defineComponent({
                     <p>{{ titleItem.title }}</p>
                     <div class="SidebarConversationListTitleMore">
                         <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-Stow"></use>
+                            <use xlink:href="#icon-More"></use>
                         </svg>
                     </div>
                 </div>
@@ -344,6 +344,7 @@ export default defineComponent({
 
                 &:hover {
                     background-color: rgba(255, 255, 255, 50%);
+                    transition: background-color 0.3s ease;
 
                     .SidebarConversationListTitleMore {
                         display: block;
