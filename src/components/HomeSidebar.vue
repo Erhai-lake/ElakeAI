@@ -128,7 +128,12 @@ export default defineComponent({
                     if (!GROUPED_CHATS[TIME_RANGE_LABEL]) {
                         GROUPED_CHATS[TIME_RANGE_LABEL] = []
                     }
-                    GROUPED_CHATS[TIME_RANGE_LABEL].push(ITEM)
+                    // 去掉多余的属性
+                    const DATA = {
+                        key: ITEM.key,
+                        title: ITEM.title
+                    }
+                    GROUPED_CHATS[TIME_RANGE_LABEL].push(DATA)
                 }
                 // 将分组数据转换成数组并按时间排序
                 this.ChatList = Object.entries(GROUPED_CHATS)
