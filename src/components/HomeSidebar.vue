@@ -177,6 +177,13 @@ export default defineComponent({
             const YEAR = DATE.getFullYear()
             const MONTH = String(DATE.getMonth() + 1).padStart(2, '0')
             return `${YEAR}-${MONTH}`
+        },
+        /**
+         * 打开聊天
+         * @param key 聊天ID
+         */
+        openChat(key: string) {
+            alert(key)
         }
     }
 })
@@ -187,12 +194,12 @@ export default defineComponent({
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
-            <div class="SidebarNew">
+            <div class="SidebarNew" tooltips="新建对话">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-New"></use>
                 </svg>
             </div>
-            <div class="SidebarStow" @click="sidebarSwitch">
+            <div class="SidebarStow" tooltips="收起侧边栏" @click="sidebarSwitch">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Stow"></use>
                 </svg>
@@ -207,7 +214,7 @@ export default defineComponent({
                 <div
                     class="SidebarConversationListTitle"
                     v-for="(titleItem, titleIndex) in timeRangeLabelItem.Data"
-                    :key="titleIndex" :title="titleItem.title">
+                    :key="titleIndex" :tooltips="titleItem.title" @click="openChat(titleItem.key)">
                     <p>{{ titleItem.title }}</p>
                     <div class="SidebarConversationListTitleMore">
                         <svg class="icon" aria-hidden="true">
@@ -217,13 +224,13 @@ export default defineComponent({
                 </div>
             </div>
         </div>
-        <div class="SidebarPreset">
+        <div class="SidebarPreset" tooltips="预设">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
             <p>预设</p>
         </div>
-        <div class="SidebarSetup">
+        <div class="SidebarSetup" tooltips="设置">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
@@ -232,23 +239,23 @@ export default defineComponent({
     </div>
     <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
         <div class="SidebarTopLogo"></div>
-        <div class="SidebarNew">
+        <div class="SidebarNew" tooltips="新建对话">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-New"></use>
             </svg>
         </div>
-        <div class="SidebarStow" @click="sidebarSwitch">
+        <div class="SidebarStow" tooltips="展开侧边栏" @click="sidebarSwitch">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Stow"></use>
             </svg>
         </div>
-        <div class="SidebarPreset">
+        <div class="SidebarPreset" tooltips="预设">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
         </div>
         <div></div>
-        <div class="SidebarSetup">
+        <div class="SidebarSetup" tooltips="设置">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
@@ -268,7 +275,7 @@ export default defineComponent({
 .SidebarContainer {
     height: 100%;
     background-color: var(--sidebar-expand-container-background-color);
-    border-right: 1px solid var(--border-right-color);
+    border-right: 1px solid var(--border-color);
     display: grid;
     user-select: none;
     transform: translateX(0%);
@@ -294,7 +301,7 @@ export default defineComponent({
 
     .SidebarTop {
         padding: 0 8px;
-        border-bottom: 1px solid var(--border-right-color);
+        border-bottom: 1px solid var(--border-color);
         display: grid;
         grid-template-rows: 64px;
         align-items: center;
@@ -350,7 +357,7 @@ export default defineComponent({
 
     .SidebarPreset, .SidebarSetup {
         padding: 0 8px;
-        border-top: 1px solid var(--border-right-color);
+        border-top: 1px solid var(--border-color);
         display: grid;
         grid-template-columns: 48px 1fr;
         grid-template-rows: 64px;

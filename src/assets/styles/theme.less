@@ -1,27 +1,53 @@
 /* 白昼主题 */
-:root {
-  --background-color: #ffffff;
-  --text-color: #434344;
+:root, [data-theme="light"] {
+  // 滚动条轨道颜色
   --scrollbar-track-color: rgba(255, 255, 255, 0.5);
+  // 滚动条滑块颜色
   --scrollbar-thumb-color: rgba(193, 193, 193, 0.6);
+  // 滚动条滑块悬停颜色
   --scrollbar-thumb-hover-color: rgba(168, 168, 168, 0.78);
+  // 工具提示背景颜色
+  --tooltips-background-color: #ffffff;
+  // 工具提示边框颜色
+  --tooltips-border-color: #000000;
+  // 背景颜色
+  --background-color: #ffffff;
+  // 文字颜色
+  --text-color: #434344;
+  // 边框颜色
+  --border-color: #6C787F;
+  // 侧边栏容器背景颜色
   --sidebar-expand-container-background-color: #F9FBFF;
+  // 侧边栏容器文字颜色
   --sidebar-expand-container-text-color: #868788;
+  // 侧边栏项目悬停背景颜色
   --sidebar-item-hover-background-color: #dadada;
-  --border-right-color: #6C787F;
 }
 
 /* 深夜主题 */
 [data-theme="dark"] {
-  --background-color: #292A2D;
-  --text-color: #E4E4E7;
+  // 滚动条轨道颜色
   --scrollbar-track-color: rgba(255, 255, 255, 0.8);
+  // 滚动条滑块颜色
   --scrollbar-thumb-color: rgba(93, 93, 93, 0.8);
+  // 滚动条滑块悬停颜色
   --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.6);
+  // 工具提示背景颜色
+  --tooltips-background-color: #000000;
+  // 工具提示边框颜色
+  --tooltips-border-color: #ffffff;
+  // 背景颜色
+  --background-color: #292A2D;
+  // 文字颜色
+  --text-color: #E4E4E7;
+  // 边框颜色
+  --border-color: #b9bdbe;
+  // 侧边栏容器背景颜色
   --sidebar-expand-container-background-color: #212327;
+  // 侧边栏容器文字颜色
   --sidebar-expand-container-text-color: #a9abad;
+  // 侧边栏项目悬停背景颜色
   --sidebar-item-hover-background-color: #9D9DA0;
-  --border-right-color: #b9bdbe;
 }
 
 * {
@@ -35,7 +61,7 @@ body {
   color: var(--text-color);
 }
 
-//全局滚动条
+//滚动条
 ::-webkit-scrollbar {
   //垂直滚动条宽度
   width: 10px;
@@ -45,17 +71,41 @@ body {
 
 /* 滚动条轨道 */
 ::-webkit-scrollbar-track {
-  background: var(--scrollbar-track-color);
+  background-color: var(--scrollbar-track-color);
   border-radius: 4px;
 }
 
 /* 滚动条滑块 */
 ::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-color);
+  background-color: var(--scrollbar-thumb-color);
   border-radius: 4px;
 }
 
 /* 滚动条滑块悬停状态 */
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover-color);
+  background-color: var(--scrollbar-thumb-hover-color);
+}
+
+// 工具提示
+[tooltips] {
+  &:hover {
+    position: relative;
+
+    &::after {
+      content: attr(tooltips);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      padding: 5px;
+      transform: translateX(-50%);
+      color: var(--text-color);
+      background-color: var(--tooltips-background-color);
+      border: 1px solid var(--tooltips-border-color);
+      font-size: 12px;
+      white-space: normal;
+      word-wrap: break-word;
+      word-break: break-all;
+      z-index: 9999;
+    }
+  }
 }
