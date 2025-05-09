@@ -270,8 +270,8 @@ export default defineComponent({
 
 <style scoped lang="less">
 .icon {
-    width: 2em;
-    height: 2em;
+    width: 1em;
+    height: 1em;
     vertical-align: -0.15em;
     fill: currentColor;
     overflow: hidden;
@@ -297,6 +297,10 @@ export default defineComponent({
 
     .SidebarNew, .SidebarStow, .SidebarPreset, .SidebarSetup {
         cursor: pointer;
+
+        .icon {
+            font-size: 32px;
+        }
     }
 }
 
@@ -354,6 +358,10 @@ export default defineComponent({
 
                     .SidebarConversationListTitleMore {
                         display: block;
+
+                        .icon {
+                            font-size: 32px;
+                        }
                     }
                 }
             }
