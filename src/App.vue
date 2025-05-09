@@ -51,13 +51,19 @@ export default {
         // 彩虹特效方法
         const rainbowMethods = {
             cssVariables: [
-                '--background-color',
-                '--text-color',
                 '--scrollbar-track-color',
                 '--scrollbar-thumb-color',
+                '--scrollbar-thumb-hover-color',
+                '--tooltips-background-color',
+                '--tooltips-border-color',
+                '--background-color',
+                '--text-color',
+                '--border-color',
                 '--sidebar-expand-container-background-color',
                 '--sidebar-expand-container-text-color',
-                '--border-right-color'
+                '--sidebar-item-hover-background-color',
+                '--chat-input-button-border-color',
+                '--chat-input-button-hover-shadow-color'
             ],
             // 生成随机颜色
             getRandomColor() {
@@ -146,21 +152,21 @@ export default {
 <template>
     <!--    <div>-->
     <HomeSidebar/>
-    <h1>当前主题: {{ currentTheme }}</h1>
-    <button @click="toggleTheme" class="theme-toggle">
-        {{ currentTheme === 'light' ? '🌙 夜间模式' : '☀️ 白天模式' }}
-    </button>
+    <router-view/>
+    <!--        <h1>当前主题: {{ currentTheme }}</h1>-->
+            <button @click="toggleTheme" class="theme-toggle">
+                {{ currentTheme === 'light' ? '🌙 夜间模式' : '☀️ 白天模式' }}
+            </button>
     <!--  <nav>-->
     <!--    <router-link to="/">Home</router-link>-->
     <!--  </nav>-->
-    <!--  <router-view/>-->
     <!--    </div>-->
 </template>
 
 <style lang="less">
 #app {
-    width: 100%;
-    height: 100vh;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 100vh;
 }
 </style>
