@@ -31,66 +31,11 @@ export default defineComponent({
         }
     },
     mounted() {
-        // try {
-        // console.log(ChatDB.add({
-        //     key: 'aa',
-        //     title: '',
-        //     data: [
-        //         {
-        //             model: 'gpt-3.5-turbo',
-        //             messages: {
-        //                 content: '你好',
-        //                 role: 'user'
-        //             },
-        //             timestamp: 1741326699000
-        //         }
-        //     ]
-        // }))
-        // console.log(ChatDB.add({
-        //     key: 'b',
-        //     title: 'b',
-        //     data: [
-        //         {
-        //             model: 'gpt-3.5-turbo',
-        //             messages: {
-        //                 content: '你好',
-        //                 role: 'user'
-        //             },
-        //             timestamp: 1744005099000
-        //         }
-        //     ]
-        // }))
-        // console.log(ChatDB.add({
-        //     key: 'c',
-        //     title: 'c',
-        //     data: [
-        //         {
-        //             model: 'gpt-3.5-turbo',
-        //             messages: {
-        //                 content: '你好',
-        //                 role: 'user'
-        //             },
-        //             timestamp: 1746510934000
-        //         }
-        //     ]
-        // }))
-        // console.log(ChatDB.add({
-        //     key: 'd',
-        //     title: 'd',
-        //     data: [
-        //         {
-        //             model: 'gpt-3.5-turbo',
-        //             messages: {
-        //                 content: '你好',
-        //                 role: 'user'
-        //             },
-        //             timestamp: 1746597099000
-        //         }
-        //     ]
-        // }))
-        // } catch (error) {
-        //     console.error('添加数据失败:', error)
-        // }
+        // 判断是否为移动端
+        if (window.innerWidth < 768) {
+            this.SidebarStatus = 0
+        }
+        // 初始化时获取聊天列表
         this.chatListGet()
     },
     methods: {
