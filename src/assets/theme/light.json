@@ -1,0 +1,57 @@
+{
+    "name": "白昼",
+    "theme": [
+        {
+            "key": "scrollbar-track-color",
+            "value": "rgba(255, 255, 255, 0.5)"
+        },
+        {
+            "key": "scrollbar-thumb-color",
+            "value": "rgba(193, 193, 193, 0.6)"
+        },
+        {
+            "key": "scrollbar-thumb-hover-color",
+            "value": "rgba(168, 168, 168, 0.78)"
+        },
+        {
+            "key": "tooltips-background-color",
+            "value": "#FFFFFFF"
+        },
+        {
+            "key": "tooltips-border-color",
+            "value": "#000000"
+        },
+        {
+            "key": "background-color",
+            "value": "#FFFFFF"
+        },
+        {
+            "key": "text-color",
+            "value": "#434344"
+        },
+        {
+            "key": "border-color",
+            "value": "#6C787F"
+        },
+        {
+            "key": "sidebar-expand-container-background-color",
+            "value": "#F9FBFF"
+        },
+        {
+            "key": "sidebar-expand-container-text-color",
+            "value": "#868788"
+        },
+        {
+            "key": "sidebar-key-hover-background-color",
+            "value": "#DADADA"
+        },
+        {
+            "key": "chat-input-button-border-color",
+            "value": "#D3D3D3"
+        },
+        {
+            "key": "chat-input-button-hover-shadow-color",
+            "value": "rgba(0, 0, 0, 0.2)"
+        }
+    ]
+}
