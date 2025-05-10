@@ -24,10 +24,40 @@ export default defineComponent({
 
 <template>
     <div class="AIInput">
+        <!--附件栏-->
+        <input id="Appendix" type="checkbox"/>
+        <div class="AppendixBar">
+            <!--关闭-->
+            <label for="Appendix">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-Close"></use>
+                </svg>
+            </label>
+            <!--拍照-->
+            <input type="file" id="Camera" accept="image/*" capture="environment"/>
+            <label for="Camera">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-Photograph"></use>
+                </svg>
+            </label>
+            <!--相册-->
+            <input type="file" id="Photos" accept="image/*"/>
+            <label for="Photos">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-PhotoAlbum"></use>
+                </svg>
+            </label>
+            <!--文件-->
+            <input type="file" id="Files"/>
+            <label for="Files">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-File"></use>
+                </svg>
+            </label>
+        </div>
         <textarea id="ChatInput" placeholder="想问点什么?" ref="textareaRef"></textarea>
         <div class="ButtonBar">
             <!--附件-->
-            <input id="Appendix" type="checkbox"/>
             <label for="Appendix">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Link"></use>
@@ -42,13 +72,14 @@ export default defineComponent({
             </label>
             <div></div>
             <!--语音-->
+            <input id="Voice" type="checkbox"/>
             <label for="Voice">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Microphone-on"></use>
                 </svg>
             </label>
             <!--发送-->
-            <label for="Send">
+            <label for="Send" class="Send">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Send"></use>
                 </svg>
@@ -67,11 +98,13 @@ export default defineComponent({
 }
 
 .AIInput {
+    position: relative;
     padding: 16px;
     margin: 0 10px;
     width: 100%;
     border: 2px solid var(--border-color);
     border-radius: 15px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -100,13 +133,36 @@ export default defineComponent({
             }
         }
 
-        #Search {
-            &:checked + label {
-                border: 2px solid lightskyblue;
-                color: lightskyblue;
-            }
+        .Send {
+            background-color: var(--chat-input-button-send-background-color);
         }
     }
+
+    .AppendixBar {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+
+        label {
+            padding: 15px;
+            border-radius: 50%;
+            border: 2px solid var(--chat-input-attachment-button-border-color);
+            font-size: 14px;
+            color: var(--chat-input-attachment-button-text-color);
+            background-color: var(--chat-input-attachment-button-background-color);
+            cursor: pointer;
+        }
+    }
+}
+
+
+#Appendix, #Camera, #Photos, #Files, #Search, #Voice {
+    display: none;
 }
 
 #ChatInput {
@@ -126,7 +182,20 @@ export default defineComponent({
     }
 }
 
-#Appendix, #Search {
-    display: none;
+#Appendix {
+    & ~ .AppendixBar {
+        display: none;
+    }
+
+    &:checked ~ .AppendixBar {
+        display: flex;
+    }
+}
+
+#Search {
+    &:checked + label {
+        border: 2px solid lightskyblue;
+        color: lightskyblue;
+    }
 }
 </style>
