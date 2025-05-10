@@ -144,12 +144,12 @@ export default defineComponent({
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
-            <div class="SidebarNew" tooltips="新建对话">
+            <div class="SidebarNew" title="新建对话">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-New"></use>
                 </svg>
             </div>
-            <div class="SidebarStow" tooltips="收起侧边栏" @click="sidebarSwitch">
+            <div class="SidebarStow" title="收起侧边栏" @click="sidebarSwitch">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Stow"></use>
                 </svg>
@@ -164,7 +164,7 @@ export default defineComponent({
                 <div
                     class="SidebarConversationListTitle"
                     v-for="(titleItem, titleIndex) in timeRangeLabelItem.Data"
-                    :key="titleIndex" :tooltips="titleItem.title" @click="openChat(titleItem.key)">
+                    :key="titleIndex" :title="titleItem.title" @click="openChat(titleItem.key)">
                     <p>{{ titleItem.title }}</p>
                     <div class="SidebarConversationListTitleMore">
                         <svg class="icon" aria-hidden="true">
@@ -174,13 +174,13 @@ export default defineComponent({
                 </div>
             </div>
         </div>
-        <div class="SidebarPreset" tooltips="预设">
+        <div class="SidebarPreset" title="预设">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
             <p>预设</p>
         </div>
-        <div class="SidebarSetup" tooltips="设置">
+        <div class="SidebarSetup" title="设置">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
@@ -189,23 +189,23 @@ export default defineComponent({
     </div>
     <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
         <div class="SidebarTopLogo"></div>
-        <div class="SidebarNew" tooltips="新建对话">
+        <div class="SidebarNew" title="新建对话">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-New"></use>
             </svg>
         </div>
-        <div class="SidebarStow" tooltips="展开侧边栏" @click="sidebarSwitch">
+        <div class="SidebarStow" title="展开侧边栏" @click="sidebarSwitch">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Stow"></use>
             </svg>
         </div>
-        <div class="SidebarPreset" tooltips="预设">
+        <div class="SidebarPreset" title="预设">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
         </div>
         <div></div>
-        <div class="SidebarSetup" tooltips="设置">
+        <div class="SidebarSetup" title="设置">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
