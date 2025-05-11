@@ -34,22 +34,22 @@ export default defineComponent({
                 </svg>
             </label>
             <!--拍照-->
-            <input type="file" id="Camera" accept="image/*" capture="environment"/>
             <label for="Camera">
+                <input type="file" id="Camera" accept="image/*" capture="environment"/>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Photograph"></use>
                 </svg>
             </label>
             <!--相册-->
-            <input type="file" id="Photos" accept="image/*"/>
             <label for="Photos">
+                <input type="file" id="Photos" accept="image/*"/>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-PhotoAlbum"></use>
                 </svg>
             </label>
             <!--文件-->
-            <input type="file" id="Files"/>
             <label for="Files">
+                <input type="file" id="Files"/>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-File"></use>
                 </svg>
@@ -101,7 +101,7 @@ export default defineComponent({
     position: relative;
     padding: 16px;
     margin: 0 10px;
-    width: 100%;
+    width: 50%;
     border: 2px solid var(--border-color);
     border-radius: 15px;
     overflow: hidden;
@@ -111,13 +111,16 @@ export default defineComponent({
     align-items: center;
 
     .ButtonBar {
+        padding: 5px;
         width: 100%;
         display: grid;
         grid-template-columns: auto auto 1fr auto auto;
         gap: 10px;
+        overflow-x: auto;
 
         label {
             padding: 10px;
+            font-size: 12px;
             border-radius: 50%;
             border: 2px solid var(--chat-input-button-border-color);
             cursor: pointer;
@@ -140,22 +143,49 @@ export default defineComponent({
 
     .AppendixBar {
         position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        backdrop-filter: blur(10px);
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
+        border-radius: 16px;
+        overflow: hidden;
+        pointer-events: none;
+        transition: all 0.2s 0.4s ease-in-out;
 
         label {
-            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
             border-radius: 50%;
             border: 2px solid var(--chat-input-attachment-button-border-color);
             font-size: 14px;
             color: var(--chat-input-attachment-button-text-color);
             background-color: var(--chat-input-attachment-button-background-color);
+            opacity: 0;
+            transition: all 0.2s ease-in-out;
+            transform: translate(-600%, 600%);
             cursor: pointer;
+        }
+
+        & :nth-child(1) {
+            transition-delay: 0.1s;
+        }
+
+        & :nth-child(2) {
+            transition-delay: 0.2s;
+        }
+
+        & :nth-child(3) {
+            transition-delay: 0.3s;
+        }
+
+        & :nth-child(4) {
+            transition-delay: 0.4s;
         }
     }
 }
@@ -166,7 +196,6 @@ export default defineComponent({
 }
 
 #ChatInput {
-    margin: 10px 0;
     width: 100%;
     min-height: 50px;
     max-height: 600px;
@@ -183,12 +212,18 @@ export default defineComponent({
 }
 
 #Appendix {
-    & ~ .AppendixBar {
-        display: none;
-    }
 
     &:checked ~ .AppendixBar {
-        display: flex;
+        background-color: var(--scrollbar-thumb-hover-color);
+        backdrop-filter: blur(5px);
+        pointer-events: all;
+        transition: all 0.2s ease-in-out;
+
+        & > label,
+        & > button {
+            opacity: 1;
+            transform: translate(0);
+        }
     }
 }
 
