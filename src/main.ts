@@ -1,11 +1,11 @@
 import {createApp} from 'vue'
 import App from '@/App.vue'
-import router from '@/router'
-import store from '@/store'
+import Router from '@/router'
+import Store from '@/store'
 import '@/assets/styles/theme.less'
 
-const app = createApp(App)
+const APP = createApp(App)
 
-app.use(store).use(router)
+APP.use(Store).use(Router)
 
-app.mount('#app')
+APP.mount('#app')
