@@ -55,7 +55,9 @@ export default defineComponent({
                 </svg>
             </label>
         </div>
+        <!--聊天输入框-->
         <textarea id="ChatInput" placeholder="想问点什么?" ref="textareaRef"></textarea>
+        <!--按钮栏-->
         <div class="ButtonBar">
             <!--附件-->
             <label for="Appendix">
@@ -71,13 +73,6 @@ export default defineComponent({
                 </svg>
             </label>
             <div></div>
-            <!--语音-->
-            <input id="Voice" type="checkbox"/>
-            <label for="Voice">
-                <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Microphone-on"></use>
-                </svg>
-            </label>
             <!--发送-->
             <label for="Send" class="Send">
                 <svg class="icon" aria-hidden="true">
@@ -97,6 +92,12 @@ export default defineComponent({
     overflow: hidden;
 }
 
+@media screen and (max-width: 768px) {
+    .AIInput {
+        width: 100% !important;
+    }
+}
+
 .AIInput {
     position: relative;
     padding: 16px;
@@ -114,7 +115,7 @@ export default defineComponent({
         padding: 5px;
         width: 100%;
         display: grid;
-        grid-template-columns: auto auto 1fr auto auto;
+        grid-template-columns: auto auto 1fr auto;
         gap: 10px;
         overflow-x: auto;
 
@@ -140,58 +141,10 @@ export default defineComponent({
             background-color: var(--chat-input-button-send-background-color);
         }
     }
-
-    .AppendixBar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 16px;
-        border-radius: 16px;
-        overflow: hidden;
-        pointer-events: none;
-        transition: all 0.2s 0.4s ease-in-out;
-
-        label {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            border-radius: 50%;
-            border: 2px solid var(--chat-input-attachment-button-border-color);
-            font-size: 14px;
-            color: var(--chat-input-attachment-button-text-color);
-            background-color: var(--chat-input-attachment-button-background-color);
-            opacity: 0;
-            transition: all 0.2s ease-in-out;
-            transform: translate(-600%, 600%);
-            cursor: pointer;
-        }
-
-        & :nth-child(1) {
-            transition-delay: 0.1s;
-        }
-
-        & :nth-child(2) {
-            transition-delay: 0.2s;
-        }
-
-        & :nth-child(3) {
-            transition-delay: 0.3s;
-        }
-
-        & :nth-child(4) {
-            transition-delay: 0.4s;
-        }
-    }
 }
 
 
-#Appendix, #Camera, #Photos, #Files, #Search, #Voice {
+#Appendix, #Camera, #Photos, #Files, #Search {
     display: none;
 }
 
@@ -211,16 +164,63 @@ export default defineComponent({
     }
 }
 
-#Appendix {
 
+.AppendixBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    border-radius: 16px;
+    overflow: hidden;
+    pointer-events: none;
+    transition: all 0.2s 0.4s ease-in-out;
+
+    label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+        border-radius: 50%;
+        border: 2px solid var(--chat-input-attachment-button-border-color);
+        font-size: 14px;
+        color: var(--chat-input-attachment-button-text-color);
+        background-color: var(--chat-input-attachment-button-background-color);
+        opacity: 0;
+        transition: all 0.2s ease-in-out;
+        transform: translate(-600%, 600%);
+        cursor: pointer;
+    }
+
+    & :nth-child(1) {
+        transition-delay: 0.1s;
+    }
+
+    & :nth-child(2) {
+        transition-delay: 0.2s;
+    }
+
+    & :nth-child(3) {
+        transition-delay: 0.3s;
+    }
+
+    & :nth-child(4) {
+        transition-delay: 0.4s;
+    }
+}
+
+#Appendix {
     &:checked ~ .AppendixBar {
         background-color: var(--scrollbar-thumb-hover-color);
         backdrop-filter: blur(5px);
         pointer-events: all;
         transition: all 0.2s ease-in-out;
 
-        & > label,
-        & > button {
+        label {
             opacity: 1;
             transform: translate(0);
         }

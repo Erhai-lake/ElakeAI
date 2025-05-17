@@ -229,7 +229,7 @@ export default defineComponent({
     display: grid;
     user-select: none;
     transform: translateX(0%);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
 
     .SidebarTopLogo {
         width: 48px;
