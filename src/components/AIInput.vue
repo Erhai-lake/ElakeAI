@@ -1,10 +1,10 @@
-<script lang="ts">
+<script>
 import {defineComponent, ref, onMounted} from 'vue';
 
 export default defineComponent({
     name: "AIInput",
     setup() {
-        const textareaRef = ref<HTMLTextAreaElement | null>(null)
+        const textareaRef = ref < HTMLTextAreaElement | null > null
         const adjustTextareaHeight = () => {
             if (!textareaRef.value) return
             textareaRef.value.style.height = 'auto'

@@ -1,36 +1,80 @@
-<script lang="ts">
+<script>
 import {defineComponent} from 'vue'
 import {ChatDB} from '@/services/ChatDB'
-
-interface ChatMessage {
-    model: string
-    messages: {
-        content: string
-        role: string
-    }
-    timestamp: number
-}
-
-interface ChatItem {
-    key: string
-    timestamp: number
-    data: ChatMessage[]
-}
-
-interface ChatGroup {
-    TimeRangeLabel: string
-    Data: ChatItem[]
-}
 
 export default defineComponent({
     name: "HomeSidebar",
     data() {
         return {
             SidebarStatus: 1,
-            ChatList: [] as ChatGroup[]
+            ChatList: []
         }
     },
     mounted() {
+        // this.$toast.open('test')
+        // try {
+        //     console.log(ChatDB.add({
+        //         key: 'aa_bb_cc',
+        //         title: 'abc*2',
+        //         data: [
+        //             {
+        //                 model: 'gpt-3.5-turbo',
+        //                 messages: {
+        //                     content: '你好',
+        //                     role: 'user'
+        //                 },
+        //                 timestamp: 1741326699000
+        //             }
+        //         ]
+        //     }))
+
+        // console.log(ChatDB.add({
+        //     key: 'b',
+        //     title: 'b',
+        //     data: [
+        //         {
+        //             model: 'gpt-3.5-turbo',
+        //             messages: {
+        //                 content: '你好',
+        //                 role: 'user'
+        //             },
+        //             timestamp: 1744005099000
+        //         }
+        //     ]
+        // }))
+        // console.log(ChatDB.add({
+        //     key: 'c',
+        //     title: 'c',
+        //     data: [
+        //         {
+        //             model: 'gpt-3.5-turbo',
+        //             messages: {
+        //                 content: '你好',
+        //                 role: 'user'
+        //             },
+        //             timestamp: 1746510934000
+        //         }
+        //     ]
+        // }))
+        // console.log(ChatDB.add({
+        //     key: 'd',
+        //     title: 'd',
+        //     data: [
+        //         {
+        //             model: 'gpt-3.5-turbo',
+        //             messages: {
+        //                 content: '你好',
+        //                 role: 'user'
+        //             },
+        //             timestamp: 1746597099000
+        //         }
+        //     ]
+        // }))
+        // } catch (error) {
+        //     console.error('添加数据失败:', error)
+        // }
+
+
         // 判断是否为移动端
         if (window.innerWidth < 768) {
             this.SidebarStatus = 0
@@ -43,8 +87,8 @@ export default defineComponent({
          * 侧边栏展开收起
          */
         sidebarSwitch() {
-            const SIDEBAR_EXPAND = document.querySelector('.SidebarExpandContainer') as HTMLElement | null
-            const SIDEBAR_STOW = document.querySelector('.SidebarStowContainer') as HTMLElement | null
+            const SIDEBAR_EXPAND = document.querySelector('.SidebarExpandContainer')
+            const SIDEBAR_STOW = document.querySelector('.SidebarStowContainer')
             if (this.SidebarStatus === 1) {
                 if (SIDEBAR_EXPAND) {
                     SIDEBAR_EXPAND.style.transform = 'translateX(-100%)'
@@ -67,18 +111,14 @@ export default defineComponent({
         async chatListGet() {
             try {
                 const CHAT_LIST = await ChatDB.getAll()
-                const GROUPED_CHATS: Record<string, any[]> = {}
+                const GROUPED_CHATS = {}
                 for (const ITEM of CHAT_LIST) {
-                    const TIME_RANGE_LABEL = this.getTimeRangeLabel(ITEM.data[ITEM.data.length - 1].timestamp)
-                    if (!GROUPED_CHATS[TIME_RANGE_LABEL]) {
-                        GROUPED_CHATS[TIME_RANGE_LABEL] = []
-                    }
-                    // 去掉多余的属性
-                    const DATA = {
-                        key: ITEM.key,
+                    const SAFE_KEY = this.getTimeRangeLabel(ITEM.data[ITEM.data.length - 1].timestamp)
+                    GROUPED_CHATS[SAFE_KEY] = GROUPED_CHATS[SAFE_KEY] || []
+                    GROUPED_CHATS[SAFE_KEY].push({
+                        key: String(ITEM.key),
                         title: ITEM.title
-                    }
-                    GROUPED_CHATS[TIME_RANGE_LABEL].push(DATA)
+                    })
                 }
                 // 将分组数据转换成数组并按时间排序
                 this.ChatList = Object.entries(GROUPED_CHATS)
@@ -105,7 +145,7 @@ export default defineComponent({
          * 获取时间范围标签
          * @param timestamp 时间戳
          */
-        getTimeRangeLabel(timestamp: number): string {
+        getTimeRangeLabel(timestamp) {
             const NOW = Date.now()
             const NOEDAYMS = 24 * 60 * 60 * 1000
             const DATE = new Date(timestamp)
@@ -132,7 +172,7 @@ export default defineComponent({
          * 打开聊天
          * @param key 聊天ID
          */
-        openChat(key: string) {
+        openChat(key) {
             alert(key)
         }
     }
@@ -321,7 +361,7 @@ export default defineComponent({
     grid-template-rows: auto auto auto auto 1fr auto;
     justify-items: center;
 
-    .SidebarTopLogo{
+    .SidebarTopLogo {
         margin: 15px 0;
     }
 

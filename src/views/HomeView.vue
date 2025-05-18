@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import {defineComponent} from 'vue';
 import AIInput from "@/components/AIInput.vue";
 

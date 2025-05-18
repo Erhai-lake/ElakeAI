@@ -1,6 +1,6 @@
-<script lang="ts">
+<script>
 import HomeSidebar from "@/components/HomeSidebar.vue"
-import ThemeSelect from "@/components/ThemeSwitch.vue";
+import ThemeSelect from "@/components/ThemeSwitch.vue"
 
 export default {
     name: 'App',

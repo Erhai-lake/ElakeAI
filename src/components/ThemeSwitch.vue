@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import {defineComponent} from 'vue'
 import {useStore} from 'vuex'
 
@@ -20,14 +20,14 @@ export default defineComponent({
         }
     },
     created() {
-        this.Theme = this.store.getters.currentTheme as string === 'light'
+        this.Theme = this.store.getters.currentTheme === 'light'
     },
     methods: {
         /**
          * 应用主题
          * @param theme 主题名称
          */
-        applyTheme(theme: string) {
+        applyTheme(theme) {
             if (!theme) return
             this.store.dispatch('switchTheme', theme)
             document.documentElement.setAttribute('data-theme', theme)
