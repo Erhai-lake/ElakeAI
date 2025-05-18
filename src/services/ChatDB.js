@@ -5,7 +5,10 @@ class ChatDBClass {
     storeName = "Chat"
 
     constructor() {
-        this.initDB().catch(console.error)
+        this.initDB().catch (error => {
+            console.error('数据库连接失败', error)
+            this.$toast.open({message: '数据库连接失败!'})
+        })
     }
 
     /**
@@ -22,7 +25,6 @@ class ChatDBClass {
                         keyPath: 'key',
                         autoIncrement: false
                     })
-                    console.log(`Created ${this.storeName} object store`)
                 }
             }
 
@@ -32,7 +34,8 @@ class ChatDBClass {
             }
 
             request.onerror = (event) => {
-                console.error('Database connection failed:', (event.target).error)
+                console.error('数据库连接失败:', (event.target).error)
+                this.$toast.open({message: '数据库连接失败!'})
                 reject((event.target).error)
             }
         })

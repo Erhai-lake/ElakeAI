@@ -11,7 +11,9 @@ export default defineComponent({
         }
     },
     mounted() {
-        // this.$toast.open('test')
+        let instance = this.$toast.open({
+            message: 'You did it!'
+        })
         // try {
         //     console.log(ChatDB.add({
         //         key: 'aa_bb_cc',
@@ -139,6 +141,7 @@ export default defineComponent({
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
                 console.error('获取数据失败:', error)
+                this.$toast.open({message: '获取数据失败!'})
             }
         },
         /**
