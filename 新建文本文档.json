@@ -1,0 +1,14 @@
+{
+    "key": "04c05bb4-2d94-49f2-b41f-d9e8ec57f11d",
+    "title": "Chat History",
+    "data": [
+        {
+            "model": "gpt-4",
+            "messages": {
+                "content": "Hello! How can I assist you today?",
+                "role": "assistant"
+            },
+            "timestamp": 1698230400000
+        }
+    ]
+}

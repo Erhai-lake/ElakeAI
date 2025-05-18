@@ -7,18 +7,18 @@ export default createStore({
     },
     getters: {
         // 获取当前主题
-        currentTheme: (state: { theme: string }) => state.theme
+        currentTheme: (state) => state.theme
     },
     mutations: {
         // 设置主题
-        SET_THEME(state: { theme: string }, theme): void {
+        SET_THEME(state, theme) {
             state.theme = theme
             localStorage.setItem('user-theme', theme)
         }
     },
     actions: {
         // 切换主题
-        switchTheme({commit}, theme): void {
+        switchTheme({commit}, theme) {
             commit('SET_THEME', theme)
         }
     },
