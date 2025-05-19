@@ -4,7 +4,7 @@ import ThemeSelect from "@/components/ThemeSwitch.vue"
 
 export default {
     name: 'App',
-    components: {ThemeSelect, HomeSidebar},
+    components: {ThemeSelect, HomeSidebar}
 }
 </script>
 

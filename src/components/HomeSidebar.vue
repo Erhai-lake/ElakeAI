@@ -1,6 +1,5 @@
 <script>
 import {defineComponent} from 'vue'
-import {ChatDB} from '@/services/ChatDB'
 
 export default defineComponent({
     name: "HomeSidebar",
@@ -11,9 +10,6 @@ export default defineComponent({
         }
     },
     mounted() {
-        let instance = this.$toast.open({
-            message: 'You did it!'
-        })
         // try {
         //     console.log(ChatDB.add({
         //         key: 'aa_bb_cc',
@@ -112,7 +108,7 @@ export default defineComponent({
          */
         async chatListGet() {
             try {
-                const CHAT_LIST = await ChatDB.getAll()
+                const CHAT_LIST = await this.$ChatDB.getAll()
                 const GROUPED_CHATS = {}
                 for (const ITEM of CHAT_LIST) {
                     const SAFE_KEY = this.getTimeRangeLabel(ITEM.data[ITEM.data.length - 1].timestamp)
@@ -176,7 +172,7 @@ export default defineComponent({
          * @param key 聊天ID
          */
         openChat(key) {
-            alert(key)
+            this.$toast.open({message: key, type: 'success'})
         }
     }
 })

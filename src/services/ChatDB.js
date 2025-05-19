@@ -5,9 +5,11 @@ class ChatDBClass {
     storeName = "Chat"
 
     constructor() {
-        this.initDB().catch (error => {
+        this.initDB().catch(error => {
             console.error('数据库连接失败', error)
-            this.$toast.open({message: '数据库连接失败!'})
+            if (this.toast) {
+                this.toast.open({message: '数据库连接失败!'})
+            }
         })
     }
 
@@ -35,7 +37,9 @@ class ChatDBClass {
 
             request.onerror = (event) => {
                 console.error('数据库连接失败:', (event.target).error)
-                this.$toast.open({message: '数据库连接失败!'})
+                if (this.toast) {
+                    this.toast.open({message: '数据库连接失败!'})
+                }
                 reject((event.target).error)
             }
         })
@@ -132,7 +136,7 @@ class ChatDBClass {
             }
 
             request.onerror = (event) => {
-                reject((event.target ).error)
+                reject((event.target).error)
             }
         })
 
@@ -180,7 +184,7 @@ class ChatDBClass {
     /**
      * 清空所有聊天记录
      */
-    async clear(){
+    async clear() {
         const db = await this.ensureDBReady()
         return new Promise((resolve, reject) => {
             const transaction = db.transaction([this.storeName], 'readwrite')
@@ -199,4 +203,5 @@ class ChatDBClass {
 }
 
 // 导出单例
-export const ChatDB = new ChatDBClass()
+// export const ChatDB = new ChatDBClass()
+export {ChatDBClass}

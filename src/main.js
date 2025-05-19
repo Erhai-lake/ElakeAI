@@ -4,6 +4,8 @@ import router from '@/router'
 import store from '@/store'
 // 全局样式
 import '@/assets/styles/theme.less'
+// Chat数据库
+import { ChatDBClass } from '@/services/ChatDB'
 // Toast 通知
 import toastPlugin from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-bootstrap.css'
@@ -16,6 +18,13 @@ const TOAST_OPTIONS = {
     position: 'top'
 }
 
+// 注册全局组件
 APP.use(store).use(router).use(toastPlugin, TOAST_OPTIONS)
 
+// 注册全局变量
+const toast = APP.config.globalProperties.$toast;
+const ChatDB = new ChatDBClass(toast)
+APP.config.globalProperties.$ChatDB = ChatDB
+
+// 挂载应用
 APP.mount('#app')
