@@ -183,11 +183,11 @@ export default defineComponent({
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
-            <div class="SidebarNew" title="新建对话">
+            <router-link to="/" class="SidebarNew" title="新建对话">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-New"></use>
                 </svg>
-            </div>
+            </router-link>
             <div class="SidebarStow" title="收起侧边栏" @click="sidebarSwitch">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Stow"></use>
@@ -219,20 +219,20 @@ export default defineComponent({
             </svg>
             <p>预设</p>
         </div>
-        <div class="SidebarSetup" title="设置">
+        <router-link to="/setup" class="SidebarSetup" title="设置">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
             <p>设置</p>
-        </div>
+        </router-link>
     </div>
     <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
         <div class="SidebarTopLogo"></div>
-        <div class="SidebarNew" title="新建对话">
+        <router-link to="/" class="SidebarNew" title="新建对话">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-New"></use>
             </svg>
-        </div>
+        </router-link>
         <div class="SidebarStow" title="展开侧边栏" @click="sidebarSwitch">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Stow"></use>
@@ -244,11 +244,11 @@ export default defineComponent({
             </svg>
         </div>
         <div></div>
-        <div class="SidebarSetup" title="设置">
+        <router-link to="/setup" class="SidebarSetup" title="设置">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
-        </div>
+        </router-link>
     </div>
 </template>
 
