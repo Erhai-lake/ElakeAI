@@ -45,15 +45,15 @@ export default defineComponent({
     <div class="Switch">
         <input type="radio" id="Light" name="Theme" value="Light" v-model="Theme"/>
         <label for="Light">
-            白昼
+            {{ $t('ThemeSwitch.Light') }}
         </label>
         <input type="radio" id="System" name="Theme" value="System" v-model="Theme"/>
         <label for="System">
-            跟随系统
+            {{ $t('ThemeSwitch.System') }}
         </label>
         <input type="radio" id="Dark" name="Theme" value="Dark" v-model="Theme"/>
         <label for="Dark">
-            深夜
+            {{ $t('ThemeSwitch.Dark') }}
         </label>
         <div class="Mask"></div>
     </div>

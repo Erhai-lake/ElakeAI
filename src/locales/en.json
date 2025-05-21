@@ -18,5 +18,10 @@
         "Appendix": "Appendix",
         "Search": "Networked Search",
         "Send": "Send"
+    },
+    "ThemeSwitch": {
+        "Light": "Light",
+        "Dark": "Dark",
+        "System": "System"
     }
 }

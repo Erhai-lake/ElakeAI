@@ -18,5 +18,10 @@
         "Appendix": "附录",
         "Search": "联网搜索",
         "Send": "发送"
+    },
+    "ThemeSwitch": {
+        "Light": "白昼",
+        "Dark": "深夜",
+        "System": "系统"
     }
 }
