@@ -1,0 +1,16 @@
+{
+    "HomeSidebar": {
+        "TimeRangeLabel": {
+            "Within_1_days": "Today",
+            "Within_30_days": "Within 30 days"
+        },
+        "Error": {
+            "Error_in_getting_data": "Error in getting data"
+        },
+        "New": "New Dialogue",
+        "Stow": "Collapse sidebar",
+        "Expand": "Expand sidebar",
+        "Preset": "Preset",
+        "Setup": "Setup"
+    }
+}

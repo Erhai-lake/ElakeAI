@@ -1,0 +1,16 @@
+{
+    "HomeSidebar": {
+        "TimeRangeLabel": {
+            "Within_1_days": "今天",
+            "Within_30_days": "30天内"
+        },
+        "Error": {
+            "Error_in_getting_data": "获取数据时出错"
+        },
+        "New": "新建对话",
+        "Stow": "折叠边栏",
+        "Expand": "展开边栏",
+        "Preset": "预设",
+        "Setup": "设置"
+    }
+}

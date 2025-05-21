@@ -6,6 +6,8 @@ import store from '@/store'
 import '@/assets/styles/theme.less'
 // Chat数据库
 import { ChatDBClass } from '@/services/ChatDB'
+// 多语言(i18n)
+import i18n from './locales'
 // Toast 通知
 import toastPlugin from 'vue-toast-notification'
 import 'vue-toast-notification/dist/theme-bootstrap.css'
@@ -19,7 +21,7 @@ const TOAST_OPTIONS = {
 }
 
 // 注册全局组件
-APP.use(store).use(router).use(toastPlugin, TOAST_OPTIONS)
+APP.use(store).use(router).use(i18n).use(toastPlugin, TOAST_OPTIONS)
 
 // 注册全局变量
 const toast = APP.config.globalProperties.$toast;

@@ -25,10 +25,9 @@ export default defineComponent({
         //             }
         //         ]
         //     }))
-
-        // console.log(ChatDB.add({
-        //     key: 'b',
-        //     title: 'b',
+        // console.log(this.$ChatDB.add({
+        //     key: 'c',
+        //     title: 'c',
         //     data: [
         //         {
         //             model: 'gpt-3.5-turbo',
@@ -36,7 +35,7 @@ export default defineComponent({
         //                 content: '你好',
         //                 role: 'user'
         //             },
-        //             timestamp: 1744005099000
+        //             timestamp: 1746959840000
         //         }
         //     ]
         // }))
@@ -123,9 +122,9 @@ export default defineComponent({
                     .map(([TimeRangeLabel, Data]) => {
                         // 计算 sortKey
                         let sortKey
-                        if (TimeRangeLabel === "今天") {
+                        if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.Within_1_days')) {
                             sortKey = 0
-                        } else if (TimeRangeLabel === "30天内") {
+                        } else if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.Within_30_days')) {
                             sortKey = 1
                         } else {
                             const [year, month] = TimeRangeLabel.split("-").map(Number)
@@ -136,8 +135,8 @@ export default defineComponent({
                     .sort((a, b) => a.sortKey - b.sortKey)
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
-                console.error('获取数据失败:', error)
-                this.$toast.open({message: '获取数据失败!'})
+                console.error(this.$t('HomeSidebar.Error.Error_in_getting_data'), error)
+                this.$toast.open({message: this.$t('HomeSidebar.Error.Error_in_getting_data')})
             }
         },
         /**
@@ -155,12 +154,12 @@ export default defineComponent({
                 DATE.getMonth() === NOW_DATE.getMonth() &&
                 DATE.getFullYear() === NOW_DATE.getFullYear()
             ) {
-                return "今天"
+                return this.$t('HomeSidebar.TimeRangeLabel.Within_1_days')
             }
             // 检查是否是30天内（不包括今天）
             const DIFF_DAYS = Math.floor((NOW - timestamp) / NOEDAYMS)
             if (DIFF_DAYS <= 30 && DIFF_DAYS > 0) {
-                return "30天内"
+                return this.$t('HomeSidebar.TimeRangeLabel.Within_30_days')
             }
             // 否则返回年月格式 "YYYY-MM"
             const YEAR = DATE.getFullYear()
@@ -183,12 +182,12 @@ export default defineComponent({
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
-            <router-link to="/" class="SidebarNew" title="新建对话">
+            <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.New')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-New"></use>
                 </svg>
             </router-link>
-            <div class="SidebarStow" title="收起侧边栏" @click="sidebarSwitch">
+            <div class="SidebarStow" :title="$t('HomeSidebar.Stow')" @click="sidebarSwitch">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Stow"></use>
                 </svg>
@@ -213,38 +212,38 @@ export default defineComponent({
                 </div>
             </div>
         </div>
-        <div class="SidebarPreset" title="预设">
+        <div class="SidebarPreset" :title="$t('HomeSidebar.Preset')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
-            <p>预设</p>
+            <p>{{ $t('HomeSidebar.Preset') }}</p>
         </div>
-        <router-link to="/setup" class="SidebarSetup" title="设置">
+        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.Setup')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
-            <p>设置</p>
+            <p>{{ $t('HomeSidebar.Setup') }}</p>
         </router-link>
     </div>
     <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
         <div class="SidebarTopLogo"></div>
-        <router-link to="/" class="SidebarNew" title="新建对话">
+        <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.New')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-New"></use>
             </svg>
         </router-link>
-        <div class="SidebarStow" title="展开侧边栏" @click="sidebarSwitch">
+        <div class="SidebarExpand" :title="$t('HomeSidebar.Expand')" @click="sidebarSwitch">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Stow"></use>
             </svg>
         </div>
-        <div class="SidebarPreset" title="预设">
+        <div class="SidebarPreset" :title="$t('HomeSidebar.Preset')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
         </div>
         <div></div>
-        <router-link to="/setup" class="SidebarSetup" title="设置">
+        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.Setup')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
@@ -364,7 +363,7 @@ export default defineComponent({
         margin: 15px 0;
     }
 
-    .SidebarNew, .SidebarStow, .SidebarPreset, .SidebarSetup {
+    .SidebarNew, .SidebarExpand, .SidebarPreset, .SidebarSetup {
         padding: 5px;
         margin: 10px 0;
         border-radius: 10px;
