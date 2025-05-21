@@ -10,10 +10,6 @@ export default {
 <template>
     <HomeSidebar/>
     <router-view/>
-    <!--  <nav>-->
-    <!--    <router-link to="/">Home</router-link>-->
-    <!--  </nav>-->
-    <!--    </div>-->
 </template>
 
 <style lang="less">
