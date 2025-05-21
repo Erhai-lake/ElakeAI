@@ -16,11 +16,11 @@ export default defineComponent({
     watch: {
         // 监听主题变化
         Theme(newVal) {
-            this.applyTheme(newVal ? 'light' : 'dark')
+            this.applyTheme(newVal ? 'Light' : 'Dark')
         }
     },
     created() {
-        this.Theme = this.store.getters.currentTheme === 'light'
+        this.Theme = this.store.getters.currentTheme === 'Light'
     },
     methods: {
         /**
