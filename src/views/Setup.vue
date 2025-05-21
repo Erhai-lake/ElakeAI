@@ -12,7 +12,7 @@ export default {
     <div class="SetupContainer">
         <FoldingPanel>
             <template #Title>
-                个性化设置
+                个性化
             </template>
             <template #Content>
                 <div class="Item">
