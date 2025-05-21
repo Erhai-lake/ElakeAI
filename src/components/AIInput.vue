@@ -134,7 +134,7 @@ export default defineComponent({
             transition: all 0.2s ease-in-out, transform 0.1s ease-in-out;
 
             &:hover {
-                box-shadow: 0 0 5px 3px var(--chat-input-button-hover-shadow-color);
+                box-shadow: 0 0 5px 3px var(--box-shadow-color);
             }
 
             &:active {
