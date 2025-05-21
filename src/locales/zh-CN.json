@@ -12,5 +12,11 @@
         "Expand": "展开边栏",
         "Preset": "预设",
         "Setup": "设置"
+    },
+    "AIInput": {
+        "ChatInputPlaceholder": "想问点什么吗？",
+        "Appendix": "附录",
+        "Search": "联网搜索",
+        "Send": "发送"
     }
 }

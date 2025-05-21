@@ -61,25 +61,25 @@ export default defineComponent({
             </label>
         </div>
         <!--聊天输入框-->
-        <textarea id="ChatInput" placeholder="想问点什么?" ref="textareaRef"></textarea>
+        <textarea id="ChatInput" :placeholder="$t('AIInput.ChatInputPlaceholder')" ref="textareaRef"></textarea>
         <!--按钮栏-->
         <div class="ButtonBar">
             <!--附件-->
-            <label for="Appendix">
+            <label for="Appendix" :title="$t('AIInput.Appendix')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Link"></use>
                 </svg>
             </label>
             <!--联网搜索-->
             <input id="Search" type="checkbox"/>
-            <label for="Search">
+            <label for="Search" :title="$t('AIInput.Search')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Networking"></use>
                 </svg>
             </label>
             <div></div>
             <!--发送-->
-            <label for="Send" class="Send">
+            <label for="Send" :title="$t('AIInput.Send')" class="Send">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Send"></use>
                 </svg>

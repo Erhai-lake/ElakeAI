@@ -12,5 +12,11 @@
         "Expand": "Expand sidebar",
         "Preset": "Preset",
         "Setup": "Setup"
+    },
+    "AIInput": {
+        "ChatInputPlaceholder": "Want to ask something?",
+        "Appendix": "Appendix",
+        "Search": "Networked Search",
+        "Send": "Send"
     }
 }
