@@ -3,7 +3,7 @@ import {createStore} from 'vuex'
 export default createStore({
     state: {
         // 默认白昼
-        theme: localStorage.getItem('user-theme') || 'Light'
+        theme: localStorage.getItem('user-theme') || 'System'
     },
     getters: {
         // 获取当前主题
