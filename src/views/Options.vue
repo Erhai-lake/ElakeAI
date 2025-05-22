@@ -4,24 +4,24 @@ import ThemeSelect from "@/components/ThemeSwitch.vue";
 import LanguageSelect from "@/components/LanguageSelect.vue";
 
 export default {
-    name: 'Setup',
+    name: 'Options',
     components: {LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
 
 <template>
-    <div class="SetupContainer">
+    <div class="OptionsContainer">
         <FoldingPanel>
             <template #Title>
-                {{ $t('Setup.Personalization') }}
+                {{ $t('Options.Personalization') }}
             </template>
             <template #Content>
                 <div class="Item">
-                    {{ $t('Setup.Theme') }}
+                    {{ $t('Options.Theme') }}
                     <ThemeSelect/>
                 </div>
                 <div class="Item">
-                    {{ $t('Setup.Language') }}
+                    {{ $t('Options.Language') }}
                     <LanguageSelect/>
                 </div>
             </template>
@@ -30,7 +30,7 @@ export default {
 </template>
 
 <style scoped lang="less">
-.SetupContainer {
+.OptionsContainer {
     padding: 20px;
 }
 

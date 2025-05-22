@@ -61,7 +61,6 @@ export default {
 
 <style scoped lang="less">
 .Switch {
-    //padding: 10px 0;
     position: relative;
     width: 200px;
     user-select: none;
@@ -81,25 +80,22 @@ export default {
         border-color: #80ceff;
         box-shadow: 0 2px 8px var(--box-shadow-color);
     }
+}
 
-    .Open {
-        border-radius: 8px 8px 0 0;
-        border-bottom: 1px solid transparent;
-    }
+.Open {
+    border-radius: 8px 8px 0 0;
 }
 
 .LangList {
     position: absolute;
-    top: calc(100% + 4px);
+    top: 100%;
     left: 0;
     right: 0;
-    margin: 0;
-    padding: 0;
     list-style: none;
     border: 1px solid var(--border-color);
+    border-top: none;
     border-radius: 0 0 8px 8px;
     background-color: var(--background-color);
-    box-shadow: 0 4px 12px var(--box-shadow-color);
     z-index: 100;
     overflow: hidden;
 
