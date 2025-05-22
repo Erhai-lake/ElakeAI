@@ -10,7 +10,7 @@ const messages = {
 const i18n = createI18n({
     legacy: false,
     // 默认语言
-    locale: 'en',
+    locale: 'zh-CN',
     // 回退语言
     fallbackLocale: 'zh-CN',
     messages

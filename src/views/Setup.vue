@@ -1,10 +1,11 @@
 <script>
 import FoldingPanel from "@/components/FoldingPanel.vue";
 import ThemeSelect from "@/components/ThemeSwitch.vue";
+import LanguageSelect from "@/components/LanguageSelect.vue";
 
 export default {
     name: 'Setup',
-    components: {ThemeSelect, FoldingPanel}
+    components: {LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
 
@@ -12,12 +13,16 @@ export default {
     <div class="SetupContainer">
         <FoldingPanel>
             <template #Title>
-                个性化
+                {{ $t('Setup.Personalization') }}
             </template>
             <template #Content>
                 <div class="Item">
-                    <p>主题</p>
+                    {{ $t('Setup.Theme') }}
                     <ThemeSelect/>
+                </div>
+                <div class="Item">
+                    {{ $t('Setup.Language') }}
+                    <LanguageSelect/>
                 </div>
             </template>
         </FoldingPanel>
@@ -29,10 +34,12 @@ export default {
     padding: 20px;
 }
 
-.Item{
+.Item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
 }
 </style>

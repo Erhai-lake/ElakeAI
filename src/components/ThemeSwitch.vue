@@ -74,12 +74,13 @@ export default defineComponent({
         left: 0;
         width: 80px;
         height: 100%;
-        background-color: #b3b3b3;
+        background-color: rgba(179, 179, 179, 0.6);
     }
 
     label {
         width: 80px;
         text-align: center;
+        font-size: 14px;
     }
 
     input {

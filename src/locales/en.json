@@ -23,5 +23,10 @@
         "Light": "Light",
         "Dark": "Dark",
         "System": "System"
+    },
+    "Setup": {
+        "Personalization": "Personalization",
+        "Theme": "Theme",
+        "Language": "Language"
     }
 }
