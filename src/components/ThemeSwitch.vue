@@ -9,10 +9,6 @@ export default defineComponent({
             Theme: "",
         }
     },
-    setup() {
-        const store = useStore()
-        return {store}
-    },
     watch: {
         // 监听主题变化
         Theme(newVal) {
