@@ -1,17 +1,17 @@
 {
+    "Error": {
+        "ERROR_GETTING_CHAT_LIST": "[DB Error] Error getting chat list"
+    },
     "HomeSidebar": {
         "TimeRangeLabel": {
-            "Within_1_days": "Today",
-            "Within_30_days": "Within 30 days"
+            "WITHIN_1_DAYS": "Today",
+            "WITHIN_30_DAYS": "Within 30 days"
         },
-        "Error": {
-            "Error_in_getting_data": "Error in getting data"
-        },
-        "New": "New Dialogue",
-        "Stow": "Collapse sidebar",
-        "Expand": "Expand sidebar",
-        "Preset": "Preset",
-        "Setup": "Setup"
+        "NEW": "New Dialogue",
+        "STOW": "Collapse sidebar",
+        "EXPAND": "Expand sidebar",
+        "PRESET": "Preset",
+        "SETUP": "Setup"
     },
     "AIInput": {
         "ChatInputPlaceholder": "Want to ask something?",

@@ -107,7 +107,14 @@ export default defineComponent({
          */
         async chatListGet() {
             try {
-                const CHAT_LIST = await this.$ChatDB.getAll()
+                const DB = new this.$DBOperation({
+                    toast: this.$toast,
+                    dbName: "ElakeAI",
+                    storeName: "Chat",
+                    keyPath: "key",
+                    dbVersion: 1
+                })
+                const CHAT_LIST = await DB.getAll()
                 const GROUPED_CHATS = {}
                 for (const ITEM of CHAT_LIST) {
                     const SAFE_KEY = this.getTimeRangeLabel(ITEM.data[ITEM.data.length - 1].timestamp)
@@ -122,9 +129,9 @@ export default defineComponent({
                     .map(([TimeRangeLabel, Data]) => {
                         // 计算 sortKey
                         let sortKey
-                        if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.Within_1_days')) {
+                        if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS')) {
                             sortKey = 0
-                        } else if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.Within_30_days')) {
+                        } else if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS')) {
                             sortKey = 1
                         } else {
                             const [year, month] = TimeRangeLabel.split("-").map(Number)
@@ -135,8 +142,8 @@ export default defineComponent({
                     .sort((a, b) => a.sortKey - b.sortKey)
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
-                console.error(this.$t('HomeSidebar.Error.Error_in_getting_data'), error)
-                this.$toast.open({message: this.$t('HomeSidebar.Error.Error_in_getting_data')})
+                console.error(this.$t('Error.ERROR_GETTING_CHAT_LIST'), error)
+                this.$toast.open({message: this.$t('Error.ERROR_GETTING_CHAT_LIST')})
             }
         },
         /**
@@ -154,12 +161,12 @@ export default defineComponent({
                 DATE.getMonth() === NOW_DATE.getMonth() &&
                 DATE.getFullYear() === NOW_DATE.getFullYear()
             ) {
-                return this.$t('HomeSidebar.TimeRangeLabel.Within_1_days')
+                return this.$t('HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS')
             }
             // 检查是否是30天内（不包括今天）
             const DIFF_DAYS = Math.floor((NOW - timestamp) / NOEDAYMS)
             if (DIFF_DAYS <= 30 && DIFF_DAYS > 0) {
-                return this.$t('HomeSidebar.TimeRangeLabel.Within_30_days')
+                return this.$t('HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS')
             }
             // 否则返回年月格式 "YYYY-MM"
             const YEAR = DATE.getFullYear()
@@ -182,12 +189,12 @@ export default defineComponent({
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
-            <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.New')">
+            <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.NEW')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-New"></use>
                 </svg>
             </router-link>
-            <div class="SidebarStow" :title="$t('HomeSidebar.Stow')" @click="sidebarSwitch">
+            <div class="SidebarStow" :title="$t('HomeSidebar.STOW')" @click="sidebarSwitch">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Stow"></use>
                 </svg>
@@ -212,38 +219,38 @@ export default defineComponent({
                 </div>
             </div>
         </div>
-        <div class="SidebarPreset" :title="$t('HomeSidebar.Preset')">
+        <div class="SidebarPreset" :title="$t('HomeSidebar.PRESET')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
-            <p>{{ $t('HomeSidebar.Preset') }}</p>
+            <p>{{ $t('HomeSidebar.PRESET') }}</p>
         </div>
-        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.Setup')">
+        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
-            <p>{{ $t('HomeSidebar.Setup') }}</p>
+            <p>{{ $t('HomeSidebar.SETUP') }}</p>
         </router-link>
     </div>
     <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
         <div class="SidebarTopLogo"></div>
-        <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.New')">
+        <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.NEW')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-New"></use>
             </svg>
         </router-link>
-        <div class="SidebarExpand" :title="$t('HomeSidebar.Expand')" @click="sidebarSwitch">
+        <div class="SidebarExpand" :title="$t('HomeSidebar.EXPAND')" @click="sidebarSwitch">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Stow"></use>
             </svg>
         </div>
-        <div class="SidebarPreset" :title="$t('HomeSidebar.Preset')">
+        <div class="SidebarPreset" :title="$t('HomeSidebar.PRESET')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
         </div>
         <div></div>
-        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.Setup')">
+        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
