@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, ref, onMounted, onUnmounted} from 'vue';
+import {defineComponent, ref, onMounted, onUnmounted} from "vue"
 
 export default defineComponent({
     name: "AIInput",
@@ -7,19 +7,19 @@ export default defineComponent({
         const textareaRef = ref(null)
         const adjustTextareaHeight = () => {
             if (!textareaRef.value) return
-            textareaRef.value.style.height = 'auto'
+            textareaRef.value.style.height = "auto"
             const newHeight = Math.min(textareaRef.value.scrollHeight, 600)
             textareaRef.value.style.height = `${Math.max(newHeight, 50)}px`
         }
         onMounted(() => {
             if (textareaRef.value) {
                 adjustTextareaHeight()
-                textareaRef.value.addEventListener('input', adjustTextareaHeight)
+                textareaRef.value.addEventListener("input", adjustTextareaHeight)
             }
         })
         onUnmounted(() => {
             if (textareaRef.value) {
-                textareaRef.value.removeEventListener('input', adjustTextareaHeight);
+                textareaRef.value.removeEventListener("input", adjustTextareaHeight)
             }
         })
         return {textareaRef}

@@ -1,10 +1,10 @@
 <script>
 export default {
-    name: 'FoldingPanel',
+    name: "FoldingPanel",
     props: {
         Title: {
             type: String,
-            default: '标题'
+            default: "标题"
         },
         Height: {
             type: Number,
@@ -13,20 +13,20 @@ export default {
     },
     methods: {
         Folding() {
-            const FoldingPanelTitle = document.querySelector('.FoldingPanelTitle')
+            const FoldingPanelTitle = document.querySelector(".FoldingPanelTitle")
             if (FoldingPanelTitle) {
-                const FoldingPanel = document.querySelector('.FoldingPanel')
+                const FoldingPanel = document.querySelector(".FoldingPanel")
                 if (FoldingPanel) {
-                    const FoldingPanelContent = FoldingPanel.querySelector('.FoldingPanelContent')
+                    const FoldingPanelContent = FoldingPanel.querySelector(".FoldingPanelContent")
                     if (FoldingPanelContent) {
-                        const Height = getComputedStyle(FoldingPanelContent).getPropertyValue('--Height')
-                        const Arrow = FoldingPanelTitle.querySelector('.Arrow')
+                        const Height = getComputedStyle(FoldingPanelContent).getPropertyValue("--Height")
+                        const Arrow = FoldingPanelTitle.querySelector(".Arrow")
                         if (FoldingPanelContent.style.height !== Height) {
                             FoldingPanelContent.style.height = Height
-                            Arrow.style.transform = 'rotate(-180deg)'
+                            Arrow.style.transform = "rotate(-180deg)"
                         } else {
-                            FoldingPanelContent.style.height = '0px'
-                            Arrow.style.transform = 'rotate(0deg)'
+                            FoldingPanelContent.style.height = "0px"
+                            Arrow.style.transform = "rotate(0deg)"
                         }
                     }
                 }

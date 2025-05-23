@@ -7,7 +7,7 @@ https://github.com/ankurk91/vue-toast-notification
 ```js
 // 使用
 let instance = this.$toast.open({
-    message: 'You did it!'
+    message: "You did it!"
 })
 // 关闭
 instance.dismiss()

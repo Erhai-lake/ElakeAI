@@ -1,23 +1,23 @@
-import {createApp} from 'vue'
-import app from '@/App.vue'
-import router from '@/router'
-import store from '@/store'
+import {createApp} from "vue"
+import app from "@/App.vue"
+import router from "@/router"
+import store from "@/store"
 // 全局样式
-import '@/assets/styles/theme.less'
+import "@/assets/styles/theme.less"
 // Chat数据库
-import { ChatDBClass } from '@/services/ChatDB'
+import { ChatDBClass } from "@/services/ChatDB"
 // 多语言(i18n)
-import i18n from './locales'
+import i18n from "./locales"
 // Toast 通知
-import toastPlugin from 'vue-toast-notification'
-import 'vue-toast-notification/dist/theme-bootstrap.css'
+import toastPlugin from "vue-toast-notification"
+import "vue-toast-notification/dist/theme-bootstrap.css"
 
 const APP = createApp(app)
 
 // Toast 配置
 const TOAST_OPTIONS = {
-    type: 'error',
-    position: 'top'
+    type: "error",
+    position: "top"
 }
 
 // 注册全局组件
@@ -29,4 +29,4 @@ const ChatDB = new ChatDBClass(toast)
 APP.config.globalProperties.$ChatDB = ChatDB
 
 // 挂载应用
-APP.mount('#app')
+APP.mount("#app")

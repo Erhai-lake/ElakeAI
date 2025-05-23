@@ -5,13 +5,13 @@ export default {
         return {
             isOpen: false,
             selectedLang: {
-                code: 'zh_cn',
-                name: '简体中文',
-                flag: 'https://flagcdn.com/cn.svg'
+                code: "zh_cn",
+                name: "简体中文",
+                flag: "https://flagcdn.com/cn.svg"
             },
             languages: [
-                {code: 'zh_cn', name: '简体中文', flag: 'https://flagcdn.com/cn.svg'},
-                {code: 'us', name: 'English', flag: 'https://flagcdn.com/us.svg'}
+                {code: "zh_cn", name: "简体中文", flag: "https://flagcdn.com/cn.svg"},
+                {code: "us", name: "English", flag: "https://flagcdn.com/us.svg"}
             ]
         }
     },
@@ -22,7 +22,7 @@ export default {
         selectLanguage(lang) {
             this.selectedLang = lang
             this.isOpen = false
-            this.$toast.open({message: `${lang.code} - ${lang.name}`, type: 'success'})
+            this.$toast.open({message: `${lang.code} - ${lang.name}`, type: "success"})
         },
         handleClickOutside(e) {
             if (!this.$el.contains(e.target)) {
@@ -31,10 +31,10 @@ export default {
         }
     },
     mounted() {
-        document.addEventListener('click', this.handleClickOutside)
+        document.addEventListener("click", this.handleClickOutside)
     },
     beforeDestroy() {
-        document.removeEventListener('click', this.handleClickOutside)
+        document.removeEventListener("click", this.handleClickOutside)
     }
 }
 </script>

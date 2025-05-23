@@ -1,10 +1,10 @@
 <script>
-import FoldingPanel from "@/components/FoldingPanel.vue";
-import ThemeSelect from "@/components/ThemeSwitch.vue";
-import LanguageSelect from "@/components/LanguageSelect.vue";
+import FoldingPanel from "@/components/FoldingPanel.vue"
+import ThemeSelect from "@/components/ThemeSwitch.vue"
+import LanguageSelect from "@/components/LanguageSelect.vue"
 
 export default {
-    name: 'Options',
+    name: "Options",
     components: {LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
@@ -13,15 +13,15 @@ export default {
     <div class="OptionsContainer">
         <FoldingPanel>
             <template #Title>
-                {{ $t('Options.Personalization') }}
+                {{ $t("Options.Personalization") }}
             </template>
             <template #Content>
                 <div class="Item">
-                    {{ $t('Options.Theme') }}
+                    {{ $t("Options.Theme") }}
                     <ThemeSelect/>
                 </div>
                 <div class="Item">
-                    {{ $t('Options.Language') }}
+                    {{ $t("Options.Language") }}
                     <LanguageSelect/>
                 </div>
             </template>
@@ -36,7 +36,7 @@ export default {
 
 .Item {
     display: flex;
-    align-items: center;
+    align-items: center
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid var(--border-color);

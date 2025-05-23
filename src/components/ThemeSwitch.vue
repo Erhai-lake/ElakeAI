@@ -1,12 +1,12 @@
 <script>
-import {defineComponent} from 'vue'
-import {useStore} from 'vuex'
+import {defineComponent} from "vue"
+import {useStore} from "vuex"
 
 export default defineComponent({
     name: "ThemeSelect",
     data() {
         return {
-            Theme: '',
+            Theme: "",
         }
     },
     setup() {
@@ -16,8 +16,8 @@ export default defineComponent({
     watch: {
         // 监听主题变化
         Theme(newVal) {
-            if (newVal === 'System') {
-                this.applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light')
+            if (newVal === "System") {
+                this.applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
             } else {
                 this.applyTheme(newVal)
             }
@@ -33,8 +33,8 @@ export default defineComponent({
          */
         applyTheme(theme) {
             if (!theme) return
-            this.store.dispatch('switchTheme', theme)
-            document.documentElement.setAttribute('data-theme', theme)
+            this.store.dispatch("switchTheme", theme)
+            document.documentElement.setAttribute("data-theme", theme)
             void document.body.offsetWidth
         }
     }
@@ -45,15 +45,15 @@ export default defineComponent({
     <div class="Switch">
         <input type="radio" id="Light" name="Theme" value="Light" v-model="Theme"/>
         <label for="Light">
-            {{ $t('ThemeSwitch.Light') }}
+            {{ $t("ThemeSwitch.Light") }}
         </label>
         <input type="radio" id="System" name="Theme" value="System" v-model="Theme"/>
         <label for="System">
-            {{ $t('ThemeSwitch.System') }}
+            {{ $t("ThemeSwitch.System") }}
         </label>
         <input type="radio" id="Dark" name="Theme" value="Dark" v-model="Theme"/>
         <label for="Dark">
-            {{ $t('ThemeSwitch.Dark') }}
+            {{ $t("ThemeSwitch.Dark") }}
         </label>
         <div class="Mask"></div>
     </div>

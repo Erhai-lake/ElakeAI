@@ -1,5 +1,5 @@
 <script>
-import {defineComponent} from 'vue'
+import {defineComponent} from "vue"
 
 export default defineComponent({
     name: "HomeSidebar",
@@ -12,53 +12,53 @@ export default defineComponent({
     mounted() {
         // try {
         //     console.log(ChatDB.add({
-        //         key: 'aa_bb_cc',
-        //         title: 'abc*2',
+        //         key: "aa_bb_cc",
+        //         title: "abc*2",
         //         data: [
         //             {
-        //                 model: 'gpt-3.5-turbo',
+        //                 model: "gpt-3.5-turbo",
         //                 messages: {
-        //                     content: '你好',
-        //                     role: 'user'
+        //                     content: "你好",
+        //                     role: "user"
         //                 },
         //                 timestamp: 1741326699000
         //             }
         //         ]
         //     }))
         // console.log(this.$ChatDB.add({
-        //     key: 'c',
-        //     title: 'c',
+        //     key: "c",
+        //     title: "c",
         //     data: [
         //         {
-        //             model: 'gpt-3.5-turbo',
+        //             model: "gpt-3.5-turbo",
         //             messages: {
-        //                 content: '你好',
-        //                 role: 'user'
+        //                 content: "你好",
+        //                 role: "user"
         //             },
         //             timestamp: 1746959840000
         //         }
         //     ]
         // }))
         // console.log(ChatDB.add({
-        //     key: 'c',
-        //     title: 'c',
+        //     key: "c",
+        //     title: "c",
         //     data: [
         //         {
-        //             model: 'gpt-3.5-turbo',
+        //             model: "gpt-3.5-turbo",
         //             messages: {
-        //                 content: '你好',
-        //                 role: 'user'
+        //                 content: "你好",
+        //                 role: "user"
         //             },
         //             timestamp: 1746510934000
         //         }
         //     ]
         // }))
         // console.log(ChatDB.add({
-        //     key: 'd',
-        //     title: 'd',
+        //     key: "d",
+        //     title: "d",
         //     data: [
         //         {
-        //             model: 'gpt-3.5-turbo',
+        //             model: "gpt-3.5-turbo',
         //             messages: {
         //                 content: '你好',
         //                 role: 'user'

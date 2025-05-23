@@ -2,7 +2,7 @@
 import HomeSidebar from "@/components/HomeSidebar.vue"
 
 export default {
-    name: 'App',
+    name: "App",
     components: {HomeSidebar}
 }
 </script>
