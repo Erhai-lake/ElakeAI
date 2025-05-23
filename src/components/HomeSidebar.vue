@@ -109,10 +109,8 @@ export default defineComponent({
             try {
                 const DB = new this.$DBOperation({
                     toast: this.$toast,
-                    dbName: "ElakeAI",
-                    storeName: "Chat",
-                    keyPath: "key",
-                    dbVersion: 1
+                    dbName: this.$DB_CONFIG.name,
+                    storeName: "Chat"
                 })
                 const CHAT_LIST = await DB.getAll()
                 const GROUPED_CHATS = {}

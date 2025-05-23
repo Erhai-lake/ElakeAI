@@ -102,9 +102,8 @@ class DBOperation {
                 return
             }
             const completeData = {
-                ...data,
-                [this.config.keyPath]: data[this.config.keyPath] || crypto.randomUUID(),
-                timestamp: data.timestamp || new Date().toISOString()
+                ...data
+                // [this.config.keyPath]: data[this.config.keyPath] || crypto.randomUUID()
             }
 
             return this.executeTransaction("readwrite", (store, resolve, reject) => {
@@ -148,8 +147,7 @@ class DBOperation {
             return this.executeTransaction("readonly", (store, resolve, reject) => {
                 const request = store.get(id)
                 request.onsuccess = () => {
-                    request.result ? resolve(request.result) :
-                        this.handleError(new Error(`ID ${id} 未找到`), "获取数据失败")
+                    resolve(request.result || null)
                 }
                 request.onerror = (event) => reject(event.target.error)
             })
@@ -176,14 +174,13 @@ class DBOperation {
 
                 getRequest.onsuccess = () => {
                     if (!getRequest.result) {
-                        this.handleError(new Error(`ID ${id} 未找到`), "更新数据失败")
+                        resolve(null)
                         return
                     }
 
                     const putRequest = store.put({
                         ...getRequest.result,
-                        ...newData,
-                        timestamp: new Date().toISOString()
+                        ...newData
                     })
 
                     putRequest.onsuccess = () => resolve(putRequest.result)

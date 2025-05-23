@@ -17,25 +17,46 @@ export default defineComponent({
         // 监听主题变化
         Theme(newVal) {
             if (newVal === "System") {
-                this.applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "LIGHT")
+                this.applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
             } else {
                 this.applyTheme(newVal)
             }
         }
     },
-    created() {
-        this.Theme = this.store.getters.currentTheme
+    async created() {
+        const DB = new this.$DBOperation({
+            toast: this.$toast,
+            dbName: this.$DB_CONFIG.name,
+            storeName: "Config"
+        })
+        if (await DB.get("Theme")) {
+            this.Theme = (await DB.get("Theme")).Theme
+        } else {
+            this.Theme = this.store.getters.currentTheme
+        }
     },
     methods: {
         /**
          * 应用主题
          * @param theme 主题名称
          */
-        applyTheme(theme) {
+        async applyTheme(theme) {
             if (!theme) return
-            this.store.dispatch("switchTheme", theme)
+            await this.store.dispatch("switchTheme", theme)
             document.documentElement.setAttribute("data-theme", theme)
             void document.body.offsetWidth
+            // 保存设置
+            const DB = new this.$DBOperation({
+                dbName: this.$DB_CONFIG.name,
+                storeName: "Config"
+            })
+            // 没有就add, 有就update
+            if (await DB.get("Theme")) {
+                await DB.update("Theme", {"Theme": theme})
+            } else {
+                await DB.add({"item": "Theme", "Theme": theme})
+            }
+            // await DB.add({"item": "Theme", "Theme": theme})
         }
     }
 })

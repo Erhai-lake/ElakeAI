@@ -2,8 +2,8 @@ import {createStore} from "vuex"
 
 export default createStore({
     state: {
-        // 默认白昼
-        theme: localStorage.getItem("user-theme") || "System"
+        // 默认系统
+        theme: "System"
     },
     getters: {
         // 获取当前主题
@@ -13,7 +13,6 @@ export default createStore({
         // 设置主题
         SET_THEME(state, theme) {
             state.theme = theme
-            localStorage.setItem("user-theme", theme)
         }
     },
     actions: {

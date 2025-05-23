@@ -5,6 +5,7 @@ import store from "@/store"
 // 全局样式
 import "@/assets/styles/theme.less"
 // 数据库操作
+import {DB_CONFIG} from "@/services/db-config"
 import {DBOperation} from "@/services/DBOperation"
 // 多语言(i18n)
 import i18n from "./locales"
@@ -25,6 +26,7 @@ const TOAST_OPTIONS = {
 APP.use(store).use(router).use(i18n).use(toastPlugin, TOAST_OPTIONS)
 
 // 注册全局变量
+APP.config.globalProperties.$DB_CONFIG = DB_CONFIG
 APP.config.globalProperties.$DBOperation = DBOperation
 
 // 挂载应用
