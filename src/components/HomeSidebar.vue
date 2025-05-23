@@ -58,17 +58,17 @@ export default defineComponent({
         //     title: "d",
         //     data: [
         //         {
-        //             model: "gpt-3.5-turbo',
+        //             model: "gpt-3.5-turbo",
         //             messages: {
-        //                 content: '你好',
-        //                 role: 'user'
+        //                 content: "你好",
+        //                 role: "user"
         //             },
         //             timestamp: 1746597099000
         //         }
         //     ]
         // }))
         // } catch (error) {
-        //     console.error('添加数据失败:', error)
+        //     console.error("添加数据失败:", error)
         // }
 
 
@@ -84,18 +84,18 @@ export default defineComponent({
          * 侧边栏展开收起
          */
         sidebarSwitch() {
-            const SIDEBAR_EXPAND = document.querySelector('.SidebarExpandContainer')
-            const SIDEBAR_STOW = document.querySelector('.SidebarStowContainer')
+            const SIDEBAR_EXPAND = document.querySelector(".SidebarExpandContainer")
+            const SIDEBAR_STOW = document.querySelector(".SidebarStowContainer")
             if (this.SidebarStatus === 1) {
                 if (SIDEBAR_EXPAND) {
-                    SIDEBAR_EXPAND.style.transform = 'translateX(-100%)'
+                    SIDEBAR_EXPAND.style.transform = "translateX(-100%)"
                     setTimeout(() => {
                         this.SidebarStatus = 0
                     }, 100)
                 }
             } else if (this.SidebarStatus === 0) {
                 if (SIDEBAR_STOW) {
-                    SIDEBAR_STOW.style.transform = 'translateX(-100%)'
+                    SIDEBAR_STOW.style.transform = "translateX(-100%)"
                     setTimeout(() => {
                         this.SidebarStatus = 1
                     }, 100)
@@ -129,9 +129,9 @@ export default defineComponent({
                     .map(([TimeRangeLabel, Data]) => {
                         // 计算 sortKey
                         let sortKey
-                        if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS')) {
+                        if (TimeRangeLabel === this.$t("HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS")) {
                             sortKey = 0
-                        } else if (TimeRangeLabel === this.$t('HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS')) {
+                        } else if (TimeRangeLabel === this.$t("HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS")) {
                             sortKey = 1
                         } else {
                             const [year, month] = TimeRangeLabel.split("-").map(Number)
@@ -142,8 +142,8 @@ export default defineComponent({
                     .sort((a, b) => a.sortKey - b.sortKey)
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
-                console.error(this.$t('Error.ERROR_GETTING_CHAT_LIST'), error)
-                this.$toast.open({message: this.$t('Error.ERROR_GETTING_CHAT_LIST')})
+                console.error(this.$t("Error.ERROR_GETTING_CHAT_LIST"), error)
+                this.$toast.open({message: this.$t("Error.ERROR_GETTING_CHAT_LIST")})
             }
         },
         /**
@@ -161,16 +161,16 @@ export default defineComponent({
                 DATE.getMonth() === NOW_DATE.getMonth() &&
                 DATE.getFullYear() === NOW_DATE.getFullYear()
             ) {
-                return this.$t('HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS')
+                return this.$t("HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS")
             }
             // 检查是否是30天内（不包括今天）
             const DIFF_DAYS = Math.floor((NOW - timestamp) / NOEDAYMS)
             if (DIFF_DAYS <= 30 && DIFF_DAYS > 0) {
-                return this.$t('HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS')
+                return this.$t("HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS")
             }
             // 否则返回年月格式 "YYYY-MM"
             const YEAR = DATE.getFullYear()
-            const MONTH = String(DATE.getMonth() + 1).padStart(2, '0')
+            const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
             return `${YEAR}-${MONTH}`
         },
         /**
@@ -178,7 +178,7 @@ export default defineComponent({
          * @param key 聊天ID
          */
         openChat(key) {
-            this.$toast.open({message: key, type: 'success'})
+            this.$toast.open({message: key, type: "success"})
         }
     }
 })
@@ -223,13 +223,13 @@ export default defineComponent({
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
-            <p>{{ $t('HomeSidebar.PRESET') }}</p>
+            <p>{{ $t("HomeSidebar.PRESET") }}</p>
         </div>
         <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
-            <p>{{ $t('HomeSidebar.SETUP') }}</p>
+            <p>{{ $t("HomeSidebar.SETUP") }}</p>
         </router-link>
     </div>
     <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
