@@ -16,11 +16,7 @@ export default defineComponent({
     watch: {
         // 监听主题变化
         Theme(newVal) {
-            if (newVal === "System") {
-                this.applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
-            } else {
-                this.applyTheme(newVal)
-            }
+            this.applyTheme(newVal)
         }
     },
     async created() {
@@ -29,11 +25,7 @@ export default defineComponent({
             dbName: this.$DB_CONFIG.name,
             storeName: "Config"
         })
-        if (await DB.get("Theme")) {
-            this.Theme = (await DB.get("Theme")).Theme
-        } else {
-            this.Theme = this.store.getters.currentTheme
-        }
+        this.Theme = await DB.get("Theme") ? (await DB.get("Theme")).Theme : "System"
     },
     methods: {
         /**
@@ -42,8 +34,11 @@ export default defineComponent({
          */
         async applyTheme(theme) {
             if (!theme) return
-            await this.store.dispatch("switchTheme", theme)
-            document.documentElement.setAttribute("data-theme", theme)
+            if (theme === "System") {
+                document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
+            } else {
+                document.documentElement.setAttribute("data-theme", theme)
+            }
             void document.body.offsetWidth
             // 保存设置
             const DB = new this.$DBOperation({
@@ -56,7 +51,6 @@ export default defineComponent({
             } else {
                 await DB.add({"item": "Theme", "Theme": theme})
             }
-            // await DB.add({"item": "Theme", "Theme": theme})
         }
     }
 })
