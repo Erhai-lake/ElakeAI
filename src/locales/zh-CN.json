@@ -14,19 +14,19 @@
         "SETUP": "设置"
     },
     "AIInput": {
-        "ChatInputPlaceholder": "想问点什么吗？",
-        "Appendix": "附录",
-        "Search": "联网搜索",
-        "Send": "发送"
+        "CHAT_INPUT_PLACEHOLDER": "想问点什么吗？",
+        "APPENDIX": "附录",
+        "SEARCH": "联网搜索",
+        "SEND": "发送"
     },
     "ThemeSwitch": {
-        "Light": "白昼",
-        "Dark": "深夜",
-        "System": "系统"
+        "LIGHT": "白昼",
+        "DARK": "深夜",
+        "SYSTEM": "系统"
     },
     "Options": {
-        "Personalization": "个性化",
-        "Theme": "主题",
-        "Language": "语言"
+        "PERSONALIZATION": "个性化",
+        "THEME": "主题",
+        "LANGUAGE": "语言"
     }
 }

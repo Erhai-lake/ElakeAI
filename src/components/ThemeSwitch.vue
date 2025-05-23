@@ -17,7 +17,7 @@ export default defineComponent({
         // 监听主题变化
         Theme(newVal) {
             if (newVal === "System") {
-                this.applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
+                this.applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "LIGHT")
             } else {
                 this.applyTheme(newVal)
             }
@@ -45,15 +45,15 @@ export default defineComponent({
     <div class="Switch">
         <input type="radio" id="Light" name="Theme" value="Light" v-model="Theme"/>
         <label for="Light">
-            {{ $t("ThemeSwitch.Light") }}
+            {{ $t("ThemeSwitch.LIGHT") }}
         </label>
         <input type="radio" id="System" name="Theme" value="System" v-model="Theme"/>
         <label for="System">
-            {{ $t("ThemeSwitch.System") }}
+            {{ $t("ThemeSwitch.SYSTEM") }}
         </label>
         <input type="radio" id="Dark" name="Theme" value="Dark" v-model="Theme"/>
         <label for="Dark">
-            {{ $t("ThemeSwitch.Dark") }}
+            {{ $t("ThemeSwitch.DARK") }}
         </label>
         <div class="Mask"></div>
     </div>

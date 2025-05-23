@@ -14,19 +14,19 @@
         "SETUP": "Setup"
     },
     "AIInput": {
-        "ChatInputPlaceholder": "Want to ask something?",
-        "Appendix": "Appendix",
-        "Search": "Networked Search",
-        "Send": "Send"
+        "CHAT_INPUT_PLACEHOLDER": "Want to ask something?",
+        "APPENDIX": "Appendix",
+        "SEARCH": "Networked Search",
+        "SEND": "Send"
     },
     "ThemeSwitch": {
-        "Light": "Light",
-        "Dark": "Dark",
-        "System": "System"
+        "LIGHT": "Light",
+        "DARK": "Dark",
+        "SYSTEM": "System"
     },
     "Options": {
-        "Personalization": "Personalization",
-        "Theme": "Theme",
-        "Language": "Language"
+        "PERSONALIZATION": "Personalization",
+        "THEME": "Theme",
+        "LANGUAGE": "Language"
     }
 }

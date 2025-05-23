@@ -13,15 +13,15 @@ export default {
     <div class="OptionsContainer">
         <FoldingPanel>
             <template #Title>
-                {{ $t("Options.Personalization") }}
+                {{ $t("Options.PERSONALIZATION") }}
             </template>
             <template #Content>
                 <div class="Item">
-                    {{ $t("Options.Theme") }}
+                    {{ $t("Options.THEME") }}
                     <ThemeSelect/>
                 </div>
                 <div class="Item">
-                    {{ $t("Options.Language") }}
+                    {{ $t("Options.LANGUAGE") }}
                     <LanguageSelect/>
                 </div>
             </template>
