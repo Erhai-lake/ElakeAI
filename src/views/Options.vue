@@ -36,7 +36,7 @@ export default {
 
 .Item {
     display: flex;
-    align-items: center
+    align-items: center;
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid var(--border-color);
