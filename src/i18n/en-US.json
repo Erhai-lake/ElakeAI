@@ -1,7 +1,4 @@
 {
-    "Error": {
-        "ERROR_GETTING_CHAT_LIST": "[DB Error] Error getting chat list"
-    },
     "HomeSidebar": {
         "TimeRangeLabel": {
             "WITHIN_1_DAYS": "Today",
@@ -11,7 +8,10 @@
         "STOW": "Collapse sidebar",
         "EXPAND": "Expand sidebar",
         "PRESET": "Preset",
-        "SETUP": "Setup"
+        "SETUP": "Setup",
+        "Error": {
+            "ERROR_GETTING_CHAT_LIST": "[HomeSidebar Error] Failed while getting chat list"
+        }
     },
     "AIInput": {
         "CHAT_INPUT_PLACEHOLDER": "Want to ask something?",

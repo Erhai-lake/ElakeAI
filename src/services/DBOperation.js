@@ -1,5 +1,42 @@
 class DBOperation {
-    db = null
+    static async create(options = {}) {
+        const instance = new DBOperation(options)
+        await instance._initDB(options.onUpgrade)
+        return instance
+    }
+
+    async _initDB(onUpgrade) {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(
+                this.config.dbName,
+                this.config.dbVersion
+            )
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result
+                // 增加存储存在性检查
+                if (!db.objectStoreNames.contains(this.config.storeName)) {
+                    db.createObjectStore(this.config.storeName, {
+                        keyPath: this.config.keyPath,
+                        autoIncrement: false
+                    })
+                }
+                onUpgrade?.(db, event.oldVersion)
+            }
+            request.onsuccess = (event) => {
+                this.db = event.target.result
+                // 监听版本变更
+                this.db.onversionchange = () => this.db.close()
+                resolve()
+            }
+            request.onerror = (event) => {
+                reject(event.target.error)
+            }
+            // 处理阻塞情况
+            request.onblocked = () => {
+                this.handleError(new Error("有其他页面连接数据库"), "请关闭其他页面的数据库连接")
+            }
+        })
+    }
 
     constructor(options = {}) {
         const {
@@ -18,7 +55,6 @@ class DBOperation {
             dbVersion,
             keyPath
         }
-        this.initDB(onUpgrade).catch(this.handleError.bind(this))
     }
 
     /**
@@ -28,7 +64,7 @@ class DBOperation {
      */
     handleError(error, context = "数据库操作") {
         const ERROR = `[DB Error] ${context}`
-        console.error(ERROR, error)
+        console.error(ERROR, error.message, error.stack)
         if (this.config.toast) {
             this.config.toast.open({message: ERROR})
         }
@@ -77,6 +113,9 @@ class DBOperation {
         return new Promise(async (resolve, reject) => {
             try {
                 const db = await this.ensureDBReady()
+                if (!db.objectStoreNames.contains(this.config.storeName)) {
+                    throw new Error(`对象存储 ${this.config.storeName} 不存在`);
+                }
                 const transaction = db.transaction([this.config.storeName], mode)
                 const store = transaction.objectStore(this.config.storeName)
 
@@ -85,7 +124,7 @@ class DBOperation {
 
                 operation(store, resolve, reject)
             } catch (error) {
-                this.handleError(error, `执行${mode}事务`)
+                this.handleError(error, `执行${mode}事务失败`)
                 reject(error)
             }
         })

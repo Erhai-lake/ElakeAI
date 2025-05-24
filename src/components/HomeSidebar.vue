@@ -140,8 +140,8 @@ export default defineComponent({
                     .sort((a, b) => a.sortKey - b.sortKey)
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
-                console.error(this.$t("Error.ERROR_GETTING_CHAT_LIST"), error)
-                this.$toast.open({message: this.$t("Error.ERROR_GETTING_CHAT_LIST")})
+                console.error(this.$t("HomeSidebar.Error.ERROR_GETTING_CHAT_LIST"), error.message, error.stack)
+                this.$toast.open({message: this.$t("HomeSidebar.Error.ERROR_GETTING_CHAT_LIST")})
             }
         },
         /**
