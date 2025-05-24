@@ -72,7 +72,6 @@ export default defineComponent({
 <style scoped lang="less">
 .Switch {
     position: relative;
-    padding: 10px 0;
     background-color: var(--background-color);
     border-radius: 50px;
     display: flex;
@@ -88,6 +87,7 @@ export default defineComponent({
     }
 
     label {
+        padding: 10px 0;
         width: 80px;
         text-align: center;
         font-size: 14px;
