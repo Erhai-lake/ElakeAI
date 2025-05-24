@@ -56,7 +56,8 @@ export default defineComponent({
                 this.$toast.error("[Theme Switch] 主题应用错误")
             }
         }
-    })
+    }
+})
 </script>
 
 <template>
