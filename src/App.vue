@@ -1,14 +1,15 @@
 <script>
 import HomeSidebar from "@/components/HomeSidebar.vue"
-import eruda from "eruda";
+// import eruda from "eruda"
 
 export default {
     name: "App",
     components: {HomeSidebar},
     created() {
-        if (process.env.NODE_ENV === "development") {
-            eruda.init()
-        }
+        // 移动端调试工具eruda
+        // if (process.env.NODE_ENV === "development") {
+        //     eruda.init()
+        // }
         // 检查浏览器是否为IE, 获取IE版本号
         const getIEVersion = () => {
             // 检查浏览器是否为IE
