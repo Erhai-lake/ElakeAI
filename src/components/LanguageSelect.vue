@@ -5,24 +5,57 @@ export default {
         return {
             isOpen: false,
             selectedLang: {
-                code: "zh_cn",
+                code: "zh-CN",
                 name: "简体中文",
                 flag: "https://flagcdn.com/cn.svg"
             },
             languages: [
-                {code: "zh_cn", name: "简体中文", flag: "https://flagcdn.com/cn.svg"},
-                {code: "us", name: "English", flag: "https://flagcdn.com/us.svg"}
+                {code: "zh-CN", name: "简体中文", flag: "https://flagcdn.com/cn.svg"},
+                {code: "en-US", name: "English", flag: "https://flagcdn.com/us.svg"}
             ]
         }
+    },
+    watch: {
+        // 监听语言变化
+        selectedLang(newVal) {
+            this.selectLanguage(newVal)
+        }
+    },
+    async created() {
+        // 获取语言
+        const DB = new this.$DBOperation({
+            toast: this.$toast,
+            dbName: this.$DB_CONFIG.name,
+            storeName: "Config"
+        })
+        const languages = await DB.get("Language") ? (await DB.get("Language")).Language : "zh-CN"
+        this.selectedLang = {
+            code: languages,
+            name: this.languages.find(lang => lang.code === languages).name,
+            flag: this.languages.find(lang => lang.code === languages).flag
+        }
+        this.$i18n.locale = this.selectedLang.code
     },
     methods: {
         toggleLangList() {
             this.isOpen = !this.isOpen
         },
-        selectLanguage(lang) {
-            this.selectedLang = lang
+        async selectLanguage(selectLang) {
+            if (!selectLang) return
+            this.selectedLang = selectLang
+            this.$i18n.locale = this.selectedLang.code
             this.isOpen = false
-            this.$toast.open({message: `${lang.code} - ${lang.name}`, type: "success"})
+            // 保存设置
+            const DB = new this.$DBOperation({
+                toast: this.$toast,
+                dbName: this.$DB_CONFIG.name,
+                storeName: "Config"
+            })
+            if (await DB.get("Language")) {
+                await DB.update("Language", {"Language": this.selectedLang.code})
+            } else {
+                await DB.add({"item": "Language", "Language": this.selectedLang.code})
+            }
         },
         handleClickOutside(e) {
             if (!this.$el.contains(e.target)) {
@@ -42,15 +75,15 @@ export default {
 <template>
     <div class="Switch">
         <div class="SelectedLang" :class="{ 'Open': isOpen }" @click="toggleLangList">
-            <img :src="selectedLang.flag" class="Flag" :alt="selectedLang.name">
-            <span class="LangOption">{{ selectedLang.name }}</span>
+            <img class="Flag" :src="this.selectedLang.flag" :alt="this.selectedLang.name">
+            <span class="LangOption">{{ this.selectedLang.name }}</span>
         </div>
         <transition name="slide">
             <ul v-show="isOpen" class="LangList">
                 <li
                     v-for="lang in languages"
                     :key="lang.code"
-                    @click="selectLanguage(lang)">
+                    @click="this.selectedLang = lang">
                     <img :src="lang.flag" class="Flag" :alt="lang.name">
                     <span class="LangOption">{{ lang.name }}</span>
                 </li>

@@ -15,6 +15,7 @@ export default defineComponent({
         }
     },
     async created() {
+        // 获取主题
         const DB = new this.$DBOperation({
             toast: this.$toast,
             dbName: this.$DB_CONFIG.name,
@@ -40,7 +41,6 @@ export default defineComponent({
                 dbName: this.$DB_CONFIG.name,
                 storeName: "Config"
             })
-            // 没有就add, 有就update
             if (await DB.get("Theme")) {
                 await DB.update("Theme", {"Theme": theme})
             } else {

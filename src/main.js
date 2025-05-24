@@ -8,7 +8,7 @@ import "@/assets/styles/theme.less"
 import {DB_CONFIG} from "@/services/db-config"
 import {DBOperation} from "@/services/DBOperation"
 // 多语言(i18n)
-import i18n from "./locales"
+import i18n from "./i18n"
 // Toast 通知
 import toastPlugin from "vue-toast-notification"
 import "vue-toast-notification/dist/theme-bootstrap.css"
