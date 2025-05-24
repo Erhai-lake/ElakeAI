@@ -83,7 +83,8 @@ export default {
                 <li
                     v-for="lang in languages"
                     :key="lang.code"
-                    @click="this.selectedLang = lang">
+                    @click="this.selectedLang = lang"
+                    :class="{ 'Active': lang.code === this.selectedLang.code }">
                     <img :src="lang.flag" class="Flag" :alt="lang.name">
                     <span class="LangOption">{{ lang.name }}</span>
                 </li>
@@ -95,7 +96,7 @@ export default {
 <style scoped lang="less">
 .Switch {
     position: relative;
-    width: 200px;
+    width: 240px;
     user-select: none;
 }
 
@@ -142,6 +143,17 @@ export default {
         &:hover {
             background-color: var(--background-color-Anti);
             color: var(--background-color);
+        }
+    }
+
+    .Active {
+        --Active-Background-Color: rgba(189, 229, 255, 0.5);
+        background-color: var(--Active-Background-Color);
+        color: #292A2DFF;
+
+        &:hover {
+            background-color: var(--Active-Background-Color);
+            color: #292A2DFF;
         }
     }
 }
