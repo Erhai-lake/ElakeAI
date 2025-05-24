@@ -4,8 +4,9 @@ import HomeSidebar from "@/components/HomeSidebar.vue"
 
 export default {
     name: "App",
+    inject: ["$DB"],
     components: {HomeSidebar},
-    created() {
+    async created() {
         // 移动端调试工具eruda
         // if (process.env.NODE_ENV === "development") {
         //     eruda.init()
@@ -44,17 +45,17 @@ export default {
             this.$toast.open({message: "很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该应用的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!"})
         }
 
-        new this.$DBOperation({
-            dbName: this.$DB_CONFIG.name,
-            dbVersion: this.$DB_CONFIG.version,
-            onUpgrade: (db) => {
-                Object.entries(this.$DB_CONFIG.stores).forEach(([name, config]) => {
-                    if (!db.objectStoreNames.contains(name)) {
-                        db.createObjectStore(name, config)
-                    }
-                })
-            }
-        })
+        // 应用主题
+        const THEME_DATA = await this.$DB.Configs.get("Theme")
+        const THEME = THEME_DATA ? THEME_DATA.value : "System"
+        if (THEME === "System") {
+            document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
+        } else {
+            document.documentElement.setAttribute("data-theme", THEME)
+        }
+        // 应用语言
+        const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
+        this.$i18n.locale = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
     }
 }
 </script>

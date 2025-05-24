@@ -3,6 +3,7 @@ import {defineComponent} from "vue"
 
 export default defineComponent({
     name: "ThemeSelect",
+    inject: ["$DB"],
     data() {
         return {
             Theme: "",
@@ -16,12 +17,13 @@ export default defineComponent({
     },
     async created() {
         // 获取主题
-        const DB = new this.$DBOperation({
-            toast: this.$toast,
-            dbName: this.$DB_CONFIG.name,
-            storeName: "Config"
-        })
-        this.Theme = await DB.get("Theme") ? (await DB.get("Theme")).Theme : "System"
+        try {
+            const THEME_DATA = await this.$DB.Configs.get("Theme")
+            this.Theme = THEME_DATA ? THEME_DATA.value : "System"
+        } catch (error) {
+            console.error(`[Theme Switch] 主题获取错误 ${error}`)
+            this.$toast.error("[Theme Switch] 主题获取错误")
+        }
     },
     methods: {
         /**
@@ -29,26 +31,32 @@ export default defineComponent({
          * @param theme 主题名称
          */
         async applyTheme(theme) {
-            if (!theme) return
-            if (theme === "System") {
-                document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
-            } else {
-                document.documentElement.setAttribute("data-theme", theme)
-            }
-            void document.body.offsetWidth
-            // 保存设置
-            const DB = new this.$DBOperation({
-                dbName: this.$DB_CONFIG.name,
-                storeName: "Config"
-            })
-            if (await DB.get("Theme")) {
-                await DB.update("Theme", {"Theme": theme})
-            } else {
-                await DB.add({"item": "Theme", "Theme": theme})
+            try {
+                if (!theme) return
+                if (theme === "System") {
+                    document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
+                } else {
+                    document.documentElement.setAttribute("data-theme", theme)
+                }
+                void document.body.offsetWidth
+                // 保存设置
+                if (await this.$DB.Configs.get("Theme")) {
+                    await this.$DB.Configs.put({
+                        item: "Theme",
+                        value: theme
+                    })
+                } else {
+                    await this.$DB.Configs.add({
+                        item: "Theme",
+                        value: theme
+                    })
+                }
+            } catch (error) {
+                console.error(`[Theme Switch] 主题应用错误 ${error}`)
+                this.$toast.error("[Theme Switch] 主题应用错误")
             }
         }
-    }
-})
+    })
 </script>
 
 <template>
