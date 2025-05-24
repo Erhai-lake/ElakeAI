@@ -29,5 +29,26 @@ APP.use(store).use(router).use(i18n).use(toastPlugin, TOAST_OPTIONS)
 APP.config.globalProperties.$DB_CONFIG = DB_CONFIG
 APP.config.globalProperties.$DBOperation = DBOperation
 
+;
+// 应用主题和语言等设置
+(async () => {
+    // 链接设置数据库
+    const DB = new DBOperation({
+        dbName: DB_CONFIG.name,
+        storeName: "Config"
+    })
+    // 设置主题
+    const THEME_DATA = await DB.get("Theme")
+    const THEME = THEME_DATA ? THEME_DATA.Theme : "System"
+    if (THEME === "System") {
+        document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
+    } else {
+        document.documentElement.setAttribute("data-theme", THEME)
+    }
+    // 设置语言
+    const LANGUAGE_DATA = await DB.get("Language");
+    i18n.global.locale.value = LANGUAGE_DATA ? LANGUAGE_DATA.Language : "zh-CN";
+})()
+
 // 挂载应用
 APP.mount("#app")
