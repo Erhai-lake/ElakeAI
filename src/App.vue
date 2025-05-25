@@ -32,10 +32,6 @@ export default {
         if (VERSION) {
             this.$toast.success(`妈的, 你还在用 IE ${VERSION}??? 你牛逼!`)
         }
-        // 检查设备是否为移动端
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            this.$toast.error("很抱歉, 由于未知原因, 移动端使用可能会报错, 无法正常使用, 暂时无法处理, 还请使用PC端浏览器访问! 请谅解!")
-        }
         // 检查浏览器是否支持 IndexedDB
         if (!"indexedDB" in window) {
             this.$toast.error("很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该应用的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!")

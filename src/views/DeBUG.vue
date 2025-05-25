@@ -52,6 +52,18 @@ export default {
                 this.$toast.error("[DeBUG] Configs数据清空错误")
             }
         },
+        // 删除Configs数据
+        async configsDelete(item) {
+            if (!confirm("确定要删除Configs数据吗?")) return
+            try {
+                await this.$DB.Configs.delete(item)
+                this.configs = this.configs.filter(config => config.item !== item)
+                this.$toast.success("[DeBUG] 数据删除成功")
+            } catch (error) {
+                console.error("[DeBUG] Configs数据删除错误", error)
+                this.$toast.error("[DeBUG] Configs数据删除错误")
+            }
+        },
         // 获取Chats数据库数据
         async chatsLoading() {
             try {
@@ -164,6 +176,7 @@ export default {
                     <tr>
                         <th>item</th>
                         <th>Value</th>
+                        <th>Operation</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -177,6 +190,9 @@ export default {
                         </td>
                         <td class="Value" v-if="item.item === 'Language'">
                             <LanguageSelect/>
+                        </td>
+                        <td>
+                            <button @click="configsDelete(item.item)">删除</button>
                         </td>
                     </tr>
                     </tbody>
