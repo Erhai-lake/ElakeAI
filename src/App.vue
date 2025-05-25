@@ -67,7 +67,9 @@ export default {
 
 <template>
     <HomeSidebar/>
-    <router-view/>
+    <div class="RouterView">
+        <router-view/>
+    </div>
 </template>
 
 <style lang="less">
@@ -75,5 +77,12 @@ export default {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-template-rows: 100vh;
+    overflow: hidden;
+
+    .RouterView {
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+    }
 }
 </style>
