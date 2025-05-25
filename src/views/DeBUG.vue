@@ -10,7 +10,7 @@ export default {
     data() {
         return {
             toastOptions: {
-                message: "",
+                message: "测试",
                 type: "success",
                 position: "top",
                 duration: 3000,
@@ -19,6 +19,10 @@ export default {
             chats: [],
             configs: []
         }
+    },
+    created() {
+        this.configsLoading()
+        this.chatsLoading()
     },
     methods: {
         // Configs特殊处理
@@ -46,7 +50,8 @@ export default {
             if (!confirm("确定要清空Configs数据库吗?")) return
             try {
                 await this.$DB.Configs.clear()
-                this.$toast.success("[DeBUG] 数据库已清空")
+                await this.configsLoading()
+                this.$toast.success("Configs数据库已清空")
             } catch (error) {
                 console.error("[DeBUG] Configs数据清空错误", error)
                 this.$toast.error("[DeBUG] Configs数据清空错误")
@@ -58,7 +63,7 @@ export default {
             try {
                 await this.$DB.Configs.delete(item)
                 this.configs = this.configs.filter(config => config.item !== item)
-                this.$toast.success("[DeBUG] 数据删除成功")
+                this.$toast.success("数据删除成功")
             } catch (error) {
                 console.error("[DeBUG] Configs数据删除错误", error)
                 this.$toast.error("[DeBUG] Configs数据删除错误")
@@ -78,10 +83,23 @@ export default {
             if (!confirm("确定要清空Chats数据库吗?")) return
             try {
                 await this.$DB.Chats.clear()
-                this.$toast.success("[DeBUG] Chats数据库已清空")
+                await this.chatsLoading()
+                this.$toast.success("Chats数据库已清空")
             } catch (error) {
                 console.error("[DeBUG] Chats数据清空错误", error)
                 this.$toast.error("[DeBUG] Chats数据清空错误")
+            }
+        },
+        // 删除Chats数据
+        async chatsDelete(item) {
+            if (!confirm("确定要删除Chats数据吗?")) return
+            try {
+                await this.$DB.Chats.delete(item)
+                this.chats = this.chats.filter(chat => chat.key!== item)
+                this.$toast.success("数据删除成功")
+            } catch (error) {
+                console.error("[DeBUG] Chats数据删除错误", error)
+                this.$toast.error("[DeBUG] Chats数据删除错误")
             }
         },
         // 处理Title输入框
@@ -91,7 +109,7 @@ export default {
             try {
                 await this.$DB.Chats.update(item.key, {title: NEW_VALUE})
                 item.title = NEW_VALUE
-                this.$toast.success("[DeBUG] 标题更新成功")
+                this.$toast.success("标题更新成功")
             } catch (error) {
                 console.error("[DeBUG] 标题更新错误", error)
                 this.$toast.error("[DeBUG] 标题更新错误")
@@ -106,7 +124,7 @@ export default {
                 const parsedData = JSON.parse(RAW_VALUE)
                 await this.$DB.Chats.update(item.key, {data: parsedData})
                 item.data = JSON.parse(JSON.stringify(parsedData))
-                this.$toast.success("[DeBUG] 数据更新成功")
+                this.$toast.success("数据更新成功")
             } catch (error) {
                 console.error("[DeBUG] 数据更新错误", error)
                 this.$toast.error("[DeBUG] JSON格式错误")
@@ -140,6 +158,7 @@ export default {
                         <th>key</th>
                         <th>title</th>
                         <th>data</th>
+                        <th>Operation</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -158,6 +177,9 @@ export default {
                                 style="width: 100%;"
                                 :value="JSON.stringify(item.data, null)"
                                 @blur="handleDataBlur(item, $event)">
+                        </td>
+                        <td>
+                            <button @click="chatsDelete(item.key)">删除</button>
                         </td>
                     </tr>
                     </tbody>
@@ -199,26 +221,43 @@ export default {
                 </table>
             </template>
         </FoldingPanel>
-        <FoldingPanel>
+        <FoldingPanel Height="500">
             <template #Title>Toast</template>
             <template #Content>
                 <div>
-                    <input type="text" v-model="toastOptions.message" style="margin: 20px 0">
-                    <select v-model="toastOptions.type">
-                        <option value="success">成功</option>
-                        <option value="error">错误</option>
-                        <option value="info">信息</option>
-                        <option value="warning">警告</option>
-                    </select>
-                    <select v-model="toastOptions.position">
-                        <option value="top">顶部居中</option>
-                        <option value="top-left">顶部左</option>
-                        <option value="top-right">顶部右</option>
-                        <option value="bottom">底部居中</option>
-                        <option value="bottom-left">底部左</option>
-                        <option value="bottom-right">底部右</option>
-                    </select>
-                    <input type="number" v-model="toastOptions.duration" style="margin: 20px 0">
+                    <label for="message">
+                        提示信息
+                        <input type="text" v-model="toastOptions.message" id="message" style="margin: 20px 0">
+                    </label>
+                    <br>
+                    <label for="type">
+                        提示类型
+                        <select v-model="toastOptions.type" id="type">
+                            <option value="success">成功</option>
+                            <option value="error">错误</option>
+                            <option value="info">信息</option>
+                            <option value="warning">警告</option>
+                        </select>
+                    </label>
+                    <br>
+                    <br>
+                    <label for="position">
+                        提示位置
+                        <select v-model="toastOptions.position">
+                            <option value="top">顶部居中</option>
+                            <option value="top-left">顶部左</option>
+                            <option value="top-right">顶部右</option>
+                            <option value="bottom">底部居中</option>
+                            <option value="bottom-left">底部左</option>
+                            <option value="bottom-right">底部右</option>
+                        </select>
+                    </label>
+                    <br>
+                    <label for="duration">
+                        提示时间
+                        <input type="number" v-model="toastOptions.duration" id="duration" style="margin: 20px 0">
+                    </label>
+                    <br>
                     <label for="dismissible">
                         鼠标点击是否可以关闭
                         <input type="checkbox" v-model="toastOptions.dismissible" id="dismissible"
