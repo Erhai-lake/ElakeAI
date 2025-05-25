@@ -5,10 +5,26 @@
 https://github.com/ankurk91/vue-toast-notification
 
 ```js
-// 使用
-let instance = this.$toast.open({
-    message: "You did it!"
+// 成功
+this.$toast.success("You did it!")
+
+// 失败
+this.$toast.error("You did it!")
+
+// 警告
+this.$toast.warning("You did it!")
+
+// 信息
+this.$toast.info("You did it!")
+
+// 自定义
+const instance = this.$toast.open({
+    message: "You did it!",
+    type: "success",
+    position: "top-right",
+    duration: 3000
 })
+
 // 关闭
 instance.dismiss()
 // 清空所有toast

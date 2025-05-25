@@ -81,6 +81,7 @@ export default defineComponent({
 <style scoped lang="less">
 .Switch {
     position: relative;
+    width: 240px;
     background-color: var(--background-color);
     border-radius: 50px;
     display: flex;

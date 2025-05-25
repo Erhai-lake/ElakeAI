@@ -135,7 +135,7 @@ export default defineComponent({
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
                 console.error("[Language Switch] 聊天列表获取错误", error)
-                this.$toast.open({message: "[Language Switch] 聊天列表获取错误"})
+                this.$toast.error("[Language Switch] 聊天列表获取错误")
             }
         },
         /**
@@ -170,7 +170,7 @@ export default defineComponent({
          * @param key 聊天ID
          */
         openChat(key) {
-            this.$toast.open({message: key, type: "success"})
+            this.$toast.success(key)
         }
     }
 })
@@ -217,7 +217,7 @@ export default defineComponent({
             </svg>
             <p>{{ $t("HomeSidebar.PRESET") }}</p>
         </div>
-        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
+        <router-link to="/options" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
@@ -242,7 +242,7 @@ export default defineComponent({
             </svg>
         </div>
         <div></div>
-        <router-link to="/setup" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
+        <router-link to="/options" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>

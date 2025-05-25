@@ -9,28 +9,20 @@ export default {
         Height: {
             type: Number,
             default: 300
+        },
+        is: {
+            type: Boolean,
+            default: false
+        }
+    },
+    data() {
+        return {
+            isExpand: this.is
         }
     },
     methods: {
-        Folding() {
-            const FoldingPanelTitle = document.querySelector(".FoldingPanelTitle")
-            if (FoldingPanelTitle) {
-                const FoldingPanel = document.querySelector(".FoldingPanel")
-                if (FoldingPanel) {
-                    const FoldingPanelContent = FoldingPanel.querySelector(".FoldingPanelContent")
-                    if (FoldingPanelContent) {
-                        const Height = getComputedStyle(FoldingPanelContent).getPropertyValue("--Height")
-                        const Arrow = FoldingPanelTitle.querySelector(".Arrow")
-                        if (FoldingPanelContent.style.height !== Height) {
-                            FoldingPanelContent.style.height = Height
-                            Arrow.style.transform = "rotate(-180deg)"
-                        } else {
-                            FoldingPanelContent.style.height = "0px"
-                            Arrow.style.transform = "rotate(0deg)"
-                        }
-                    }
-                }
-            }
+        toggleFolding() {
+            this.isExpand = !this.isExpand
         }
     }
 }
@@ -38,7 +30,7 @@ export default {
 
 <template>
     <div class="FoldingPanel" :style="{ '--Height': Height + 'px' }">
-        <div class="FoldingPanelTitle" @click="Folding" :title="Title">
+        <div class="FoldingPanelTitle" @click="toggleFolding" :title="Title">
             <div class="Left">
                 <slot name="Title">
                     使用 &lt;template #Title&gt;&lt;/template&gt;插入标题
@@ -54,7 +46,7 @@ export default {
                 </svg>
             </div>
         </div>
-        <div class="FoldingPanelContent">
+        <div class="FoldingPanelContent" :style="{ height: isExpand ? Height + 'px' : '0px' }">
             <slot name="Content">
                 使用 &lt;template #Content&gt;&lt;/template&gt;插入内容
             </slot>

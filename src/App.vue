@@ -30,32 +30,37 @@ export default {
         }
         const VERSION = getIEVersion()
         if (VERSION) {
-            this.$toast.open({message: `妈的, 你还在用 IE ${VERSION}??? 你牛逼!`})
+            this.$toast.success(`妈的, 你还在用 IE ${VERSION}??? 你牛逼!`)
         }
         // 检查设备是否为移动端
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            this.$toast.open({message: "很抱歉, 由于未知原因, 移动端使用可能会报错, 无法正常使用, 暂时无法处理, 还请使用PC端浏览器访问! 请谅解!"})
+            this.$toast.error("很抱歉, 由于未知原因, 移动端使用可能会报错, 无法正常使用, 暂时无法处理, 还请使用PC端浏览器访问! 请谅解!")
         }
         // 检查浏览器是否支持 IndexedDB
         if (!"indexedDB" in window) {
-            this.$toast.open({message: "很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该应用的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!"})
+            this.$toast.error("很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该应用的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!")
         }
         // 检查浏览器是否支持 IDBTransaction
         if (!"IDBTransaction" in window) {
-            this.$toast.open({message: "很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该应用的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!"})
+            this.$toast.error("很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该应用的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!")
         }
 
-        // 应用主题
-        const THEME_DATA = await this.$DB.Configs.get("Theme")
-        const THEME = THEME_DATA ? THEME_DATA.value : "System"
-        if (THEME === "System") {
-            document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
-        } else {
-            document.documentElement.setAttribute("data-theme", THEME)
+        try {
+            // 应用主题
+            const THEME_DATA = await this.$DB.Configs.get("Theme")
+            const THEME = THEME_DATA ? THEME_DATA.value : "System"
+            if (THEME === "System") {
+                document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
+            } else {
+                document.documentElement.setAttribute("data-theme", THEME)
+            }
+            // 应用语言
+            const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
+            this.$i18n.locale = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
+        } catch (error) {
+            console.error("[App] 配置初始化应用错误", error)
+            this.$toast.error("[App] 配置初始化应用错误")
         }
-        // 应用语言
-        const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
-        this.$i18n.locale = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
     }
 }
 </script>
