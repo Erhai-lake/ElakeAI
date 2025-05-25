@@ -3,6 +3,7 @@ import {defineComponent} from "vue"
 
 export default defineComponent({
     name: "HomeSidebar",
+    inject: ["$DB"],
     data() {
         return {
             SidebarStatus: 1,
@@ -11,20 +12,18 @@ export default defineComponent({
     },
     mounted() {
         // try {
-        //     console.log(ChatDB.add({
-        //         key: "aa_bb_cc",
-        //         title: "abc*2",
-        //         data: [
-        //             {
-        //                 model: "gpt-3.5-turbo",
-        //                 messages: {
-        //                     content: "你好",
-        //                     role: "user"
-        //                 },
-        //                 timestamp: 1741326699000
-        //             }
-        //         ]
-        //     }))
+        // this.$DB.Chats.add({
+        //     key: "aa_bb_cc",
+        //     title: "abc*2",
+        //     data: [{
+        //         model: "gpt-3.5-turbo",
+        //         messages: {
+        //             content: "你好",
+        //             role: "user"
+        //         },
+        //         timestamp: 1741326699000
+        //     }]
+        // })
         // console.log(this.$ChatDB.add({
         //     key: "c",
         //     title: "c",
@@ -107,12 +106,7 @@ export default defineComponent({
          */
         async chatListGet() {
             try {
-                const DB = new this.$DBOperation({
-                    toast: this.$toast,
-                    dbName: this.$DB_CONFIG.name,
-                    storeName: "Chat"
-                })
-                const CHAT_LIST = await DB.getAll()
+                const CHAT_LIST = await this.$DB.Chats.toArray()
                 const GROUPED_CHATS = {}
                 for (const ITEM of CHAT_LIST) {
                     const SAFE_KEY = this.getTimeRangeLabel(ITEM.data[ITEM.data.length - 1].timestamp)
@@ -140,8 +134,8 @@ export default defineComponent({
                     .sort((a, b) => a.sortKey - b.sortKey)
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
-                console.error(this.$t("HomeSidebar.Error.ERROR_GETTING_CHAT_LIST"), error.message, error.stack)
-                this.$toast.open({message: this.$t("HomeSidebar.Error.ERROR_GETTING_CHAT_LIST")})
+                console.error("[Language Switch] 聊天列表获取错误", error)
+                this.$toast.open({message: "[Language Switch] 聊天列表获取错误"})
             }
         },
         /**

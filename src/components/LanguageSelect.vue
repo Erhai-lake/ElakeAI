@@ -34,7 +34,7 @@ export default {
             }
             this.$i18n.locale = this.selectedLang.code
         } catch (error) {
-            console.error(`[Language Select] 语言获取错误 ${error}`)
+            console.error("[Language Switch] 语言获取错误", error)
             this.$toast.error("[Language Select] 语言获取错误")
         }
     },
@@ -61,7 +61,7 @@ export default {
                     })
                 }
             } catch (error) {
-                console.error(`[Language Select] 语言应用错误 ${error}`)
+                console.error("[Language Switch] 语言应用错误", error)
                 this.$toast.error("[Language Select] 语言应用错误")
             }
         },

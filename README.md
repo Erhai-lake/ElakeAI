@@ -26,3 +26,20 @@ this.$toast.clear()
 | onDismiss    | Function |       --       | Toast 被关闭后执行操作                                                              |
 | queue        | Boolean  |    `false`     | 等待现有的 toast 消失后再显示新的                                                        |
 | pauseOnHover | Boolean  |     `true`     | 鼠标悬停在 toast 上时暂停计时器                                                         |
+
+## Dexie
+
+增
+`this.$DB.Chats.add()`
+
+删
+`this.$DB.Chats.delete()`
+
+改
+`this.$DB.Chats.update()`
+
+查
+`this.$DB.Chats.get()`
+
+例子
+`const config = await db.Configs.get("theme")`

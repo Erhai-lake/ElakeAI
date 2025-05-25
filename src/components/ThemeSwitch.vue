@@ -21,7 +21,7 @@ export default defineComponent({
             const THEME_DATA = await this.$DB.Configs.get("Theme")
             this.Theme = THEME_DATA ? THEME_DATA.value : "System"
         } catch (error) {
-            console.error(`[Theme Switch] 主题获取错误 ${error}`)
+            console.error("[Theme Switch] 主题获取错误", error)
             this.$toast.error("[Theme Switch] 主题获取错误")
         }
     },
@@ -52,7 +52,7 @@ export default defineComponent({
                     })
                 }
             } catch (error) {
-                console.error(`[Theme Switch] 主题应用错误 ${error}`)
+                console.error("[Theme Switch] 主题应用错误", error)
                 this.$toast.error("[Theme Switch] 主题应用错误")
             }
         }

@@ -8,10 +8,7 @@
         "STOW": "Collapse sidebar",
         "EXPAND": "Expand sidebar",
         "PRESET": "Preset",
-        "SETUP": "Setup",
-        "Error": {
-            "ERROR_GETTING_CHAT_LIST": "[HomeSidebar Error] Failed while getting chat list"
-        }
+        "SETUP": "Setup"
     },
     "AIInput": {
         "CHAT_INPUT_PLACEHOLDER": "Want to ask something?",

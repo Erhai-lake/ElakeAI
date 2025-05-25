@@ -8,10 +8,7 @@
         "STOW": "折叠边栏",
         "EXPAND": "展开边栏",
         "PRESET": "预设",
-        "SETUP": "设置",
-        "Error": {
-            "ERROR_GETTING_CHAT_LIST": "[HomeSidebar Error] 获取聊天列表时失败"
-        }
+        "SETUP": "设置"
     },
     "AIInput": {
         "CHAT_INPUT_PLACEHOLDER": "想问点什么吗？",
