@@ -2,10 +2,11 @@
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import ThemeSelect from "@/components/ThemeSwitch.vue"
 import LanguageSelect from "@/components/LanguageSelect.vue"
+import ChatAIKey from "@/components/ChatsAIKey.vue";
 
 export default {
     name: "Options",
-    components: {LanguageSelect, ThemeSelect, FoldingPanel}
+    components: {ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
 
@@ -24,6 +25,14 @@ export default {
                     {{ $t("Options.LANGUAGE") }}
                     <LanguageSelect/>
                 </div>
+            </template>
+        </FoldingPanel>
+        <FoldingPanel Height="600" :is="true">
+            <template #Title>
+                {{ $t("Options.CHATS") }}
+            </template>
+            <template #Content>
+                <ChatAIKey/>
             </template>
         </FoldingPanel>
         <div class="Container">

@@ -16,6 +16,35 @@
         "SEARCH": "Networked Search",
         "SEND": "Send"
     },
+    "ChatAIKey": {
+        "CHATS_API_KEY": "API Key Pool",
+        "ADD_API_KEY": "Add API Key",
+        "API_KEY": "Key",
+        "PLEASE_ENTER_API_KEY": "Please enter API Key",
+        "ADD_API_KEY_VALUE_REQUIRED": "API Key is required",
+        "API_KEY_REMARKS": "Remarks",
+        "PLEASE_ENTER_API_KEY_REMARKS": "Please enter API Key remarks (optional)",
+        "API_KEY_URL": "Url",
+        "PLEASE_ENTER_URL": "Enter the API image Url (official by default)",
+        "ENABLE": "Remove Selected",
+        "SAVE": "Save",
+        "CANCEL": "Cancel",
+        "REMOVE_SELECTED": "Remove{count}API Keys",
+        "ADD_TIP": "No API Key, please click above to add",
+        "ADD_API_KEY_SUCCESS": "API Key added successfully",
+        "SELECT_KEYS_TO_REMOVE": "Select API Keys to remove",
+        "REMOVE_API_KEY_SUCCESS": "API Key removed successfully",
+        "EDIT_SELECTED": "Edit Selected",
+        "SELECT_KEYS_TO_EDIT": "Select API Keys to edit",
+        "YOU_CAN_ONLY_EDIT_ONE_AT_A_TIME": "You can only edit one at a time",
+        "EDIT_API_KEY_SUCCESS": "API Key edited successfully",
+        "ENABLE_SUCCESS": "API Key enabled successfully",
+        "DISABLE_SUCCESS": "API Key disabled successfully",
+        "BATCH_ENABLE_SUCCESS": "API Key batch enabled successfully",
+        "BATCH_DISABLE_SUCCESS": "API Key batch disabled successfully",
+        "BATCH_ENABLE": "Batch Enable",
+        "BATCH_DISABLE": "Batch Disable"
+    },
     "ThemeSwitch": {
         "LIGHT": "Light",
         "DARK": "Dark",
@@ -24,6 +53,7 @@
     "Options": {
         "PERSONALIZATION": "Personalization",
         "THEME": "Theme",
-        "LANGUAGE": "Language"
+        "LANGUAGE": "Language",
+        "CHATS": "Chats"
     }
 }

@@ -16,6 +16,35 @@
         "SEARCH": "联网搜索",
         "SEND": "发送"
     },
+    "ChatAIKey": {
+        "CHATS_API_KEY": "API Key池",
+        "ADD_API_KEY": "添加API Key",
+        "API_KEY": "Key",
+        "PLEASE_ENTER_API_KEY": "请输入API Key",
+        "ADD_API_KEY_VALUE_REQUIRED": "API Key不能为空",
+        "API_KEY_REMARKS": "备注",
+        "PLEASE_ENTER_API_KEY_REMARKS": "请输入API Key备注(可选)",
+        "API_KEY_URL": "Url",
+        "PLEASE_ENTER_URL": "请输入API镜像Url(默认为官方)",
+        "ENABLE": "启用",
+        "SAVE": "保存",
+        "CANCEL": "取消",
+        "REMOVE_SELECTED": "移除{count}个API Key",
+        "ADD_TIP": "暂无API Key, 请点击上方添加",
+        "ADD_API_KEY_SUCCESS": "添加API Key成功",
+        "SELECT_KEYS_TO_REMOVE": "请选择要移除的API Key",
+        "REMOVE_API_KEY_SUCCESS": "移除API Key成功",
+        "EDIT_SELECTED": "编辑选中",
+        "SELECT_KEYS_TO_EDIT": "请选择要编辑的API Key",
+        "YOU_CAN_ONLY_EDIT_ONE_AT_A_TIME": "您只能同时编辑一个API Key",
+        "EDIT_API_KEY_SUCCESS": "编辑API Key成功",
+        "ENABLE_SUCCESS": "启用API Key成功",
+        "DISABLE_SUCCESS": "禁用API Key成功",
+        "BATCH_ENABLE_SUCCESS": "批量启用API Key成功",
+        "BATCH_DISABLE_SUCCESS": "批量禁用API Key成功",
+        "BATCH_ENABLE": "批量启用",
+        "BATCH_DISABLE": "批量禁用"
+    },
     "ThemeSwitch": {
         "LIGHT": "白昼",
         "DARK": "深夜",
@@ -24,6 +53,7 @@
     "Options": {
         "PERSONALIZATION": "个性化",
         "THEME": "主题",
-        "LANGUAGE": "语言"
+        "LANGUAGE": "语言",
+        "CHATS": "对话"
     }
 }
