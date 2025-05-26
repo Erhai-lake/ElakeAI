@@ -2,11 +2,12 @@
 import FoldingPanel from "@/components/FoldingPanel.vue";
 import ThemeSelect from "@/components/ThemeSwitch.vue";
 import LanguageSelect from "@/components/LanguageSelect.vue";
+import ChatAIKey from "@/components/ChatsAIKey.vue";
 
 export default {
     name: "DeBUG",
     inject: ["$DB"],
-    components: {LanguageSelect, ThemeSelect, FoldingPanel},
+    components: {ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
     data() {
         return {
             toastOptions: {
@@ -221,6 +222,7 @@ export default {
                 </table>
             </template>
         </FoldingPanel>
+        <ChatAIKey/>
         <FoldingPanel Height="500">
             <template #Title>Toast</template>
             <template #Content>

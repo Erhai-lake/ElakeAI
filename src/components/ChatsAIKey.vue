@@ -250,7 +250,7 @@ export default {
 </script>
 
 <template>
-    <FoldingPanel Height="500" :is="true">
+    <FoldingPanel Height="500">
         <template #Title>
             {{ $t("ChatAIKey.CHATS_API_KEY") }}
         </template>
