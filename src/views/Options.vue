@@ -14,22 +14,22 @@ export default {
     <div class="OptionsContainer">
         <FoldingPanel>
             <template #Title>
-                {{ $t("Options.PERSONALIZATION") }}
+                {{ $t("views.Options.personalization") }}
             </template>
             <template #Content>
                 <div class="Item">
-                    {{ $t("Options.THEME") }}
+                    {{ $t("views.Options.theme") }}
                     <ThemeSelect/>
                 </div>
                 <div class="Item">
-                    {{ $t("Options.LANGUAGE") }}
+                    {{ $t("views.Options.language") }}
                     <LanguageSelect/>
                 </div>
             </template>
         </FoldingPanel>
         <FoldingPanel Height="600">
             <template #Title>
-                {{ $t("Options.CHATS") }}
+                {{ $t("views.Options.chats") }}
             </template>
             <template #Content>
                 <ChatAIKey/>

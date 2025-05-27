@@ -14,6 +14,41 @@
                 "file": "File"
             }
         },
+        "ChatAIKey": {
+            "title": "API Key Pool",
+            "operationButton": {
+                "add": "Add",
+                "remove": "Remove {count} API Keys",
+                "edit": "Edit",
+                "enable": "Enable",
+                "disable": "Disable"
+            },
+            "toast": {
+                "keyNull": "API Key cannot be empty",
+                "invalidUrl": "Invalid URL",
+                "addKeySuccess": "API Key added successfully",
+                "selectKeysOperate": "Please select keys to operate",
+                "removeKeySuccess": "API Key(s) removed successfully",
+                "selectAKey": "You can only edit one key at a time",
+                "editKeySuccess": "Key edited successfully",
+                "enableSuccess": "Key enabled successfully",
+                "disableSuccess": "Key disabled successfully",
+                "batchEnableSuccess": "Batch enable successful",
+                "batchDisableSuccess": "Batch disable successful"
+            },
+            "form": {
+                "enable": "Enabled",
+                "key": "Key",
+                "pleaseEnterKey": "Enter key",
+                "remarks": "Remarks",
+                "pleaseEnterKeyRemarks": "Enter remarks (optional)",
+                "url": "URL",
+                "pleaseEnterKeyUrl": "Enter API mirror URL (default: official)",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
+            "addTip": "Click above to add a key"
+        },
         "HomeSidebar": {
             "timeRangeLabel": {
                 "1": "Today",
@@ -26,47 +61,19 @@
                 "preset": "Presets",
                 "options": "Settings"
             }
+        },
+        "ThemeSwitch": {
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System"
         }
     },
-    "ChatAIKey": {
-        "CHATS_API_KEY": "API Key Pool",
-        "ADD_API_KEY": "Add API Key",
-        "API_KEY": "Key",
-        "PLEASE_ENTER_API_KEY": "Please enter API Key",
-        "ADD_API_KEY_VALUE_REQUIRED": "API Key is required",
-        "API_KEY_REMARKS": "Remarks",
-        "PLEASE_ENTER_API_KEY_REMARKS": "Please enter API Key remarks (optional)",
-        "API_KEY_URL": "Url",
-        "PLEASE_ENTER_URL": "Enter the API image Url (official by default)",
-        "ENABLE": "Remove Selected",
-        "SAVE": "Save",
-        "CANCEL": "Cancel",
-        "REMOVE_SELECTED": "Remove{count}API Keys",
-        "ADD_TIP": "No API Key, please click above to add",
-        "ADD_API_KEY_SUCCESS": "API Key added successfully",
-        "SELECT_KEYS_TO_REMOVE": "Select API Keys to remove",
-        "REMOVE_API_KEY_SUCCESS": "API Key removed successfully",
-        "EDIT_SELECTED": "Edit Selected",
-        "SELECT_KEYS_TO_EDIT": "Select API Keys to edit",
-        "YOU_CAN_ONLY_EDIT_ONE_AT_A_TIME": "You can only edit one at a time",
-        "EDIT_API_KEY_SUCCESS": "API Key edited successfully",
-        "ENABLE_SUCCESS": "API Key enabled successfully",
-        "DISABLE_SUCCESS": "API Key disabled successfully",
-        "BATCH_ENABLE_SUCCESS": "API Key batch enabled successfully",
-        "BATCH_DISABLE_SUCCESS": "API Key batch disabled successfully",
-        "BATCH_ENABLE": "Batch Enable",
-        "BATCH_DISABLE": "Batch Disable",
-        "INVALID_URL": "Invalid URL"
-    },
-    "ThemeSwitch": {
-        "LIGHT": "Light",
-        "DARK": "Dark",
-        "SYSTEM": "System"
-    },
-    "Options": {
-        "PERSONALIZATION": "Personalization",
-        "THEME": "Theme",
-        "LANGUAGE": "Language",
-        "CHATS": "Chats"
+    "views": {
+        "Options": {
+            "personalization": "Personalization",
+            "theme": "Theme",
+            "language": "Language",
+            "chats": "Chats"
+        }
     }
 }

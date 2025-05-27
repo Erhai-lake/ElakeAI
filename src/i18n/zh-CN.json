@@ -14,6 +14,41 @@
                 "file": "文件"
             }
         },
+        "ChatAIKey": {
+            "title": "API Key池",
+            "operationButton": {
+                "add": "添加",
+                "remove": "移除{count}个API Key",
+                "edit": "编辑",
+                "enable": "启用",
+                "disable": "禁用"
+            },
+            "toast": {
+                "keyNull": "API Key不能为空",
+                "invalidUrl": "无效的URL",
+                "addKeySuccess": "添加API Key成功",
+                "selectKeysOperate": "请选择要操作的Key",
+                "removeKeySuccess": "移除API Key成功",
+                "selectAKey": "您只能同时编辑一个Key",
+                "editKeySuccess": "编辑Key成功",
+                "enableSuccess": "启用Key成功",
+                "disableSuccess": "禁用Key成功",
+                "batchEnableSuccess": "批量启用Key成功",
+                "batchDisableSuccess": "批量禁用Key成功"
+            },
+            "form": {
+                "enable": "启用",
+                "key": "Key",
+                "pleaseEnterKey": "请输入Key",
+                "remarks": "备注",
+                "pleaseEnterKeyRemarks": "请输入Key备注(可选)",
+                "url": "Url",
+                "pleaseEnterKeyUrl": "请输入API镜像站Url(默认为官方)",
+                "save": "保存",
+                "cancel": "取消"
+            },
+            "addTip": "请点击上方添加Key"
+        },
         "HomeSidebar": {
             "timeRangeLabel": {
                 "1": "今天",
@@ -26,47 +61,19 @@
                 "preset": "预设",
                 "options": "设置"
             }
+        },
+        "ThemeSwitch": {
+            "light": "白昼",
+            "dark": "深夜",
+            "system": "系统"
         }
     },
-    "ChatAIKey": {
-        "CHATS_API_KEY": "API Key池",
-        "ADD_API_KEY": "添加API Key",
-        "API_KEY": "Key",
-        "PLEASE_ENTER_API_KEY": "请输入API Key",
-        "ADD_API_KEY_VALUE_REQUIRED": "API Key不能为空",
-        "API_KEY_REMARKS": "备注",
-        "PLEASE_ENTER_API_KEY_REMARKS": "请输入API Key备注(可选)",
-        "API_KEY_URL": "Url",
-        "PLEASE_ENTER_URL": "请输入API镜像Url(默认为官方)",
-        "ENABLE": "启用",
-        "SAVE": "保存",
-        "CANCEL": "取消",
-        "REMOVE_SELECTED": "移除{count}个API Key",
-        "ADD_TIP": "暂无API Key, 请点击上方添加",
-        "ADD_API_KEY_SUCCESS": "添加API Key成功",
-        "SELECT_KEYS_TO_REMOVE": "请选择要移除的API Key",
-        "REMOVE_API_KEY_SUCCESS": "移除API Key成功",
-        "EDIT_SELECTED": "编辑选中",
-        "SELECT_KEYS_TO_EDIT": "请选择要编辑的API Key",
-        "YOU_CAN_ONLY_EDIT_ONE_AT_A_TIME": "您只能同时编辑一个API Key",
-        "EDIT_API_KEY_SUCCESS": "编辑API Key成功",
-        "ENABLE_SUCCESS": "启用API Key成功",
-        "DISABLE_SUCCESS": "禁用API Key成功",
-        "BATCH_ENABLE_SUCCESS": "批量启用API Key成功",
-        "BATCH_DISABLE_SUCCESS": "批量禁用API Key成功",
-        "BATCH_ENABLE": "批量启用",
-        "BATCH_DISABLE": "批量禁用",
-        "INVALID_URL": "无效的URL"
-    },
-    "ThemeSwitch": {
-        "LIGHT": "白昼",
-        "DARK": "深夜",
-        "SYSTEM": "系统"
-    },
-    "Options": {
-        "PERSONALIZATION": "个性化",
-        "THEME": "主题",
-        "LANGUAGE": "语言",
-        "CHATS": "对话"
+    "views": {
+        "Options": {
+            "personalization": "个性化",
+            "theme": "主题",
+            "language": "语言",
+            "chats": "对话"
+        }
     }
 }

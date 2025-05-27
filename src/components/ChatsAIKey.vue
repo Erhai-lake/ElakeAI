@@ -101,7 +101,7 @@ export default {
         async addNewKey() {
             // 禁止key空
             if (!this.newKey.value) {
-                this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.keyNull"))
                 return
             }
             // url空则使用默认url
@@ -110,7 +110,7 @@ export default {
             }
             // 校验url
             if (!this.isValidUrl(this.newKey.url)) {
-                this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.invalidUrl"))
                 return
             }
             try {
@@ -128,7 +128,7 @@ export default {
                 // 重置表单
                 this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
                 this.status.addFormStatus = false
-                this.$toast.success(this.$t("ChatAIKey.ADD_API_KEY_SUCCESS"))
+                this.$toast.success(this.$t("components.ChatAIKey.toast.addKeySuccess"))
             } catch (error) {
                 console.error("[Chats AI Key] 添加Key错误", error)
                 this.$toast.error("[Chats AI Key] 添加Key错误")
@@ -143,7 +143,7 @@ export default {
         async removeSelectedKeys() {
             // 禁止空删除
             if (this.operationSelection.length === 0) {
-                this.$toast.warning(this.$t("ChatAIKey.SELECT_KEYS_TO_REMOVE"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.selectKeysOperate"))
                 return
             }
             try {
@@ -153,7 +153,7 @@ export default {
                     !this.operationSelection.includes(item.key)
                 )
                 this.operationSelection = []
-                this.$toast.success(this.$t("ChatAIKey.REMOVE_API_KEY_SUCCESS"))
+                this.$toast.success(this.$t("components.ChatAIKey.toast.removeKeySuccess"))
             } catch (error) {
                 console.error("[Chats AI Key] 删除Keys错误", error)
                 this.$toast.error("[Chats AI Key] 删除Keys错误")
@@ -163,12 +163,12 @@ export default {
         async toggleEditSelected() {
             // 禁止空编辑
             if (this.operationSelection.length === 0) {
-                this.$toast.warning(this.$t("ChatAIKey.SELECT_KEYS_TO_EDIT"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.selectKeysOperate"))
                 return
             }
             // 禁止多选编辑
             if (this.operationSelection.length > 1) {
-                this.$toast.warning(this.$t("ChatAIKey.YOU_CAN_ONLY_EDIT_ONE_AT_A_TIME"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.selectAKey"))
                 return
             }
             try {
@@ -190,7 +190,7 @@ export default {
         async editSelectedKeys() {
             // 禁止空编辑
             if (!this.editKey.value) {
-                this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.keyNull"))
                 return
             }
             // url空则使用默认url
@@ -199,7 +199,7 @@ export default {
             }
             // 校验url
             if (!this.isValidUrl(this.editKey.url)) {
-                this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.invalidUrl"))
                 return
             }
             try {
@@ -225,7 +225,7 @@ export default {
                     enabled: true
                 }
                 this.status.editFormStatus = false
-                this.$toast.success(this.$t("ChatAIKey.EDIT_API_KEY_SUCCESS"))
+                this.$toast.success(this.$t("components.ChatAIKey.toast.editKeySuccess"))
             } catch (error) {
                 console.error("[Chats AI Key] 编辑Keys错误", error)
                 this.$toast.error("[Chats AI Key] 编辑Keys错误")
@@ -246,7 +246,7 @@ export default {
                 const NEW_STATUS = !keyItem.enabled
                 await this.$DB.APIKeys.update(keyItem.key, {enabled: NEW_STATUS})
                 keyItem.enabled = NEW_STATUS
-                this.$toast.success(this.$t(`ChatAIKey.${NEW_STATUS ? 'ENABLE' : 'DISABLE'}_SUCCESS`))
+                this.$toast.success(this.$t(`components.ChatAIKey.toast.${NEW_STATUS ? 'enable' : 'disable'}Success`))
             } catch (error) {
                 console.error("[Chats AI Key] 状态更新失败", error)
                 this.$toast.error("[Chats AI Key] 状态更新失败")
@@ -255,7 +255,7 @@ export default {
         // 切换Key启用状态(批量)
         async batchToggleEnable(status) {
             if (this.operationSelection.length === 0) {
-                this.$toast.warning(this.$t("ChatAIKey.SELECT_KEYS_TO_OPERATE"))
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.selectKeysOperate"))
                 return
             }
             try {
@@ -270,7 +270,7 @@ export default {
                     }
                     return item
                 })
-                this.$toast.success(this.$t(`ChatAIKey.BATCH_${status ? 'ENABLE' : 'DISABLE'}_SUCCESS`))
+                this.$toast.success(this.$t(`components.ChatAIKey.toast.batch${status ? 'Enable' : 'Disable'}Success`))
             } catch (error) {
                 console.error("[Chats AI Key] 状态更新失败", error)
                 this.$toast.error("[Chats AI Key] 状态更新失败")
@@ -295,9 +295,9 @@ export default {
 </script>
 
 <template>
-    <FoldingPanel Height="500">
+    <FoldingPanel Height="500" :is="true">
         <template #Title>
-            {{ $t("ChatAIKey.CHATS_API_KEY") }}
+            {{ $t("components.ChatAIKey.title") }}
         </template>
         <template #Content>
             <div class="ChatAIKey">
@@ -324,69 +324,69 @@ export default {
                     </div>
                     <!-- 新增按钮 -->
                     <button @click="status.addFormStatus = !status.addFormStatus">{{
-                            $t("ChatAIKey.ADD_API_KEY")
+                            $t("components.ChatAIKey.operationButton.add")
                         }}
                     </button>
                     <!-- 移除选中 -->
                     <button @click="removeSelectedKeys">
-                        {{ $t("ChatAIKey.REMOVE_SELECTED", operationSelection.length) }}
+                        {{ $t("components.ChatAIKey.operationButton.remove", operationSelection.length) }}
                     </button>
                     <!-- 编辑选中 -->
                     <button @click="toggleEditSelected">
-                        {{ $t("ChatAIKey.EDIT_SELECTED") }}
+                        {{ $t("components.ChatAIKey.operationButton.edit") }}
                     </button>
                     <div class="Consolidation">
                         <!-- 启用选中 -->
                         <button @click="batchToggleEnable(true)">
-                            {{ $t("ChatAIKey.BATCH_ENABLE") }}
+                            {{ $t("components.ChatAIKey.operationButton.enable") }}
                         </button>
                         <!-- 禁用选中 -->
                         <button @click="batchToggleEnable(false)">
-                            {{ $t("ChatAIKey.BATCH_DISABLE") }}
+                            {{ $t("components.ChatAIKey.operationButton.disable") }}
                         </button>
                     </div>
                     <div/>
                 </div>
                 <!-- 新增表单 -->
                 <div v-if="status.addFormStatus" class="AddForm">
-                    <h3>{{ $t("ChatAIKey.ADD_API_KEY") }}</h3>
+                    <h3>{{ $t("components.ChatAIKey.operationButton.add") }}</h3>
                     <div class="FormGroup">
-                        <label>{{ $t("ChatAIKey.API_KEY") }}</label>
-                        <input type="text" v-model="newKey.value" :placeholder="$t('ChatAIKey.PLEASE_ENTER_API_KEY')">
+                        <label>{{ $t("components.ChatAIKey.form.key") }}</label>
+                        <input type="text" v-model="newKey.value" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
                     </div>
                     <div class="FormGroup">
-                        <label>{{ $t("ChatAIKey.API_KEY_REMARKS") }}</label>
+                        <label>{{ $t("components.ChatAIKey.form.remarks") }}</label>
                         <input type="text" v-model="newKey.remark"
-                               :placeholder="$t('ChatAIKey.PLEASE_ENTER_API_KEY_REMARKS')">
+                               :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyRemarks')">
                     </div>
                     <div class="FormGroup">
-                        <label>{{ $t("ChatAIKey.API_KEY_URL") }}</label>
-                        <input type="text" v-model="newKey.url" :placeholder="$t('ChatAIKey.PLEASE_ENTER_URL')">
+                        <label>{{ $t("components.ChatAIKey.form.url") }}</label>
+                        <input type="text" v-model="newKey.url" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
                     </div>
                     <div class="FormActions">
-                        <button @click="addNewKey">{{ $t("ChatAIKey.SAVE") }}</button>
-                        <button @click="status.addFormStatus = false">{{ $t("ChatAIKey.CANCEL") }}</button>
+                        <button @click="addNewKey">{{ $t("components.ChatAIKey.form.save") }}</button>
+                        <button @click="status.addFormStatus = false">{{ $t("components.ChatAIKey.form.cancel") }}</button>
                     </div>
                 </div>
                 <!-- 编辑表单 -->
                 <div v-if="status.editFormStatus" class="AddForm">
-                    <h3>{{ $t("ChatAIKey.EDIT_SELECTED") }}</h3>
+                    <h3>{{ $t("components.ChatAIKey.operationButton.edit") }}</h3>
                     <div class="FormGroup">
-                        <label>{{ $t("ChatAIKey.API_KEY") }}</label>
-                        <input type="text" v-model="editKey.value" :placeholder="$t('ChatAIKey.PLEASE_ENTER_API_KEY')">
+                        <label>{{ $t("components.ChatAIKey.form.key") }}</label>
+                        <input type="text" v-model="editKey.value" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
                     </div>
                     <div class="FormGroup">
-                        <label>{{ $t("ChatAIKey.API_KEY_REMARKS") }}</label>
+                        <label>{{ $t("components.ChatAIKey.form.remarks") }}</label>
                         <input type="text" v-model="editKey.remark"
-                               :placeholder="$t('ChatAIKey.PLEASE_ENTER_API_KEY_REMARKS')">
+                               :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyRemarks')">
                     </div>
                     <div class="FormGroup">
-                        <label>{{ $t("ChatAIKey.API_KEY_URL") }}</label>
-                        <input type="text" v-model="editKey.url" :placeholder="$t('ChatAIKey.PLEASE_ENTER_URL')">
+                        <label>{{ $t("components.ChatAIKey.form.url") }}</label>
+                        <input type="text" v-model="editKey.url" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
                     </div>
                     <div class="FormActions">
-                        <button @click="editSelectedKeys">{{ $t("ChatAIKey.SAVE") }}</button>
-                        <button @click="status.editFormStatus = false">{{ $t("ChatAIKey.CANCEL") }}</button>
+                        <button @click="editSelectedKeys">{{ $t("components.ChatAIKey.form.save") }}</button>
+                        <button @click="status.editFormStatus = false">{{ $t("components.ChatAIKey.form.cancel") }}</button>
                     </div>
                 </div>
                 <div class="Bottom">
@@ -401,10 +401,10 @@ export default {
                                         <span class="CustomCheckbox"></span>
                                     </label>
                                 </th>
-                                <th>{{ $t("ChatAIKey.ENABLE") }}</th>
-                                <th>{{ $t("ChatAIKey.API_KEY") }}</th>
-                                <th>{{ $t("ChatAIKey.API_KEY_REMARKS") }}</th>
-                                <th>{{ $t("ChatAIKey.API_KEY_URL") }}</th>
+                                <th>{{ $t("components.ChatAIKey.form.enable") }}</th>
+                                <th>{{ $t("components.ChatAIKey.form.key") }}</th>
+                                <th>{{ $t("components.ChatAIKey.form.remarks") }}</th>
+                                <th>{{ $t("components.ChatAIKey.form.url") }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -427,7 +427,7 @@ export default {
                                 <td :title="keyItem.url">{{ keyItem.url }}</td>
                             </tr>
                             <tr v-if="(keyPools || []).length === 0">
-                                <td colspan="5" class="EmptyTip">{{ $t("ChatAIKey.ADD_TIP") }}</td>
+                                <td colspan="5" class="EmptyTip">{{ $t("components.ChatAIKey.addTip") }}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -452,7 +452,7 @@ export default {
         justify-content: space-between;
 
         button {
-            padding: 10px 18px;
+            padding: 10px 25px;
         }
     }
 }
@@ -596,11 +596,11 @@ export default {
             }
 
             th:nth-child(1), td:nth-child(1) {
-                width: 5%;
+                width: 10%;
             }
 
             th:nth-child(2), td:nth-child(2) {
-                width: 5%;
+                width: 10%;
             }
 
             th:nth-child(3), td:nth-child(3) {
@@ -615,7 +615,7 @@ export default {
             }
 
             th:nth-child(5), td:nth-child(5) {
-                width: 45%;
+                width: 35%;
             }
         }
     }
