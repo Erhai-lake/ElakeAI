@@ -104,12 +104,19 @@ export default {
                     this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
                     return
                 }
+                if (!this.newKey.url) {
+                    this.newKey.url = this.selectedModel.url
+                }
+                if (!this.isValidUrl(this.newKey.url)) {
+                    this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
+                    return
+                }
                 await this.$DB.APIKeys.add({
                     key: crypto.randomUUID(),
                     model: this.selectedModel.name,
                     value: this.newKey.value,
-                    remark: this.newKey.remark || "空",
-                    url: this.newKey.url || this.selectedModel.url,
+                    remark: this.newKey.remark,
+                    url: this.newKey.url,
                     enabled: this.newKey.enabled
                 })
                 await this.loadKeyPools()
@@ -175,6 +182,17 @@ export default {
         // 编辑Key
         async editSelectedKeys() {
             try {
+                if (!this.editKey.value) {
+                    this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
+                    return
+                }
+                if (!this.editKey.url) {
+                    this.editKey.url = this.selectedModel.url
+                }
+                if (!this.isValidUrl(this.editKey.url)) {
+                    this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
+                    return
+                }
                 await this.$DB.APIKeys.update(this.editKey.key, {
                     value: this.editKey.value,
                     remark: this.editKey.remark,
@@ -193,6 +211,15 @@ export default {
             } catch (error) {
                 console.error("[Chats AI Key] 编辑Keys错误", error)
                 this.$toast.error("[Chats AI Key] 编辑Keys错误")
+            }
+        },
+        // url是否是有效的url
+        isValidUrl(url) {
+            try {
+                new URL(url)
+                return true
+            } catch (error) {
+                return false
             }
         },
         // 切换Key启用状态(单个)
@@ -372,7 +399,8 @@ export default {
                                 </td>
                                 <td>
                                     <label>
-                                        <input type="checkbox" :checked="keyItem.enabled" @change="toggleKeyEnable(keyItem)">
+                                        <input type="checkbox" :checked="keyItem.enabled"
+                                               @change="toggleKeyEnable(keyItem)">
                                         <span class="CustomCheckbox"></span>
                                     </label>
                                 </td>
@@ -609,6 +637,8 @@ input[type="checkbox"] {
     display: inline-block;
     width: 20px;
     height: 20px;
+    box-sizing: border-box;
+    vertical-align: middle;
     border: 2px solid var(--border-color);
     border-radius: 4px;
     position: relative;

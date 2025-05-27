@@ -43,7 +43,8 @@
         "BATCH_ENABLE_SUCCESS": "API Key batch enabled successfully",
         "BATCH_DISABLE_SUCCESS": "API Key batch disabled successfully",
         "BATCH_ENABLE": "Batch Enable",
-        "BATCH_DISABLE": "Batch Disable"
+        "BATCH_DISABLE": "Batch Disable",
+        "INVALID_URL": "Invalid URL"
     },
     "ThemeSwitch": {
         "LIGHT": "Light",

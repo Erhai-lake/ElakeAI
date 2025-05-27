@@ -43,7 +43,8 @@
         "BATCH_ENABLE_SUCCESS": "批量启用API Key成功",
         "BATCH_DISABLE_SUCCESS": "批量禁用API Key成功",
         "BATCH_ENABLE": "批量启用",
-        "BATCH_DISABLE": "批量禁用"
+        "BATCH_DISABLE": "批量禁用",
+        "INVALID_URL": "无效的URL"
     },
     "ThemeSwitch": {
         "LIGHT": "白昼",
