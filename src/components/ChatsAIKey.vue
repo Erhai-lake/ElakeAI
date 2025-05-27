@@ -350,7 +350,12 @@ export default {
                         <table>
                             <thead>
                             <tr>
-                                <th><input type="checkbox" :checked="isAllSelected" @change="toggleAllSelection"></th>
+                                <th>
+                                    <label>
+                                        <input type="checkbox" :checked="isAllSelected" @change="toggleAllSelection">
+                                        <span class="CustomCheckbox"></span>
+                                    </label>
+                                </th>
                                 <th>{{ $t("ChatAIKey.ENABLE") }}</th>
                                 <th>{{ $t("ChatAIKey.API_KEY") }}</th>
                                 <th>{{ $t("ChatAIKey.API_KEY_REMARKS") }}</th>
@@ -360,11 +365,16 @@ export default {
                             <tbody>
                             <tr v-for="keyItem in keyPools || []" :key="keyItem.key">
                                 <td>
-                                    <input type="checkbox" :value="keyItem.key" v-model="operationSelection">
+                                    <label>
+                                        <input type="checkbox" :value="keyItem.key" v-model="operationSelection">
+                                        <span class="CustomCheckbox"></span>
+                                    </label>
                                 </td>
                                 <td>
-                                    <input type="checkbox" :checked="keyItem.enabled"
-                                           @change="toggleKeyEnable(keyItem)">
+                                    <label>
+                                        <input type="checkbox" :checked="keyItem.enabled" @change="toggleKeyEnable(keyItem)">
+                                        <span class="CustomCheckbox"></span>
+                                    </label>
                                 </td>
                                 <td :title="keyItem.value">{{ maskKey(keyItem.value) }}</td>
                                 <td :title="keyItem.remark">{{ keyItem.remark }}</td>
@@ -583,6 +593,38 @@ button {
 
     &:active {
         background-color: var(--button-active-background-color);
+    }
+}
+
+input[type="checkbox"] {
+    display: none;
+
+    &:checked + .CustomCheckbox::after {
+        opacity: 1;
+
+    }
+}
+
+.CustomCheckbox {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 10px;
+        height: 10px;
+        background-color: var(--button-background-color);
+        border-radius: 2px;
+        opacity: 0;
     }
 }
 </style>
