@@ -283,6 +283,15 @@ export default {
             } else {
                 this.operationSelection = this.keyPools.map(item => item.key)
             }
+        },
+        // 切换行选择状态
+        toggleRowSelection(key) {
+            const INDEX = this.operationSelection.indexOf(key)
+            if (INDEX === -1) {
+                this.operationSelection.push(key)
+            } else {
+                this.operationSelection.splice(INDEX, 1)
+            }
         }
     },
     mounted() {
@@ -352,7 +361,8 @@ export default {
                     <h3>{{ $t("components.ChatAIKey.operationButton.add") }}</h3>
                     <div class="FormGroup">
                         <label>{{ $t("components.ChatAIKey.form.key") }}</label>
-                        <input type="text" v-model="newKey.value" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
+                        <input type="text" v-model="newKey.value"
+                               :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
                     </div>
                     <div class="FormGroup">
                         <label>{{ $t("components.ChatAIKey.form.remarks") }}</label>
@@ -361,11 +371,15 @@ export default {
                     </div>
                     <div class="FormGroup">
                         <label>{{ $t("components.ChatAIKey.form.url") }}</label>
-                        <input type="text" v-model="newKey.url" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
+                        <input type="text" v-model="newKey.url"
+                               :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
                     </div>
                     <div class="FormActions">
                         <button @click="addNewKey">{{ $t("components.ChatAIKey.form.save") }}</button>
-                        <button @click="status.addFormStatus = false">{{ $t("components.ChatAIKey.form.cancel") }}</button>
+                        <button @click="status.addFormStatus = false">{{
+                                $t("components.ChatAIKey.form.cancel")
+                            }}
+                        </button>
                     </div>
                 </div>
                 <!-- 编辑表单 -->
@@ -373,7 +387,8 @@ export default {
                     <h3>{{ $t("components.ChatAIKey.operationButton.edit") }}</h3>
                     <div class="FormGroup">
                         <label>{{ $t("components.ChatAIKey.form.key") }}</label>
-                        <input type="text" v-model="editKey.value" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
+                        <input type="text" v-model="editKey.value"
+                               :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
                     </div>
                     <div class="FormGroup">
                         <label>{{ $t("components.ChatAIKey.form.remarks") }}</label>
@@ -382,11 +397,15 @@ export default {
                     </div>
                     <div class="FormGroup">
                         <label>{{ $t("components.ChatAIKey.form.url") }}</label>
-                        <input type="text" v-model="editKey.url" :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
+                        <input type="text" v-model="editKey.url"
+                               :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
                     </div>
                     <div class="FormActions">
                         <button @click="editSelectedKeys">{{ $t("components.ChatAIKey.form.save") }}</button>
-                        <button @click="status.editFormStatus = false">{{ $t("components.ChatAIKey.form.cancel") }}</button>
+                        <button @click="status.editFormStatus = false">{{
+                                $t("components.ChatAIKey.form.cancel")
+                            }}
+                        </button>
                     </div>
                 </div>
                 <div class="Bottom">
@@ -397,7 +416,9 @@ export default {
                             <tr>
                                 <th>
                                     <label>
-                                        <input type="checkbox" :checked="isAllSelected" @change="toggleAllSelection">
+                                        <input type="checkbox"
+                                               :checked="isAllSelected"
+                                               @change="toggleAllSelection">
                                         <span class="CustomCheckbox"></span>
                                     </label>
                                 </th>
@@ -408,17 +429,26 @@ export default {
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="keyItem in keyPools || []" :key="keyItem.key">
-                                <td>
+                            <tr
+                                v-for="keyItem in keyPools || []"
+                                :key="keyItem.key"
+                                @click="toggleRowSelection(keyItem.key)"
+                                :class="{ 'SelectedRow': operationSelection.includes(keyItem.key) }">
+                                <td @click.stop>
                                     <label>
-                                        <input type="checkbox" :value="keyItem.key" v-model="operationSelection">
+                                        <input type="checkbox"
+                                               :value="keyItem.key"
+                                               v-model="operationSelection"
+                                               @click.stop>
                                         <span class="CustomCheckbox"></span>
                                     </label>
                                 </td>
                                 <td>
                                     <label>
-                                        <input type="checkbox" :checked="keyItem.enabled"
-                                               @change="toggleKeyEnable(keyItem)">
+                                        <input
+                                            type="checkbox"
+                                            :checked="keyItem.enabled"
+                                            @change="toggleKeyEnable(keyItem)">
                                         <span class="CustomCheckbox"></span>
                                     </label>
                                 </td>
@@ -595,12 +625,29 @@ export default {
                 text-align: center;
             }
 
+            tbody tr {
+                transition: background-color 0.2s;
+                cursor: pointer;
+
+                &:hover {
+                    color: var(--text-color-Anti);
+                    background-color: var(--background-color-Anti);
+
+                    .CustomCheckbox{
+                        &::after{
+                            background-color: var(--background-color);
+                        }
+                    }
+                }
+            }
+
             th:nth-child(1), td:nth-child(1) {
                 width: 10%;
             }
 
             th:nth-child(2), td:nth-child(2) {
                 width: 10%;
+                pointer-events: auto;
             }
 
             th:nth-child(3), td:nth-child(3) {
@@ -616,6 +663,23 @@ export default {
 
             th:nth-child(5), td:nth-child(5) {
                 width: 35%;
+            }
+
+            .SelectedRow {
+                --Active-Background-Color: rgba(189, 229, 255, 0.5);
+                color: var(--text-color);
+                background-color: var(--Active-Background-Color);
+
+                &:hover {
+                    color: var(--text-color);
+                    background-color: var(--Active-Background-Color);
+
+                    .CustomCheckbox{
+                        &::after{
+                            background-color: var(--background-color-Anti);
+                        }
+                    }
+                }
             }
         }
     }
@@ -670,7 +734,7 @@ input[type="checkbox"] {
         transform: translate(-50%, -50%);
         width: 10px;
         height: 10px;
-        background-color: var(--button-background-color);
+        background-color: var(--background-color-Anti);
         border-radius: 2px;
         opacity: 0;
     }
