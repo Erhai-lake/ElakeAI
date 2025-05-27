@@ -337,24 +337,22 @@ export default {
                             $t("components.ChatAIKey.operationButton.add")
                         }}
                     </button>
-                    <!-- 移除选中 -->
-                    <button @click="removeSelectedKeys">
-                        {{ $t("components.ChatAIKey.operationButton.remove", operationSelection.length) }}
-                    </button>
                     <!-- 编辑选中 -->
                     <button @click="toggleEditSelected">
                         {{ $t("components.ChatAIKey.operationButton.edit") }}
                     </button>
-                    <div class="Consolidation">
-                        <!-- 启用选中 -->
-                        <button @click="batchToggleEnable(true)">
-                            {{ $t("components.ChatAIKey.operationButton.enable") }}
-                        </button>
-                        <!-- 禁用选中 -->
-                        <button @click="batchToggleEnable(false)">
-                            {{ $t("components.ChatAIKey.operationButton.disable") }}
-                        </button>
-                    </div>
+                    <!-- 移除选中 -->
+                    <button @click="removeSelectedKeys">
+                        {{ $t("components.ChatAIKey.operationButton.remove", operationSelection.length) }}
+                    </button>
+                    <!-- 启用选中 -->
+                    <button @click="batchToggleEnable(true)">
+                        {{ $t("components.ChatAIKey.operationButton.enable", operationSelection.length) }}
+                    </button>
+                    <!-- 禁用选中 -->
+                    <button @click="batchToggleEnable(false)">
+                        {{ $t("components.ChatAIKey.operationButton.disable", operationSelection.length) }}
+                    </button>
                     <div/>
                 </div>
                 <!-- 新增表单 -->
@@ -477,15 +475,6 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fill, 200px);
     gap: 10px;
-
-    .Consolidation {
-        display: flex;
-        justify-content: space-between;
-
-        button {
-            padding: 10px 25px;
-        }
-    }
 }
 
 .ModelSelector {
@@ -634,8 +623,8 @@ export default {
                     color: var(--text-color-Anti);
                     background-color: var(--background-color-Anti);
 
-                    .CustomCheckbox{
-                        &::after{
+                    .CustomCheckbox {
+                        &::after {
                             background-color: var(--background-color);
                         }
                     }
@@ -675,8 +664,8 @@ export default {
                     color: var(--text-color);
                     background-color: var(--Active-Background-Color);
 
-                    .CustomCheckbox{
-                        &::after{
+                    .CustomCheckbox {
+                        &::after {
                             background-color: var(--background-color-Anti);
                         }
                     }

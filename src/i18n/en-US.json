@@ -18,10 +18,10 @@
             "title": "API Key Pool",
             "operationButton": {
                 "add": "Add",
-                "remove": "Remove {count} API Keys",
+                "remove": "Remove {count} Keys",
                 "edit": "Edit",
-                "enable": "Enable",
-                "disable": "Disable"
+                "enable": "Enable {count} Keys",
+                "disable": "Disable {count} Keys"
             },
             "toast": {
                 "keyNull": "API Key cannot be empty",

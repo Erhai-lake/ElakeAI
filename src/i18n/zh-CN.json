@@ -18,10 +18,10 @@
             "title": "API Key池",
             "operationButton": {
                 "add": "添加",
-                "remove": "移除{count}个API Key",
+                "remove": "移除{count}个Key",
                 "edit": "编辑",
-                "enable": "启用",
-                "disable": "禁用"
+                "enable": "启用{count}个Key",
+                "disable": "禁用{count}个Key"
             },
             "toast": {
                 "keyNull": "API Key不能为空",
