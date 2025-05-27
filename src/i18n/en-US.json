@@ -1,4 +1,20 @@
 {
+    "components": {
+        "AIInput": {
+            "inputTip": "Please enter your question",
+            "function": {
+                "appendix": "Appendix",
+                "webSearch": "Web Search",
+                "send": "Send"
+            },
+            "appendix": {
+                "close": "Close",
+                "camera": "Camera",
+                "picture": "Photo",
+                "file": "File"
+            }
+        }
+    },
     "HomeSidebar": {
         "TimeRangeLabel": {
             "WITHIN_1_DAYS": "Today",
@@ -9,12 +25,6 @@
         "EXPAND": "Expand sidebar",
         "PRESET": "Preset",
         "SETUP": "Setup"
-    },
-    "AIInput": {
-        "CHAT_INPUT_PLACEHOLDER": "Want to ask something?",
-        "APPENDIX": "Appendix",
-        "SEARCH": "Networked Search",
-        "SEND": "Send"
     },
     "ChatAIKey": {
         "CHATS_API_KEY": "API Key Pool",

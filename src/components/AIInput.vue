@@ -33,27 +33,27 @@ export default defineComponent({
         <input id="Appendix" type="checkbox"/>
         <div class="AppendixBar">
             <!--关闭-->
-            <label for="Appendix">
+            <label for="Appendix" :title="$t('components.AIInput.appendix.close')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Close"></use>
                 </svg>
             </label>
             <!--拍照-->
-            <label for="Camera">
+            <label for="Camera" :title="$t('components.AIInput.appendix.camera')">
                 <input type="file" id="Camera" accept="image/*" capture="environment"/>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Photograph"></use>
                 </svg>
             </label>
             <!--相册-->
-            <label for="Photos">
+            <label for="Photos" :title="$t('components.AIInput.appendix.picture')">
                 <input type="file" id="Photos" accept="image/*"/>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-PhotoAlbum"></use>
                 </svg>
             </label>
             <!--文件-->
-            <label for="Files">
+            <label for="Files" :title="$t('components.AIInput.appendix.file')">
                 <input type="file" id="Files"/>
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-File"></use>
@@ -61,25 +61,25 @@ export default defineComponent({
             </label>
         </div>
         <!--聊天输入框-->
-        <textarea id="ChatInput" :placeholder="$t('AIInput.CHAT_INPUT_PLACEHOLDER')" ref="textareaRef"></textarea>
+        <textarea id="ChatInput" :placeholder="$t('components.AIInput.inputTip')" ref="textareaRef"></textarea>
         <!--按钮栏-->
         <div class="ButtonBar">
             <!--附件-->
-            <label for="Appendix" :title="$t('AIInput.APPENDIX')">
+            <label for="Appendix" :title="$t('components.AIInput.function.appendix')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Link"></use>
                 </svg>
             </label>
             <!--联网搜索-->
             <input id="Search" type="checkbox"/>
-            <label for="Search" :title="$t('AIInput.SEARCH')">
+            <label for="Search" :title="$t('components.AIInput.function.webSearch')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Networking"></use>
                 </svg>
             </label>
             <div></div>
             <!--发送-->
-            <label for="Send" :title="$t('AIInput.SEND')" class="Send">
+            <label for="Send" :title="$t('components.AIInput.function.send')" class="Send">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Send"></use>
                 </svg>
