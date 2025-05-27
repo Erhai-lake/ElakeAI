@@ -34,7 +34,8 @@
                 "enableSuccess": "Key enabled successfully",
                 "disableSuccess": "Key disabled successfully",
                 "batchEnableSuccess": "Batch enable successful",
-                "batchDisableSuccess": "Batch disable successful"
+                "batchDisableSuccess": "Batch disable successful",
+                "errorKeyDisabled": "Bad Key: {key} is disabled"
             },
             "form": {
                 "enable": "Enabled",
@@ -45,7 +46,8 @@
                 "url": "URL",
                 "pleaseEnterKeyUrl": "Enter API mirror URL (default: official)",
                 "save": "Save",
-                "cancel": "Cancel"
+                "cancel": "Cancel",
+                "balance": "Balance"
             },
             "addTip": "Click above to add a key"
         },

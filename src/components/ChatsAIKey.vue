@@ -1,5 +1,6 @@
 <script>
-import FoldingPanel from "@/components/FoldingPanel.vue";
+import FoldingPanel from "@/components/FoldingPanel.vue"
+import Balance from "@/services/api/Balance"
 
 export default {
     name: "ChatAIKey",
@@ -93,9 +94,36 @@ export default {
         async loadKeyPools() {
             try {
                 this.keyPools = await this.$DB.APIKeys.where("model").equals(this.selectedModel.name).toArray()
+                for (const item of this.keyPools) {
+                    if (!item.enabled) {
+                        item.balance = "0"
+                        continue
+                    }
+                    const BALANCE = await this.getKeyBalance(item.key)
+                    item.balance = BALANCE
+                    if (!BALANCE) {
+                        item.enabled = false
+                    }
+                }
             } catch (error) {
                 console.error("[Chats AI Key] 加载Key池错误", error)
                 this.$toast.error("[Chats AI Key] 加载Key池错误")
+            }
+        },
+        // 获取Key余额
+        async getKeyBalance(key) {
+            try {
+                const KEY_DATA = await this.$DB.APIKeys.get(key)
+                const BALANCE = await Balance.getBalance(KEY_DATA.model ,KEY_DATA.value, KEY_DATA.url)
+                if (!BALANCE) {
+                    this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {key: key}))
+                    await this.$DB.APIKeys.update(KEY_DATA.key, {enabled: false})
+                    return false
+                }
+                return BALANCE.balance
+            } catch (error) {
+                console.error("[Chats AI Key] 获取Key余额错误", error)
+                this.$toast.error("[Chats AI Key] 获取Key余额错误")
             }
         },
         // 添加新Key
@@ -113,6 +141,10 @@ export default {
             if (!this.isValidUrl(this.newKey.url)) {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.invalidUrl"))
                 return
+            }
+            // 删除Url末尾的/
+            if (this.newKey.url.endsWith("/")) {
+                this.newKey.url = this.newKey.url.slice(0, -1)
             }
             try {
                 // 写入数据库
@@ -137,13 +169,14 @@ export default {
         },
         // Key脱敏显示
         maskKey(key) {
+            if (!key) return ""
             if (key.length < 8) return key
             return key.slice(0, 4) + '****' + key.slice(-4)
         },
         // 删除Key(批量)
         async removeSelectedKeys() {
             // 禁止空删除
-            if (this.operationSelection.length === 0) {
+            if (!this.operationSelection || this.operationSelection.length === 0) {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.selectKeysOperate"))
                 return
             }
@@ -163,7 +196,7 @@ export default {
         // 编辑Key
         async toggleEditSelected() {
             // 禁止空编辑
-            if (this.operationSelection.length === 0) {
+            if (!this.operationSelection || this.operationSelection.length === 0) {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.selectKeysOperate"))
                 return
             }
@@ -202,6 +235,10 @@ export default {
             if (!this.isValidUrl(this.editKey.url)) {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.invalidUrl"))
                 return
+            }
+            // 删除Url末尾的/
+            if (this.newKey.url.endsWith("/")) {
+                this.newKey.url = this.newKey.url.slice(0, -1)
             }
             try {
                 // 写入数据库
@@ -247,6 +284,15 @@ export default {
                 const NEW_STATUS = !keyItem.enabled
                 await this.$DB.APIKeys.update(keyItem.key, {enabled: NEW_STATUS})
                 keyItem.enabled = NEW_STATUS
+                if (keyItem.enabled) {
+                    const BALANCE = await this.getKeyBalance(keyItem.key)
+                    keyItem.balance = BALANCE
+                    if (!BALANCE) {
+                        keyItem.enabled = false
+                    }
+                } else {
+                    keyItem.balance = "0"
+                }
                 this.$toast.success(this.$t(`components.ChatAIKey.toast.${NEW_STATUS ? 'enable' : 'disable'}Success`))
             } catch (error) {
                 console.error("[Chats AI Key] 状态更新失败", error)
@@ -255,22 +301,37 @@ export default {
         },
         // 切换Key启用状态(批量)
         async batchToggleEnable(status) {
-            if (this.operationSelection.length === 0) {
+            if (!this.operationSelection || this.operationSelection.length === 0) {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.selectKeysOperate"))
                 return
             }
             try {
-                await this.$DB.APIKeys.bulkUpdate(
-                    this.operationSelection,
-                    {enabled: status}
-                )
+                const UPDATES = this.operationSelection.map(key => ({
+                    key: key,
+                    changes: {enabled: status}
+                }))
+                await this.$DB.APIKeys.bulkUpdate(UPDATES)
                 // 本地更新选中项状态
-                this.keyPools = this.keyPools.map(item => {
+                const UPDATED_POOLS = []
+                for (const item of this.keyPools) {
                     if (this.operationSelection.includes(item.key)) {
-                        return {...item, enabled: status}
+                        const updatedItem = {...item, enabled: status}
+                        if (status) {
+                            const BALANCE = await this.getKeyBalance(item.key)
+                            updatedItem.balance = BALANCE
+                            if (!BALANCE) {
+                                updatedItem.enabled = false
+                                await this.$DB.APIKeys.update(item.key, {enabled: false})
+                            }
+                        } else {
+                            updatedItem.balance = "0"
+                        }
+                        UPDATED_POOLS.push(updatedItem)
+                    } else {
+                        UPDATED_POOLS.push(item)
                     }
-                    return item
-                })
+                }
+                this.keyPools = UPDATED_POOLS
                 this.$toast.success(this.$t(`components.ChatAIKey.toast.batch${status ? 'Enable' : 'Disable'}Success`))
             } catch (error) {
                 console.error("[Chats AI Key] 状态更新失败", error)
@@ -425,6 +486,7 @@ export default {
                                 <th>{{ $t("components.ChatAIKey.form.key") }}</th>
                                 <th>{{ $t("components.ChatAIKey.form.remarks") }}</th>
                                 <th>{{ $t("components.ChatAIKey.form.url") }}</th>
+                                <th>{{ $t("components.ChatAIKey.form.balance") }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -454,9 +516,10 @@ export default {
                                 <td :title="keyItem.value">{{ maskKey(keyItem.value) }}</td>
                                 <td :title="keyItem.remark">{{ keyItem.remark }}</td>
                                 <td :title="keyItem.url">{{ keyItem.url }}</td>
+                                <td :title="keyItem.balance">{{ keyItem.balance }}</td>
                             </tr>
                             <tr v-if="(keyPools || []).length === 0">
-                                <td colspan="5" class="EmptyTip">{{ $t("components.ChatAIKey.addTip") }}</td>
+                                <td colspan="6" class="EmptyTip">{{ $t("components.ChatAIKey.addTip") }}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -613,6 +676,9 @@ export default {
                 box-sizing: border-box;
                 border: 1px solid var(--border-color);
                 text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             tbody tr {
@@ -646,17 +712,18 @@ export default {
 
             th:nth-child(4), td:nth-child(4) {
                 width: 25%;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
 
             th:nth-child(5), td:nth-child(5) {
-                width: 35%;
+                width: 25%;
+            }
+
+            th:nth-child(6), td:nth-child(6) {
+                width: 10%;
             }
 
             .SelectedRow {
-                --Active-Background-Color: rgba(189, 229, 255, 0.5);
+                --Active-Background-Color: rgba(107, 130, 145, 0.5);
                 color: var(--text-color);
                 background-color: var(--Active-Background-Color);
 

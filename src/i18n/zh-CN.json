@@ -34,7 +34,8 @@
                 "enableSuccess": "启用Key成功",
                 "disableSuccess": "禁用Key成功",
                 "batchEnableSuccess": "批量启用Key成功",
-                "batchDisableSuccess": "批量禁用Key成功"
+                "batchDisableSuccess": "批量禁用Key成功",
+                "errorKeyDisabled": "错误的Key: {key}已禁用"
             },
             "form": {
                 "enable": "启用",
@@ -45,7 +46,8 @@
                 "url": "Url",
                 "pleaseEnterKeyUrl": "请输入API镜像站Url(默认为官方)",
                 "save": "保存",
-                "cancel": "取消"
+                "cancel": "取消",
+                "balance": "余额"
             },
             "addTip": "请点击上方添加Key"
         },
