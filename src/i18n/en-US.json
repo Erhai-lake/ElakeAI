@@ -13,18 +13,20 @@
                 "picture": "Photo",
                 "file": "File"
             }
-        }
-    },
-    "HomeSidebar": {
-        "TimeRangeLabel": {
-            "WITHIN_1_DAYS": "Today",
-            "WITHIN_30_DAYS": "Within 30 days"
         },
-        "NEW": "New Dialogue",
-        "STOW": "Collapse sidebar",
-        "EXPAND": "Expand sidebar",
-        "PRESET": "Preset",
-        "SETUP": "Setup"
+        "HomeSidebar": {
+            "timeRangeLabel": {
+                "1": "Today",
+                "30": "Last 30 days"
+            },
+            "function": {
+                "new": "New Chat",
+                "stow": "Collapse Sidebar",
+                "expand": "Expand Sidebar",
+                "preset": "Presets",
+                "options": "Settings"
+            }
+        }
     },
     "ChatAIKey": {
         "CHATS_API_KEY": "API Key Pool",

@@ -13,18 +13,20 @@
                 "picture": "照片",
                 "file": "文件"
             }
-        }
-    },
-    "HomeSidebar": {
-        "TimeRangeLabel": {
-            "WITHIN_1_DAYS": "今天",
-            "WITHIN_30_DAYS": "30天内"
         },
-        "NEW": "新建对话",
-        "STOW": "折叠边栏",
-        "EXPAND": "展开边栏",
-        "PRESET": "预设",
-        "SETUP": "设置"
+        "HomeSidebar": {
+            "timeRangeLabel": {
+                "1": "今天",
+                "30": "30天内"
+            },
+            "function": {
+                "new": "新建对话",
+                "stow": "折叠边栏",
+                "expand": "展开边栏",
+                "preset": "预设",
+                "options": "设置"
+            }
+        }
     },
     "ChatAIKey": {
         "CHATS_API_KEY": "API Key池",

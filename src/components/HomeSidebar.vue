@@ -121,9 +121,9 @@ export default defineComponent({
                     .map(([TimeRangeLabel, Data]) => {
                         // 计算 sortKey
                         let sortKey
-                        if (TimeRangeLabel === this.$t("HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS")) {
+                        if (TimeRangeLabel === this.$t("components.HomeSidebar.timeRangeLabel.1")) {
                             sortKey = 0
-                        } else if (TimeRangeLabel === this.$t("HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS")) {
+                        } else if (TimeRangeLabel === this.$t("components.HomeSidebar.timeRangeLabel.30")) {
                             sortKey = 1
                         } else {
                             const [year, month] = TimeRangeLabel.split("-").map(Number)
@@ -153,12 +153,12 @@ export default defineComponent({
                 DATE.getMonth() === NOW_DATE.getMonth() &&
                 DATE.getFullYear() === NOW_DATE.getFullYear()
             ) {
-                return this.$t("HomeSidebar.TimeRangeLabel.WITHIN_1_DAYS")
+                return this.$t("components.HomeSidebar.timeRangeLabel.1")
             }
             // 检查是否是30天内（不包括今天）
             const DIFF_DAYS = Math.floor((NOW - timestamp) / NOEDAYMS)
             if (DIFF_DAYS <= 30 && DIFF_DAYS > 0) {
-                return this.$t("HomeSidebar.TimeRangeLabel.WITHIN_30_DAYS")
+                return this.$t("components.HomeSidebar.timeRangeLabel.30")
             }
             // 否则返回年月格式 "YYYY-MM"
             const YEAR = DATE.getFullYear()
@@ -181,12 +181,12 @@ export default defineComponent({
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
-            <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.NEW')">
+            <router-link to="/" class="SidebarNew" :title="$t('components.HomeSidebar.function.new')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-New"></use>
                 </svg>
             </router-link>
-            <div class="SidebarStow" :title="$t('HomeSidebar.STOW')" @click="sidebarSwitch">
+            <div class="SidebarStow" :title="$t('components.HomeSidebar.function.stow')" @click="sidebarSwitch">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Stow"></use>
                 </svg>
@@ -211,38 +211,38 @@ export default defineComponent({
                 </div>
             </div>
         </div>
-        <div class="SidebarPreset" :title="$t('HomeSidebar.PRESET')">
+        <div class="SidebarPreset" :title="$t('components.HomeSidebar.function.preset')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
-            <p>{{ $t("HomeSidebar.PRESET") }}</p>
+            <p>{{ $t("components.HomeSidebar.function.preset") }}</p>
         </div>
-        <router-link to="/options" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
+        <router-link to="/options" class="SidebarSetup" :title="$t('components.HomeSidebar.function.options')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
-            <p>{{ $t("HomeSidebar.SETUP") }}</p>
+            <p>{{ $t("components.HomeSidebar.function.options") }}</p>
         </router-link>
     </div>
     <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
         <div class="SidebarTopLogo"></div>
-        <router-link to="/" class="SidebarNew" :title="$t('HomeSidebar.NEW')">
+        <router-link to="/" class="SidebarNew" :title="$t('components.HomeSidebar.function.new')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-New"></use>
             </svg>
         </router-link>
-        <div class="SidebarExpand" :title="$t('HomeSidebar.EXPAND')" @click="sidebarSwitch">
+        <div class="SidebarExpand" :title="$t('components.HomeSidebar.function.expand')" @click="sidebarSwitch">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Stow"></use>
             </svg>
         </div>
-        <div class="SidebarPreset" :title="$t('HomeSidebar.PRESET')">
+        <div class="SidebarPreset" :title="$t('components.HomeSidebar.function.preset')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Preset"></use>
             </svg>
         </div>
         <div></div>
-        <router-link to="/options" class="SidebarSetup" :title="$t('HomeSidebar.SETUP')">
+        <router-link to="/options" class="SidebarSetup" :title="$t('components.HomeSidebar.function.options')">
             <svg class="icon" aria-hidden="true">
                 <use xlink:href="#icon-Setup"></use>
             </svg>
