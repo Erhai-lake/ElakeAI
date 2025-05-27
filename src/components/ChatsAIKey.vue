@@ -85,8 +85,8 @@ export default {
             if (!selectModel) return
             this.selectedModel = selectModel
             this.operationSelection = []
-            this.loadKeyPools()
             this.status.modelStatus = false
+            this.loadKeyPools()
         },
         // 加载Key池
         async loadKeyPools() {
@@ -99,44 +99,40 @@ export default {
         },
         // 添加新Key
         async addNewKey() {
+            // 禁止key空
+            if (!this.newKey.value) {
+                this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
+                return
+            }
+            // url空则使用默认url
+            if (!this.newKey.url) {
+                this.newKey.url = this.selectedModel.url
+            }
+            // 校验url
+            if (!this.isValidUrl(this.newKey.url)) {
+                this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
+                return
+            }
             try {
-                if (!this.newKey.value) {
-                    this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
-                    return
-                }
-                if (!this.newKey.url) {
-                    this.newKey.url = this.selectedModel.url
-                }
-                if (!this.isValidUrl(this.newKey.url)) {
-                    this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
-                    return
-                }
+                // 写入数据库
                 await this.$DB.APIKeys.add({
                     key: crypto.randomUUID(),
                     model: this.selectedModel.name,
                     value: this.newKey.value,
-                    remark: this.newKey.remark,
+                    remark: this.newKey.remark || "",
                     url: this.newKey.url,
                     enabled: this.newKey.enabled
                 })
-                await this.loadKeyPools()
-                this.newKey = {
-                    key: "",
-                    value: "",
-                    remark: "",
-                    url: "",
-                    enabled: true
-                }
+                // 写入Key池
+                this.keyPools.push({...this.newKey})
+                // 重置表单
+                this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
                 this.status.addFormStatus = false
                 this.$toast.success(this.$t("ChatAIKey.ADD_API_KEY_SUCCESS"))
             } catch (error) {
                 console.error("[Chats AI Key] 添加Key错误", error)
                 this.$toast.error("[Chats AI Key] 添加Key错误")
             }
-
-
-            // if (!this.keyPools[this.selectedModel.name]) this.keyPools[this.selectedModel.name] = []
-            // this.keyPools[this.selectedModel.name].push({...this.newKey})
         },
         // Key脱敏显示
         maskKey(key) {
@@ -145,13 +141,17 @@ export default {
         },
         // 删除Key(批量)
         async removeSelectedKeys() {
+            // 禁止空删除
             if (this.operationSelection.length === 0) {
                 this.$toast.warning(this.$t("ChatAIKey.SELECT_KEYS_TO_REMOVE"))
                 return
             }
             try {
                 await this.$DB.APIKeys.bulkDelete(this.operationSelection)
-                await this.loadKeyPools()
+                // 删除Key池
+                this.keyPools = this.keyPools.filter(item =>
+                    !this.operationSelection.includes(item.key)
+                )
                 this.operationSelection = []
                 this.$toast.success(this.$t("ChatAIKey.REMOVE_API_KEY_SUCCESS"))
             } catch (error) {
@@ -161,45 +161,62 @@ export default {
         },
         // 编辑Key
         async toggleEditSelected() {
+            // 禁止空编辑
             if (this.operationSelection.length === 0) {
                 this.$toast.warning(this.$t("ChatAIKey.SELECT_KEYS_TO_EDIT"))
                 return
             }
+            // 禁止多选编辑
             if (this.operationSelection.length > 1) {
                 this.$toast.warning(this.$t("ChatAIKey.YOU_CAN_ONLY_EDIT_ONE_AT_A_TIME"))
                 return
             }
-            // 获取数据库中选中的Key
-            const KEY_DATA = await this.$DB.APIKeys.get(this.operationSelection[0])
-            this.editKey = {
-                key: KEY_DATA.key,
-                value: KEY_DATA.value,
-                remark: KEY_DATA.remark,
-                url: KEY_DATA.url
-            }
-            this.status.editFormStatus = !this.status.editFormStatus
-        },
-        // 编辑Key
-        async editSelectedKeys() {
             try {
-                if (!this.editKey.value) {
-                    this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
-                    return
+                // 加载编辑数据
+                const KEY_DATA = await this.$DB.APIKeys.get(this.operationSelection[0])
+                this.editKey = {
+                    key: KEY_DATA.key,
+                    value: KEY_DATA.value,
+                    remark: KEY_DATA.remark || "",
+                    url: KEY_DATA.url
                 }
-                if (!this.editKey.url) {
-                    this.editKey.url = this.selectedModel.url
-                }
-                if (!this.isValidUrl(this.editKey.url)) {
-                    this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
-                    return
-                }
+                this.status.editFormStatus = !this.status.editFormStatus
+            } catch (error) {
+                console.error("[Chats AI Key] 获取Keys错误", error)
+                this.$toast.error("[Chats AI Key] 获取Keys错误")
+            }
+        },
+        // 编辑Key(写数据库)
+        async editSelectedKeys() {
+            // 禁止空编辑
+            if (!this.editKey.value) {
+                this.$toast.warning(this.$t("ChatAIKey.ADD_API_KEY_VALUE_REQUIRED"))
+                return
+            }
+            // url空则使用默认url
+            if (!this.editKey.url) {
+                this.editKey.url = this.selectedModel.url
+            }
+            // 校验url
+            if (!this.isValidUrl(this.editKey.url)) {
+                this.$toast.warning(this.$t("ChatAIKey.INVALID_URL"))
+                return
+            }
+            try {
+                // 写入数据库
                 await this.$DB.APIKeys.update(this.editKey.key, {
                     value: this.editKey.value,
                     remark: this.editKey.remark,
                     url: this.editKey.url
                 })
-                await this.loadKeyPools()
-                this.status.editFormStatus = false
+                // 更新Key池
+                this.keyPools = this.keyPools.map(item => {
+                    if (item.key === this.editKey.key) {
+                        return {...item, ...this.editKey}
+                    }
+                    return item
+                })
+                // 重置表单
                 this.editKey = {
                     key: "",
                     value: "",
@@ -207,6 +224,7 @@ export default {
                     url: "",
                     enabled: true
                 }
+                this.status.editFormStatus = false
                 this.$toast.success(this.$t("ChatAIKey.EDIT_API_KEY_SUCCESS"))
             } catch (error) {
                 console.error("[Chats AI Key] 编辑Keys错误", error)
