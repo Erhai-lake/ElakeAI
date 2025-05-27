@@ -83,6 +83,7 @@ export default {
         // 选择模型
         selectModel(selectModel) {
             if (!selectModel) return
+            if (selectModel === this.selectedModel.name) return
             this.selectedModel = selectModel
             this.operationSelection = []
             this.status.modelStatus = false
