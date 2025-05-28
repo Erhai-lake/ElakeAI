@@ -103,6 +103,7 @@ export default {
                     item.balance = BALANCE
                     if (!BALANCE) {
                         item.enabled = false
+                        item.balance = "0"
                     }
                 }
             } catch (error) {
@@ -289,6 +290,7 @@ export default {
                     keyItem.balance = BALANCE
                     if (!BALANCE) {
                         keyItem.enabled = false
+                        keyItem.balance = "0"
                     }
                 } else {
                     keyItem.balance = "0"
@@ -321,6 +323,7 @@ export default {
                             updatedItem.balance = BALANCE
                             if (!BALANCE) {
                                 updatedItem.enabled = false
+                                updatedItem.balance = "0"
                                 await this.$DB.APIKeys.update(item.key, {enabled: false})
                             }
                         } else {

@@ -37,7 +37,7 @@ export default {
                             "Content-Type": "application/json",
                             "Authorization": `Bearer ${key}`
                         },
-                        timeout: 10000
+                        timeout: 5000
                     })
                     Response = await API_CLIENT.get("user/balance")
                     if (!isValidApiResponse(Response)) {
@@ -45,8 +45,8 @@ export default {
                     }
                     Balance = `${Response.data.balance_infos[0].total_balance} ${Response.data.balance_infos[0].currency}`
                     break
-                // default:
-                //     throw new Error("不支持的模型")
+                case "ChatGPT":
+                    Balance = "无法查询"
             }
             return {
                 balance: Balance,
@@ -55,19 +55,29 @@ export default {
                 timestamp: new Date().toISOString()
             }
         } catch (error) {
+            if (error.code === 'ECONNABORTED') {
+                // 处理超时错误
+                console.error("[Balance Api]请求超时:", error.message)
+                return {
+                    balance: "请求超时",
+                    key: key,
+                    url: url,
+                    timestamp: new Date().toISOString()
+                }
+            }
             if (error.response) {
                 // 服务器返回了响应但状态码不在2xx范围
                 if (!isValidApiResponse(error.response)) {
                     return false
                 }
-                console.error("[DeepSeek Api]获取余额错误:", error.response.data)
+                console.error("[Balance Api]获取余额错误:", error.response.data)
             } else if (error.request) {
                 // 请求已发出但没有收到响应
-                console.error("[DeepSeek Api]无响应:", error.request)
+                console.error("[Balance Api]无响应:", error.request)
                 return false
             } else {
                 // 请求配置出错
-                console.error("[DeepSeek Api]配置错误:", error.message)
+                console.error("[Balance Api]配置错误:", error.message)
             }
             return false
         }
