@@ -1,4 +1,5 @@
 import {createI18n} from "vue-i18n"
+import LanguagesList from "@/assets/data/LanguagesList"
 import enUS from "./en-US.json"
 import zhCN from "./zh-CN.json"
 
@@ -10,9 +11,9 @@ const messages = {
 const i18n = createI18n({
     legacy: false,
     // 默认语言
-    locale: "zh-CN",
+    locale: LanguagesList[0].code,
     // 回退语言
-    fallbackLocale: "zh-CN",
+    fallbackLocale: LanguagesList[0].code,
     messages
 })
 

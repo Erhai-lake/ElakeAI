@@ -1,6 +1,7 @@
 <script>
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import Balance from "@/services/api/Balance"
+import ModelList from "@/assets/data/ModelList.json"
 
 export default {
     name: "ChatAIKey",
@@ -17,24 +18,9 @@ export default {
                 editFormStatus: false
             },
             // 模型列表
-            modelList: [
-                {
-                    name: "DeepSeek",
-                    logo: "https://chat.deepseek.com/favicon.svg",
-                    url: "https://api.deepseek.com"
-                },
-                {
-                    name: "ChatGPT",
-                    logo: "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico",
-                    url: "https://api.openai.com"
-                }
-            ],
+            modelList: ModelList,
             // 选中的模型
-            selectedModel: {
-                name: "DeepSeek",
-                logo: "https://chat.deepseek.com/favicon.svg",
-                url: "https://api.deepseek.com"
-            },
+            selectedModel: ModelList[0],
             // Key池
             keyPools: [],
             // 操作选择

@@ -1,19 +1,14 @@
 <script>
+import LanguagesList from "@/assets/data/LanguagesList"
+
 export default {
     name: "LanguageSelect",
     inject: ["$DB"],
     data() {
         return {
             isOpen: false,
-            selectedLang: {
-                code: "zh-CN",
-                name: "简体中文",
-                flag: "https://flagcdn.com/cn.svg"
-            },
-            languages: [
-                {code: "zh-CN", name: "简体中文", flag: "https://flagcdn.com/cn.svg"},
-                {code: "en-US", name: "English", flag: "https://flagcdn.com/us.svg"}
-            ]
+            languages: LanguagesList,
+            selectedLang: LanguagesList[0]
         }
     },
     watch: {

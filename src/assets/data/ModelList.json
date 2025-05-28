@@ -1,0 +1,12 @@
+[
+    {
+        "name": "DeepSeek",
+        "logo": "https://chat.deepseek.com/favicon.svg",
+        "url": "https://api.deepseek.com"
+    },
+    {
+        "name": "ChatGPT",
+        "logo": "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico",
+        "url": "https://api.openai.com"
+    }
+]
