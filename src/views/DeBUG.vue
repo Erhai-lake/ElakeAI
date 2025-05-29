@@ -3,11 +3,12 @@ import FoldingPanel from "@/components/FoldingPanel.vue";
 import ThemeSelect from "@/components/ThemeSwitch.vue";
 import LanguageSelect from "@/components/LanguageSelect.vue";
 import ChatAIKey from "@/components/ChatsAIKey.vue";
+import Button from "@/components/Button.vue";
 
 export default {
     name: "DeBUG",
     inject: ["$DB"],
-    components: {ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
+    components: {Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
     data() {
         return {
             toastOptions: {
@@ -150,8 +151,8 @@ export default {
             <template #Title>Chats数据库</template>
             <template #Content>
                 <div>
-                    <button @click="chatsLoading">加载</button>
-                    <button @click="chatsClear">清空</button>
+                    <Button @click="chatsLoading">加载</Button>
+                    <Button @click="chatsClear">清空</Button>
                 </div>
                 <table>
                     <thead>
@@ -180,7 +181,7 @@ export default {
                                 @blur="handleDataBlur(item, $event)">
                         </td>
                         <td>
-                            <button @click="chatsDelete(item.key)">删除</button>
+                            <Button @click="chatsDelete(item.key)">删除</Button>
                         </td>
                     </tr>
                     </tbody>
@@ -191,8 +192,8 @@ export default {
             <template #Title>Configs数据库</template>
             <template #Content>
                 <div>
-                    <button @click="configsLoading">加载</button>
-                    <button @click="configsClear">清空</button>
+                    <Button @click="configsLoading">加载</Button>
+                    <Button @click="configsClear">清空</Button>
                 </div>
                 <table>
                     <thead>
@@ -215,7 +216,7 @@ export default {
                             <LanguageSelect/>
                         </td>
                         <td>
-                            <button @click="configsDelete(item.item)">删除</button>
+                            <Button @click="configsDelete(item.item)">删除</Button>
                         </td>
                     </tr>
                     </tbody>
@@ -268,8 +269,8 @@ export default {
                 </div>
                 <textarea v-text="toastOptions"/>
                 <div>
-                    <button @click="toastTest(1)">清空</button>
-                    <button @click="toastTest">提示</button>
+                    <Button @click="toastTest(1)">清空</Button>
+                    <Button @click="toastTest">提示</Button>
                 </div>
             </template>
         </FoldingPanel>
@@ -279,27 +280,6 @@ export default {
 <style scoped lang="less">
 .DeBUGContainer {
     padding: 20px;
-}
-
-button {
-    padding: 10px 30px;
-    margin: 10px;
-    background-color: var(--button-background-color);
-    color: var(--text-color);
-    border: 1px solid #909399FF;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.15s;
-
-    &:hover {
-        background-color: var(--button-hover-background-color);
-    }
-
-    &:active {
-        background-color: var(--button-active-background-color);
-    }
 }
 
 table {

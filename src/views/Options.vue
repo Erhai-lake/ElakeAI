@@ -3,10 +3,11 @@ import FoldingPanel from "@/components/FoldingPanel.vue"
 import ThemeSelect from "@/components/ThemeSwitch.vue"
 import LanguageSelect from "@/components/LanguageSelect.vue"
 import ChatAIKey from "@/components/ChatsAIKey.vue";
+import Button from "@/components/Button.vue";
 
 export default {
     name: "Options",
-    components: {ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
+    components: {Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
 
@@ -37,7 +38,7 @@ export default {
         </FoldingPanel>
         <div class="Container">
             <router-link :to="{ path: '/debug' }">
-                <button>DeBUG</button>
+                <Button>BeBUG</Button>
             </router-link>
         </div>
     </div>
@@ -63,25 +64,5 @@ export default {
     border-radius: 10px;
     user-select: none;
     background-color: #b3b3b33f;
-}
-
-button {
-    padding: 10px 30px;
-    background-color: var(--button-background-color);
-    color: var(--text-color);
-    border: 1px solid #909399FF;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.15s;
-
-    &:hover {
-        background-color: var(--button-hover-background-color);
-    }
-
-    &:active {
-        background-color: var(--button-active-background-color);
-    }
 }
 </style>

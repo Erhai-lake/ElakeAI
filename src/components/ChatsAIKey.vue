@@ -2,10 +2,11 @@
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import Balance from "@/services/api/Balance"
 import ModelList from "@/assets/data/ModelList.json"
+import Button from "@/components/Button.vue";
 
 export default {
     name: "ChatAIKey",
-    components: {FoldingPanel},
+    components: {Button, FoldingPanel},
     inject: ["$DB"],
     data() {
         return {
@@ -383,26 +384,25 @@ export default {
                         </transition>
                     </div>
                     <!-- 新增按钮 -->
-                    <button @click="status.addFormStatus = !status.addFormStatus">{{
-                            $t("components.ChatAIKey.operationButton.add")
-                        }}
-                    </button>
+                    <Button @click="status.addFormStatus = !status.addFormStatus">
+                        {{ $t("components.ChatAIKey.operationButton.add") }}
+                    </Button>
                     <!-- 编辑选中 -->
-                    <button @click="toggleEditSelected">
+                    <Button @click="toggleEditSelected">
                         {{ $t("components.ChatAIKey.operationButton.edit") }}
-                    </button>
+                    </Button>
                     <!-- 移除选中 -->
-                    <button @click="removeSelectedKeys">
+                    <Button @click="removeSelectedKeys">
                         {{ $t("components.ChatAIKey.operationButton.remove", operationSelection.length) }}
-                    </button>
+                    </Button>
                     <!-- 启用选中 -->
-                    <button @click="batchToggleEnable(true)">
+                    <Button @click="batchToggleEnable(true)">
                         {{ $t("components.ChatAIKey.operationButton.enable", operationSelection.length) }}
-                    </button>
+                    </Button>
                     <!-- 禁用选中 -->
-                    <button @click="batchToggleEnable(false)">
+                    <Button @click="batchToggleEnable(false)">
                         {{ $t("components.ChatAIKey.operationButton.disable", operationSelection.length) }}
-                    </button>
+                    </Button>
                     <div/>
                 </div>
                 <!-- 新增表单 -->
@@ -424,11 +424,10 @@ export default {
                                :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
                     </div>
                     <div class="FormActions">
-                        <button @click="addNewKey">{{ $t("components.ChatAIKey.form.save") }}</button>
-                        <button @click="status.addFormStatus = false">{{
-                                $t("components.ChatAIKey.form.cancel")
-                            }}
-                        </button>
+                        <Button @click="addNewKey">{{ $t("components.ChatAIKey.form.save") }}</Button>
+                        <Button @click="status.addFormStatus = false">
+                            {{ $t("components.ChatAIKey.form.cancel") }}
+                        </Button>
                     </div>
                 </div>
                 <!-- 编辑表单 -->
@@ -450,11 +449,10 @@ export default {
                                :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
                     </div>
                     <div class="FormActions">
-                        <button @click="editSelectedKeys">{{ $t("components.ChatAIKey.form.save") }}</button>
-                        <button @click="status.editFormStatus = false">{{
-                                $t("components.ChatAIKey.form.cancel")
-                            }}
-                        </button>
+                        <Button @click="editSelectedKeys">{{ $t("components.ChatAIKey.form.save") }}</Button>
+                        <Button @click="status.editFormStatus = false">
+                            {{ $t("components.ChatAIKey.form.cancel") }}
+                        </Button>
                     </div>
                 </div>
                 <div class="Bottom">
@@ -639,7 +637,7 @@ export default {
     .FormActions {
         margin-top: 15px;
 
-        button {
+        Button {
             margin-right: 10px;
             padding: 8px 16px;
         }
@@ -728,27 +726,6 @@ export default {
                 }
             }
         }
-    }
-}
-
-button {
-    padding: 10px 30px;
-    background-color: var(--button-background-color);
-    color: var(--text-color);
-    border: 1px solid #909399FF;
-    border-radius: 4px;
-    font-size: 14px;
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.15s;
-
-    &:hover {
-        background-color: var(--button-hover-background-color);
-    }
-
-    &:active {
-        background-color: var(--button-active-background-color);
     }
 }
 
