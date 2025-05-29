@@ -82,8 +82,9 @@ export default defineComponent({
 .Switch {
     position: relative;
     width: 240px;
-    background-color: var(--background-color);
     border-radius: 50px;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-color);
     display: flex;
     overflow: hidden;
 
