@@ -1,8 +1,24 @@
 <script>
 import {defineComponent, ref, onMounted, onUnmounted} from "vue"
+import ModelList from "@/assets/data/ModelList.json"
 
 export default defineComponent({
     name: "AIInput",
+    data() {
+        return {
+            modelStatus: false,
+            // 模型列表
+            modelList: ModelList,
+            // 选中的模型
+            selectedModel: ModelList[0]
+        }
+    },
+    watch: {
+        // 监听模型变化
+        selectedModel(newVal) {
+            this.selectModel(newVal)
+        }
+    },
     setup() {
         const textareaRef = ref(null)
         const adjustTextareaHeight = () => {
@@ -23,6 +39,28 @@ export default defineComponent({
             }
         })
         return {textareaRef}
+    },
+    methods: {
+        // 点击外部关闭下拉列表
+        handleClickOutside(e) {
+            if (!this.$el.contains(e.target)) {
+                this.modelStatus = false
+            }
+        },
+        // 选择模型
+        selectModel(selectModel) {
+            if (!selectModel) return
+            if (selectModel === this.selectedModel.name) return
+            this.selectedModel = selectModel
+            this.operationSelection = []
+            this.modelStatus = false
+        }
+    },
+    mounted() {
+        document.addEventListener("click", this.handleClickOutside)
+    },
+    beforeDestroy() {
+        document.removeEventListener("click", this.handleClickOutside)
     }
 })
 </script>
@@ -77,6 +115,26 @@ export default defineComponent({
                     <use xlink:href="#icon-Networking"></use>
                 </svg>
             </label>
+            <!-- 模型选择 -->
+            <div class="ModelSelector">
+                <div class="SelectedModel" :class="{ 'Open': modelStatus }"
+                     @click="modelStatus = !modelStatus">
+                    <img class="Logo" :src="this.selectedModel.logo" :alt="this.selectedModel.name">
+                    <span class="ModelOption">{{ this.selectedModel.name }}</span>
+                </div>
+                <transition name="slide">
+                    <ul v-show="modelStatus" class="ModelList">
+                        <li
+                            v-for="model in modelList"
+                            :key="model.name"
+                            @click="this.selectedModel = model"
+                            :class="{ 'Active': model.name === this.selectedModel.name }">
+                            <img :src="model.logo" class="Logo" :alt="model.name">
+                            <span class="ModelOption">{{ model.name }}</span>
+                        </li>
+                    </ul>
+                </transition>
+            </div>
             <div></div>
             <!--发送-->
             <label for="Send" :title="$t('components.AIInput.function.send')" class="Send">
@@ -110,19 +168,18 @@ export default defineComponent({
     width: 50%;
     border: 2px solid var(--border-color);
     border-radius: 15px;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
     .ButtonBar {
+        position: relative;
         padding: 5px;
         width: 100%;
         display: grid;
-        grid-template-columns: auto auto 1fr auto;
+        grid-template-columns: auto auto auto 1fr auto;
         gap: 10px;
-        overflow-x: auto;
 
         label {
             padding: 10px;
@@ -148,6 +205,92 @@ export default defineComponent({
     }
 }
 
+.ModelSelector {
+    width: 200px;
+    position: relative;
+    user-select: none;
+
+    .SelectedModel {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border: 2px solid var(--chat-input-button-border-color);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        background-color: var(--background-color);
+
+        &:hover {
+            border-color: #80ceff;
+            box-shadow: 0 2px 8px var(--box-shadow-color);
+        }
+    }
+
+    .Open {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .ModelList {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        list-style: none;
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        background-color: var(--background-color);
+        z-index: 100;
+        overflow: hidden;
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+
+            &:hover {
+                background-color: var(--background-color-Anti);
+                color: var(--background-color);
+            }
+        }
+
+        .Active {
+            --Active-Background-Color: rgba(189, 229, 255, 0.5);
+            background-color: var(--Active-Background-Color);
+            color: #292A2DFF;
+
+            &:hover {
+                background-color: var(--Active-Background-Color);
+                color: #292A2DFF;
+            }
+        }
+    }
+
+    .Logo {
+        width: 24px;
+        height: 18px;
+        margin-right: 12px;
+        border-radius: 2px;
+        object-fit: cover;
+    }
+
+    .ModelOption {
+        font-size: 14px;
+    }
+
+    .slide-enter-active,
+    .slide-leave-active {
+        transition: all 0.3s ease;
+    }
+
+    .slide-enter-from,
+    .slide-leave-to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
 
 #Appendix, #Camera, #Photos, #Files, #Search {
     display: none;
