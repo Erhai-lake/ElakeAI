@@ -23,7 +23,7 @@ export default {
             } else if (TRIDENT > 0) {
                 // IE11: Trident/7.0 表示 IE11
                 const rv = UA.indexOf("rv:")
-                return parseInt(ua.substring(rv + 3, UA.indexOf(".", rv)), 10)
+                return parseInt(UA.substring(rv + 3, UA.indexOf(".", rv)), 10)
             }
             // 不是 IE
             return false
