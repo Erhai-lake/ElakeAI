@@ -1,14 +1,5 @@
 import axios from "axios"
-
-/**
- * 检查API响应是否有效
- * @param {Object} response - API响应对象
- * @returns {boolean} 是否为有效的API响应
- */
-const isValidApiResponse = (response) => {
-    const contentType = response.headers["content-type"]
-    return contentType && contentType.includes("application/json")
-}
+import General from "@/services/api/General"
 
 export default {
     /**
@@ -20,6 +11,9 @@ export default {
      * @throws {Error} 包含详细错误信息
      */
     async getBalance(model, key, url) {
+        if (!model || typeof model!== "string") {
+            throw new Error("无效的模型名称: 必须提供非空字符串")
+        }
         if (!key || typeof key !== "string") {
             throw new Error("无效的API Key: 必须提供非空字符串")
         }
@@ -27,7 +21,6 @@ export default {
             throw new Error("无效的API URL: 必须提供非空字符串")
         }
         try {
-            let Response = null
             let Balance = "0"
             switch (model) {
                 case "DeepSeek":
@@ -39,11 +32,11 @@ export default {
                         },
                         timeout: 5000
                     })
-                    Response = await API_CLIENT.get("user/balance")
-                    if (!isValidApiResponse(Response)) {
+                    const RESPONSE = await API_CLIENT.get("user/balance")
+                    if (!General.isValidApiResponse(RESPONSE)) {
                         return false
                     }
-                    Balance = `${Response.data.balance_infos[0].total_balance} ${Response.data.balance_infos[0].currency}`
+                    Balance = `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`
                     break
                 case "ChatGPT":
                     Balance = "无法查询"
@@ -67,7 +60,7 @@ export default {
             }
             if (error.response) {
                 // 服务器返回了响应但状态码不在2xx范围
-                if (!isValidApiResponse(error.response)) {
+                if (!General.isValidApiResponse(error.response)) {
                     return false
                 }
                 console.error("[Balance Api]获取余额错误:", error.response.data)
