@@ -103,7 +103,7 @@ export default defineComponent({
         <!--按钮栏-->
         <div class="ButtonBar">
             <!--附件-->
-            <label for="Appendix" :title="$t('components.AIInput.function.appendix')">
+            <label for="Appendix" :title="$t('components.AIInput.function.appendix')" @click="modelStatus = false">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Link"></use>
                 </svg>
@@ -174,7 +174,6 @@ export default defineComponent({
     align-items: center;
 
     .ButtonBar {
-        position: relative;
         padding: 5px;
         width: 100%;
         display: grid;
@@ -239,7 +238,6 @@ export default defineComponent({
         border-top: none;
         border-radius: 0 0 8px 8px;
         background-color: var(--background-color);
-        z-index: 100;
         overflow: hidden;
 
         li {
@@ -313,6 +311,7 @@ export default defineComponent({
 
 
 .AppendixBar {
+    z-index: 1;
     position: absolute;
     top: 0;
     left: 0;
@@ -361,15 +360,17 @@ export default defineComponent({
 }
 
 #Appendix {
-    &:checked ~ .AppendixBar {
-        background-color: var(--scrollbar-thumb-hover-color);
-        backdrop-filter: blur(5px);
-        pointer-events: all;
-        transition: all 0.2s ease-in-out;
+    &:checked {
+        & ~ .AppendixBar {
+            background-color: var(--scrollbar-thumb-hover-color);
+            backdrop-filter: blur(5px);
+            pointer-events: all;
+            transition: all 0.2s ease-in-out;
 
-        label {
-            opacity: 1;
-            transform: translate(0);
+            label {
+                opacity: 1;
+                transform: translate(0);
+            }
         }
     }
 }
