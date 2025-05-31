@@ -232,7 +232,6 @@ export default defineComponent({
 
     .ModelList {
         position: absolute;
-        top: 100%;
         left: 0;
         right: 0;
         list-style: none;
