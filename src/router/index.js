@@ -7,14 +7,24 @@ const routes = [
         component: () => import("@/views/HomeView.vue")
     },
     {
+        path: "/chat/:key",
+        name: "ChatKey",
+        component: () => import("@/views/DeBUGView.vue")
+    },
+    {
         path: "/options",
         name: "Options",
-        component: () => import("@/views/Options.vue")
+        component: () => import("@/views/OptionsView.vue")
     },
     {
         path: "/debug",
         name: "DeBUG",
-        component: () => import("@/views/DeBUG.vue")
+        component: () => import("@/views/DeBUGView.vue")
+    },
+    {
+        path: "/:pathMatch(.*)*",
+        name: "NotFound",
+        component: () => import("@/views/NotFoundView.vue")
     }
 ]
 
