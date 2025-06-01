@@ -78,6 +78,11 @@
             "theme": "Theme",
             "language": "Language",
             "chats": "Chats"
+        },
+        "ChatView": {
+            "toast": {
+                "noChatKey": "Chat does not exist"
+            }
         }
     }
 }

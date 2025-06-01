@@ -78,6 +78,11 @@
             "theme": "主题",
             "language": "语言",
             "chats": "对话"
+        },
+        "ChatView": {
+            "toast": {
+                "noChatKey": "聊天不存在"
+            }
         }
     }
 }
