@@ -1,5 +1,6 @@
 <script>
 import {defineComponent} from "vue"
+import EventBus from "@/services/EventBus"
 
 export default defineComponent({
     name: "HomeSidebar",
@@ -17,6 +18,12 @@ export default defineComponent({
         }
         // 初始化时获取聊天列表
         this.chatListGet()
+        // 监听事件
+        EventBus.$on("chatListGet", this.chatListGet)
+    },
+    beforeUnmount() {
+        // 移除事件监听器
+        EventBus.$off("chatListGet", this.chatListGet)
     },
     methods: {
         /**
@@ -49,7 +56,7 @@ export default defineComponent({
                 const CHAT_LIST = await this.$DB.Chats.toArray()
                 const GROUPED_CHATS = {}
                 for (const ITEM of CHAT_LIST) {
-                    const SAFE_KEY = this.getTimeRangeLabel(ITEM.data[ITEM.data.length - 1].timestamp)
+                    const SAFE_KEY = this.getTimeRangeLabel(ITEM.timestamp)
                     GROUPED_CHATS[SAFE_KEY] = GROUPED_CHATS[SAFE_KEY] || []
                     GROUPED_CHATS[SAFE_KEY].push({
                         key: String(ITEM.key),
@@ -110,7 +117,7 @@ export default defineComponent({
          * @param key 聊天ID
          */
         openChat(key) {
-            this.$toast.success(key)
+            this.$router.push(`/chat/${key}`)
         }
     }
 })
