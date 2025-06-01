@@ -6,7 +6,7 @@ import ChatAIKey from "@/components/ChatsAIKey.vue";
 import Button from "@/components/Button.vue";
 
 export default {
-    name: "DeBUG",
+    name: "DeBUGView",
     inject: ["$DB"],
     components: {Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
     data() {
@@ -43,8 +43,8 @@ export default {
             try {
                 this.configs = await this.$DB.Configs.toArray()
             } catch (error) {
-                console.error("[DeBUG] Configs数据获取错误", error)
-                this.$toast.error("[DeBUG] Configs数据获取错误")
+                console.error("[DeBUG View] Configs数据获取错误", error)
+                this.$toast.error("[DeBUG View] Configs数据获取错误")
             }
         },
         // 清空Configs数据库数据
@@ -55,8 +55,8 @@ export default {
                 await this.configsLoading()
                 this.$toast.success("Configs数据库已清空")
             } catch (error) {
-                console.error("[DeBUG] Configs数据清空错误", error)
-                this.$toast.error("[DeBUG] Configs数据清空错误")
+                console.error("[DeBUG View] Configs数据清空错误", error)
+                this.$toast.error("[DeBUG View] Configs数据清空错误")
             }
         },
         // 删除Configs数据
@@ -67,8 +67,8 @@ export default {
                 this.configs = this.configs.filter(config => config.item !== item)
                 this.$toast.success("数据删除成功")
             } catch (error) {
-                console.error("[DeBUG] Configs数据删除错误", error)
-                this.$toast.error("[DeBUG] Configs数据删除错误")
+                console.error("[DeBUG View] Configs数据删除错误", error)
+                this.$toast.error("[DeBUG View] Configs数据删除错误")
             }
         },
         // 获取Chats数据库数据
@@ -76,8 +76,8 @@ export default {
             try {
                 this.chats = await this.$DB.Chats.toArray()
             } catch (error) {
-                console.error("[DeBUG] Chats数据获取错误", error)
-                this.$toast.error("[DeBUG] Chats数据获取错误")
+                console.error("[DeBUG View] Chats数据获取错误", error)
+                this.$toast.error("[DeBUG View] Chats数据获取错误")
             }
         },
         // 清空Chats数据库数据
@@ -88,8 +88,8 @@ export default {
                 await this.chatsLoading()
                 this.$toast.success("Chats数据库已清空")
             } catch (error) {
-                console.error("[DeBUG] Chats数据清空错误", error)
-                this.$toast.error("[DeBUG] Chats数据清空错误")
+                console.error("[DeBUG View] Chats数据清空错误", error)
+                this.$toast.error("[DeBUG View] Chats数据清空错误")
             }
         },
         // 删除Chats数据
@@ -100,8 +100,8 @@ export default {
                 this.chats = this.chats.filter(chat => chat.key!== item)
                 this.$toast.success("数据删除成功")
             } catch (error) {
-                console.error("[DeBUG] Chats数据删除错误", error)
-                this.$toast.error("[DeBUG] Chats数据删除错误")
+                console.error("[DeBUG View] Chats数据删除错误", error)
+                this.$toast.error("[DeBUG View] Chats数据删除错误")
             }
         },
         // 处理Title输入框
@@ -113,8 +113,8 @@ export default {
                 item.title = NEW_VALUE
                 this.$toast.success("标题更新成功")
             } catch (error) {
-                console.error("[DeBUG] 标题更新错误", error)
-                this.$toast.error("[DeBUG] 标题更新错误")
+                console.error("[DeBUG View] 标题更新错误", error)
+                this.$toast.error("[DeBUG View] 标题更新错误")
                 event.target.value = item.title
             }
         },
@@ -128,8 +128,8 @@ export default {
                 item.data = JSON.parse(JSON.stringify(parsedData))
                 this.$toast.success("数据更新成功")
             } catch (error) {
-                console.error("[DeBUG] 数据更新错误", error)
-                this.$toast.error("[DeBUG] JSON格式错误")
+                console.error("[DeBUG View] 数据更新错误", error)
+                this.$toast.error("[DeBUG View] JSON格式错误")
                 event.target.value = JSON.stringify(item.data, null)
             }
         },

@@ -9,7 +9,7 @@ const routes = [
     {
         path: "/chat/:key",
         name: "ChatKey",
-        component: () => import("@/views/HomeView.vue")
+        component: () => import("@/views/ChatView.vue")
     },
     {
         path: "/options",

@@ -6,7 +6,7 @@ import ChatAIKey from "@/components/ChatsAIKey.vue";
 import Button from "@/components/Button.vue";
 
 export default {
-    name: "Options",
+    name: "OptionsView",
     components: {Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
