@@ -2,6 +2,7 @@
     "components": {
         "AIInput": {
             "inputTip": "Please enter your question",
+            "newChat": "New Chat",
             "function": {
                 "appendix": "Appendix",
                 "webSearch": "Web Search",

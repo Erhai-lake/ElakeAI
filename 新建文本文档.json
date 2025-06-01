@@ -1,6 +1,7 @@
 {
     "key": "04c05bb4-2d94-49f2-b41f-d9e8ec57f11d",
     "title": "Chat History",
+    "timestamp": 1698230400000,
     "data": [
         {
             "model": "gpt-4",

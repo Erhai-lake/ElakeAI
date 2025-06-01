@@ -1,7 +1,8 @@
 <script>
 import {defineComponent, ref, onMounted, onUnmounted} from "vue"
 import ModelList from "@/assets/data/ModelList.json"
-import Chat from "@/services/api/Chat";
+import Chat from "@/services/api/Chat"
+import EventBus from "@/services/EventBus"
 
 export default defineComponent({
     name: "AIInput",
@@ -105,7 +106,21 @@ export default defineComponent({
         async Send() {
             // 检查输入框是否为空
             if (this.ChatInput.trim() === "") return
-            await Chat.chat(crypto.randomUUID(), this.selectedModel.name, this.selectedKey.key, this.selectedModel.url, this.ChatInput.trim(), this.enableWebSearch)
+            // 判断路由
+            if (this.$route.name === "ChatKey") {
+                await Chat.chat(crypto.randomUUID(), this.selectedModel.name, this.selectedKey.key, this.selectedModel.url, this.ChatInput.trim(), this.enableWebSearch)
+            } else {
+                const NEW_CHAY_KEY = crypto.randomUUID()
+                this.$router.push(`/chat/${NEW_CHAY_KEY}`)
+                await this.$DB.Chats.add({
+                    key: NEW_CHAY_KEY,
+                    title: this.$t("components.AIInput.newChat"),
+                    timestamp: Date.now(),
+                    data: []
+                })
+                // 触发事件 更新ChatsList
+                EventBus.emit("chatListGet")
+            }
         }
     },
     mounted() {

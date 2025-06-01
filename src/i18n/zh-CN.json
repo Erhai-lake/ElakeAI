@@ -2,6 +2,7 @@
     "components": {
         "AIInput": {
             "inputTip": "请输入您的问题",
+            "newChat": "新建对话",
             "function": {
                 "appendix": "附录",
                 "webSearch": "联网搜索",
