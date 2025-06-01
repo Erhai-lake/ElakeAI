@@ -24,7 +24,8 @@
                 "disable": "Disable {count} Keys"
             },
             "toast": {
-                "keyNull": "API Key cannot be empty",
+                "keyNull": "Key cannot be empty",
+                "remarkNull": "Remarks cannot be empty",
                 "invalidUrl": "Invalid URL",
                 "addKeySuccess": "API Key added successfully",
                 "selectKeysOperate": "Please select keys to operate",
@@ -42,7 +43,7 @@
                 "key": "Key",
                 "pleaseEnterKey": "Enter key",
                 "remarks": "Remarks",
-                "pleaseEnterKeyRemarks": "Enter remarks (optional)",
+                "pleaseEnterKeyRemarks": "Enter remarks",
                 "url": "URL",
                 "pleaseEnterKeyUrl": "Enter API mirror URL (default: official)",
                 "save": "Save",

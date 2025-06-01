@@ -121,6 +121,11 @@ export default {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.keyNull"))
                 return
             }
+            // 禁止备注为空
+            if (!this.newKey.remark) {
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.remarkNull"))
+                return
+            }
             // url空则使用默认url
             if (!this.newKey.url) {
                 this.newKey.url = this.selectedModel.url
@@ -140,7 +145,7 @@ export default {
                     key: crypto.randomUUID(),
                     model: this.selectedModel.name,
                     value: this.newKey.value,
-                    remark: this.newKey.remark || "",
+                    remark: this.newKey.remark,
                     url: this.newKey.url,
                     enabled: this.newKey.enabled
                 })
@@ -199,7 +204,7 @@ export default {
                 this.editKey = {
                     key: KEY_DATA.key,
                     value: KEY_DATA.value,
-                    remark: KEY_DATA.remark || "",
+                    remark: KEY_DATA.remark,
                     url: KEY_DATA.url
                 }
                 this.status.editFormStatus = !this.status.editFormStatus
@@ -215,6 +220,11 @@ export default {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.keyNull"))
                 return
             }
+            // 禁止备注为空
+            if (!this.editKey.remark) {
+                this.$toast.warning(this.$t("components.ChatAIKey.toast.remarkNull"))
+                return
+            }
             // url空则使用默认url
             if (!this.editKey.url) {
                 this.editKey.url = this.selectedModel.url
@@ -225,8 +235,8 @@ export default {
                 return
             }
             // 删除Url末尾的/
-            if (this.newKey.url.endsWith("/")) {
-                this.newKey.url = this.newKey.url.slice(0, -1)
+            if (this.editKey.url.endsWith("/")) {
+                this.editKey.url = this.editKey.url.slice(0, -1)
             }
             try {
                 // 写入数据库
