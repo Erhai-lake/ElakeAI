@@ -1,23 +1,47 @@
 <script>
 import {defineComponent, ref, onMounted, onUnmounted} from "vue"
 import ModelList from "@/assets/data/ModelList.json"
+import Chat from "@/services/api/Chat";
 
 export default defineComponent({
     name: "AIInput",
+    inject: ["$DB"],
     data() {
         return {
+            // 模型选择器状态
             modelStatus: false,
+            // Key选择器状态
+            keyStatus: false,
             // 模型列表
             modelList: ModelList,
+            // Key列表
+            keyPools: null,
             // 选中的模型
-            selectedModel: ModelList[0]
+            selectedModel: ModelList[0],
+            // 选中的Key
+            selectedKey: {
+                key: "auto",
+                remark: "自动",
+            },
+            // 输入框
+            ChatInput: "",
+            // 联网搜索状态
+            enableWebSearch: false
         }
     },
     watch: {
         // 监听模型变化
         selectedModel(newVal) {
             this.selectModel(newVal)
+        },
+        // 监听Key变化
+        selectedKey(newVal) {
+            this.selectKey(newVal)
         }
+    },
+    created() {
+        // 初始化Key池
+        this.loadKeyPools()
     },
     setup() {
         const textareaRef = ref(null)
@@ -45,6 +69,7 @@ export default defineComponent({
         handleClickOutside(e) {
             if (!this.$el.contains(e.target)) {
                 this.modelStatus = false
+                this.keyStatus = false
             }
         },
         // 选择模型
@@ -52,8 +77,35 @@ export default defineComponent({
             if (!selectModel) return
             if (selectModel === this.selectedModel.name) return
             this.selectedModel = selectModel
-            this.operationSelection = []
             this.modelStatus = false
+            this.loadKeyPools()
+        },
+        // 选择模型
+        selectKey(selectKey) {
+            if (!selectKey) return
+            if (selectKey === this.selectedKey.name) return
+            this.selectedKey = selectKey
+            this.keyStatus = false
+        },
+        // 加载Key
+        async loadKeyPools() {
+            try {
+                const DEFAULT = {key: "auto", remark: "自动"}
+                this.keyPools = [
+                    DEFAULT,
+                    ...(await this.$DB.APIKeys.where("model").equals(this.selectedModel.name).toArray())
+                ]
+                this.selectedKey = DEFAULT
+            } catch (error) {
+                console.error("[Chats AI Key] 加载Key池错误", error)
+                this.$toast.error("[Chats AI Key] 加载Key池错误")
+            }
+        },
+        // 发送
+        async Send() {
+            // 检查输入框是否为空
+            if (this.ChatInput.trim() === "") return
+            await Chat.chat(crypto.randomUUID(), this.selectedModel.name, this.selectedKey.key, this.selectedModel.url, this.ChatInput.trim(), this.enableWebSearch)
         }
     },
     mounted() {
@@ -99,7 +151,12 @@ export default defineComponent({
             </label>
         </div>
         <!--聊天输入框-->
-        <textarea id="ChatInput" :placeholder="$t('components.AIInput.inputTip')" ref="textareaRef"></textarea>
+        <textarea
+            id="ChatInput"
+            :placeholder="$t('components.AIInput.inputTip')"
+            ref="textareaRef"
+            spellcheck="false"
+            v-model="ChatInput"></textarea>
         <!--按钮栏-->
         <div class="ButtonBar">
             <!--附件-->
@@ -109,7 +166,7 @@ export default defineComponent({
                 </svg>
             </label>
             <!--联网搜索-->
-            <input id="Search" type="checkbox"/>
+            <input id="Search" type="checkbox" v-model="enableWebSearch"/>
             <label for="Search" :title="$t('components.AIInput.function.webSearch')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Networking"></use>
@@ -135,9 +192,27 @@ export default defineComponent({
                     </ul>
                 </transition>
             </div>
+            <!-- Key选择 -->
+            <div class="KeySelector">
+                <div class="SelectedKey" :class="{ 'Open': keyStatus }"
+                     @click="keyStatus = !keyStatus">
+                    <span class="KeyOption">{{ this.selectedKey.remark }}</span>
+                </div>
+                <transition name="slide">
+                    <ul v-show="keyStatus" class="KeyList">
+                        <li
+                            v-for="key in keyPools"
+                            :key="key.key"
+                            @click="this.selectedKey = key"
+                            :class="{ 'Active': key.key === this.selectedKey.key }">
+                            <span class="KeyOption">{{ key.remark }}</span>
+                        </li>
+                    </ul>
+                </transition>
+            </div>
             <div></div>
             <!--发送-->
-            <label for="Send" :title="$t('components.AIInput.function.send')" class="Send">
+            <label for="Send" :title="$t('components.AIInput.function.send')" class="Send" @click="Send">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Send"></use>
                 </svg>
@@ -177,7 +252,7 @@ export default defineComponent({
         padding: 5px;
         width: 100%;
         display: grid;
-        grid-template-columns: auto auto auto 1fr auto;
+        grid-template-columns: auto auto auto auto 1fr auto;
         gap: 10px;
 
         label {
@@ -204,12 +279,12 @@ export default defineComponent({
     }
 }
 
-.ModelSelector {
-    width: 200px;
+.ModelSelector, .KeySelector {
+    width: 170px;
     position: relative;
     user-select: none;
 
-    .SelectedModel {
+    .SelectedModel, .SelectedKey {
         display: flex;
         align-items: center;
         padding: 12px;
@@ -229,7 +304,7 @@ export default defineComponent({
         border-radius: 8px 8px 0 0;
     }
 
-    .ModelList {
+    .ModelList, .KeyList {
         position: absolute;
         left: 0;
         right: 0;
@@ -273,7 +348,7 @@ export default defineComponent({
         object-fit: cover;
     }
 
-    .ModelOption {
+    .ModelOption, .KeyOption {
         font-size: 14px;
     }
 

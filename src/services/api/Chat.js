@@ -2,7 +2,7 @@ import axios from "axios"
 import General from "@/services/api/General"
 
 export default {
-    async chat(model, key, url) {
+    async chat(chatKey,model, key, url, content, webSearch) {
         if (!model || typeof model!== "string") {
             throw new Error("无效的模型名称: 必须提供非空字符串")
         }
@@ -12,12 +12,26 @@ export default {
         if (!url || typeof url !== "string") {
             throw new Error("无效的API URL: 必须提供非空字符串")
         }
+        if (!content || typeof content !== "string") {
+            throw new Error("无效的API Content: 必须提供非空字符串")
+        }
+        if (webSearch && typeof webSearch!== "boolean") {
+            throw new Error("无效的API WebSearch: 必须提供布尔值")
+        }
+        console.log({chatKey, model, key, url, content, webSearch})
         try {
             switch (model) {
                 case "DeepSeek":
+                    if (webSearch) {
+
+                    } else {
+
+                    }
                     break
                 case "ChatGPT":
                     break
+                default:
+                    throw new Error(`不支持的模型: ${model}`)
             }
         } catch (error) {
             if (error.code === 'ECONNABORTED') {
