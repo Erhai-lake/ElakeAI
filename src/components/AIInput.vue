@@ -256,6 +256,7 @@ export default defineComponent({
     padding: 16px;
     margin: 0 10px;
     width: 50%;
+    background-color: var(--background-color);
     border: 2px solid var(--border-color);
     border-radius: 15px;
     display: flex;
@@ -274,6 +275,7 @@ export default defineComponent({
             padding: 10px;
             font-size: 12px;
             border-radius: 50%;
+            background-color: var(--background-color);
             border: 2px solid var(--chat-input-button-border-color);
             cursor: pointer;
             outline: none;
@@ -289,7 +291,7 @@ export default defineComponent({
         }
 
         .Send {
-            background-color: var(--chat-input-button-send-background-color);
+            background-color: var(--background-color);
         }
     }
 }
