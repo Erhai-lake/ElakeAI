@@ -82,7 +82,8 @@
         "ChatView": {
             "toast": {
                 "noChatKey": "聊天不存在"
-            }
+            },
+            "aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
         }
     }
 }

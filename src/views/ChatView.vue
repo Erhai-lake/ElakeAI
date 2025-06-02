@@ -105,7 +105,7 @@ export default {
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -135,7 +135,7 @@ export default {
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": `"/* 白昼主题 */\\n:root, [data-theme=\\"Light\\"] {\\n  // 滚动条轨道颜色\\n  --scrollbar-track-color: rgba(255, 255, 255, 0.5);\\n  // 滚动条滑块颜色\\n  --scrollbar-thumb-color: rgba(193, 193, 193, 0.6);\\n  // 滚动条滑块悬停颜色\\n  --scrollbar-thumb-hover-color: rgba(168, 168, 168, 0.78);\\n  // 背景颜色\\n  --background-color: #ffffff;\\n  // 背景颜色(反)\\n  --background-color-Anti: #292A2D;\\n  // 文字颜色\\n  --text-color: #434344;\\n  // 文字颜色(反)\\n  --text-color-Anti: #E4E4E7;\\n  // 边框颜色\\n  --border-color: #6C787F;\\n  // 阴影颜色\\n  --box-shadow-color: rgba(0, 0, 0, 0.2);\\n  // 按钮鼠标悬停背景颜色\\n  --button-hover-background-color: #dadada;\\n  // 按钮激活背景颜色\\n  --button-active-background-color: #c3c3c3;\\n  // 侧边栏容器背景颜色\\n  --sidebar-expand-container-background-color: #F9FBFF;\\n  // 侧边栏容器文字颜色\\n  --sidebar-expand-container-text-color: #868788;\\n  // 侧边栏项目悬停背景颜色\\n  --sidebar-item-hover-background-color: #dadada;\\n  // 聊天输入框按钮边框颜色\\n  --chat-input-button-border-color: #d3d3d3;\\n  // 聊天输入框附件按钮背景颜色\\n  --chat-input-attachment-button-background-color: #363636;\\n  // 聊天输入框附件按钮文字颜色\\n  --chat-input-attachment-button-text-color: #d3d3d3;\\n  // 聊天用户背景颜色\\n  --chat-user-background-color: #e3f2fd;\\n  // 聊天用户文字颜色\\n  --chat-user-text-color: #464646;\\n  // 聊天助手背景颜色\\n  --chat-assistant-background-color: #f5f5f5;\\n  // 聊天助手文字颜色\\n  --chat-assistant-text-color: #464646;\\n  // 聊天对话框时间文字颜色\\n  --chat-dialogue-time-text-color: #868788;\\n  // 聊天免责声明文字颜色\\n  --chat-disclaimer-text-color: #868788;\\n}\\n\\n/* 深夜主题 */\\n[data-theme=\\"Dark\\"] {\\n  // 滚动条轨道颜色\\n  --scrollbar-track-color: rgba(255, 255, 255, 0.8);\\n  // 滚动条滑块颜色\\n  --scrollbar-thumb-color: rgba(93, 93, 93, 0.8);\\n  // 滚动条滑块悬停颜色\\n  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.6);\\n  // 背景颜色\\n  --background-color: #292A2D;\\n  // 背景颜色(反)\\n  --background-color-Anti: #ffffff;\\n  // 文字颜色\\n  --text-color: #E4E4E7;\\n  // 文字颜色(反)\\n  --text-color-Anti: #434344;\\n  // 边框颜色\\n  --border-color: #b9bdbe;\\n  // 阴影颜色\\n  --box-shadow-color: rgba(255, 255, 255, 0.2);\\n  // 按钮鼠标悬停背景颜色\\n  --button-hover-background-color: #818181;\\n  // 按钮激活背景颜色\\n  --button-active-background-color: #646464;\\n  // 侧边栏容器背景颜色\\n  --sidebar-expand-container-background-color: #212327;\\n  // 侧边栏容器文字颜色\\n  --sidebar-expand-container-text-color: #a9abad;\\n  // 侧边栏项目悬停背景颜色\\n  --sidebar-item-hover-background-color: #9D9DA0;\\n  // 聊天输入框按钮边框颜色\\n  --chat-input-button-border-color: #393939;\\n  // 聊天输入框附件按钮背景颜色\\n  --chat-input-attachment-button-background-color: #d3d3d3;\\n  // 聊天输入框附件按钮文字颜色\\n  --chat-input-attachment-button-text-color: #363636;\\n  // 聊天用户背景颜色\\n  --chat-user-background-color: #607c88;\\n  // 聊天用户文字颜色\\n  --chat-user-text-color: #fcfcfc;\\n  // 聊天助手背景颜色\\n  --chat-assistant-background-color: #484848;\\n  // 聊天助手文字颜色\\n  --chat-assistant-text-color: #fcfcfc;\\n  // 聊天对话框时间文字颜色\\n  --chat-dialogue-time-text-color: #afafaf;\\n  // 聊天免责声明文字颜色\\n  --chat-disclaimer-text-color: #868788;\\n}\\n\\n* {\\n  margin: 0;\\n  padding: 0;\\n  transition: all 0.3s ease-in-out;\\n}\\n\\na {\\n  color: var(--text-color);\\n  text-decoration: none;\\n}\\n\\nbody {\\n  background-color: var(--background-color);\\n  color: var(--text-color);\\n}\\n\\n//滚动条\\n::-webkit-scrollbar {\\n  //垂直滚动条宽度\\n  width: 10px;\\n  //水平滚动条高度\\n  height: 10px;\\n}\\n\\n/* 滚动条轨道 */\\n::-webkit-scrollbar-track {\\n  background-color: var(--scrollbar-track-color);\\n  border-radius: 4px;\\n}\\n\\n/* 滚动条滑块 */\\n::-webkit-scrollbar-thumb {\\n  background-color: var(--scrollbar-thumb-color);\\n  border-radius: 4px;\\n}\\n\\n/* 滚动条滑块悬停状态 */\\n::-webkit-scrollbar-thumb:hover {\\n  background-color: var(--scrollbar-thumb-hover-color);\\n}\\n\\n// 工具提示\\n[tooltips] {\\n  &:hover {\\n    position: relative;\\n\\n    &::after {\\n      content: attr(tooltips);\\n      position: absolute;\\n      top: 100%;\\n      left: 50%;\\n      padding: 5px;\\n      transform: translateX(-50%);\\n      color: var(--text-color);\\n      background-color: var(--tooltips-background-color);\\n      border: 1px solid var(--tooltips-border-color);\\n      font-size: 12px;\\n      white-space: normal;\\n      word-wrap: break-word;\\n      word-break: break-all;\\n      z-index: 9999;\\n    }\\n  }\\n}"`,
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -256,6 +256,18 @@ export default {
             console.error("[Chat View] 聊天记录获取错误", error)
             this.$toast.error("[Chat View] 聊天记录获取错误")
         }
+    },
+    methods: {
+        formatTimestamp(timestamp) {
+            const DATE = new Date(timestamp)
+            const YEAR = DATE.getFullYear()
+            const MONTH = String(DATE.getMonth() + 1).padStart(2, '0')
+            const DAY = String(DATE.getDate()).padStart(2, '0')
+            const HOURS = String(DATE.getHours()).padStart(2, '0')
+            const MINUTES = String(DATE.getMinutes()).padStart(2, '0')
+            const SECONDS = String(DATE.getSeconds()).padStart(2, '0')
+            return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
+        }
     }
 }
 </script>
@@ -269,7 +281,7 @@ export default {
             <div v-for="message in data.data" :key="message.timestamp" :class="['Message', message.message.role]">
                 <div class="MessageCard">
                     <div class="MessageContent">{{ message.message.content }}</div>
-                    <div class="MessageTime">{{ message.timestamp }}</div>
+                    <div class="MessageTime">{{ formatTimestamp(message.timestamp) }}</div>
                 </div>
             </div>
         </div>
@@ -279,9 +291,7 @@ export default {
             <AIInput/>
         </div>
         <!-- AI提示信息 -->
-        <div class="AIDisclaimer">
-            内容由 AI 生成, 请仔细甄别
-        </div>
+        <div class="AIDisclaimer">{{ $t("views.ChatView.aiDisclaimer") }}</div>
     </div>
 </template>
 
@@ -310,7 +320,7 @@ export default {
 
 .MessageList {
     position: absolute;
-    padding: 100px 0 200px 0;
+    padding: 100px 50px 200px 50px;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
@@ -333,7 +343,7 @@ export default {
 }
 
 .MessageCard {
-    max-width: 80%;
+    max-width: 70%;
     padding: 12px 16px;
     border-radius: 12px;
     position: relative;
