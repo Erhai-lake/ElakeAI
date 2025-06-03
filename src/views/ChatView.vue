@@ -4,7 +4,7 @@ import {useRoute} from "vue-router"
 import markdownit from "markdown-it"
 import highlight from "highlight.js"
 import "@/assets/styles/highlight.css"
-import "@/assets/styles/markdown.css"
+import "@/assets/styles/markdown.less"
 
 export default {
     name: "ChatView",
