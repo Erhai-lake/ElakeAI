@@ -1,0 +1,29 @@
+.MessageContent {
+  ul, ol {
+    padding-left: 24px;
+    margin: 8px 0;
+
+    li {
+      margin-bottom: 4px;
+      line-height: 1.5;
+    }
+  }
+
+  ul {
+    list-style-type: disc;
+
+    li::marker {
+      color: inherit;
+      font-size: 1.2em;
+    }
+  }
+
+  ol {
+    list-style-type: decimal;
+
+    li::marker {
+      color: inherit;
+      font-weight: bold;
+    }
+  }
+}
