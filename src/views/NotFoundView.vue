@@ -134,6 +134,12 @@ export default {
     overflow-y: auto;
 }
 
+@media screen and (max-width: 768px) {
+    .MessageList {
+        padding: 100px 0 200px 0;
+    }
+}
+
 .MessageCard {
     padding: 16px 20px;
     border-radius: 12px;
