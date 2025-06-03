@@ -99,7 +99,7 @@ export default defineComponent({
                 this.selectedKey = DEFAULT
             } catch (error) {
                 console.error("[Chats AI Key] 加载Key池错误", error)
-                this.$toast.error("[Chats AI Key] 加载Key池错误")
+                this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
             }
         },
         // 发送

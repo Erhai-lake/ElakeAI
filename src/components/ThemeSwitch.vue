@@ -22,7 +22,7 @@ export default defineComponent({
             this.Theme = THEME_DATA ? THEME_DATA.value : "System"
         } catch (error) {
             console.error("[Theme Switch] 主题获取错误", error)
-            this.$toast.error("[Theme Switch] 主题获取错误")
+            this.$toast.error(`[Theme Switch] ${this.$t("components.ThemeSwitch.toast.getThemeError")}`)
         }
     },
     methods: {
@@ -53,7 +53,7 @@ export default defineComponent({
                 }
             } catch (error) {
                 console.error("[Theme Switch] 主题应用错误", error)
-                this.$toast.error("[Theme Switch] 主题应用错误")
+                this.$toast.error(`[Theme Switch] ${this.$t("components.ThemeSwitch.toast.applicationThemeError")}`)
             }
         }
     }

@@ -257,7 +257,7 @@ export default {
             }
         } catch (error) {
             console.error("[Chat View] 聊天记录获取错误", error)
-            this.$toast.error("[Chat View] 聊天记录获取错误")
+            this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
         }
     },
     mounted() {

@@ -82,7 +82,7 @@ export default defineComponent({
                     .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
             } catch (error) {
                 console.error("[Language Switch] 聊天列表获取错误", error)
-                this.$toast.error("[Language Switch] 聊天列表获取错误")
+                this.$toast.error(`[Language Switch] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
             }
         },
         /**

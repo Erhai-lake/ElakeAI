@@ -3,6 +3,9 @@
         "AIInput": {
             "inputTip": "请输入您的问题",
             "newChat": "新建对话",
+            "toast": {
+                "loadKeyPoolError": "加载Key池错误"
+            },
             "function": {
                 "appendix": "附录",
                 "webSearch": "联网搜索",
@@ -25,19 +28,26 @@
                 "disable": "禁用{count}个Key"
             },
             "toast": {
+                "loadKeyPoolError": "加载Key池错误",
+                "errorKeyDisabled": "错误的Key: {key}已禁用",
+                "errorObtainingKeyBalance": "获取Key余额错误",
                 "keyNull": "Key不能为空",
                 "remarkNull": "备注不能为空",
                 "invalidUrl": "无效的URL",
-                "addKeySuccess": "添加API Key成功",
+                "addKeySuccess": "添加Key成功",
+                "addKeyError": "添加Key错误",
                 "selectKeysOperate": "请选择要操作的Key",
-                "removeKeySuccess": "移除API Key成功",
-                "selectAKey": "您只能同时编辑一个Key",
+                "removeKeySuccess": "移除Key成功",
+                "removeKeysError": "移除Keys错误",
+                "selectAKey": "您只能同时选择一个Key",
+                "getKeyError": "获取Key错误",
                 "editKeySuccess": "编辑Key成功",
+                "editKeyError": "编辑Key错误",
                 "enableSuccess": "启用Key成功",
                 "disableSuccess": "禁用Key成功",
                 "batchEnableSuccess": "批量启用Key成功",
                 "batchDisableSuccess": "批量禁用Key成功",
-                "errorKeyDisabled": "错误的Key: {key}已禁用"
+                "statusUpdateError": "状态更新错误"
             },
             "form": {
                 "enable": "启用",
@@ -54,6 +64,9 @@
             "addTip": "请点击上方添加Key"
         },
         "HomeSidebar": {
+            "toast": {
+                "errorGettingChatList": "获取聊天列表错误"
+            },
             "timeRangeLabel": {
                 "1": "今天",
                 "30": "30天内"
@@ -66,27 +79,38 @@
                 "options": "设置"
             }
         },
+        "LanguageSelect": {
+            "toast": {
+                "getLanguageError": "获取语言错误",
+                "applicationLanguageError": "应用语言错误"
+            }
+        },
         "ThemeSwitch": {
+            "toast": {
+                "getThemeError": "获取主题错误",
+                "applicationThemeError": "应用主题错误"
+            },
             "light": "白昼",
             "dark": "深夜",
             "system": "系统"
         }
     },
     "views": {
-        "Options": {
-            "personalization": "个性化",
-            "theme": "主题",
-            "language": "语言",
-            "chats": "对话"
-        },
         "ChatView": {
             "toast": {
                 "noChatKey": "聊天不存在",
+                "getChatLogError": "获取聊天记录错误",
                 "copied": "复制成功",
                 "copyFailed": "复制失败"
             },
             "copyButton": "复制",
             "aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
+        },
+        "Options": {
+            "personalization": "个性化",
+            "theme": "主题",
+            "language": "语言",
+            "chats": "对话"
         }
     }
 }
