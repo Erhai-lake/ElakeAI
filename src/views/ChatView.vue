@@ -4,6 +4,7 @@ import {useRoute} from "vue-router"
 import markdownit from "markdown-it"
 import highlight from "highlight.js"
 import "@/assets/styles/highlight.css"
+import "@/assets/styles/markdown.css"
 
 export default {
     name: "ChatView",
@@ -33,7 +34,7 @@ export default {
                     },
                     {
                         "message": {
-                            "content": "```python\nprint(\"你好, 世界!\")\n```",
+                            "content": "```python\nprint(\"你好, 世界!\")\n```\n\n这是一段python代码!",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -48,7 +49,7 @@ export default {
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n无序列表",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -56,7 +57,7 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "3你好! 今天我能帮你什么?",
+                            "content": "有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n有序列表",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
@@ -373,7 +374,7 @@ export default {
 }
 
 .MessageCard {
-    padding: 12px 16px;
+    padding: 16px 20px;
     border-radius: 12px;
     position: relative;
 
@@ -393,10 +394,12 @@ export default {
 .MessageContent {
     font-size: 16px;
     line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .MessageTime {
-    margin-top: 4px;
+    margin-top: 8px;
     font-size: 12px;
     color: var(--chat-dialogue-time-text-color);
     text-align: right;
