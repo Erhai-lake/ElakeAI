@@ -67,6 +67,10 @@ export default {
                             <li>⏳ 稍后再试, 也许页面正在休息</li>
                             <li>📞 联系网站管理员派搜救队</li>
                             <li>🍵 先喝杯茶冷静一下️</li>
+                            <li>📽️ 看个
+                                <a href="//www.bilibili.com/video/BV1UT42167xb" target="_blank" style="color: #80ceff;">小短剧</a>
+                                放松一下, 打发打发时间
+                            </li>
                         </ol>
                     </div>
                     <div class="MessageTime">{{ formatTimestamp(Date.now()) }}</div>
