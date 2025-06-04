@@ -10,6 +10,7 @@ import mermaid from "mermaid"
 import panzoom from "@panzoom/panzoom"
 import "@/assets/styles/highlight.css"
 import "@/assets/styles/markdown.less"
+import EventBus from "@/services/EventBus";
 
 export default {
     name: "ChatView",
@@ -18,6 +19,10 @@ export default {
     data() {
         return {
             route: useRoute(),
+            editingTitle: {
+                show: false,
+                value: ""
+            },
             data: {
                 key: null,
                 title: null,
@@ -193,6 +198,52 @@ export default {
             const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
             const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
             return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
+        },
+        // 标题输入
+        titleInput() {
+            this.editingTitle.value = this.data.title
+            this.editingTitle.show = true
+            this.$nextTick(() => {
+                const input = this.$el.querySelector('.TopTitle input')
+                if (input) {
+                    input.focus()
+                    input.select()
+                }
+            })
+        },
+        // 保存标题
+        async saveTitle() {
+            if (this.editingTitle.value.trim() === this.data.title) {
+                this.editingTitle.show = false
+                return
+            }
+            try {
+                const NEW_TITLE = this.editingTitle.value.trim()
+                this.data.title = NEW_TITLE
+                await this.$DB.Chats.update(this.data.key, {title: NEW_TITLE})
+                this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
+                // 触发事件 更新ChatsList
+                EventBus.emit("chatListGet")
+            } catch (error) {
+                console.error("[Chat View] 标题更新错误", error)
+                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
+                this.editingTitle.value = this.data.title
+            } finally {
+                this.editingTitle.show = false
+            }
+        },
+        // 取消编辑标题
+        cancelEditTitle() {
+            this.editingTitle.show = false
+            this.editingTitle.value = this.data.title
+        },
+        // 处理标题键盘事件
+        handleTitleKeydown(e) {
+            if (e.key === "Enter") {
+                this.saveTitle()
+            } else if (e.key === "Escape") {
+                this.cancelEditTitle()
+            }
         }
     }
 }
@@ -201,7 +252,16 @@ export default {
 <template>
     <div class="ChatView">
         <!-- 顶部标题 -->
-        <div class="TopTitle">{{ data.title }}</div>
+        <div class="TopTitle">
+            <p v-if="!editingTitle.show" @click="titleInput" :title="data.title">{{ data.title }}</p>
+            <input
+                type="text"
+                v-else
+                v-model="editingTitle.value"
+                @blur="saveTitle"
+                @keydown="handleTitleKeydown"
+                class="TitleInput">
+        </div>
         <!-- 消息列表 -->
         <div class="MessageList">
             <div v-for="message in data.data" :key="message.timestamp" :class="['Message', message.message.role]">
@@ -232,6 +292,7 @@ export default {
 }
 
 .TopTitle {
+    position: relative;
     height: 65px;
     font-size: 18px;
     font-weight: bold;
@@ -242,6 +303,31 @@ export default {
     align-items: center;
     justify-content: center;
     z-index: 1;
+
+    p {
+        position: absolute;
+        max-width: 90%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+    .TitleInput {
+        width: 500px;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--background-color);
+        color: var(--text-color);
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+
+        &:focus {
+            outline: none;
+        }
+    }
 }
 
 .MessageList {
@@ -253,6 +339,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    overflow-x: hidden;
     overflow-y: auto;
 }
 
