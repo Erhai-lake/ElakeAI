@@ -71,7 +71,6 @@ export default {
             if (selectModel === this.selectedModel.title) return
             this.selectedModel = selectModel
             this.operationSelection = []
-            this.status.modelStatus = false
             this.loadKeyPools()
         },
         // 加载Key池

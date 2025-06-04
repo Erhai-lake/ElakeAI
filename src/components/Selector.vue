@@ -13,17 +13,32 @@ export default {
         uniqueKey: {
             type: String,
             required: true
+        },
+        num: {
+            type: Number,
+            default: 3
         }
     },
     data() {
         return {
-            isOpen: false
+            isOpen: false,
+            dropdownDirection: "bottom"
         }
     },
     methods: {
         // 切换下拉列表
         toggleList() {
+            if (!this.isOpen) {
+                this.calculateDropdownDirection()
+            }
             this.isOpen = !this.isOpen
+        },
+        // 计算下拉方向
+        calculateDropdownDirection() {
+            const DROPDOWN_HEIGHT = this.num * 44
+            const DROPDOWN_BOTTOM = this.$el.getBoundingClientRect().bottom + DROPDOWN_HEIGHT
+            const WINDOW_HEIGHT = window.innerHeight
+            this.dropdownDirection = DROPDOWN_BOTTOM > WINDOW_HEIGHT ? "top" : "bottom"
         },
         // 点击外部关闭下拉列表
         handleClickOutside(e) {
@@ -49,17 +64,23 @@ export default {
 <template>
     <div class="Selector">
         <div class="SelectorSelected" :class="{ 'Open': isOpen }" @click="toggleList">
-            <img class="Images" :src="selectorSelected.images" :alt="selectorSelected.title">
+            <img class="Images"
+                 :src="selectorSelected.images"
+                 :alt="selectorSelected.title"
+                 v-if="selectorSelected.images">
             <span class="SelectorOption">{{ selectorSelected.title }}</span>
         </div>
         <transition name="slide">
-            <ul v-show="isOpen" class="SelectorList">
+            <ul
+                v-show="isOpen"
+                class="SelectorList"
+                :class="{'DropdownUp': dropdownDirection === 'top', 'DropdownDown': dropdownDirection === 'bottom'}">
                 <li
                     v-for="item in selectorList"
                     :key="item[uniqueKey]"
                     @click="selectItem(item)"
                     :class="{ 'Active': item[uniqueKey] === selectorSelected[uniqueKey] }">
-                    <img :src="item.images" class="Images" :alt="item.title">
+                    <img :src="item.images" class="Images" :alt="item.title" v-if="item.images">
                     <span class="LangOption">{{ item.title }}</span>
                 </li>
             </ul>
@@ -129,6 +150,18 @@ export default {
             background-color: var(--Active-Background-Color);
             color: #292A2DFF;
         }
+    }
+
+    &.DropdownDown {
+        top: 100%;
+        border-radius: 0 0 8px 8px;
+        border-top: none;
+    }
+
+    &.DropdownUp {
+        bottom: 100%;
+        border-radius: 8px 8px 0 0;
+        border-bottom: none;
     }
 }
 

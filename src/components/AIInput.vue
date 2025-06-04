@@ -3,16 +3,14 @@ import {defineComponent, ref, onMounted, onUnmounted} from "vue"
 import ModelList from "@/assets/data/ModelList.json"
 import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
+import Selector from "@/components/Selector.vue";
 
 export default defineComponent({
     name: "AIInput",
+    components: {Selector},
     inject: ["$DB"],
     data() {
         return {
-            // 模型选择器状态
-            modelStatus: false,
-            // Key选择器状态
-            keyStatus: false,
             // 模型列表
             modelList: ModelList,
             // Key列表
@@ -66,19 +64,18 @@ export default defineComponent({
         return {textareaRef}
     },
     methods: {
-        // 点击外部关闭下拉列表
-        handleClickOutside(e) {
-            if (!this.$el.contains(e.target)) {
-                this.modelStatus = false
-                this.keyStatus = false
-            }
+        // 更新选中项
+        updateSelectedModel(newVal) {
+            this.selectedModel = newVal
+        },
+        updateSelectedKey(newVal) {
+            this.selectedKey = newVal
         },
         // 选择模型
         selectModel(selectModel) {
             if (!selectModel) return
-            if (selectModel === this.selectedModel.name) return
+            if (selectModel === this.selectedModel.title) return
             this.selectedModel = selectModel
-            this.modelStatus = false
             this.loadKeyPools()
         },
         // 选择模型
@@ -86,15 +83,18 @@ export default defineComponent({
             if (!selectKey) return
             if (selectKey === this.selectedKey.name) return
             this.selectedKey = selectKey
-            this.keyStatus = false
         },
         // 加载Key
         async loadKeyPools() {
             try {
-                const DEFAULT = {key: "auto", remark: "自动"}
+                const DEFAULT = {key: "auto", title: "自动"}
+                const KEYS_DATA = await this.$DB.APIKeys.where("model").equals(this.selectedModel.title).toArray()
                 this.keyPools = [
                     DEFAULT,
-                    ...(await this.$DB.APIKeys.where("model").equals(this.selectedModel.name).toArray())
+                    ...KEYS_DATA.map(key => ({
+                        key: key.key,
+                        title: key.remark
+                    }))
                 ]
                 this.selectedKey = DEFAULT
             } catch (error) {
@@ -108,7 +108,7 @@ export default defineComponent({
             if (this.ChatInput.trim() === "") return
             // 判断路由
             if (this.$route.name === "ChatKey") {
-                await Chat.chat(crypto.randomUUID(), this.selectedModel.name, this.selectedKey.key, this.selectedModel.url, this.ChatInput.trim(), this.enableWebSearch)
+                await Chat.chat(crypto.randomUUID(), this.selectedModel.title, this.selectedKey.key, this.selectedModel.url, this.ChatInput.trim(), this.enableWebSearch)
             } else {
                 const NEW_CHAY_KEY = crypto.randomUUID()
                 this.$router.push(`/chat/${NEW_CHAY_KEY}`)
@@ -122,12 +122,6 @@ export default defineComponent({
                 EventBus.emit("chatListGet")
             }
         }
-    },
-    mounted() {
-        document.addEventListener("click", this.handleClickOutside)
-    },
-    beforeDestroy() {
-        document.removeEventListener("click", this.handleClickOutside)
     }
 })
 </script>
@@ -188,42 +182,20 @@ export default defineComponent({
                 </svg>
             </label>
             <!-- 模型选择 -->
-            <div class="ModelSelector">
-                <div class="SelectedModel" :class="{ 'Open': modelStatus }"
-                     @click="modelStatus = !modelStatus">
-                    <img class="Logo" :src="this.selectedModel.logo" :alt="this.selectedModel.name">
-                    <span class="ModelOption">{{ this.selectedModel.name }}</span>
-                </div>
-                <transition name="slide">
-                    <ul v-show="modelStatus" class="ModelList">
-                        <li
-                            v-for="model in modelList"
-                            :key="model.name"
-                            @click="this.selectedModel = model"
-                            :class="{ 'Active': model.name === this.selectedModel.name }">
-                            <img :src="model.logo" class="Logo" :alt="model.name">
-                            <span class="ModelOption">{{ model.name }}</span>
-                        </li>
-                    </ul>
-                </transition>
+            <div class="Selector">
+                <Selector
+                    :selectorSelected="selectedModel"
+                    :selectorList="modelList"
+                    uniqueKey="title"
+                    @update:selectorSelected="updateSelectedModel"/>
             </div>
             <!-- Key选择 -->
-            <div class="KeySelector">
-                <div class="SelectedKey" :class="{ 'Open': keyStatus }"
-                     @click="keyStatus = !keyStatus">
-                    <span class="KeyOption">{{ this.selectedKey.remark }}</span>
-                </div>
-                <transition name="slide">
-                    <ul v-show="keyStatus" class="KeyList">
-                        <li
-                            v-for="key in keyPools"
-                            :key="key.key"
-                            @click="this.selectedKey = key"
-                            :class="{ 'Active': key.key === this.selectedKey.key }">
-                            <span class="KeyOption">{{ key.remark }}</span>
-                        </li>
-                    </ul>
-                </transition>
+            <div class="Selector">
+                <Selector
+                    :selectorSelected="selectedKey"
+                    :selectorList="keyPools"
+                    uniqueKey="key"
+                    @update:selectorSelected="updateSelectedKey"/>
             </div>
             <div></div>
             <!--发送-->
@@ -296,89 +268,8 @@ export default defineComponent({
     }
 }
 
-.ModelSelector, .KeySelector {
-    width: 170px;
-    position: relative;
-    user-select: none;
-
-    .SelectedModel, .SelectedKey {
-        display: flex;
-        align-items: center;
-        padding: 12px;
-        border: 2px solid var(--chat-input-button-border-color);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s;
-        background-color: var(--background-color);
-
-        &:hover {
-            border-color: #80ceff;
-            box-shadow: 0 2px 8px var(--box-shadow-color);
-        }
-    }
-
-    .Open {
-        border-radius: 8px 8px 0 0;
-    }
-
-    .ModelList, .KeyList {
-        position: absolute;
-        left: 0;
-        right: 0;
-        list-style: none;
-        border: 1px solid var(--border-color);
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        background-color: var(--background-color);
-        overflow: hidden;
-
-        li {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-
-            &:hover {
-                background-color: var(--background-color-Anti);
-                color: var(--background-color);
-            }
-        }
-
-        .Active {
-            --Active-Background-Color: rgba(189, 229, 255, 0.5);
-            background-color: var(--Active-Background-Color);
-            color: #292A2DFF;
-
-            &:hover {
-                background-color: var(--Active-Background-Color);
-                color: #292A2DFF;
-            }
-        }
-    }
-
-    .Logo {
-        width: 24px;
-        height: 18px;
-        margin-right: 12px;
-        border-radius: 2px;
-        object-fit: cover;
-    }
-
-    .ModelOption, .KeyOption {
-        font-size: 14px;
-    }
-
-    .slide-enter-active,
-    .slide-leave-active {
-        transition: all 0.3s ease;
-    }
-
-    .slide-enter-from,
-    .slide-leave-to {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
+.Selector {
+    width: 200px;
 }
 
 #Appendix, #Camera, #Photos, #Files, #Search {

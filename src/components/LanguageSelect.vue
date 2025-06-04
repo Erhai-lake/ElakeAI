@@ -44,7 +44,6 @@ export default {
                 if (!selectLang) return
                 this.selectedLang = selectLang
                 this.$i18n.locale = this.selectedLang.code
-                this.isOpen = false
                 // 保存设置
                 if (await this.$DB.Configs.get("Language")) {
                     await this.$DB.Configs.put({
