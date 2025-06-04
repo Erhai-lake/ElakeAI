@@ -83,6 +83,7 @@ export default {
             })
             // 触发事件 更新ChatsList
             EventBus.emit("chatListGet")
+            await this.chatsLoading()
             this.$toast.success("生成完毕")
         },
         // 获取Chats数据库数据
@@ -129,6 +130,8 @@ export default {
             try {
                 await this.$DB.Chats.update(item.key, {title: NEW_VALUE})
                 item.title = NEW_VALUE
+                // 触发事件 更新ChatsList
+                EventBus.emit("chatListGet")
                 this.$toast.success("标题更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 标题更新错误", error)
@@ -144,6 +147,8 @@ export default {
                 const parsedData = JSON.parse(RAW_VALUE)
                 await this.$DB.Chats.update(item.key, {data: parsedData})
                 item.data = JSON.parse(JSON.stringify(parsedData))
+                // 触发事件 更新ChatsList
+                EventBus.emit("chatListGet")
                 this.$toast.success("数据更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 数据更新错误", error)
@@ -196,7 +201,7 @@ export default {
                             <input
                                 type="text"
                                 style="width: 100%;"
-                                :value="JSON.stringify(item.data, null)"
+                                :value="JSON.stringify(item, null)"
                                 @blur="handleDataBlur(item, $event)">
                         </td>
                         <td>
