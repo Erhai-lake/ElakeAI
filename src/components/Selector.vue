@@ -74,7 +74,7 @@ export default {
             <ul
                 v-show="isOpen"
                 class="SelectorList"
-                :class="{'DropdownUp': dropdownDirection === 'top', 'DropdownDown': dropdownDirection === 'bottom'}">
+                :class="{'DropdownTop': dropdownDirection === 'top', 'DropdownBottom': dropdownDirection === 'bottom'}">
                 <li
                     v-for="item in selectorList"
                     :key="item[uniqueKey]"
@@ -152,13 +152,13 @@ export default {
         }
     }
 
-    &.DropdownDown {
+    &.DropdownBottom {
         top: 100%;
         border-radius: 0 0 8px 8px;
         border-top: none;
     }
 
-    &.DropdownUp {
+    &.DropdownTop {
         bottom: 100%;
         border-radius: 8px 8px 0 0;
         border-bottom: none;
