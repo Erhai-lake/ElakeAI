@@ -63,12 +63,12 @@ export default {
                         <p>别担心! 我有几个建议:</p>
                         <ol>
                             <li>🧭 检查网址是否正确</li>
-                            <li>🏠 返回<router-link to="/" style="color: #80ceff;">首页</router-link>重新导航</li>
+                            <li>🏠 返回<router-link to="/">首页</router-link>重新导航</li>
                             <li>⏳ 稍后再试, 也许页面正在休息</li>
                             <li>📞 联系网站管理员派搜救队</li>
                             <li>🍵 先喝杯茶冷静一下️</li>
                             <li>📽️ 看个
-                                <a href="//www.bilibili.com/video/BV1UT42167xb" target="_blank" style="color: #80ceff;">小短剧</a>
+                                <a href="//www.bilibili.com/video/BV1UT42167xb" target="_blank">小短剧</a>
                                 放松一下, 打发打发时间
                             </li>
                         </ol>

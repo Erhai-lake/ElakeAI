@@ -3,6 +3,11 @@ import AIInput from "@/components/AIInput.vue"
 import {useRoute} from "vue-router"
 import markdownit from "markdown-it"
 import highlight from "highlight.js"
+import markdownItTaskLists from "markdown-it-task-lists"
+import {full as emoji} from "markdown-it-emoji"
+import markdownItMathjax3 from "markdown-it-mathjax3"
+import mermaid from "mermaid"
+import panzoom from "@panzoom/panzoom"
 import "@/assets/styles/highlight.css"
 import "@/assets/styles/markdown.less"
 
@@ -19,7 +24,7 @@ export default {
                 data: [
                     {
                         "message": {
-                            "content": "你好\n# 你好!\n## 你好!!\n### 你好!!!\n#### 你好!!!!\n##### 你好!!!!!\n###### 你好!!!!!!",
+                            "content": "各种标题测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -27,14 +32,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "`\" '\ns",
+                            "content": "# 你好!\n\n## 你好!!\n\n### 你好!!!\n\n#### 你好!!!!\n\n##### 你好!!!!!\n\n###### 你好!!!!!!",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "```python\nprint(\"你好, 世界!\")\n```\n\n这是一段python代码!",
+                            "content": "文字属性测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -42,14 +47,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "```js\nfunction hello() {\n  console.log(\"Hello, world!\")\n}\n```",
+                            "content": "加粗: **加粗**\n\n斜体: *斜体*\n\n删除线: ~~删除线~~",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n无序列表",
+                            "content": "段落测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -57,14 +62,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n有序列表",
+                            "content": "123\n456\n\n489\n123\n\n456\n\n489",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "引用测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -72,14 +77,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "4你好! 今天我能帮你什么?",
+                            "content": "单行引用:\n\n> 单行引用\n\n多行引用:\n\n> 多行引用\n> 多行引用\n> 多行引用\n\n嵌套引用:\n\n> 嵌套引用\n> > 嵌套引用\n> > > 嵌套引用",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "列表测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -87,14 +92,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "5你好! 今天我能帮你什么?",
+                            "content": "无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n嵌套列表\n\n* 11111\n    * 2222",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "代码行测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -102,14 +107,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "6你好! 今天我能帮你什么?",
+                            "content": "`print(\"你好, 世界!\")`",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!你好!",
+                            "content": "代码块测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -117,14 +122,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "7你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?你好! 今天我能帮你什么?",
+                            "content": "```js\nfunction hello() {\n  console.log(\"Hello, world!\")\n}\n```\n\n这是一段JavaScript代码, lang属性写的是js",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "分割行测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -132,14 +137,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "8你好! 今天我能帮你什么?",
+                            "content": "***",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "```less\n/* 白昼主题 */\n:root, [data-theme=\"Light\"] {\n  // 滚动条轨道颜色\n  --scrollbar-track-color: rgba(255, 255, 255, 0.5);\n  // 滚动条滑块颜色\n  --scrollbar-thumb-color: rgba(193, 193, 193, 0.6);\n  // 滚动条滑块悬停颜色\n  --scrollbar-thumb-hover-color: rgba(168, 168, 168, 0.78);\n  // 背景颜色\n  --background-color: #ffffff;\n  // 背景颜色(反)\n  --background-color-Anti: #292A2D;\n  // 文字颜色\n  --text-color: #434344;\n  // 文字颜色(反)\n  --text-color-Anti: #E4E4E7;\n  // 边框颜色\n  --border-color: #6C787F;\n  // 阴影颜色\n  --box-shadow-color: rgba(0, 0, 0, 0.2);\n  // 按钮鼠标悬停背景颜色\n  --button-hover-background-color: #dadada;\n  // 按钮激活背景颜色\n  --button-active-background-color: #c3c3c3;\n  // 侧边栏容器背景颜色\n  --sidebar-expand-container-background-color: #F9FBFF;\n  // 侧边栏容器文字颜色\n  --sidebar-expand-container-text-color: #868788;\n  // 侧边栏项目悬停背景颜色\n  --sidebar-item-hover-background-color: #dadada;\n  // 聊天输入框按钮边框颜色\n  --chat-input-button-border-color: #d3d3d3;\n  // 聊天输入框附件按钮背景颜色\n  --chat-input-attachment-button-background-color: #363636;\n  // 聊天输入框附件按钮文字颜色\n  --chat-input-attachment-button-text-color: #d3d3d3;\n  // 聊天用户背景颜色\n  --chat-user-background-color: #e3f2fd;\n  // 聊天用户文字颜色\n  --chat-user-text-color: #464646;\n  // 聊天助手背景颜色\n  --chat-assistant-background-color: #f5f5f5;\n  // 聊天助手文字颜色\n  --chat-assistant-text-color: #464646;\n  // 聊天对话框时间文字颜色\n  --chat-dialogue-time-text-color: #868788;\n  // 聊天免责声明文字颜色\n  --chat-disclaimer-text-color: #868788;\n}\n\n/* 深夜主题 */\n[data-theme=\"Dark\"] {\n  // 滚动条轨道颜色\n  --scrollbar-track-color: rgba(255, 255, 255, 0.8);\n  // 滚动条滑块颜色\n  --scrollbar-thumb-color: rgba(93, 93, 93, 0.8);\n  // 滚动条滑块悬停颜色\n  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.6);\n  // 背景颜色\n  --background-color: #292A2D;\n  // 背景颜色(反)\n  --background-color-Anti: #ffffff;\n  // 文字颜色\n  --text-color: #E4E4E7;\n  // 文字颜色(反)\n  --text-color-Anti: #434344;\n  // 边框颜色\n  --border-color: #b9bdbe;\n  // 阴影颜色\n  --box-shadow-color: rgba(255, 255, 255, 0.2);\n  // 按钮鼠标悬停背景颜色\n  --button-hover-background-color: #818181;\n  // 按钮激活背景颜色\n  --button-active-background-color: #646464;\n  // 侧边栏容器背景颜色\n  --sidebar-expand-container-background-color: #212327;\n  // 侧边栏容器文字颜色\n  --sidebar-expand-container-text-color: #a9abad;\n  // 侧边栏项目悬停背景颜色\n  --sidebar-item-hover-background-color: #9D9DA0;\n  // 聊天输入框按钮边框颜色\n  --chat-input-button-border-color: #393939;\n  // 聊天输入框附件按钮背景颜色\n  --chat-input-attachment-button-background-color: #d3d3d3;\n  // 聊天输入框附件按钮文字颜色\n  --chat-input-attachment-button-text-color: #363636;\n  // 聊天用户背景颜色\n  --chat-user-background-color: #607c88;\n  // 聊天用户文字颜色\n  --chat-user-text-color: #fcfcfc;\n  // 聊天助手背景颜色\n  --chat-assistant-background-color: #484848;\n  // 聊天助手文字颜色\n  --chat-assistant-text-color: #fcfcfc;\n  // 聊天对话框时间文字颜色\n  --chat-dialogue-time-text-color: #afafaf;\n  // 聊天免责声明文字颜色\n  --chat-disclaimer-text-color: #868788;\n}\n\n* {\n  margin: 0;\n  padding: 0;\n  transition: all 0.3s ease-in-out;\n}\n\na {\n  color: var(--text-color);\n  text-decoration: none;\n}\n\nbody {\n  background-color: var(--background-color);\n  color: var(--text-color);\n}\n\n//滚动条\n::-webkit-scrollbar {\n  //垂直滚动条宽度\n  width: 10px;\n  //水平滚动条高度\n  height: 10px;\n}\n\n/* 滚动条轨道 */\n::-webkit-scrollbar-track {\n  background-color: var(--scrollbar-track-color);\n  border-radius: 4px;\n}\n\n/* 滚动条滑块 */\n::-webkit-scrollbar-thumb {\n  background-color: var(--scrollbar-thumb-color);\n  border-radius: 4px;\n}\n\n/* 滚动条滑块悬停状态 */\n::-webkit-scrollbar-thumb:hover {\n  background-color: var(--scrollbar-thumb-hover-color);\n}\n\n// 工具提示\n[tooltips] {\n  &:hover {\n    position: relative;\n\n    &::after {\n      content: attr(tooltips);\n      position: absolute;\n      top: 100%;\n      left: 50%;\n      padding: 5px;\n      transform: translateX(-50%);\n      color: var(--text-color);\n      background-color: var(--tooltips-background-color);\n      border: 1px solid var(--tooltips-border-color);\n      font-size: 12px;\n      white-space: normal;\n      word-wrap: break-word;\n      word-break: break-all;\n      z-index: 9999;\n    }\n  }\n}\n```",
+                            "content": "链接测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -147,14 +152,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "9你好! 今天我能帮你什么?",
+                            "content": "[Markdown语法](https://markdown.com.cn \"最好的markdown教程\")\n\n<https://markdown.com.cn>",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "图片测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -162,14 +167,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "10你好! 今天我能帮你什么?",
+                            "content": "![图片](https://flagcdn.com/cn.svg \"中国国旗\")",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "表格测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -177,14 +182,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "11你好! 今天我能帮你什么?",
+                            "content": "| Syntax      | Description | Test Text     |\n| :---        |    :----:   |          ---: |\n| Header      | Title       | Here's this   |\n| Paragraph   | Text        | And more      |",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "任务列表测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -192,14 +197,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "11你好! 今天我能帮你什么?",
+                            "content": "- [x] Write the press release\n- [ ] Update the website\n- [ ] Contact the media",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "Emoji测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -207,14 +212,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "13你好! 今天我能帮你什么?",
+                            "content": "去露营了！ :tent: 很快回来。",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "数学公式测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -222,14 +227,14 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "14你好! 今天我能帮你什么?",
+                            "content": "假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
                     },
                     {
                         "message": {
-                            "content": "你好!",
+                            "content": "流程图测试",
                             "role": "user"
                         },
                         "timestamp": 1698230400000
@@ -237,7 +242,7 @@ export default {
                     {
                         "model": "DeepSeek",
                         "message": {
-                            "content": "15你好! 今天我能帮你什么?",
+                            "content": "```mermaid\nflowchart TD\n    A[Christmas] -->|Get money| B(Go shopping)\n    B --> C{Let me think}\n    C -->|One| D[Laptop]\n    C -->|Two| E[iPhone]\n    C -->|Three| F[fa:fa-car Car]\n    C --> D((This is the <br  />text<br  /> in the circle))\n```",
                             "role": "assistant"
                         },
                         "timestamp": 1698230400000
@@ -262,6 +267,9 @@ export default {
         }
     },
     mounted() {
+        // 初始化Mermaid
+        this.initMermaid()
+        // 监听复制事件
         this.$el.addEventListener("click", (e) => {
             if (e.target.classList.contains("codecopy-btn")) {
                 const code = decodeURIComponent(e.target.dataset.code)
@@ -269,11 +277,20 @@ export default {
             }
         })
     },
+    updated() {
+        clearTimeout(this._mermaidInitTimer)
+        this._mermaidInitTimer = setTimeout(() => {
+            this.initMermaid()
+        }, 100)
+    },
     methods: {
         // 处理Markdown
         handleMarkdown(content) {
+            content = content.replace(/```mermaid([\s\S]*?)```/g, (match, diagram) => {
+                return `<div class="mermaid">${diagram}</div>`
+            })
             const MD = markdownit({
-                html: false,
+                html: true,
                 linkify: true,
                 typographer: true,
                 breaks: true,
@@ -289,7 +306,85 @@ export default {
                     return `<pre class="hljs"><code>${MD.utils.escapeHtml(str)}</code></pre>`
                 }
             })
+                // 任务列表
+                .use(markdownItTaskLists)
+                //Emoji
+                .use(emoji)
+                // 数学公式
+                .use(markdownItMathjax3)
             return MD.render(content)
+        },
+        // 初始化Mermaid
+        async initMermaid() {
+            try {
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: "default",
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        width: "100%"
+                    }
+                })
+
+                requestAnimationFrame(async () => {
+                    const ELEMENTS = document.querySelectorAll(".mermaid:not([data-rendered])")
+                    for (const ELEMENT of ELEMENTS) {
+                        try {
+                            ELEMENT.dataset.processed = "true"
+                            const CODE = ELEMENT.textContent.trim()
+                            const ID = "mermaid-" + Math.random().toString(36).substr(2, 9)
+                            // 渲染图表
+                            const { svg } = await mermaid.render(ID, CODE)
+                            // 创建容器
+                            const CONTAINER = document.createElement("div")
+                            CONTAINER.className = "mermaid-container"
+                            CONTAINER.setAttribute("data-rendered", "true")
+                            CONTAINER.innerHTML = svg
+                            // 插入DOM
+                            ELEMENT.replaceWith(CONTAINER)
+                            // Mermaid SVG 尺寸初始化
+                            const SVG_ELEMENT = CONTAINER.querySelector("svg")
+                            if (SVG_ELEMENT) {
+                                SVG_ELEMENT.removeAttribute("width")
+                                SVG_ELEMENT.removeAttribute("height")
+                                SVG_ELEMENT.style.width = "100%"
+                                SVG_ELEMENT.style.maxHeight = "400px"
+                                SVG_ELEMENT.style.display = "block"
+                            }
+                            // 处理 SVG 和缩放
+                            this.setupZoom(CONTAINER)
+                        } catch (error) {
+                            console.error("Mermaid 渲染错误", error)
+                            ELEMENT.innerHTML = `<div class="mermaid-error">流程图渲染失败</div>`
+                        }
+                    }
+                })
+            } catch (error) {
+                console.error("Mermaid 初始化错误", error);
+            }
+        },
+        setupZoom(container) {
+            const SVG = container.querySelector("svg")
+            if (!SVG) return
+
+            // 初始化 panzoom
+            const INSTANCE = panzoom(SVG, {
+                maxZoom: 10,
+                minZoom: 0.2,
+                initialZoom: 3,
+                bounds: true,
+                boundsPadding: 0.2,
+                zoomSpeed: 0.065,
+                zoomDoubleClickSpeed: 1
+            })
+            container.addEventListener('wheel', INSTANCE.zoomWithWheel)
+            // 防止文本选择
+            container.addEventListener("mousedown", e => {
+                if (e.target.tagName.toLowerCase() === "svg") {
+                    e.preventDefault()
+                }
+            })
         },
         // 复制代码
         copyCode(code) {
