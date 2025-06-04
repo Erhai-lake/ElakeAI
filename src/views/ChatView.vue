@@ -140,15 +140,18 @@ export default {
                             // 处理 SVG 和缩放
                             this.setupZoom(CONTAINER)
                         } catch (error) {
-                            console.error("Mermaid 渲染错误", error)
                             ELEMENT.innerHTML = `<div class="mermaid-error">流程图渲染失败</div>`
+                            console.error("[Chat View] Mermaid渲染错误", error)
+                            this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.mermaidRenderingError")}`)
                         }
                     }
                 })
             } catch (error) {
-                console.error("Mermaid 初始化错误", error);
+                console.error("[Chat View] Mermaid初始化错误", error);
+                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.mermaidInitializationError")}`)
             }
         },
+        // 处理SVG缩放
         setupZoom(container) {
             const SVG = container.querySelector("svg")
             if (!SVG) return
@@ -176,8 +179,8 @@ export default {
             navigator.clipboard.writeText(code).then(() => {
                 this.$toast.success(this.$t("views.ChatView.toast.copied"))
             }).catch((err) => {
-                console.error("复制失败", err)
-                this.$toast.error("views.ChatView.toast.copyFailed")
+                console.error("[Chat View] 复制失败", err)
+                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.copyFailed")}`)
             })
         },
         // 格式化时间戳

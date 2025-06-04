@@ -96,6 +96,8 @@
             "toast": {
                 "noChatKey": "Chat does not exist",
                 "getChatLogError": "Get chat log error",
+                "mermaidRenderingError": "Mermaid rendering error",
+                "mermaidInitializationError": "Mermaid initialization error",
                 "copied": "Copy success",
                 "copyFailed": "Copy failed"
             },
