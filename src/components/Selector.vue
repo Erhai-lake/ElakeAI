@@ -70,7 +70,7 @@ export default {
 <style scoped lang="less">
 .Selector {
     position: relative;
-    width: 240px;
+    width: 100%;
     user-select: none;
 }
 

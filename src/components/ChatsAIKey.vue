@@ -3,16 +3,15 @@ import FoldingPanel from "@/components/FoldingPanel.vue"
 import Balance from "@/services/api/Balance"
 import ModelList from "@/assets/data/ModelList.json"
 import Button from "@/components/Button.vue";
+import Selector from "@/components/Selector.vue"
 
 export default {
     name: "ChatAIKey",
-    components: {Button, FoldingPanel},
+    components: {Selector, Button, FoldingPanel},
     inject: ["$DB"],
     data() {
         return {
             status: {
-                // 下拉列表状态
-                modelStatus: false,
                 // 新增表单状态
                 addFormStatus: false,
                 // 编辑表单状态
@@ -62,16 +61,14 @@ export default {
         }
     },
     methods: {
-        // 点击外部关闭下拉列表
-        handleClickOutside(e) {
-            if (!this.$el.contains(e.target)) {
-                this.status.modelStatus = false
-            }
+        // 更新选中项
+        updateSelectedModel(newVal) {
+            this.selectedModel = newVal
         },
         // 选择模型
         selectModel(selectModel) {
             if (!selectModel) return
-            if (selectModel === this.selectedModel.name) return
+            if (selectModel === this.selectedModel.title) return
             this.selectedModel = selectModel
             this.operationSelection = []
             this.status.modelStatus = false
@@ -80,7 +77,7 @@ export default {
         // 加载Key池
         async loadKeyPools() {
             try {
-                this.keyPools = await this.$DB.APIKeys.where("model").equals(this.selectedModel.name).toArray()
+                this.keyPools = await this.$DB.APIKeys.where("model").equals(this.selectedModel.title).toArray()
                 for (const item of this.keyPools) {
                     if (!item.enabled) {
                         item.balance = "0"
@@ -143,7 +140,7 @@ export default {
                 // 写入数据库
                 await this.$DB.APIKeys.add({
                     key: crypto.randomUUID(),
-                    model: this.selectedModel.name,
+                    model: this.selectedModel.title,
                     value: this.newKey.value,
                     remark: this.newKey.remark,
                     url: this.newKey.url,
@@ -355,12 +352,6 @@ export default {
                 this.operationSelection.splice(INDEX, 1)
             }
         }
-    },
-    mounted() {
-        document.addEventListener("click", this.handleClickOutside)
-    },
-    beforeDestroy() {
-        document.removeEventListener("click", this.handleClickOutside)
     }
 }
 </script>
@@ -374,25 +365,11 @@ export default {
             <div class="ChatAIKey">
                 <div class="Top">
                     <!-- 模型选择 -->
-                    <div class="ModelSelector">
-                        <div class="SelectedModel" :class="{ 'Open': status.modelStatus }"
-                             @click="status.modelStatus = !status.modelStatus">
-                            <img class="Logo" :src="this.selectedModel.logo" :alt="this.selectedModel.name">
-                            <span class="ModelOption">{{ this.selectedModel.name }}</span>
-                        </div>
-                        <transition name="slide">
-                            <ul v-show="status.modelStatus" class="ModelList">
-                                <li
-                                    v-for="model in modelList"
-                                    :key="model.name"
-                                    @click="this.selectedModel = model"
-                                    :class="{ 'Active': model.name === this.selectedModel.name }">
-                                    <img :src="model.logo" class="Logo" :alt="model.name">
-                                    <span class="ModelOption">{{ model.name }}</span>
-                                </li>
-                            </ul>
-                        </transition>
-                    </div>
+                    <Selector
+                        :selectorSelected="selectedModel"
+                        :selectorList="modelList"
+                        uniqueKey="title"
+                        @update:selectorSelected="updateSelectedModel"/>
                     <!-- 新增按钮 -->
                     <Button @click="status.addFormStatus = !status.addFormStatus">
                         {{ $t("components.ChatAIKey.operationButton.add") }}
@@ -535,92 +512,6 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fill, 200px);
     gap: 10px;
-}
-
-.ModelSelector {
-    position: relative;
-    user-select: none;
-
-    .SelectedModel {
-        display: flex;
-        align-items: center;
-        padding: 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s;
-        background-color: var(--background-color);
-
-        &:hover {
-            border-color: #80ceff;
-            box-shadow: 0 2px 8px var(--box-shadow-color);
-        }
-    }
-
-    .Open {
-        border-radius: 8px 8px 0 0;
-    }
-
-    .ModelList {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        list-style: none;
-        border: 1px solid var(--border-color);
-        border-top: none;
-        border-radius: 0 0 8px 8px;
-        background-color: var(--background-color);
-        z-index: 100;
-        overflow: hidden;
-
-        li {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-
-            &:hover {
-                background-color: var(--background-color-Anti);
-                color: var(--background-color);
-            }
-        }
-
-        .Active {
-            --Active-Background-Color: rgba(189, 229, 255, 0.5);
-            background-color: var(--Active-Background-Color);
-            color: #292A2DFF;
-
-            &:hover {
-                background-color: var(--Active-Background-Color);
-                color: #292A2DFF;
-            }
-        }
-    }
-
-    .Logo {
-        width: 24px;
-        height: 18px;
-        margin-right: 12px;
-        border-radius: 2px;
-        object-fit: cover;
-    }
-
-    .ModelOption {
-        font-size: 14px;
-    }
-
-    .slide-enter-active,
-    .slide-leave-active {
-        transition: all 0.3s ease;
-    }
-
-    .slide-enter-from,
-    .slide-leave-to {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
 }
 
 .AddForm {
