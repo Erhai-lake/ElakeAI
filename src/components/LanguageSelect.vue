@@ -67,12 +67,17 @@ export default {
 </script>
 
 <template>
-    <Selector
-        :selectorSelected="selectedLang"
-        :selectorList="languages"
-        uniqueKey="code"
-        @update:selectorSelected="updateSelectedLang"/>
+    <div class="LanguageSelect">
+        <Selector
+            :selectorSelected="selectedLang"
+            :selectorList="languages"
+            uniqueKey="code"
+            @update:selectorSelected="updateSelectedLang"/>
+    </div>
 </template>
 
 <style scoped lang="less">
+.LanguageSelect {
+    width: 240px;
+}
 </style>
