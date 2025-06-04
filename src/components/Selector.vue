@@ -8,7 +8,8 @@ export default {
         },
         selectorList: {
             type: Array,
-            required: true
+            required: true,
+            default: () => []
         },
         uniqueKey: {
             type: String,
@@ -26,27 +27,24 @@ export default {
         }
     },
     methods: {
-        // 切换下拉列表
         toggleList() {
             if (!this.isOpen) {
                 this.calculateDropdownDirection()
             }
             this.isOpen = !this.isOpen
         },
-        // 计算下拉方向
         calculateDropdownDirection() {
             const DROPDOWN_HEIGHT = this.num * 44
-            const DROPDOWN_BOTTOM = this.$el.getBoundingClientRect().bottom + DROPDOWN_HEIGHT
+            const DROPDOWN_RECT = this.$el.getBoundingClientRect()
+            const DROPDOWN_BOTTOM = DROPDOWN_RECT.bottom + DROPDOWN_HEIGHT
             const WINDOW_HEIGHT = window.innerHeight
             this.dropdownDirection = DROPDOWN_BOTTOM > WINDOW_HEIGHT ? "top" : "bottom"
         },
-        // 点击外部关闭下拉列表
         handleClickOutside(e) {
             if (!this.$el.contains(e.target)) {
                 this.isOpen = false
             }
         },
-        // 选择选项时触发事件
         selectItem(item) {
             this.isOpen = false
             this.$emit('update:selectorSelected', item)
@@ -62,21 +60,32 @@ export default {
 </script>
 
 <template>
-    <div class="Selector">
-        <div class="SelectorSelected" :class="{ 'Open': isOpen }" @click="toggleList">
+    <div class="Selector" ref="selector">
+        <div
+            class="SelectorSelected"
+            :class="{
+                 'OpenBottom': isOpen && dropdownDirection === 'bottom',
+                 'OpenTop': isOpen && dropdownDirection === 'top'
+             }"
+            @click="toggleList">
             <img class="Images"
                  :src="selectorSelected.images"
                  :alt="selectorSelected.title"
                  v-if="selectorSelected.images">
             <span class="SelectorOption">{{ selectorSelected.title }}</span>
         </div>
-        <transition name="slide">
+        <transition :name="dropdownDirection === 'bottom' ? 'slide-down' : 'slide-up'">
             <ul
                 v-show="isOpen"
                 class="SelectorList"
-                :class="{'DropdownTop': dropdownDirection === 'top', 'DropdownBottom': dropdownDirection === 'bottom'}">
+                :class="{
+                    'DropdownTop': dropdownDirection === 'top',
+                    'DropdownBottom': dropdownDirection === 'bottom',
+                    'hasScroll': selectorList && selectorList.length > num
+                }"
+                :style="{ 'max-height': `${num * 44}px` }">
                 <li
-                    v-for="item in selectorList"
+                    v-for="item in selectorList || []"
                     :key="item[uniqueKey]"
                     @click="selectItem(item)"
                     :class="{ 'Active': item[uniqueKey] === selectorSelected[uniqueKey] }">
@@ -111,22 +120,28 @@ export default {
     }
 }
 
-.Open {
+.OpenBottom {
     border-radius: 8px 8px 0 0;
+}
+
+.OpenTop {
+    border-radius: 0 0 8px 8px;
 }
 
 .SelectorList {
     position: absolute;
-    top: 100%;
     left: 0;
     right: 0;
     list-style: none;
     border: 1px solid var(--border-color);
-    border-top: none;
-    border-radius: 0 0 8px 8px;
     background-color: var(--background-color);
     z-index: 100;
     overflow: hidden;
+    max-height: 132px;
+
+    &.hasScroll {
+        overflow-y: auto;
+    }
 
     li {
         display: flex;
@@ -177,14 +192,27 @@ export default {
     font-size: 14px;
 }
 
-.slide-enter-active,
-.slide-leave-active {
+//向下展开的动画
+.slide-down-enter-active,
+.slide-down-leave-active {
     transition: all 0.3s ease;
 }
 
-.slide-enter-from,
-.slide-leave-to {
+.slide-down-enter-from,
+.slide-down-leave-to {
     opacity: 0;
     transform: translateY(-10px);
+}
+
+//向上展开的动画
+.slide-up-enter-active,
+.slide-up-leave-active {
+    transition: all 0.3s ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
 }
 </style>
