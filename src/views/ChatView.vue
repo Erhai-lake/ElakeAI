@@ -17,253 +17,21 @@ export default {
     components: {AIInput},
     data() {
         return {
+            route: useRoute(),
             data: {
-                key: "04c05bb4-2d94-49f2-b41f-d9e8ec57f11d",
-                title: "Chat History",
-                timestamp: 1698230400000,
-                data: [
-                    {
-                        "message": {
-                            "content": "各种标题测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "# 你好!\n\n## 你好!!\n\n### 你好!!!\n\n#### 你好!!!!\n\n##### 你好!!!!!\n\n###### 你好!!!!!!",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "文字属性测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "加粗: **加粗**\n\n斜体: *斜体*\n\n删除线: ~~删除线~~",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "段落测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "123\n456\n\n489\n123\n\n456\n\n489",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "引用测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "单行引用:\n\n> 单行引用\n\n多行引用:\n\n> 多行引用\n> 多行引用\n> 多行引用\n\n嵌套引用:\n\n> 嵌套引用\n> > 嵌套引用\n> > > 嵌套引用",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "列表测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n嵌套列表\n\n* 11111\n    * 2222",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "代码行测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "`print(\"你好, 世界!\")`",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "代码块测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "```js\nfunction hello() {\n  console.log(\"Hello, world!\")\n}\n```\n\n这是一段JavaScript代码, lang属性写的是js",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "分割行测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "***",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "链接测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "[Markdown语法](https://markdown.com.cn \"最好的markdown教程\")\n\n<https://markdown.com.cn>",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "图片测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "![图片](https://flagcdn.com/cn.svg \"中国国旗\")",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "表格测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "| Syntax      | Description | Test Text     |\n| :---        |    :----:   |          ---: |\n| Header      | Title       | Here's this   |\n| Paragraph   | Text        | And more      |",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "任务列表测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "- [x] Write the press release\n- [ ] Update the website\n- [ ] Contact the media",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "Emoji测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "去露营了！ :tent: 很快回来。",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "数学公式测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "message": {
-                            "content": "流程图测试",
-                            "role": "user"
-                        },
-                        "timestamp": 1698230400000
-                    },
-                    {
-                        "model": "DeepSeek",
-                        "message": {
-                            "content": "```mermaid\nflowchart TD\n    A[Christmas] -->|Get money| B(Go shopping)\n    B --> C{Let me think}\n    C -->|One| D[Laptop]\n    C -->|Two| E[iPhone]\n    C -->|Three| F[fa:fa-car Car]\n    C --> D((This is the <br  />text<br  /> in the circle))\n```",
-                            "role": "assistant"
-                        },
-                        "timestamp": 1698230400000
-                    }
-                ]
+                key: null,
+                title: null,
+                timestamp: null,
+                data: [],
             }
         }
     },
     async created() {
-        try {
-            const ROUTE = useRoute()
-            const CHAT_KEY = ROUTE.params.key
-            // 检查ChatKey是否存在
-            const CHAT_KEY_DATA = await this.$DB.Chats.get(CHAT_KEY)
-            if (!CHAT_KEY_DATA) {
-                this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
-                this.$router.push("/")
-            }
-        } catch (error) {
-            console.error("[Chat View] 聊天记录获取错误", error)
-            this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
+        await this.initChatView()
+    },
+    watch: {
+        "route.params.key"(newKey) {
+            this.initChatView(newKey)
         }
     },
     mounted() {
@@ -284,6 +52,23 @@ export default {
         }, 100)
     },
     methods: {
+        // 初始化聊天界面
+        async initChatView(newKey) {
+            try {
+                const CHAT_DATA = newKey ? await this.$DB.Chats.get(newKey) : await this.$DB.Chats.get(this.route.params.key)
+                // 检查ChatKey是否存在
+                if (!CHAT_DATA) {
+                    this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
+                    this.$router.push("/")
+                    return
+                }
+                // 写入聊天记录
+                this.data = CHAT_DATA
+            } catch (error) {
+                console.error("[Chat View] 聊天记录获取错误", error)
+                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
+            }
+        },
         // 处理Markdown
         handleMarkdown(content) {
             content = content.replace(/```mermaid([\s\S]*?)```/g, (match, diagram) => {
@@ -335,7 +120,7 @@ export default {
                             const CODE = ELEMENT.textContent.trim()
                             const ID = "mermaid-" + Math.random().toString(36).substr(2, 9)
                             // 渲染图表
-                            const { svg } = await mermaid.render(ID, CODE)
+                            const {svg} = await mermaid.render(ID, CODE)
                             // 创建容器
                             const CONTAINER = document.createElement("div")
                             CONTAINER.className = "mermaid-container"
