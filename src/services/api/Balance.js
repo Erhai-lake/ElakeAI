@@ -11,16 +11,16 @@ export default {
      * @throws {Error} 包含详细错误信息
      */
     async getBalance(model, key, url) {
-        if (!model || typeof model !== "string") {
-            throw new Error("无效的模型名称: 必须提供非空字符串")
-        }
-        if (!key || typeof key !== "string") {
-            throw new Error("无效的API Key: 必须提供非空字符串")
-        }
-        if (!url || typeof url !== "string") {
-            throw new Error("无效的API URL: 必须提供非空字符串")
-        }
         try {
+            if (!model || typeof model !== "string") {
+                throw new Error("无效的模型名称: 必须提供非空字符串")
+            }
+            if (!key || typeof key !== "string") {
+                throw new Error("无效的API Key: 必须提供非空字符串")
+            }
+            if (!url || typeof url !== "string") {
+                throw new Error("无效的API URL: 必须提供非空字符串")
+            }
             let Balance = "0"
             switch (model) {
                 case "DeepSeek":

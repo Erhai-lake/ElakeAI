@@ -1,33 +1,40 @@
 import axios from "axios"
 import General from "@/services/api/General"
+import DB from "@/services/Dexie.js"
 
 export default {
-    async chat(chatKey,model, key, url, content, webSearch) {
-        if (!model || typeof model!== "string") {
-            throw new Error("无效的模型名称: 必须提供非空字符串")
-        }
-        if (!key || typeof key !== "string") {
-            throw new Error("无效的API Key: 必须提供非空字符串")
-        }
-        if (!url || typeof url !== "string") {
-            throw new Error("无效的API URL: 必须提供非空字符串")
-        }
-        if (!content || typeof content !== "string") {
-            throw new Error("无效的API Content: 必须提供非空字符串")
-        }
-        if (webSearch && typeof webSearch!== "boolean") {
-            throw new Error("无效的API WebSearch: 必须提供布尔值")
-        }
-        console.log({chatKey, model, key, url, content, webSearch})
+    async chat(chatKey, model, key, url, content, webSearch) {
         try {
+            if (!model || typeof model !== "string") {
+                throw new Error("无效的模型名称: 必须提供非空字符串")
+            }
+            if (!key || typeof key !== "string") {
+                throw new Error("无效的API Key: 必须提供非空字符串")
+            }
+            if (!url || typeof url !== "string") {
+                throw new Error("无效的API URL: 必须提供非空字符串")
+            }
+            if (!content || typeof content !== "string") {
+                throw new Error("无效的API Content: 必须提供非空字符串")
+            }
+            if (webSearch && typeof webSearch !== "boolean") {
+                throw new Error("无效的API WebSearch: 必须提供布尔值")
+            }
+            console.log({chatKey, model, key, url, content, webSearch})
+            if (key === "auto") {
+                throw new Error("很抱歉, 目前不支持自动选择API Key, 请手动选择, Key池还没写完呢")
+            }
             switch (model) {
                 case "DeepSeek":
-                    if (webSearch) {
+                    console.log(await DB.APIKeys.get(key))
+                // 获取聊天记录
 
-                    } else {
-
-                    }
-                    break
+                // if (webSearch) {
+                //
+                // } else {
+                //
+                // }
+                // break
                 case "ChatGPT":
                     break
                 default:
