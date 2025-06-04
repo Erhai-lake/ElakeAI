@@ -98,7 +98,7 @@ export default {
         async getKeyBalance(key) {
             try {
                 const KEY_DATA = await this.$DB.APIKeys.get(key)
-                const BALANCE = await Balance.getBalance(KEY_DATA.model ,KEY_DATA.value, KEY_DATA.url)
+                const BALANCE = await Balance.getBalance(key)
                 if (!BALANCE) {
                     this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {key: key}))
                     await this.$DB.APIKeys.update(KEY_DATA.key, {enabled: false})

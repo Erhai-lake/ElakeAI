@@ -1,34 +1,28 @@
 import axios from "axios"
 import General from "@/services/api/General"
+import DB from "@/services/Dexie.js"
 
 export default {
     /**
      * 查询API余额
-     * @param {string} model - 模型名称
      * @param {string} key - API Key值
-     * @param {string} url - API基础URL
      * @returns {Promise<Object>} 余额信息
      * @throws {Error} 包含详细错误信息
      */
-    async getBalance(model, key, url) {
+    async getBalance(key) {
         try {
-            if (!model || typeof model !== "string") {
-                throw new Error("无效的模型名称: 必须提供非空字符串")
-            }
             if (!key || typeof key !== "string") {
                 throw new Error("无效的API Key: 必须提供非空字符串")
             }
-            if (!url || typeof url !== "string") {
-                throw new Error("无效的API URL: 必须提供非空字符串")
-            }
+            const KEY_DATA = await DB.APIKeys.get(key)
             let Balance = "0"
-            switch (model) {
+            switch (KEY_DATA.model) {
                 case "DeepSeek":
                     const API_CLIENT = axios.create({
-                        baseURL: url,
+                        baseURL: KEY_DATA.url,
                         headers: {
                             "Content-Type": "application/json",
-                            "Authorization": `Bearer ${key}`
+                            "Authorization": `Bearer ${KEY_DATA.value}`
                         },
                         timeout: 5000
                     })
@@ -42,12 +36,11 @@ export default {
                     Balance = "无法查询"
                     break
                 default:
-                    throw new Error(`不支持的模型: ${model}`)
+                    throw new Error(`不支持的模型: ${KEY_DATA.model}`)
             }
             return {
                 balance: Balance,
                 key: key,
-                url: url,
                 timestamp: new Date().toISOString()
             }
         } catch (error) {
@@ -57,7 +50,6 @@ export default {
                 return {
                     balance: "请求超时",
                     key: key,
-                    url: url,
                     timestamp: new Date().toISOString()
                 }
             }
