@@ -4,14 +4,18 @@ import ModelList from "@/assets/data/ModelList.json"
 import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
 import Selector from "@/components/Selector.vue";
-import balance from "@/services/api/Balance";
 import {useRoute} from "vue-router";
-import Balance from "@/services/api/Balance";
 
 export default defineComponent({
     name: "AIInput",
     components: {Selector},
     inject: ["$DB"],
+    props: {
+        data: {
+            type: Object,
+            required: true
+        }
+    },
     data() {
         return {
             route: useRoute(),
@@ -107,28 +111,90 @@ export default defineComponent({
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
             }
         },
+        // 滚动到底部
+        scrollToBottom() {
+            this.$nextTick(() => {
+                const container = document.querySelector('.MessageList')
+                if (container) {
+                    container.scrollTop = container.scrollHeight
+                }
+            })
+        },
         // 发送
         async Send() {
             // 检查输入框是否为空
             if (this.ChatInput.trim() === "") return
             // 判断路由
             if (this.route.name === "ChatKey") {
-                const CHAT = await Chat.chat(this.selectedKey.key, this.route.params.key, this.ChatInput.trim(), this.enableWebSearch)
-                if (CHAT.error) {
-                    this.$toast.warning(this.$t(`api.Chat.${CHAT.data}`))
+                try {
+                    // 先显示用户消息
+                    const userMessage = {
+                        message: {
+                            content: this.ChatInput.trim(),
+                            role: "user"
+                        },
+                        timestamp: Date.now()
+                    }
+                    // 添加临时AI消息占位
+                    const aiMessagePlaceholder = {
+                        model: this.selectedKey.title,
+                        message: {
+                            content: "",
+                            role: "assistant"
+                        },
+                        // 确保在用户消息之后
+                        timestamp: Date.now() + 1
+                    }
+                    // 更新本地数据
+                    const newData = {
+                        ...this.data,
+                        data: [...this.data.data, userMessage, aiMessagePlaceholder]
+                    }
+                    // 触发父组件更新
+                    this.$emit('update:data', newData)
+                    this.scrollToBottom()
+                    // 发送请求
+                    const CHAT = await Chat.chat(
+                        this.selectedKey.key,
+                        this.route.params.key,
+                        this.ChatInput.trim(),
+                        this.enableWebSearch
+                    )
+                    if (CHAT.error) {
+                        this.$toast.warning(this.$t(`api.Chat.${CHAT.data}`))
+                        // 回滚更新
+                        const rolledBackData = {
+                            ...this.data,
+                            data: this.data.data.filter(msg => msg.timestamp !== aiMessagePlaceholder.timestamp)
+                        }
+                        this.$emit('update:data', rolledBackData)
+                        // 更新本地数据
+                        await this.$DB.Chats.update(this.route.params.key, {
+                            data: rolledBackData.data
+                        })
+                    }
+                    this.ChatInput = ""
+                } catch (error) {
+                    console.error("[Chats AI Key]  发送消息错误", error)
+                    this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.sendMessageError")}`)
                 }
-                console.log(CHAT)
             } else {
-                const NEW_CHAY_KEY = crypto.randomUUID()
-                this.$router.push(`/chat/${NEW_CHAY_KEY}`)
-                await this.$DB.Chats.add({
-                    key: NEW_CHAY_KEY,
-                    title: this.$t("components.AIInput.newChat"),
-                    timestamp: Date.now(),
-                    data: []
-                })
-                // 触发事件 更新ChatsList
-                EventBus.emit("chatListGet")
+                try {
+                    const NEW_CHAT_KEY = crypto.randomUUID()
+                    this.$router.push(`/chat/${NEW_CHAT_KEY}`)
+
+                    await this.$DB.Chats.add({
+                        key: NEW_CHAT_KEY,
+                        title: this.$t("components.AIInput.newChat"),
+                        timestamp: Date.now(),
+                        data: []
+                    })
+                    // 触发事件 更新ChatsList
+                    EventBus.emit("chatListGet")
+                } catch (error) {
+                    console.error("[Chats AI Key]  创建新聊天错误", error)
+                    this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.createNewChatError")}`)
+                }
             }
         }
     }

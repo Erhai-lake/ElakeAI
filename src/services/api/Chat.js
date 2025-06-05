@@ -1,6 +1,7 @@
 import axios from "axios"
 import General from "@/services/api/General"
 import DB from "@/services/Dexie.js"
+import EventBus from "@/services/EventBus"
 
 const REQUEST_TIMEOUT = 5000
 
@@ -16,13 +17,13 @@ const response = (APIKey, chatKey, data, error) => {
 }
 
 // DeepSeek
-const DeepSeek = async (keyData, messages, content) => {
+const DeepSeek = async (keyData, chatkey, messages, content, streamCallback) => {
     console.log("DeepSeek", {keyData, messages, content})
     return "NULL"
 }
 
 // ChatGPT
-const ChatGPT = async (keyData, messages, content) => {
+const ChatGPT = async (keyData, chatkey, messages, content, streamCallback) => {
     console.log("ChatGPT", {keyData, messages, content})
     const API_CLIENT = axios.create({
         baseURL: keyData.url,
@@ -36,16 +37,64 @@ const ChatGPT = async (keyData, messages, content) => {
         // model: keyData.model,
         model: "gpt-3.5-turbo",
         messages: messages,
-        stream: false
+        stream: true
     }
-    const RESPONSE = await API_CLIENT.post("v1/chat/completions", PAYLOAD)
-    if (!General.isValidApiResponse(RESPONSE)) {
-        console.error("[Chat Api] 获取聊天错误", RESPONSE.data)
-        return response(keyData.key, "getChatError", true)
-    }
-    return {
-        message: RESPONSE.data.choices[0].message.content,
-        totalTokens: RESPONSE.data.usage.total_tokens
+    try {
+        const RESPONSE = await API_CLIENT.post("v1/chat/completions", PAYLOAD)
+        const READER = RESPONSE.data.body.getReader()
+        const DECODER = new TextDecoder()
+        let fullResponse = ""
+        let buffer = ""
+        while (true) {
+            const {done, value} = await reader.read()
+            if (done) break
+            const chunk = decoder.decode(value, {stream: true})
+            buffer += chunk
+            // 处理可能的多条消息
+            const lines = buffer.split("\n")
+            // 保留不完整的行
+            buffer = lines.pop()
+            for (const line of lines) {
+                if (line.trim() === "") continue
+                if (line === "data: [DONE]") {
+                    if (streamCallback) {
+                        streamCallback({
+                            partial: "",
+                            full: fullResponse,
+                            done: true
+                        })
+                    }
+                    return
+                }
+                try {
+                    if (line.startsWith("data: ")) {
+                        const data = JSON.parse(line.substring(6))
+                        if (data.choices?.[0]?.delta?.content) {
+                            const content = data.choices[0].delta.content
+                            fullResponse += content
+
+                            if (streamCallback) {
+                                streamCallback({
+                                    partial: content,
+                                    full: fullResponse,
+                                    done: false
+                                })
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error("[Chat Api] 流式数据解析错误", error)
+                    return response(keyData.key, chatkey, "streamingDataParsingError", true)
+                }
+            }
+        }
+        return {
+            message: fullResponse,
+            error: false
+        }
+    } catch (error) {
+        console.error("[Chat Api] 流式请求错误", error)
+        return response(keyData.key, chatkey, "streamingRequestError", true)
     }
 }
 
@@ -74,56 +123,84 @@ export default {
         if (APIKey === "auto") {
             return response(APIKey, chatKey, "NoAuto", true)
         }
-        // 获取Key信息
-        let keyData = null
+        // 获取信息
+        let keyData, chatData
         try {
-            keyData = await DB.APIKeys.get(APIKey)
-            if (!keyData) {
-                return response(APIKey, chatKey, "keyDoesNotExist", true)
+            [keyData, chatData] = await Promise.all([
+                DB.APIKeys.get(APIKey),
+                DB.Chats.get(chatKey)
+            ])
+            if (!keyData || !chatData) {
+                console.error("[Balance Api] Key或ChatKey不存在")
+                return response(APIKey, chatKey, keyData ? "chatKeyDoesNotExist" : "keyDoesNotExist", true)
             }
         } catch (error) {
-            console.error("[Balance Api] 获取Key信息错误", error)
+            console.error("[Balance Api] 获取Key或ChatKey信息错误", error)
             return response(APIKey, chatKey, "getKeyError", true)
         }
-        // 获取Key信息
-        let chatData = null
-        try {
-            chatData = await DB.Chats.get(chatKey)
-            if (!chatData) {
-                return response(APIKey, chatKey, "chatKeyDoesNotExist", true)
-            }
-        } catch (error) {
-            console.error("[Balance Api] 获取Key信息错误", error)
-            return response(APIKey, chatKey, "getChatKeyError", true)
-        }
-        // console.log({keyData, chatData, content, webSearch})
         try {
             const QUERY_STRATEGY = STRATEGIES[keyData.model]
             if (!QUERY_STRATEGY) {
                 console.error("不支持的模型")
                 return response(APIKey, "unsupportedModel", true)
             }
-            // 拼接上下文聊天
-            let messages = chatData.data.map(item => item.message)
-            messages.push({content: content, role: "user"})
-            // 请求
-            const RESPONSE = await QUERY_STRATEGY(keyData, messages, content)
-            // 更新上下文聊天
-            const DATA = [
-                ...chatData.data,
-                {
-                    message: {content: content, role: "user"},
-                    timestamp: new Date().getTime(),
-                },
-                {
-                    model: keyData.model,
-                    message: {content: RESPONSE.message, role: "assistant"},
-                    timestamp: new Date().getTime(),
-                }
+            // 构建消息历史
+            const messages = [
+                ...chatData.data.map(item => item.message),
+                {content, role: "user"}
             ]
-            // 更新数据库
-            await DB.Chats.update(chatKey, {data: DATA})
-            return response(APIKey, chatKey, RESPONSE, false)
+            const FINAL_RESPONSE = {
+                message: "",
+                totalTokens: 0
+            }
+            // 添加用户消息到历史
+            const USER_MESSAGE = {
+                message: {content, role: "user"},
+                timestamp: Date.now()
+            }
+            // 先保存用户消息
+            const TEMP_DATA = [...chatData.data, USER_MESSAGE]
+            await DB.Chats.update(chatKey, {data: TEMP_DATA})
+            // 处理流式响应
+            const HANDLE_STREAM = async ({partial, full, done, totalTokens}) => {
+                if (done) {
+                    FINAL_RESPONSE.message = full
+                    FINAL_RESPONSE.totalTokens = totalTokens
+                    // 保存完整响应
+                    const ASSISTANT_MESSAGE = {
+                        model: keyData.model,
+                        message: {content: full, role: "assistant"},
+                        timestamp: Date.now()
+                    }
+
+                    // 使用事务确保数据一致性
+                    await DB.transaction("rw", DB.Chats, async () => {
+                        const chat = await DB.Chats.get(chatKey)
+                        await DB.Chats.update(chatKey, {
+                            data: [...chat.data, ASSISTANT_MESSAGE]
+                        })
+                    })
+                    EventBus.emit("stream-end", {chatKey, message: full})
+                } else {
+                    // 实时更新最后一条消息
+                    await DB.transaction("rw", DB.Chats, async () => {
+                        const chat = await DB.Chats.get(chatKey)
+                        if (chat.data.length > 0) {
+                            const lastMessage = chat.data[chat.data.length - 1]
+                            if (lastMessage.message.role === "assistant") {
+                                lastMessage.message.content = full
+                                await DB.Chats.update(chatKey, {
+                                    data: chat.data
+                                })
+                            }
+                        }
+                    })
+                    EventBus.emit("stream-update", {chatKey, partial, full})
+                }
+            }
+            // 调用策略
+            const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages, content, HANDLE_STREAM)
+            return response(APIKey, chatKey, RESULT, false)
         } catch (error) {
             if (error.code === "ECONNABORTED") {
                 // 处理超时错误

@@ -23,7 +23,15 @@
             "chatKeyDoesNotExist": "Chat session key does not exist",
             "getChatKeyError": "Failed to retrieve chat session key",
             "unsupportedModel": "Unsupported model",
-            "getChatError": "Error fetching chat"
+            "getChatError": "Error fetching chat",
+            "streamingRequestError": "Error sending streaming request",
+            "streamingDataParsingError": "Error parsing streaming data",
+            "streamError": "Error in streaming",
+            "requestTimeout": "Request timeout",
+            "badRequest": "Bad request",
+            "networkError": "Network error",
+            "noResponse": "No response",
+            "unknownError": "Unknown error"
         }
     },
     "components": {
@@ -31,7 +39,9 @@
             "inputTip": "Please enter your question",
             "newChat": "New Chat",
             "toast": {
-                "loadKeyPoolError": "Failed to load Key pool"
+                "loadKeyPoolError": "Failed to load Key pool",
+                "sendMessageError": "Failed to send message",
+                "createNewChatError": "Failed to create new chat"
             },
             "function": {
                 "appendix": "Appendix",

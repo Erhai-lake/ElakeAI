@@ -2,7 +2,7 @@ import {createApp} from 'vue'
 
 const eventBus = createApp({}).config.globalProperties
 
-eventBus.$on = function (event, callback) {
+eventBus.on = function (event, callback) {
     if (!this._events) this._events = {}
     if (!this._events[event]) {
         this._events[event] = []
@@ -10,7 +10,7 @@ eventBus.$on = function (event, callback) {
     this._events[event].push(callback)
 }
 
-eventBus.$off = function (event, callback) {
+eventBus.off = function (event, callback) {
     if (!this._events || !this._events[event]) return
     if (!callback) {
         this._events[event] = []

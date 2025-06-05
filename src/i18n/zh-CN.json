@@ -23,7 +23,15 @@
             "chatKeyDoesNotExist": "ChatKey不存在",
             "getChatKeyError": "获取ChatKey错误",
             "unsupportedModel": "不支持的模型",
-            "getChatError": "获取聊天错误"
+            "getChatError": "获取聊天错误",
+            "streamingRequestError": "流式请求错误",
+            "streamingDataParsingError": "流式数据解析错误",
+            "streamError": "流错误",
+            "requestTimeout": "请求超时",
+            "badRequest": "错误的请求",
+            "networkError": "网络错误",
+            "noResponse": "无响应",
+            "unknownError": "未知错误"
         }
     },
     "components": {
@@ -31,7 +39,9 @@
             "inputTip": "请输入您的问题",
             "newChat": "新建对话",
             "toast": {
-                "loadKeyPoolError": "加载Key池错误"
+                "loadKeyPoolError": "加载Key池错误",
+                "sendMessageError": "发送消息错误",
+                "createNewChatError": "创建新对话错误"
             },
             "function": {
                 "appendix": "附录",

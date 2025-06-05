@@ -10,7 +10,7 @@ import mermaid from "mermaid"
 import panzoom from "@panzoom/panzoom"
 import "@/assets/styles/highlight.css"
 import "@/assets/styles/markdown.less"
-import EventBus from "@/services/EventBus";
+import EventBus from "@/services/EventBus"
 
 export default {
     name: "ChatView",
@@ -49,6 +49,29 @@ export default {
                 this.copyCode(code)
             }
         })
+        // 流式监听
+        this.streamUpdateHandler = ({chatKey, partial, full}) => {
+            if (this.data.key === chatKey) {
+                // 更新最后一条消息内容
+                const lastIndex = this.data.data.length - 1
+                if (lastIndex >= 0) {
+                    // 使用 Vue.set 确保响应式更新
+                    this.$set(this.data.data[lastIndex].message, "content", full)
+                    // 滚动到底部
+                    this.$nextTick(() => {
+                        this.scrollToBottom()
+                    })
+                }
+            }
+        }
+        this.streamEndHandler = ({chatKey, message}) => {
+            if (this.data.key === chatKey) {
+                // 确保消息完整保存
+                this.initChatView(chatKey)
+            }
+        }
+        EventBus.on("stream-update", this.streamUpdateHandler)
+        EventBus.on("stream-end", this.streamEndHandler)
     },
     updated() {
         clearTimeout(this._mermaidInitTimer)
@@ -56,7 +79,21 @@ export default {
             this.initMermaid()
         }, 100)
     },
+    beforeUnmount() {
+        EventBus.off("stream-update", this.streamUpdateHandler)
+        EventBus.off("stream-end", this.streamEndHandler)
+    },
     methods: {
+        handleDataUpdate(newData) {
+            this.data = newData
+        },
+        // 滚动到底部
+        scrollToBottom() {
+            const container = this.$el.querySelector(".MessageList")
+            if (container) {
+                container.scrollTop = container.scrollHeight
+            }
+        },
         // 初始化聊天界面
         async initChatView(newKey) {
             try {
@@ -274,7 +311,7 @@ export default {
         <div></div>
         <!-- 底部输入框 -->
         <div class="InputArea">
-            <AIInput/>
+            <AIInput :data="data" @update:data="handleDataUpdate"/>
         </div>
         <!-- AI提示信息 -->
         <div class="AIDisclaimer">{{ $t("views.ChatView.aiDisclaimer") }}</div>
