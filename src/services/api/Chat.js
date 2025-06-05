@@ -31,7 +31,8 @@ const ChatGPT = async (keyData, chatkey, messages, content, streamCallback) => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${keyData.value}`
         },
-        timeout: REQUEST_TIMEOUT
+        timeout: REQUEST_TIMEOUT,
+        responseType: "stream"
     })
     const PAYLOAD = {
         // model: keyData.model,
@@ -41,22 +42,22 @@ const ChatGPT = async (keyData, chatkey, messages, content, streamCallback) => {
     }
     try {
         const RESPONSE = await API_CLIENT.post("v1/chat/completions", PAYLOAD)
-        const READER = RESPONSE.data.body.getReader()
+        const READER = RESPONSE.data.getReader()
         const DECODER = new TextDecoder()
         let fullResponse = ""
         let buffer = ""
         while (true) {
-            const {done, value} = await reader.read()
+            const {done, value} = await READER.read()
             if (done) break
-            const chunk = decoder.decode(value, {stream: true})
-            buffer += chunk
+            const CHUNK = DECODER.decode(value, {stream: true})
+            buffer += CHUNK
             // 处理可能的多条消息
-            const lines = buffer.split("\n")
+            const LINES = buffer.split("\n")
             // 保留不完整的行
-            buffer = lines.pop()
-            for (const line of lines) {
-                if (line.trim() === "") continue
-                if (line === "data: [DONE]") {
+            buffer = LINES.pop()
+            for (const LINE of LINES) {
+                if (LINE.trim() === "") continue
+                if (LINE === "data: [DONE]") {
                     if (streamCallback) {
                         streamCallback({
                             partial: "",
@@ -64,11 +65,14 @@ const ChatGPT = async (keyData, chatkey, messages, content, streamCallback) => {
                             done: true
                         })
                     }
-                    return
+                    return {
+                        message: fullResponse,
+                        error: false
+                    }
                 }
                 try {
-                    if (line.startsWith("data: ")) {
-                        const data = JSON.parse(line.substring(6))
+                    if (LINE.startsWith("data: ")) {
+                        const data = JSON.parse(LINE.substring(6))
                         if (data.choices?.[0]?.delta?.content) {
                             const content = data.choices[0].delta.content
                             fullResponse += content
