@@ -6,16 +6,8 @@ const REQUEST_TIMEOUT = 5000
 
 // 返回
 const response = (APIKey, balance, error) => {
-    if (error) {
-        return {
-            error: true,
-            balance: balance,
-            key: APIKey,
-            timestamp: new Date().toISOString()
-        }
-    }
     return {
-        error: false,
+        error: error,
         balance: balance,
         key: APIKey,
         timestamp: new Date().toISOString()
