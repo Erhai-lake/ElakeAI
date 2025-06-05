@@ -2,70 +2,124 @@ import axios from "axios"
 import General from "@/services/api/General"
 import DB from "@/services/Dexie.js"
 
-export default {
-    async chat(chatKey, model, key, url, content, webSearch) {
-        try {
-            if (!model || typeof model !== "string") {
-                throw new Error("无效的模型名称: 必须提供非空字符串")
-            }
-            if (!key || typeof key !== "string") {
-                throw new Error("无效的API Key: 必须提供非空字符串")
-            }
-            if (!url || typeof url !== "string") {
-                throw new Error("无效的API URL: 必须提供非空字符串")
-            }
-            if (!content || typeof content !== "string") {
-                throw new Error("无效的API Content: 必须提供非空字符串")
-            }
-            if (webSearch && typeof webSearch !== "boolean") {
-                throw new Error("无效的API WebSearch: 必须提供布尔值")
-            }
-            console.log({chatKey, model, key, url, content, webSearch})
-            if (key === "auto") {
-                throw new Error("很抱歉, 目前不支持自动选择API Key, 请手动选择, Key池还没写完呢")
-            }
-            switch (model) {
-                case "DeepSeek":
-                    console.log(await DB.APIKeys.get(key))
-                // 获取聊天记录
+const REQUEST_TIMEOUT = 5000
 
-                // if (webSearch) {
-                //
-                // } else {
-                //
-                // }
-                // break
-                case "ChatGPT":
-                    break
-                default:
-                    throw new Error(`不支持的模型: ${model}`)
+// 返回
+const response = (APIKey, chatKey, data, error) => {
+    if (error) {
+        return {
+            error: true,
+            data: data,
+            key: APIKey,
+            chatKey: chatKey,
+            timestamp: new Date().toISOString()
+        }
+    }
+    return {
+        error: false,
+        data: data,
+        key: APIKey,
+        chatKey: chatKey,
+        timestamp: new Date().toISOString()
+    }
+}
+
+// DeepSeek
+const DeepSeek = async (keyData, chatData, content) => {
+    console.log("DeepSeek", {keyData, chatData, content})
+    return "NULL"
+}
+
+// ChatGPT
+const ChatGPT = async (keyData, chatData, content) => {
+    console.log("ChatGPT", {keyData, chatData, content})
+    return "NULL"
+}
+
+// 策略
+const STRATEGIES = {
+    DeepSeek: DeepSeek,
+    ChatGPT: ChatGPT
+}
+
+export default {
+    async chat(APIKey, chatKey, content, webSearch) {
+        // 参数验证
+        if (!APIKey || typeof APIKey !== "string") {
+            return response(APIKey, chatKey, "invalidKey", true)
+        }
+        if (!chatKey || typeof chatKey !== "string") {
+            return response(chatKey, chatKey, "invalidChatKey", true)
+        }
+        if (!content || typeof content !== "string") {
+            return response(content, chatKey, "invalidContent", true)
+        }
+        if (typeof webSearch !== "boolean") {
+            return response(webSearch, chatKey, "invalidWebSearch", true)
+        }
+        // 拦截自动选择
+        if (APIKey === "auto") {
+            return response(APIKey, chatKey, "NoAuto", true)
+        }
+        // 获取Key信息
+        let keyData = null
+        try {
+            keyData = await DB.APIKeys.get(APIKey)
+            if (!keyData) {
+                return response(APIKey, chatKey, "keyDoesNotExist", true)
             }
         } catch (error) {
-            if (error.code === 'ECONNABORTED') {
-                // 处理超时错误
-                console.error("[Chat Api]请求超时:", error.message)
-                return {
-                    balance: "请求超时",
-                    key: key,
-                    url: url,
-                    timestamp: new Date().toISOString()
-                }
+            console.error("[Balance Api] 获取Key信息错误", error)
+            return response(APIKey, chatKey, "getKeyError", true)
+        }
+        // 获取Key信息
+        let chatData = null
+        try {
+            chatData = await DB.Chats.get(chatKey)
+            if (!chatData) {
+                return response(APIKey, chatKey, "chatKeyDoesNotExist", true)
             }
-            if (error.response) {
+        } catch (error) {
+            console.error("[Balance Api] 获取Key信息错误", error)
+            return response(APIKey, chatKey, "getChatKeyError", true)
+        }
+        console.log({keyData, chatData, content, webSearch})
+
+        try {
+            const QUERY_STRATEGY = STRATEGIES[keyData.model]
+            if (!QUERY_STRATEGY) {
+                console.error("不支持的模型")
+                return response(APIKey, "unsupportedModel", true)
+            }
+            return response(APIKey, chatKey, await QUERY_STRATEGY(keyData, chatData, content), false)
+        } catch (error) {
+            if (error.code === "ECONNABORTED") {
+                // 处理超时错误
+                console.error("[Balance Api] 请求超时", error.message)
+                return response(APIKey, chatKey, "requestTimeout", true)
+            } else if (error.code === "ERR_BAD_REQUEST") {
+                // 处理错误的请求
+                console.error("[Balance Api] 错误的请求", error.message)
+                return response(APIKey, chatKey, "badRequest", true)
+            } else if (error.code === "ERR_NETWORK") {
+                // 处理网络错误
+                console.error("[Balance Api] 网络错误", error.message)
+                return response(APIKey, chatKey, "networkError", true)
+            } else if (error.response) {
                 // 服务器返回了响应但状态码不在2xx范围
+                console.error("[Balance Api] 获取余额错误", error.response.data)
                 if (!General.isValidApiResponse(error.response)) {
-                    return false
+                    return response(APIKey, chatKey, "getBalanceError", true)
                 }
-                console.error("[Chat Api]获取余额错误:", error.response.data)
             } else if (error.request) {
                 // 请求已发出但没有收到响应
-                console.error("[Chat Api]无响应:", error.request)
-                return false
+                console.error("[Balance Api] 无响应", error.request)
+                return response(APIKey, chatKey, "noResponse", true)
             } else {
                 // 请求配置出错
-                console.error("[Chat Api]配置错误:", error.message)
+                console.error("[Balance Api] 未知错误", error.message)
+                return response(APIKey, chatKey, "unknownError", true)
             }
-            return false
         }
     }
 }

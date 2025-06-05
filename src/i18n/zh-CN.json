@@ -11,6 +11,18 @@
             "networkError": "网络错误",
             "noResponse": "无响应",
             "unknownError": "未知错误"
+        },
+        "Chat": {
+            "NoAuto": "很抱歉, 目前不支持自动选择API Key, 请手动选择, Key池还没写完呢",
+            "invalidKey": "无效的Key",
+            "invalidChatKey": "无效的ChatKey",
+            "invalidContent": "无效的内容",
+            "invalidWebSearch": "无效的WebSearch",
+            "keyDoesNotExist": "Key不存在",
+            "getKeyError": "获取Key错误",
+            "chatKeyDoesNotExist": "ChatKey不存在",
+            "getChatKeyError": "获取ChatKey错误",
+            "unsupportedModel": "不支持的模型"
         }
     },
     "components": {

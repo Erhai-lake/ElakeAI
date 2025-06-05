@@ -9,7 +9,7 @@ const response = (APIKey, balance, error) => {
     if (error) {
         return {
             error: true,
-            balance: "invalidKey",
+            balance: balance,
             key: APIKey,
             timestamp: new Date().toISOString()
         }
@@ -23,7 +23,7 @@ const response = (APIKey, balance, error) => {
 }
 
 // DeepSeek
-const queryDeepSeekBalance = async (keyData) => {
+const DeepSeek = async (keyData) => {
     const API_CLIENT = axios.create({
         baseURL: keyData.url,
         headers: {
@@ -41,14 +41,14 @@ const queryDeepSeekBalance = async (keyData) => {
 }
 
 // ChatGPT
-const queryChatGPTBalance = async (keyData) => {
+const ChatGPT = async (keyData) => {
     return "NULL"
 }
 
 // 余额查询策略
-const BALANCE_QUERY_STRATEGIES = {
-    DeepSeek: queryDeepSeekBalance,
-    ChatGPT: queryChatGPTBalance
+const STRATEGIES = {
+    DeepSeek: DeepSeek,
+    ChatGPT: ChatGPT
 }
 
 export default {
@@ -74,9 +74,8 @@ export default {
             console.error("[Balance Api] 获取Key信息错误", error)
             return response(APIKey, "getKeyError", true)
         }
-        // 查询余额
         try {
-            const QUERY_STRATEGY = BALANCE_QUERY_STRATEGIES[keyData.model]
+            const QUERY_STRATEGY = STRATEGIES[keyData.model]
             if (!QUERY_STRATEGY) {
                 console.error("不支持的模型")
                 return response(APIKey, "unsupportedModel", true)

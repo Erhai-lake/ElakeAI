@@ -5,6 +5,8 @@ import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
 import Selector from "@/components/Selector.vue";
 import balance from "@/services/api/Balance";
+import {useRoute} from "vue-router";
+import Balance from "@/services/api/Balance";
 
 export default defineComponent({
     name: "AIInput",
@@ -12,6 +14,7 @@ export default defineComponent({
     inject: ["$DB"],
     data() {
         return {
+            route: useRoute(),
             // 模型列表
             modelList: ModelList,
             // Key列表
@@ -109,8 +112,12 @@ export default defineComponent({
             // 检查输入框是否为空
             if (this.ChatInput.trim() === "") return
             // 判断路由
-            if (this.$route.name === "ChatKey") {
-                await Chat.chat(crypto.randomUUID(), this.selectedModel.title, this.selectedKey.key, this.selectedModel.url, this.ChatInput.trim(), this.enableWebSearch)
+            if (this.route.name === "ChatKey") {
+                const CHAT = await Chat.chat(this.selectedKey.key, this.route.params.key, this.ChatInput.trim(), this.enableWebSearch)
+                if (CHAT.error) {
+                    this.$toast.warning(this.$t(`api.Chat.${CHAT.data}`))
+                }
+                console.log(CHAT)
             } else {
                 const NEW_CHAY_KEY = crypto.randomUUID()
                 this.$router.push(`/chat/${NEW_CHAY_KEY}`)
