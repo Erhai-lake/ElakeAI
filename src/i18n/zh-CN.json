@@ -22,7 +22,8 @@
             "getKeyError": "获取Key错误",
             "chatKeyDoesNotExist": "ChatKey不存在",
             "getChatKeyError": "获取ChatKey错误",
-            "unsupportedModel": "不支持的模型"
+            "unsupportedModel": "不支持的模型",
+            "getChatError": "获取聊天错误"
         }
     },
     "components": {

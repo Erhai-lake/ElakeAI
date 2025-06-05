@@ -22,7 +22,8 @@
             "getKeyError": "Failed to retrieve API Key",
             "chatKeyDoesNotExist": "Chat session key does not exist",
             "getChatKeyError": "Failed to retrieve chat session key",
-            "unsupportedModel": "Unsupported model"
+            "unsupportedModel": "Unsupported model",
+            "getChatError": "Error fetching chat"
         }
     },
     "components": {
