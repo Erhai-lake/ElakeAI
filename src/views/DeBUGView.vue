@@ -81,8 +81,7 @@ export default {
                 timestamp: Date.now(),
                 data: [{"message":{"content":"各种标题测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"# 你好!\n\n## 你好!!\n\n### 你好!!!\n\n#### 你好!!!!\n\n##### 你好!!!!!\n\n###### 你好!!!!!!","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"文字属性测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"加粗: **加粗**\n\n斜体: *斜体*\n\n删除线: ~~删除线~~","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"段落测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"123\n456\n\n489\n123\n\n456\n\n489","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"引用测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"单行引用:\n\n> 单行引用\n\n多行引用:\n\n> 多行引用\n> 多行引用\n> 多行引用\n\n嵌套引用:\n\n> 嵌套引用\n> > 嵌套引用\n> > > 嵌套引用","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"列表测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n嵌套列表\n\n* 11111\n    * 2222","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"代码行测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"`print(\"你好, 世界!\")`","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"代码块测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"```js\nfunction hello() {\n  console.log(\"Hello, world!\")\n}\n```\n\n这是一段JavaScript代码, lang属性写的是js","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"分割行测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"***","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"链接测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"[Markdown语法](https://markdown.com.cn \"最好的markdown教程\")\n\n<https://markdown.com.cn>","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"图片测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"![图片](https://flagcdn.com/cn.svg \"中国国旗\")","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"表格测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"| Syntax      | Description | Test Text     |\n| :---        |    :----:   |          ---: |\n| Header      | Title       | Here's this   |\n| Paragraph   | Text        | And more      |","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"任务列表测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"- [x] Write the press release\n- [ ] Update the website\n- [ ] Contact the media","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"Emoji测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"去露营了！ :tent: 很快回来。","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"数学公式测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$","role":"assistant"},"timestamp":1698230400000},{"message":{"content":"流程图测试","role":"user"},"timestamp":1698230400000},{"model":"DeepSeek","message":{"content":"```mermaid\nflowchart TD\n    A[Christmas] -->|Get money| B(Go shopping)\n    B --> C{Let me think}\n    C -->|One| D[Laptop]\n    C -->|Two| E[iPhone]\n    C -->|Three| F[fa:fa-car Car]\n    C --> D((This is the <br  />text<br  /> in the circle))\n```","role":"assistant"},"timestamp":1698230400000}]
             })
-            // 触发事件 更新ChatsList
-            EventBus.emit("chatListGet")
+            EventBus.emit("[HomeSidebar] chatListGet")
             await this.chatsLoading()
             this.$toast.success("生成完毕")
         },
@@ -101,8 +100,7 @@ export default {
             try {
                 await this.$DB.Chats.clear()
                 await this.chatsLoading()
-                // 触发事件 更新ChatsList
-                EventBus.emit("chatListGet")
+                EventBus.emit("[HomeSidebar] chatListGet")
                 this.$toast.success("Chats数据库已清空")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据清空错误", error)
@@ -115,8 +113,7 @@ export default {
             try {
                 await this.$DB.Chats.delete(item)
                 this.chats = this.chats.filter(chat => chat.key!== item)
-                // 触发事件 更新ChatsList
-                EventBus.emit("chatListGet")
+                EventBus.emit("[HomeSidebar] chatListGet")
                 this.$toast.success("数据删除成功")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据删除错误", error)
@@ -130,8 +127,7 @@ export default {
             try {
                 await this.$DB.Chats.update(item.key, {title: NEW_VALUE})
                 item.title = NEW_VALUE
-                // 触发事件 更新ChatsList
-                EventBus.emit("chatListGet")
+                EventBus.emit("[HomeSidebar] chatListGet")
                 this.$toast.success("标题更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 标题更新错误", error)
@@ -147,8 +143,7 @@ export default {
                 const parsedData = JSON.parse(RAW_VALUE)
                 await this.$DB.Chats.update(item.key, {data: parsedData})
                 item.data = JSON.parse(JSON.stringify(parsedData))
-                // 触发事件 更新ChatsList
-                EventBus.emit("chatListGet")
+                EventBus.emit("[HomeSidebar] chatListGet")
                 this.$toast.success("数据更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 数据更新错误", error)

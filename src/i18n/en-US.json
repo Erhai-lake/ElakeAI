@@ -13,7 +13,7 @@
             "unknownError": "Unknown error"
         },
         "Chat": {
-            "NoAuto": "Auto-selection of API Keys is currently unavailable. Please manually select a key. (Key Pool feature still in development)",
+            "noAuto": "Auto-selection of API Keys is currently unavailable. Please manually select a key. (Key Pool feature still in development)",
             "invalidKey": "Invalid API Key",
             "invalidChatKey": "Invalid Chat Session Key",
             "invalidContent": "Invalid content",
@@ -23,15 +23,12 @@
             "chatKeyDoesNotExist": "Chat session key does not exist",
             "getChatKeyError": "Failed to retrieve chat session key",
             "unsupportedModel": "Unsupported model",
-            "getChatError": "Error fetching chat",
+            "httpError": "HTTP error",
+            "noResponseBody": "No response body",
             "streamingRequestError": "Error sending streaming request",
             "streamingDataParsingError": "Error parsing streaming data",
             "streamError": "Error in streaming",
-            "requestTimeout": "Request timeout",
-            "badRequest": "Bad request",
-            "networkError": "Network error",
-            "noResponse": "No response",
-            "unknownError": "Unknown error"
+            "chatProcessingError": "Error processing chat"
         }
     },
     "components": {

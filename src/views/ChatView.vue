@@ -49,29 +49,20 @@ export default {
                 this.copyCode(code)
             }
         })
-        // 流式监听
-        this.streamUpdateHandler = ({chatKey, partial, full}) => {
-            if (this.data.key === chatKey) {
-                // 更新最后一条消息内容
-                const lastIndex = this.data.data.length - 1
-                if (lastIndex >= 0) {
-                    // 使用 Vue.set 确保响应式更新
-                    this.$set(this.data.data[lastIndex].message, "content", full)
-                    // 滚动到底部
-                    this.$nextTick(() => {
-                        this.scrollToBottom()
-                    })
-                }
-            }
-        }
-        this.streamEndHandler = ({chatKey, message}) => {
-            if (this.data.key === chatKey) {
-                // 确保消息完整保存
-                this.initChatView(chatKey)
-            }
-        }
-        EventBus.on("stream-update", this.streamUpdateHandler)
-        EventBus.on("stream-end", this.streamEndHandler)
+        // 监听用户消息
+        EventBus.on("[ChatView] userMessage", this.userMessage)
+        // 监听消息流
+        EventBus.on("[ChatView] messageStream", this.messageStream)
+        // 监听消息完成
+        EventBus.on("[ChatView] messageComplete", this.messageComplete)
+    },
+    beforeUnmount() {
+        // 移除用户消息监听
+        EventBus.off("[ChatView] userMessage", this.userMessage)
+        // 移除消息流监听
+        EventBus.on("[ChatView] messageStream", this.messageStream)
+        // 移除消息完成监听
+        EventBus.off("[ChatView] messageComplete", this.messageComplete)
     },
     updated() {
         clearTimeout(this._mermaidInitTimer)
@@ -79,25 +70,20 @@ export default {
             this.initMermaid()
         }, 100)
     },
-    beforeUnmount() {
-        EventBus.off("stream-update", this.streamUpdateHandler)
-        EventBus.off("stream-end", this.streamEndHandler)
-    },
     methods: {
-        handleDataUpdate(newData) {
-            this.data = newData
-        },
         // 滚动到底部
         scrollToBottom() {
-            const container = this.$el.querySelector(".MessageList")
-            if (container) {
-                container.scrollTop = container.scrollHeight
-            }
+            this.$nextTick(() => {
+                const CONTAINER = this.$el.querySelector(".MessageList")
+                if (CONTAINER) {
+                    CONTAINER.scrollTop = CONTAINER.scrollHeight
+                }
+            })
         },
         // 初始化聊天界面
-        async initChatView(newKey) {
+        async initChatView(chatKey) {
             try {
-                const CHAT_DATA = newKey ? await this.$DB.Chats.get(newKey) : await this.$DB.Chats.get(this.route.params.key)
+                const CHAT_DATA = await this.$DB.Chats.get(chatKey || this.route.params.key)
                 // 检查ChatKey是否存在
                 if (!CHAT_DATA) {
                     this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
@@ -106,6 +92,7 @@ export default {
                 }
                 // 写入聊天记录
                 this.data = CHAT_DATA
+                this.scrollToBottom()
             } catch (error) {
                 console.error("[Chat View] 聊天记录获取错误", error)
                 this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
@@ -113,11 +100,43 @@ export default {
         },
         // 处理Markdown
         handleMarkdown(content) {
+            // 1. 先处理mermaid的div形式
+            content = content.replace(/<div class="?mermaid"?>([\s\S]*?)<\/div>/g, (match, diagram) => {
+                return `<div class="mermaid">${diagram}</div>`
+            })
+            // 2. 处理代码块形式的mermaid
+            content = content.replace(/```mermaid([\s\S]*?)```/g, (match, diagram) => {
+                return `<div class="mermaid">${diagram}</div>`
+            })
+            // 3. 转义所有其他HTML标签（保留mermaid不转义）
+            const tempDiv = document.createElement("div")
+            tempDiv.innerHTML = content
+            // 找到所有mermaid图表并临时存储
+            const mermaidCharts = []
+            const mermaidElements = tempDiv.querySelectorAll(".mermaid")
+            mermaidElements.forEach((el, index) => {
+                mermaidCharts.push(el.outerHTML)
+                el.outerHTML = `<!--MERMAID-${index}-->`
+            })
+            // 转义剩余HTML
+            let escapedContent = tempDiv.innerHTML
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+            // 恢复mermaid图表
+            mermaidCharts.forEach((chart, index) => {
+                escapedContent = escapedContent.replace(`<!--MERMAID-${index}-->`, chart)
+            })
+
+            if (!content.startsWith("```mermaid")) {
+                content = content.replace(/[<>]/g, function(m) {
+                    return {"<": "&lt;", ">": "&gt;"}[m]
+                })
+            }
             content = content.replace(/```mermaid([\s\S]*?)```/g, (match, diagram) => {
                 return `<div class="mermaid">${diagram}</div>`
             })
             const MD = markdownit({
-                html: true,
+                html: false,
                 linkify: true,
                 typographer: true,
                 breaks: true,
@@ -208,7 +227,7 @@ export default {
                 zoomSpeed: 0.065,
                 zoomDoubleClickSpeed: 1
             })
-            container.addEventListener('wheel', INSTANCE.zoomWithWheel)
+            container.addEventListener("wheel", INSTANCE.zoomWithWheel)
             // 防止文本选择
             container.addEventListener("mousedown", e => {
                 if (e.target.tagName.toLowerCase() === "svg") {
@@ -241,7 +260,7 @@ export default {
             this.editingTitle.value = this.data.title
             this.editingTitle.show = true
             this.$nextTick(() => {
-                const input = this.$el.querySelector('.TopTitle input')
+                const input = this.$el.querySelector(".TopTitle input")
                 if (input) {
                     input.focus()
                     input.select()
@@ -281,6 +300,37 @@ export default {
             } else if (e.key === "Escape") {
                 this.cancelEditTitle()
             }
+        },
+        // 用户消息
+        async userMessage(message) {
+            this.data.data.push({
+                message: {
+                    content: message,
+                    role: "user"
+                },
+                timestamp: Date.now()
+            })
+
+        },
+        // 消息流
+        async messageStream(message) {
+            const LAST_MESSAGE = this.data.data[this.data.data.length - 1]
+            if (LAST_MESSAGE && LAST_MESSAGE.message.role === "assistant") {
+                LAST_MESSAGE.message.content += message.message
+            } else {
+                this.data.data.push({
+                    model: message.model,
+                    message: {
+                        content: message.message,
+                        role: "assistant"
+                    },
+                    timestamp: Date.now()
+                })
+            }
+        },
+        // 消息完成
+        async messageComplete() {
+            console.log("消息完成")
         }
     }
 }

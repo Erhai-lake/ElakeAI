@@ -18,12 +18,12 @@ export default defineComponent({
         }
         // 初始化时获取聊天列表
         this.chatListGet()
-        // 监听事件
-        EventBus.on("chatListGet", this.chatListGet)
+        // 监听更新列表事件
+        EventBus.on("[HomeSidebar] chatListGet", this.chatListGet)
     },
     beforeUnmount() {
-        // 移除事件监听器
-        EventBus.off("chatListGet", this.chatListGet)
+        // 移除更新列表事件监听
+        EventBus.off("[HomeSidebar] chatListGet", this.chatListGet)
     },
     methods: {
         /**
