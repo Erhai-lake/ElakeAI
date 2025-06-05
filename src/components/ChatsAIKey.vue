@@ -79,14 +79,14 @@ export default {
                 this.keyPools = await this.$DB.APIKeys.where("model").equals(this.selectedModel.title).toArray()
                 for (const item of this.keyPools) {
                     if (!item.enabled) {
-                        item.balance = "0"
+                        item.balance = "NULL"
                         continue
                     }
                     const BALANCE = await this.getKeyBalance(item.key)
                     item.balance = BALANCE
                     if (!BALANCE) {
                         item.enabled = false
-                        item.balance = "0"
+                        item.balance = "NULL"
                     }
                 }
             } catch (error) {
@@ -99,8 +99,9 @@ export default {
             try {
                 const KEY_DATA = await this.$DB.APIKeys.get(key)
                 const BALANCE = await Balance.getBalance(key)
-                if (!BALANCE) {
-                    this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {key: key}))
+                if (BALANCE.error) {
+                    this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {remark: KEY_DATA.remark}))
+                    this.$toast.warning(this.$t(`api.Balance.${BALANCE.balance}`))
                     await this.$DB.APIKeys.update(KEY_DATA.key, {enabled: false})
                     return false
                 }
@@ -283,15 +284,15 @@ export default {
                     keyItem.balance = BALANCE
                     if (!BALANCE) {
                         keyItem.enabled = false
-                        keyItem.balance = "0"
+                        keyItem.balance = "NULL"
                     }
                 } else {
-                    keyItem.balance = "0"
+                    keyItem.balance = "NULL"
                 }
                 this.$toast.success(this.$t(`components.ChatAIKey.toast.${NEW_STATUS ? 'enable' : 'disable'}Success`))
             } catch (error) {
                 console.error("[Chats AI Key] 状态更新错误", error)
-                this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.statusUpdateFailed")}`)
+                this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)
             }
         },
         // 切换Key启用状态(批量)
@@ -316,11 +317,11 @@ export default {
                             updatedItem.balance = BALANCE
                             if (!BALANCE) {
                                 updatedItem.enabled = false
-                                updatedItem.balance = "0"
+                                updatedItem.balance = "NULL"
                                 await this.$DB.APIKeys.update(item.key, {enabled: false})
                             }
                         } else {
-                            updatedItem.balance = "0"
+                            updatedItem.balance = "NULL"
                         }
                         UPDATED_POOLS.push(updatedItem)
                     } else {
