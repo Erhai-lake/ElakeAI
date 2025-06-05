@@ -4,6 +4,7 @@ import ModelList from "@/assets/data/ModelList.json"
 import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
 import Selector from "@/components/Selector.vue";
+import balance from "@/services/api/Balance";
 
 export default defineComponent({
     name: "AIInput",
@@ -88,13 +89,14 @@ export default defineComponent({
         async loadKeyPools() {
             try {
                 const DEFAULT = {key: "auto", title: "自动"}
-                const KEYS_DATA = await this.$DB.APIKeys.where("model").equals(this.selectedModel.title).toArray()
+                const KEYS_DATA = await this.$DB.APIKeys
+                    .where("model")
+                    .equals(this.selectedModel.title)
+                    .and(key => key.enabled)
+                    .toArray()
                 this.keyPools = [
                     DEFAULT,
-                    ...KEYS_DATA.map(key => ({
-                        key: key.key,
-                        title: key.remark
-                    }))
+                    ...KEYS_DATA.map(key => ({key: key.key, title: key.remark}))
                 ]
                 this.selectedKey = DEFAULT
             } catch (error) {
