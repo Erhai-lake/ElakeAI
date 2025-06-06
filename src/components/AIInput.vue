@@ -1,5 +1,5 @@
 <script>
-import {defineComponent, ref, onMounted, onUnmounted} from "vue"
+import {defineComponent, ref} from "vue"
 import ModelList from "@/assets/data/ModelList.json"
 import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
@@ -46,26 +46,27 @@ export default defineComponent({
     },
     setup() {
         const textareaRef = ref(null)
-        const adjustTextareaHeight = () => {
-            if (!textareaRef.value) return
-            textareaRef.value.style.height = "auto"
-            const newHeight = Math.min(textareaRef.value.scrollHeight, 600)
-            textareaRef.value.style.height = `${Math.max(newHeight, 50)}px`
-        }
-        onMounted(() => {
-            if (textareaRef.value) {
-                adjustTextareaHeight()
-                textareaRef.value.addEventListener("input", adjustTextareaHeight)
-            }
-        })
-        onUnmounted(() => {
-            if (textareaRef.value) {
-                textareaRef.value.removeEventListener("input", adjustTextareaHeight)
-            }
-        })
         return {textareaRef}
     },
+    mounted() {
+        if (this.textareaRef) {
+            this.adjustTextareaHeight()
+            this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
+        }
+    },
+    unmounted() {
+        if (this.textareaRef) {
+            this.textareaRef.removeEventListener("input", this.adjustTextareaHeight)
+        }
+    },
     methods: {
+        // 调整输入框高度
+        adjustTextareaHeight() {
+            if (!this.textareaRef) return
+            this.textareaRef.style.height = "auto"
+            const newHeight = Math.min(this.textareaRef.scrollHeight, 600)
+            this.textareaRef.style.height = `${Math.max(newHeight, 50)}px`
+        },
         // 更新选中项
         updateSelectedModel(newVal) {
             this.selectedModel = newVal
@@ -109,53 +110,88 @@ export default defineComponent({
         async Send() {
             // 检查输入框是否为空
             if (this.ChatInput.trim() === "") return
-            // 判断路由
-            if (this.route.name === "ChatKey") {
-                try {
-                    // 发送请求
-                    const CHAT = await Chat.chat(
-                        this.selectedKey.key,
-                        this.route.params.key,
-                        this.ChatInput.trim(),
-                        this.enableWebSearch
-                    )
-                    if (CHAT.error) {
-                        this.$toast.warning(this.$t(`api.Chat.${CHAT.data}`))
-                        return
-                    }
-                    this.ChatInput = ""
-                } catch (error) {
-                    console.error("[Chats AI Key]  发送消息错误", error)
-                    this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.sendMessageError")}`)
-                }
-            } else {
-                try {
-                    const NEW_CHAT_KEY = crypto.randomUUID()
-                    this.$router.push(`/chat/${NEW_CHAT_KEY}`)
-                    await this.$DB.Chats.add({
-                        key: NEW_CHAT_KEY,
-                        title: this.$t("components.AIInput.newChat"),
-                        timestamp: Date.now(),
-                        data: []
-                    })
-                    EventBus.emit("[HomeSidebar] chatListGet")
-                    // 发送请求
-                    const CHAT = await Chat.chat(
-                        this.selectedKey.key,
-                        this.route.params.key,
-                        this.ChatInput.trim(),
-                        this.enableWebSearch
-                    )
-                    if (CHAT.error) {
-                        this.$toast.warning(this.$t(`api.Chat.${CHAT.data}`))
-                        return
-                    }
-                    this.ChatInput = ""
-                } catch (error) {
-                    console.error("[Chats AI Key]  创建新聊天错误", error)
-                    this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.createNewChatError")}`)
-                }
+            const CONTENT = this.ChatInput
+            this.ChatInput = ""
+            await this.$nextTick(() => {
+                this.adjustTextareaHeight()
+            })
+            if (this.route.name !== "ChatKey") {
+                await this.createNewChat(CONTENT)
+                return
             }
+            await this.sendMessage(CONTENT)
+
+        },
+        // 创建新的聊天
+        async createNewChat(content) {
+            try {
+                const NEW_CHAT_KEY = crypto.randomUUID()
+                this.$router.push(`/chat/${NEW_CHAT_KEY}`)
+                await this.$DB.Chats.add({
+                    key: NEW_CHAT_KEY,
+                    title: this.$t("components.AIInput.newChat"),
+                    timestamp: Date.now(),
+                    data: []
+                })
+                await this.sendMessage(content)
+                EventBus.emit("[HomeSidebar] chatListGet")
+            } catch (error) {
+                this.ChatInput = content
+                await this.$nextTick(() => {
+                    this.adjustTextareaHeight()
+                })
+                console.error("[Chats AI Key]  创建新聊天错误", error)
+                this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.createNewChatError")}`)
+            }
+        },
+        // 发送消息
+        async sendMessage(content) {
+            try {
+                // 发送请求
+                const CHAT = await Chat.chat(
+                    this.selectedKey.key,
+                    this.route.params.key,
+                    content.trim(),
+                    this.enableWebSearch
+                )
+                if (CHAT.error) {
+                    this.ChatInput = content
+                    await this.$nextTick(() => {
+                        this.adjustTextareaHeight()
+                    })
+                    this.$toast.warning(this.$t(`api.Chat.${CHAT.data}`))
+                }
+            } catch (error) {
+                this.ChatInput = content
+                await this.$nextTick(() => {
+                    this.adjustTextareaHeight()
+                })
+                console.error("[Chats AI Key]  发送消息错误", error)
+                this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.sendMessageError")}`)
+            }
+        },
+        // 处理换行
+        handleNewLine(event) {
+            event.preventDefault()
+            const textarea = event.target
+            const cursorPos = textarea.selectionStart
+            const currentValue = this.ChatInput
+
+            // 获取当前行的缩进
+            const lineStart = currentValue.lastIndexOf("\n", cursorPos - 1) + 1
+            const currentLine = currentValue.substring(lineStart, cursorPos)
+            const indent = currentLine.match(/^\s*/)[0]
+
+            // 插入换行符和缩进
+            this.ChatInput = currentValue.substring(0, cursorPos) + "\n" + indent + currentValue.substring(cursorPos)
+
+            this.$nextTick(() => {
+                this.adjustTextareaHeight()
+                // 设置光标位置到新行的缩进后面
+                textarea.selectionStart = cursorPos + 1 + indent.length
+                textarea.selectionEnd = cursorPos + 1 + indent.length
+                textarea.focus()
+            })
         }
     }
 })
@@ -200,7 +236,10 @@ export default defineComponent({
             :placeholder="$t('components.AIInput.inputTip')"
             ref="textareaRef"
             spellcheck="false"
-            v-model="ChatInput"></textarea>
+            v-model="ChatInput"
+            @keydown.enter.exact.prevent="Send"
+            @keydown.ctrl.enter.exact="handleNewLine"
+            @keydown.shift.enter.exact="handleNewLine"></textarea>
         <!--按钮栏-->
         <div class="ButtonBar">
             <!--附件-->
