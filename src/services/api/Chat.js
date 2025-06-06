@@ -6,11 +6,11 @@ import EventBus from "@/services/EventBus"
 // 返回
 const response = (APIKey, chatKey, data, error) => {
     return {
-        error: error,
+        error: error || "",
         data: data,
         key: APIKey,
         chatKey: chatKey,
-        timestamp: new Date().getTime()
+        timestamp: Date.now()
     }
 }
 
@@ -59,7 +59,7 @@ const handleStreamResponse = async (response, model) => {
 
 // DeepSeek
 const DeepSeek = async (keyData, chatKey, messages) => {
-    return "NULL"
+    return response(keyData.key, chatKey, "NULL")
 }
 
 // ChatGPT
@@ -80,16 +80,16 @@ const ChatGPT = async (keyData, chatKey, messages) => {
         })
         if (!RESPONSE.ok) {
             console.error(`[Chat Api] HTTP错误, 状态码: ${RESPONSE.status}`)
-            return response(keyData.key, chatKey, "httpError", true)
+            return response(keyData.key, chatKey, "NULL", "httpError")
         }
         if (!RESPONSE.body) {
             console.error("[Chat Api] 无响应体")
-            return response(keyData.key, chatKey, "noResponseBody", true)
+            return response(keyData.key, chatKey, "NULL", "noResponseBody")
         }
         return await handleStreamResponse(RESPONSE, keyData.model)
     } catch (error) {
         console.error("[Chat Api] 流式请求错误", error)
-        return response(keyData.key, chatKey, "streamingRequestError", true)
+        return response(keyData.key, chatKey, "NULL", "streamingRequestError")
     }
 }
 
@@ -103,20 +103,20 @@ export default {
     async chat(APIKey, chatKey, content, webSearch) {
         // 参数验证
         if (!APIKey || typeof APIKey !== "string") {
-            return response(APIKey, chatKey, "invalidKey", true)
+            return response(APIKey, chatKey, "NULL", "invalidKey")
         }
         if (!chatKey || typeof chatKey !== "string") {
-            return response(chatKey, chatKey, "invalidChatKey", true)
+            return response(APIKey, chatKey, "NULL", "invalidChatKey")
         }
         if (!content || typeof content !== "string") {
-            return response(content, chatKey, "invalidContent", true)
+            return response(APIKey, chatKey, "NULL", "invalidContent")
         }
         if (typeof webSearch !== "boolean") {
-            return response(webSearch, chatKey, "invalidWebSearch", true)
+            return response(APIKey, chatKey, "NULL", "invalidWebSearch")
         }
         // 拦截自动选择
         if (APIKey === "auto") {
-            return response(APIKey, chatKey, "noAuto", true)
+            return response(APIKey, chatKey, "NULL", "noAuto")
         }
         // 获取信息
         let keyData, chatData
@@ -127,17 +127,17 @@ export default {
             ])
             if (!keyData || !chatData) {
                 console.error("[Balance Api] Key或ChatKey不存在")
-                return response(APIKey, chatKey, keyData ? "chatKeyDoesNotExist" : "keyDoesNotExist", true)
+                return response(APIKey, chatKey, "NULL", keyData ? "chatKeyDoesNotExist" : "keyDoesNotExist")
             }
         } catch (error) {
             console.error("[Balance Api] 获取Key或ChatKey信息错误", error)
-            return response(APIKey, chatKey, "getKeyError", true)
+            return response(APIKey, chatKey, "NULL", "getKeyError")
         }
         try {
             const QUERY_STRATEGY = STRATEGIES[keyData.model]
             if (!QUERY_STRATEGY) {
                 console.error("不支持的模型")
-                return response(APIKey, "unsupportedModel", true)
+                return response(APIKey, chatKey, "NULL", "unsupportedModel")
             }
             // 构建消息历史
             const messages = [
@@ -163,10 +163,10 @@ export default {
                     }
                 ]
             })
-            return response(APIKey, chatKey, RESULT, false)
+            return RESULT
         } catch (error) {
             console.error("[Chat Api] 聊天处理错误", error)
-            return response(APIKey, chatKey, "chatProcessingError", true)
+            return response(APIKey, chatKey, "NULL", "chatProcessingError")
         }
     }
 }

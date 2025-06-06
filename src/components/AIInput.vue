@@ -159,7 +159,7 @@ export default defineComponent({
                     await this.$nextTick(() => {
                         this.adjustTextareaHeight()
                     })
-                    this.$toast.warning(this.$t(`api.Chat.${CHAT.data}`))
+                    this.$toast.warning(this.$t(`api.Chat.${CHAT.error}`))
                 }
             } catch (error) {
                 this.ChatInput = content

@@ -354,7 +354,7 @@ export default {
                 this.data.data.push({
                     model: message.model,
                     message: {
-                        content: "",
+                        content: message.message,
                         role: "assistant"
                     },
                     timestamp: Date.now()

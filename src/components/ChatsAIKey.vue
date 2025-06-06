@@ -101,7 +101,7 @@ export default {
                 const BALANCE = await Balance.getBalance(key)
                 if (BALANCE.error) {
                     this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {remark: KEY_DATA.remark}))
-                    this.$toast.warning(this.$t(`api.Balance.${BALANCE.balance}`))
+                    this.$toast.warning(this.$t(`api.Balance.${BALANCE.error}`))
                     await this.$DB.APIKeys.update(KEY_DATA.key, {enabled: false})
                     return false
                 }
