@@ -53,6 +53,12 @@ export default defineComponent({
             this.adjustTextareaHeight()
             this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
         }
+        // 监听消息流完成
+        EventBus.on("[ChatView] messageComplete", this.messageComplete)
+    },
+    beforeUnmount() {
+        // 移除消息流完成监听
+        EventBus.off("[ChatView] messageComplete", this.messageComplete)
     },
     unmounted() {
         if (this.textareaRef) {
@@ -102,8 +108,8 @@ export default defineComponent({
                 ]
                 this.selectedKey = DEFAULT
             } catch (error) {
-                console.error("[Chats AI Key] 加载Key池错误", error)
-                this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
+                console.error("[AI Input] 加载Key池错误", error)
+                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
             }
         },
         // 发送
@@ -140,8 +146,8 @@ export default defineComponent({
                 await this.$nextTick(() => {
                     this.adjustTextareaHeight()
                 })
-                console.error("[Chats AI Key]  创建新聊天错误", error)
-                this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.createNewChatError")}`)
+                console.error("[AI Input]  创建新聊天错误", error)
+                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.createNewChatError")}`)
             }
         },
         // 发送消息
@@ -166,8 +172,8 @@ export default defineComponent({
                 await this.$nextTick(() => {
                     this.adjustTextareaHeight()
                 })
-                console.error("[Chats AI Key]  发送消息错误", error)
-                this.$toast.error(`[Chats AI Key] ${this.$t("components.AIInput.toast.sendMessageError")}`)
+                console.error("[AI Input]  发送消息错误", error)
+                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.sendMessageError")}`)
             }
         },
         // 处理换行
@@ -192,6 +198,10 @@ export default defineComponent({
                 textarea.selectionEnd = cursorPos + 1 + indent.length
                 textarea.focus()
             })
+        },
+        // 消息流完成
+        messageComplete() {
+            console.log("[AI Input] 消息流完成")
         }
     }
 })

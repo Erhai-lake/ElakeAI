@@ -65,7 +65,7 @@ export default {
         EventBus.on("[ChatView] userMessage", this.userMessage)
         // 监听消息流
         EventBus.on("[ChatView] messageStream", this.messageStream)
-        // 监听消息完成
+        // 监听消息流完成
         EventBus.on("[ChatView] messageComplete", this.messageComplete)
     },
     beforeUnmount() {
@@ -78,7 +78,7 @@ export default {
         EventBus.off("[ChatView] userMessage", this.userMessage)
         // 移除消息流监听
         EventBus.on("[ChatView] messageStream", this.messageStream)
-        // 移除消息完成监听
+        // 移除消息流完成监听
         EventBus.off("[ChatView] messageComplete", this.messageComplete)
     },
     updated() {
@@ -368,7 +368,6 @@ export default {
         },
         // 消息完成
         async messageComplete() {
-            console.log("消息完成")
             // 如果用户在底部附近会滚动到底部
             if (this.isAtBottom) {
                 this.scrollToBottom()
