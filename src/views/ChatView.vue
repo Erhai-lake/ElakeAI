@@ -19,6 +19,8 @@ export default {
     data() {
         return {
             route: useRoute(),
+            isAtBottom: true,
+            scrollDebounce: null,
             editingTitle: {
                 show: false,
                 value: ""
@@ -49,6 +51,11 @@ export default {
                 this.copyCode(code)
             }
         })
+        // 监听滚动事件
+        const container = this.$el.querySelector(".MessageList")
+        if (container) {
+            container.addEventListener("scroll", this.checkScrollPosition)
+        }
         // 监听用户消息
         EventBus.on("[ChatView] userMessage", this.userMessage)
         // 监听消息流
@@ -57,6 +64,11 @@ export default {
         EventBus.on("[ChatView] messageComplete", this.messageComplete)
     },
     beforeUnmount() {
+        // 移除滚动事件
+        const container = this.$el.querySelector(".MessageList")
+        if (container) {
+            container.removeEventListener("scroll", this.checkScrollPosition)
+        }
         // 移除用户消息监听
         EventBus.off("[ChatView] userMessage", this.userMessage)
         // 移除消息流监听
@@ -75,10 +87,25 @@ export default {
         scrollToBottom() {
             this.$nextTick(() => {
                 const CONTAINER = this.$el.querySelector(".MessageList")
-                if (CONTAINER) {
-                    CONTAINER.scrollTop = CONTAINER.scrollHeight
-                }
+                if (!CONTAINER) return
+                CONTAINER.scrollTo({
+                    top: CONTAINER.scrollHeight,
+                    behavior: "smooth"
+                })
             })
+        },
+        // 检查滚动位置
+        checkScrollPosition() {
+            const container = this.$el.querySelector(".MessageList")
+            if (!container) return
+            // 清除之前的防抖
+            clearTimeout(this.scrollDebounce)
+            // 设置新的防抖
+            this.scrollDebounce = setTimeout(() => {
+                const {scrollTop, scrollHeight, clientHeight} = container
+                // 判断是否在底部（留出50px的缓冲区域）
+                this.isAtBottom = scrollHeight - (scrollTop + clientHeight) < 50
+            }, 100)
         },
         // 初始化聊天界面
         async initChatView(chatKey) {
@@ -128,7 +155,7 @@ export default {
             })
 
             if (!content.startsWith("```mermaid")) {
-                content = content.replace(/[<>]/g, function(m) {
+                content = content.replace(/[<>]/g, function (m) {
                     return {"<": "&lt;", ">": "&gt;"}[m]
                 })
             }
@@ -310,7 +337,10 @@ export default {
                 },
                 timestamp: Date.now()
             })
-
+            // 只有在底部附近时才自动滚动
+            if (this.isAtBottom) {
+                this.scrollToBottom()
+            }
         },
         // 消息流
         async messageStream(message) {
@@ -327,10 +357,18 @@ export default {
                     timestamp: Date.now()
                 })
             }
+            // 只有在底部附近时才自动滚动
+            if (this.isAtBottom) {
+                this.scrollToBottom()
+            }
         },
         // 消息完成
         async messageComplete() {
             console.log("消息完成")
+            // 如果用户在底部附近会滚动到底部
+            if (this.isAtBottom) {
+                this.scrollToBottom()
+            }
         }
     }
 }
