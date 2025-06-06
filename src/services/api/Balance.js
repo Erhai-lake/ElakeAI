@@ -10,7 +10,7 @@ const response = (APIKey, balance, error) => {
         error: error || "",
         balance: balance,
         key: APIKey,
-        timestamp: new Date().getTime()
+        timestamp: Date.now()
     }
 }
 
