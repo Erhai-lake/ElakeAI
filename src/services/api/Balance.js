@@ -34,7 +34,7 @@ const DeepSeek = async (keyData) => {
 
 // ChatGPT
 const ChatGPT = async (keyData) => {
-    return response(keyData.key, "NULL", "NULL")
+    return response(keyData.key, "NULL")
 }
 
 // 余额查询策略
