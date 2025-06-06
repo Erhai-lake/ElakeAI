@@ -361,7 +361,7 @@ export default {
         <div></div>
         <!-- 底部输入框 -->
         <div class="InputArea">
-            <AIInput :data="data" @update:data="handleDataUpdate"/>
+            <AIInput/>
         </div>
         <!-- AI提示信息 -->
         <div class="AIDisclaimer">{{ $t("views.ChatView.aiDisclaimer") }}</div>

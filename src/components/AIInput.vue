@@ -10,12 +10,6 @@ export default defineComponent({
     name: "AIInput",
     components: {Selector},
     inject: ["$DB"],
-    props: {
-        data: {
-            type: Object,
-            required: true
-        }
-    },
     data() {
         return {
             route: useRoute(),
