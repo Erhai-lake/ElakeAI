@@ -21,6 +21,11 @@ export default {
             route: useRoute(),
             isAtBottom: true,
             scrollDebounce: null,
+            typingEffect: {
+                active: false,
+                cursorVisible: true,
+                currentMessageIndex: -1
+            },
             editingTitle: {
                 show: false,
                 value: ""
@@ -345,9 +350,7 @@ export default {
         // 消息流
         async messageStream(message) {
             const LAST_MESSAGE = this.data.data[this.data.data.length - 1]
-            if (LAST_MESSAGE && LAST_MESSAGE.message.role === "assistant") {
-                LAST_MESSAGE.message.content += message.message
-            } else {
+            if (!(LAST_MESSAGE && LAST_MESSAGE.message.role === "assistant")) {
                 this.data.data.push({
                     model: message.model,
                     message: {
@@ -357,6 +360,7 @@ export default {
                     timestamp: Date.now()
                 })
             }
+            LAST_MESSAGE.message.content += message.message
             // 只有在底部附近时才自动滚动
             if (this.isAtBottom) {
                 this.scrollToBottom()
