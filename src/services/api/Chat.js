@@ -14,49 +14,6 @@ const response = (APIKey, chatKey, data, error) => {
     }
 }
 
-// 处理流式响应
-const handleStreamResponse = async (response, keyData, chatKey) => {
-    const DECODER = new TextDecoder()
-    let buffer = ""
-    let assistantMessage = ""
-    let streamMessage = ""
-    const READER = response.body.getReader()
-    const readChunk = async () => {
-        try {
-            while (true) {
-                const {done, value} = await READER.read()
-                if (done) break
-                buffer += DECODER.decode(value, {stream: true})
-                const LINES = buffer.split("\n")
-                buffer = LINES.pop()
-                for (const LINE of LINES) {
-                    if (!LINE.trim()) continue
-                    const MESSAGE = LINE.replace(/^data: /, "")
-                    if (MESSAGE === "[DONE]") {
-                        EventBus.emit("messageComplete")
-                        return response(keyData.key, chatKey, assistantMessage)
-                    }
-                    try {
-                        const PARSED = JSON.parse(MESSAGE)
-                        if (PARSED.choices?.[0]?.delta?.content) {
-                            assistantMessage += PARSED.choices[0].delta.content
-                            streamMessage = PARSED.choices[0].delta.content
-                            EventBus.emit("messageStream", {message: streamMessage, model: model})
-                        }
-                    } catch (error) {
-                        console.error("[Chat Api] 流式数据解析错误", error)
-                        return response(keyData.key, chatKey, "NULL", "streamingDataParsingError")
-                    }
-                }
-            }
-        } catch (error) {
-            console.error("[Chat Api] 流错误", error)
-            return response(keyData.key, chatKey, "NULL", "streamError")
-        }
-    }
-    return readChunk()
-}
-
 let abortController = null
 
 // DeepSeek
@@ -97,7 +54,42 @@ const ChatGPT = async (keyData, chatKey, messages) => {
             console.error("[Chat Api] 无响应体")
             return response(keyData.key, chatKey, "NULL", "noResponseBody")
         }
-        return await handleStreamResponse(RESPONSE, keyData, chatKey)
+        const DECODER = new TextDecoder()
+        let buffer = ""
+        let assistantMessage = ""
+        let streamMessage = ""
+        const READER = RESPONSE.body.getReader()
+        try {
+            while (true) {
+                const {done, value} = await READER.read()
+                if (done) break
+                buffer += DECODER.decode(value, {stream: true})
+                const LINES = buffer.split("\n")
+                buffer = LINES.pop()
+                for (const LINE of LINES) {
+                    if (!LINE.trim()) continue
+                    const MESSAGE = LINE.replace(/^data: /, "")
+                    if (MESSAGE === "[DONE]") {
+                        EventBus.emit("messageComplete")
+                        return response(keyData.key, chatKey, assistantMessage)
+                    }
+                    try {
+                        const PARSED = JSON.parse(MESSAGE)
+                        if (PARSED.choices?.[0]?.delta?.content) {
+                            assistantMessage += PARSED.choices[0].delta.content
+                            streamMessage = PARSED.choices[0].delta.content
+                            EventBus.emit("messageStream", {message: streamMessage, model: keyData.model})
+                        }
+                    } catch (error) {
+                        console.error("[Chat Api] 流式数据解析错误", error)
+                        return response(keyData.key, chatKey, "NULL", "streamingDataParsingError")
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("[Chat Api] 流错误", error)
+            return response(keyData.key, chatKey, "NULL", "streamError")
+        }
     } catch (error) {
         if (error.name === 'AbortError') {
             console.error("[Chat Api] 请求已中止")
@@ -173,7 +165,7 @@ export default {
                     },
                     {
                         model: keyData.model,
-                        message: {content: RESULT, role: "assistant"},
+                        message: {content: RESULT.data, role: "assistant"},
                         timestamp: Date.now()
                     }
                 ]
