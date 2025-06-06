@@ -2,8 +2,8 @@
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import ThemeSelect from "@/components/ThemeSwitch.vue"
 import LanguageSelect from "@/components/LanguageSelect.vue"
-import ChatAIKey from "@/components/ChatsAIKey.vue";
-import Button from "@/components/Button.vue";
+import ChatAIKey from "@/components/ChatsAIKey.vue"
+import Button from "@/components/Button.vue"
 
 export default {
     name: "OptionsView",

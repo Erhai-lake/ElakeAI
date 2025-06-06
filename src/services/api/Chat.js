@@ -15,7 +15,7 @@ const response = (APIKey, chatKey, data, error) => {
 }
 
 // 处理流式响应
-const handleStreamResponse = async (response, model) => {
+const handleStreamResponse = async (response, keyData, chatKey) => {
     const DECODER = new TextDecoder()
     let buffer = ""
     let assistantMessage = ""
@@ -34,7 +34,7 @@ const handleStreamResponse = async (response, model) => {
                     const MESSAGE = LINE.replace(/^data: /, "")
                     if (MESSAGE === "[DONE]") {
                         EventBus.emit("messageComplete")
-                        return assistantMessage
+                        return response(keyData.key, chatKey, assistantMessage)
                     }
                     try {
                         const PARSED = JSON.parse(MESSAGE)
@@ -44,18 +44,20 @@ const handleStreamResponse = async (response, model) => {
                             EventBus.emit("messageStream", {message: streamMessage, model: model})
                         }
                     } catch (error) {
-                        console.error("[Chat Api] 流式数据解析错误", error);
-                        return "streamingDataParsingError"
+                        console.error("[Chat Api] 流式数据解析错误", error)
+                        return response(keyData.key, chatKey, "NULL", "streamingDataParsingError")
                     }
                 }
             }
         } catch (error) {
-            console.error("[Chat Api] 流错误", error);
-            return "streamError"
+            console.error("[Chat Api] 流错误", error)
+            return response(keyData.key, chatKey, "NULL", "streamError")
         }
     }
     return readChunk()
 }
+
+let abortController = null
 
 // DeepSeek
 const DeepSeek = async (keyData, chatKey, messages) => {
@@ -64,6 +66,10 @@ const DeepSeek = async (keyData, chatKey, messages) => {
 
 // ChatGPT
 const ChatGPT = async (keyData, chatKey, messages) => {
+    if (abortController) {
+        abortController.abort()
+    }
+    abortController = new AbortController()
     try {
         const RESPONSE = await fetch(`${keyData.url}/v1/chat/completions`, {
             method: "POST",
@@ -76,18 +82,27 @@ const ChatGPT = async (keyData, chatKey, messages) => {
                 model: "gpt-3.5-turbo",
                 messages: messages,
                 stream: true
-            })
+            }),
+            signal: abortController.signal
         })
         if (!RESPONSE.ok) {
             console.error(`[Chat Api] HTTP错误, 状态码: ${RESPONSE.status}`)
-            return response(keyData.key, chatKey, "NULL", "httpError")
+            if (RESPONSE.status === 500) {
+                return response(keyData.key, chatKey, "NULL",  "serverBusy")
+            } else {
+                return response(keyData.key, chatKey, "NULL", "httpError")
+            }
         }
         if (!RESPONSE.body) {
             console.error("[Chat Api] 无响应体")
             return response(keyData.key, chatKey, "NULL", "noResponseBody")
         }
-        return await handleStreamResponse(RESPONSE, keyData.model)
+        return await handleStreamResponse(RESPONSE, keyData, chatKey)
     } catch (error) {
+        if (error.name === 'AbortError') {
+            console.error("[Chat Api] 请求已中止")
+            return response(keyData.key, chatKey, "NULL", "requestCancelled")
+        }
         console.error("[Chat Api] 流式请求错误", error)
         return response(keyData.key, chatKey, "NULL", "streamingRequestError")
     }
@@ -167,6 +182,12 @@ export default {
         } catch (error) {
             console.error("[Chat Api] 聊天处理错误", error)
             return response(APIKey, chatKey, "NULL", "chatProcessingError")
+        }
+    },
+    async stop() {
+        if (abortController) {
+            abortController.abort()
+            abortController = null
         }
     }
 }

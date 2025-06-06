@@ -23,9 +23,11 @@
             "chatKeyDoesNotExist": "Chat session key does not exist",
             "getChatKeyError": "Failed to retrieve chat session key",
             "unsupportedModel": "Unsupported model",
+            "serverBusy": "Server is busy",
             "httpError": "HTTP error",
             "noResponseBody": "No response body",
             "streamingRequestError": "Error sending streaming request",
+            "requestCancelled": "Request cancelled",
             "streamingDataParsingError": "Error parsing streaming data",
             "streamError": "Error in streaming",
             "chatProcessingError": "Error processing chat"
@@ -38,7 +40,8 @@
             "toast": {
                 "loadKeyPoolError": "Failed to load Key pool",
                 "sendMessageError": "Failed to send message",
-                "createNewChatError": "Failed to create new chat"
+                "createNewChatError": "Failed to create new chat",
+                "stopError": "Failed to stop message"
             },
             "function": {
                 "appendix": "Appendix",
@@ -121,6 +124,10 @@
             }
         },
         "ThemeSwitch": {
+            "toast": {
+                "getThemeError": "Get Theme Error",
+                "applicationThemeError": "Application Theme Error"
+            },
             "light": "Light",
             "dark": "Dark",
             "system": "System"

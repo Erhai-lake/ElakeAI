@@ -3,8 +3,8 @@ import {defineComponent, ref} from "vue"
 import ModelList from "@/assets/data/ModelList.json"
 import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
-import Selector from "@/components/Selector.vue";
-import {useRoute} from "vue-router";
+import Selector from "@/components/Selector.vue"
+import {useRoute} from "vue-router"
 
 export default defineComponent({
     name: "AIInput",
@@ -123,55 +123,47 @@ export default defineComponent({
             await this.$nextTick(() => {
                 this.adjustTextareaHeight()
             })
+            // 创建新的聊天
             if (this.route.name !== "ChatKey") {
-                await this.createNewChat(CONTENT)
-                return
+                try {
+                    const NEW_CHAT_KEY = crypto.randomUUID()
+                    this.$router.push(`/chat/${NEW_CHAT_KEY}`)
+                    await this.$DB.Chats.add({
+                        key: NEW_CHAT_KEY,
+                        title: this.$t("components.AIInput.newChat"),
+                        timestamp: Date.now(),
+                        data: []
+                    })
+                    EventBus.emit("chatListGet")
+                } catch (error) {
+                    this.ChatInput = CONTENT
+                    await this.$nextTick(() => {
+                        this.adjustTextareaHeight()
+                    })
+                    console.error("[AI Input]  创建新聊天错误", error)
+                    this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.createNewChatError")}`)
+                }
             }
-            await this.sendMessage(CONTENT)
-
-        },
-        // 创建新的聊天
-        async createNewChat(content) {
-            try {
-                const NEW_CHAT_KEY = crypto.randomUUID()
-                this.$router.push(`/chat/${NEW_CHAT_KEY}`)
-                await this.$DB.Chats.add({
-                    key: NEW_CHAT_KEY,
-                    title: this.$t("components.AIInput.newChat"),
-                    timestamp: Date.now(),
-                    data: []
-                })
-                await this.sendMessage(content)
-                EventBus.emit("chatListGet")
-            } catch (error) {
-                this.ChatInput = content
-                await this.$nextTick(() => {
-                    this.adjustTextareaHeight()
-                })
-                console.error("[AI Input]  创建新聊天错误", error)
-                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.createNewChatError")}`)
-            }
-        },
-        // 发送消息
-        async sendMessage(content) {
+            // 发送消息
             try {
                 this.stopStatus = true
                 // 发送请求
                 const CHAT = await Chat.chat(
                     this.selectedKey.key,
                     this.route.params.key,
-                    content.trim(),
+                    CONTENT.trim(),
                     this.enableWebSearch
                 )
                 if (CHAT.error) {
-                    this.ChatInput = content
+                    this.stopStatus = false
+                    this.ChatInput = CONTENT
                     await this.$nextTick(() => {
                         this.adjustTextareaHeight()
                     })
                     this.$toast.warning(this.$t(`api.Chat.${CHAT.error}`))
                 }
             } catch (error) {
-                this.ChatInput = content
+                this.ChatInput = CONTENT
                 await this.$nextTick(() => {
                     this.adjustTextareaHeight()
                 })
@@ -208,8 +200,14 @@ export default defineComponent({
         },
         // 停止
         async stop() {
-            this.stopStatus = false
-            // await Chat.stop()
+            try {
+                await Chat.stop()
+                this.stopStatus = false
+            } catch (error) {
+                this.stopStatus = true
+                console.error("[AI Input]  停止错误", error)
+                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.stopError")}`)
+            }
         }
     }
 })
