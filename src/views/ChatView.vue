@@ -62,11 +62,11 @@ export default {
             container.addEventListener("scroll", this.checkScrollPosition)
         }
         // 监听用户消息
-        EventBus.on("[ChatView] userMessage", this.userMessage)
+        EventBus.on("userMessage", this.userMessage)
         // 监听消息流
-        EventBus.on("[ChatView] messageStream", this.messageStream)
+        EventBus.on("messageStream", this.messageStream)
         // 监听消息流完成
-        EventBus.on("[ChatView] messageComplete", this.messageComplete)
+        EventBus.on("messageComplete", this.messageComplete)
     },
     beforeUnmount() {
         // 移除滚动事件
@@ -75,11 +75,11 @@ export default {
             container.removeEventListener("scroll", this.checkScrollPosition)
         }
         // 移除用户消息监听
-        EventBus.off("[ChatView] userMessage", this.userMessage)
+        EventBus.off("userMessage", this.userMessage)
         // 移除消息流监听
-        EventBus.on("[ChatView] messageStream", this.messageStream)
+        EventBus.on("messageStream", this.messageStream)
         // 移除消息流完成监听
-        EventBus.off("[ChatView] messageComplete", this.messageComplete)
+        EventBus.off("messageComplete", this.messageComplete)
     },
     updated() {
         clearTimeout(this._mermaidInitTimer)

@@ -33,7 +33,7 @@ const handleStreamResponse = async (response, model) => {
                     if (!LINE.trim()) continue
                     const MESSAGE = LINE.replace(/^data: /, "")
                     if (MESSAGE === "[DONE]") {
-                        EventBus.emit("[ChatView] messageComplete")
+                        EventBus.emit("messageComplete")
                         return assistantMessage
                     }
                     try {
@@ -41,7 +41,7 @@ const handleStreamResponse = async (response, model) => {
                         if (PARSED.choices?.[0]?.delta?.content) {
                             assistantMessage += PARSED.choices[0].delta.content
                             streamMessage = PARSED.choices[0].delta.content
-                            EventBus.emit("[ChatView] messageStream", {message: streamMessage, model: model})
+                            EventBus.emit("messageStream", {message: streamMessage, model: model})
                         }
                     } catch (error) {
                         console.error("[Chat Api] 流式数据解析错误", error);
@@ -145,7 +145,7 @@ export default {
                 {content, role: "user"}
             ]
             // 用户消息
-            EventBus.emit("[ChatView] userMessage", content)
+            EventBus.emit("userMessage", content)
             // 调用策略
             const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages)
             // 保存消息

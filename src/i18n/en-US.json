@@ -43,7 +43,8 @@
             "function": {
                 "appendix": "Appendix",
                 "webSearch": "Web Search",
-                "send": "Send"
+                "send": "Send",
+                "stop": "Stop"
             },
             "appendix": {
                 "close": "Close",

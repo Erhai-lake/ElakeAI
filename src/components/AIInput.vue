@@ -27,7 +27,9 @@ export default defineComponent({
             // 输入框
             ChatInput: "",
             // 联网搜索状态
-            enableWebSearch: false
+            enableWebSearch: false,
+            // 停止
+            stopStatus: false
         }
     },
     watch: {
@@ -54,11 +56,11 @@ export default defineComponent({
             this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
         }
         // 监听消息流完成
-        EventBus.on("[ChatView] messageComplete", this.messageComplete)
+        EventBus.on("messageComplete", this.messageComplete)
     },
     beforeUnmount() {
         // 移除消息流完成监听
-        EventBus.off("[ChatView] messageComplete", this.messageComplete)
+        EventBus.off("messageComplete", this.messageComplete)
     },
     unmounted() {
         if (this.textareaRef) {
@@ -140,7 +142,7 @@ export default defineComponent({
                     data: []
                 })
                 await this.sendMessage(content)
-                EventBus.emit("[HomeSidebar] chatListGet")
+                EventBus.emit("chatListGet")
             } catch (error) {
                 this.ChatInput = content
                 await this.$nextTick(() => {
@@ -153,6 +155,7 @@ export default defineComponent({
         // 发送消息
         async sendMessage(content) {
             try {
+                this.stopStatus = true
                 // 发送请求
                 const CHAT = await Chat.chat(
                     this.selectedKey.key,
@@ -201,7 +204,12 @@ export default defineComponent({
         },
         // 消息流完成
         messageComplete() {
-            console.log("[AI Input] 消息流完成")
+            this.stopStatus = false
+        },
+        // 停止
+        async stop() {
+            this.stopStatus = false
+            // await Chat.stop()
         }
     }
 })
@@ -283,9 +291,25 @@ export default defineComponent({
             </div>
             <div></div>
             <!--发送-->
-            <label for="Send" :title="$t('components.AIInput.function.send')" class="Send" @click="Send">
+            <label
+                for="Send"
+                :title="$t('components.AIInput.function.send')"
+                class="Send"
+                v-if="!stopStatus"
+                @click="Send">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-Send"></use>
+                </svg>
+            </label>
+            <!--停止-->
+            <label
+                for="Stop"
+                :title="$t('components.AIInput.function.stop')"
+                class="Stop"
+                v-if="stopStatus"
+                @click="stop">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-Close"></use>
                 </svg>
             </label>
         </div>

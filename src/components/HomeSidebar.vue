@@ -19,11 +19,11 @@ export default defineComponent({
         // 初始化时获取聊天列表
         this.chatListGet()
         // 监听更新列表事件
-        EventBus.on("[HomeSidebar] chatListGet", this.chatListGet)
+        EventBus.on("chatListGet", this.chatListGet)
     },
     beforeUnmount() {
         // 移除更新列表事件监听
-        EventBus.off("[HomeSidebar] chatListGet", this.chatListGet)
+        EventBus.off("chatListGet", this.chatListGet)
     },
     methods: {
         /**

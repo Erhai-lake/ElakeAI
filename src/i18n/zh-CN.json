@@ -43,7 +43,8 @@
             "function": {
                 "appendix": "附录",
                 "webSearch": "联网搜索",
-                "send": "发送"
+                "send": "发送",
+                "stop": "停止"
             },
             "appendix": {
                 "close": "关闭",
