@@ -19,8 +19,12 @@ export default {
     data() {
         return {
             route: useRoute(),
-            isAtBottom: true,
-            scrollDebounce: null,
+            scroll: {
+                isAtTop: false,
+                isAtBottom: true,
+                scrollDebounce: null,
+                currentMessageId: null
+            },
             typingEffect: {
                 active: false,
                 cursorVisible: true,
@@ -92,28 +96,77 @@ export default {
         }, 100)
     },
     methods: {
-        // 滚动到底部
-        scrollToBottom() {
+        // 设置当前聚焦的消息(在滚动或点击时调用)
+        setCurrentMessageId(id) {
+            this.scroll.currentMessageId = id
+        },
+        // 滚动到指定ID的消息
+        scrollToMessage(id) {
             this.$nextTick(() => {
-                const CONTAINER = this.$el.querySelector(".MessageList")
-                if (!CONTAINER) return
-                CONTAINER.scrollTo({
-                    top: CONTAINER.scrollHeight,
-                    behavior: "smooth"
-                })
+                const container = this.$el.querySelector(".MessageList")
+                if (!container) return
+                const messageElement = this.$el.querySelector(`[data-message-id="${id}"]`)
+                if (messageElement) {
+                    // 更新当前聚焦的消息
+                    this.setCurrentMessageId(id)
+                    // 滚动到消息位置(距顶部留出100px空间)
+                    container.scrollTo({
+                        top: messageElement.offsetTop - 100,
+                        behavior: "smooth"
+                    })
+                }
             })
+        },
+        // 向上或向下滚动消息(默认向上)
+        scrollToUpAndDownMessages(type = "up") {
+            if (!this.data.data?.length) return
+            const LAST_INDEX = this.data.data.length - 1
+            // 获取当前消息的索引(无当前消息时, up从最后开始, down从第一条开始)
+            let CURRENT_INDEX = this.scroll.currentMessageId
+                ? this.data.data.findIndex((msg) => msg.id === this.scroll.currentMessageId)
+                : type === "up" ? LAST_INDEX : 0
+            // 边界检查
+            if (type === "up") {
+                if (CURRENT_INDEX === 0) {
+                    this.scrollToUpAndDownMessages("top")
+                    return
+                }
+                if (CURRENT_INDEX === -1) CURRENT_INDEX = LAST_INDEX
+            } else if (type === "down") {
+                if (CURRENT_INDEX === LAST_INDEX) {
+                    this.scrollToUpAndDownMessages("bottom")
+                    return
+                }
+                if (CURRENT_INDEX === -1) CURRENT_INDEX = 0
+            } else if (type === "top") {
+                if (!this.data.data?.length) return
+                this.scrollToMessage(this.data.data[0].id)
+                return
+            } else if (type === "bottom") {
+                if (!this.data.data?.length) return
+                this.scrollToMessage(this.data.data[LAST_INDEX].id)
+                return
+            }
+            // 计算目标索引
+            let targetIndex = type === "up" ? CURRENT_INDEX - 1 : CURRENT_INDEX + 1
+            targetIndex = Math.max(0, Math.min(targetIndex, LAST_INDEX))
+            if (this.data.data[targetIndex]) {
+                this.scrollToMessage(this.data.data[targetIndex].id)
+            }
         },
         // 检查滚动位置
         checkScrollPosition() {
             const container = this.$el.querySelector(".MessageList")
             if (!container) return
             // 清除之前的防抖
-            clearTimeout(this.scrollDebounce)
+            clearTimeout(this.scroll.scrollDebounce)
             // 设置新的防抖
-            this.scrollDebounce = setTimeout(() => {
+            this.scroll.scrollDebounce = setTimeout(() => {
                 const {scrollTop, scrollHeight, clientHeight} = container
-                // 判断是否在底部（留出50px的缓冲区域）
-                this.isAtBottom = scrollHeight - (scrollTop + clientHeight) < 50
+                // 判断是否在顶部(留出50px的缓冲区域)
+                this.scroll.isAtTop = scrollTop < 50
+                // 判断是否在底部(留出50px的缓冲区域)
+                this.scroll.isAtBottom = scrollHeight - (scrollTop + clientHeight) < 50
             }, 100)
         },
         // 初始化聊天界面
@@ -128,7 +181,7 @@ export default {
                 }
                 // 写入聊天记录
                 this.data = CHAT_DATA
-                this.scrollToBottom()
+                this.scrollToUpAndDownMessages("bottom")
             } catch (error) {
                 console.error("[Chat View] 聊天记录获取错误", error)
                 this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
@@ -199,21 +252,26 @@ export default {
         // 初始化Mermaid
         async initMermaid() {
             try {
-                mermaid.initialize({
-                    startOnLoad: false,
-                    theme: "default",
-                    flowchart: {
-                        useMaxWidth: true,
-                        htmlLabels: true,
-                        width: "100%"
-                    }
-                })
+                if (!window.mermaidInitialized) {
+                    mermaid.initialize({
+                        startOnLoad: false,
+                        theme: "default",
+                        flowchart: {
+                            useMaxWidth: true,
+                            htmlLabels: true,
+                            width: "100%"
+                        },
+                        securityLevel: "loose"
+                    })
+                    window.mermaidInitialized = true
+                }
 
-                requestAnimationFrame(async () => {
-                    const ELEMENTS = document.querySelectorAll(".mermaid:not([data-rendered])")
+                await this.$nextTick(async () => {
+
+                    const ELEMENTS = document.querySelectorAll(".mermaid:not([data-prendered])")
                     for (const ELEMENT of ELEMENTS) {
                         try {
-                            ELEMENT.dataset.processed = "true"
+                            ELEMENT.setAttribute("data-processed", "true")
                             const CODE = ELEMENT.textContent.trim()
                             const ID = "mermaid-" + Math.random().toString(36).substr(2, 9)
                             // 渲染图表
@@ -221,23 +279,19 @@ export default {
                             // 创建容器
                             const CONTAINER = document.createElement("div")
                             CONTAINER.className = "mermaid-container"
-                            CONTAINER.setAttribute("data-rendered", "true")
                             CONTAINER.innerHTML = svg
                             // 插入DOM
                             ELEMENT.replaceWith(CONTAINER)
                             // Mermaid SVG 尺寸初始化
                             const SVG_ELEMENT = CONTAINER.querySelector("svg")
                             if (SVG_ELEMENT) {
-                                SVG_ELEMENT.removeAttribute("width")
-                                SVG_ELEMENT.removeAttribute("height")
                                 SVG_ELEMENT.style.width = "100%"
-                                SVG_ELEMENT.style.maxHeight = "400px"
                                 SVG_ELEMENT.style.display = "block"
                             }
                             // 处理 SVG 和缩放
                             this.setupZoom(CONTAINER)
                         } catch (error) {
-                            ELEMENT.innerHTML = `<div class="mermaid-error">流程图渲染失败</div>`
+                            ELEMENT.innerHTML = `<div class="error">error.message</div>`
                             console.error("[Chat View] Mermaid渲染错误", error)
                             this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.mermaidRenderingError")}`)
                         }
@@ -348,8 +402,8 @@ export default {
                 timestamp: Date.now()
             })
             // 只有在底部附近时才自动滚动
-            if (this.isAtBottom) {
-                this.scrollToBottom()
+            if (this.scroll.isAtBottom) {
+                this.scrollToUpAndDownMessages("bottom")
             }
         },
         // 消息流
@@ -369,15 +423,15 @@ export default {
                 LAST_MESSAGE.message.content += message.message
             }
             // 只有在底部附近时才自动滚动
-            if (this.isAtBottom) {
-                this.scrollToBottom()
+            if (this.scroll.isAtBottom) {
+                this.scrollToUpAndDownMessages("bottom")
             }
         },
         // 消息完成
         async messageComplete() {
             // 如果用户在底部附近会滚动到底部
-            if (this.isAtBottom) {
-                this.scrollToBottom()
+            if (this.scroll.isAtBottom) {
+                this.scrollToUpAndDownMessages("bottom")
             }
         },
         // 错误处理
@@ -403,7 +457,11 @@ export default {
         </div>
         <!-- 消息列表 -->
         <div class="MessageList">
-            <div v-for="message in data.data" :key="message.timestamp" :class="['Message', message.message.role]">
+            <div
+                v-for="message in data.data"
+                :key="message.timestamp"
+                :class="['Message', scroll.currentMessageId === message.id ? 'Current' : '', message.message.role]"
+                :data-message-id="message.id">
                 <div class="MessageCard">
                     <div
                         class="MessageContent"
@@ -420,10 +478,59 @@ export default {
         </div>
         <!-- AI提示信息 -->
         <div class="AIDisclaimer">{{ $t("views.ChatView.aiDisclaimer") }}</div>
+        <!-- 功能控件 -->
+        <div class="FunctionalControls">
+            <!-- 回到顶部按钮 -->
+            <button
+                class="ScrollToTopMessages"
+                :title="$t('views.ChatView.FunctionalControls.scrollToTopMessages')"
+                @click="scrollToUpAndDownMessages('top')"
+                :disabled="scroll.isAtTop">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-topArrow"></use>
+                </svg>
+            </button>
+            <!-- 上一条按钮 -->
+            <button
+                class="ScrollToUpMessages"
+                :title="$t('views.ChatView.FunctionalControls.scrollToUpMessages')"
+                @click="scrollToUpAndDownMessages('up')">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-upArrow"></use>
+                </svg>
+            </button>
+            <!-- 下一条按钮 -->
+            <button
+                class="ScrollToDownMessages"
+                :title="$t('views.ChatView.FunctionalControls.scrollToDownMessages')"
+                @click="scrollToUpAndDownMessages('Down')">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-downArrow"></use>
+                </svg>
+            </button>
+            <!-- 回到底部按钮 -->
+            <button
+                class="ScrollToBottomMessages"
+                :title="$t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
+                @click="scrollToUpAndDownMessages('bottom')"
+                :disabled="scroll.isAtBottom">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-bottomArrow"></use>
+                </svg>
+            </button>
+        </div>
     </div>
 </template>
 
 <style scoped lang="less">
+.icon {
+    width: 2em;
+    height: 2em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+}
+
 .ChatView {
     position: relative;
     width: 100%;
@@ -470,6 +577,10 @@ export default {
             outline: none;
         }
     }
+}
+
+.Message[data-message-id].Current {
+    background-color: red;
 }
 
 .MessageList {
@@ -537,5 +648,34 @@ export default {
     color: var(--chat-disclaimer-text-color);
     user-select: none;
     z-index: 1;
+}
+
+.FunctionalControls {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+
+    button {
+        margin: 10px 0;
+        color: var(--text-color);
+        background-color: var(--background-color);
+        box-shadow: 0 0 10px var(--box-shadow-color);
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
 }
 </style>
