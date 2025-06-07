@@ -45,7 +45,7 @@ const ChatGPT = async (keyData, chatKey, messages) => {
         if (!RESPONSE.ok) {
             console.error(`[Chat Api] HTTP错误, 状态码: ${RESPONSE.status}`)
             if (RESPONSE.status === 500) {
-                return response(keyData.key, chatKey, "NULL",  "serverBusy")
+                return response(keyData.key, chatKey, "NULL", "serverBusy")
             } else {
                 return response(keyData.key, chatKey, "NULL", "httpError")
             }
@@ -95,8 +95,16 @@ const ChatGPT = async (keyData, chatKey, messages) => {
             console.error("[Chat Api] 请求已中止")
             return response(keyData.key, chatKey, "NULL", "requestCancelled")
         }
-        console.error("[Chat Api] 流式请求错误", error)
-        return response(keyData.key, chatKey, "NULL", "streamingRequestError")
+        if (error.message.includes('Failed to fetch')) {
+            console.error("[Chat Api] 网络错误", error)
+            return response(keyData.key, chatKey, "NULL", "networkError");
+        } else if (error.message.includes('Unexpected token')) {
+            console.error("[Chat Api] 无效响应", error)
+            return response(keyData.key, chatKey, "NULL", "invalidResponse");
+        } else {
+            console.error("[Chat Api] 请求失败", error)
+            return response(keyData.key, chatKey, "NULL", "requestFailed");
+        }
     }
 }
 
@@ -155,6 +163,10 @@ export default {
             EventBus.emit("userMessage", content)
             // 调用策略
             const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages)
+            if (RESULT.error) {
+                EventBus.emit("ChatError")
+                return RESULT
+            }
             // 保存消息
             await DB.Chats.update(chatKey, {
                 data: [

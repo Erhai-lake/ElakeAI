@@ -67,6 +67,8 @@ export default {
         EventBus.on("messageStream", this.messageStream)
         // 监听消息流完成
         EventBus.on("messageComplete", this.messageComplete)
+        // 监听错误
+        EventBus.on("ChatError", this.chatError)
     },
     beforeUnmount() {
         // 移除滚动事件
@@ -80,6 +82,8 @@ export default {
         EventBus.on("messageStream", this.messageStream)
         // 移除消息流完成监听
         EventBus.off("messageComplete", this.messageComplete)
+        // 移除错误监听
+        EventBus.on("ChatError", this.chatError)
     },
     updated() {
         clearTimeout(this._mermaidInitTimer)
@@ -373,6 +377,10 @@ export default {
             if (this.isAtBottom) {
                 this.scrollToBottom()
             }
+        },
+        // 错误处理
+        async chatError() {
+            this.data.data.pop()
         }
     }
 }
