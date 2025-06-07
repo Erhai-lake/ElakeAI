@@ -461,7 +461,8 @@ export default {
                 v-for="message in data.data"
                 :key="message.timestamp"
                 :class="['Message', scroll.currentMessageId === message.id ? 'Current' : '', message.message.role]"
-                :data-message-id="message.id">
+                :data-message-id="message.id"
+                @click="setCurrentMessageId(message.id)">
                 <div class="MessageCard">
                     <div
                         class="MessageContent"
