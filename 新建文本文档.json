@@ -4,6 +4,7 @@
     "timestamp": 1698230400000,
     "data": [
         {
+            "id": "04c05bb4-2d94-49f2-b41f-d9e8ec57f11d",
             "message": {
                 "content": "你好!",
                 "role": "user"
@@ -11,6 +12,7 @@
             "timestamp": 1698230400000
         },
         {
+            "id": "04c05bb4-2d94-49f2-b41f-d9e8ec57f11d",
             "model": "DeepSeek",
             "message": {
                 "content": "你好! 今天我能帮你什么?",

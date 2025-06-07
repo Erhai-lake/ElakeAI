@@ -2,7 +2,6 @@ import axios from "axios"
 import DB from "@/services/Dexie.js"
 import EventBus from "@/services/EventBus"
 
-
 // 返回
 const response = (APIKey, chatKey, data, error) => {
     return {
@@ -13,6 +12,9 @@ const response = (APIKey, chatKey, data, error) => {
         timestamp: Date.now()
     }
 }
+
+// 对话ID
+const DIALOGUE_ID = crypto.randomUUID()
 
 let abortController = null
 
@@ -78,7 +80,11 @@ const ChatGPT = async (keyData, chatKey, messages) => {
                         if (PARSED.choices?.[0]?.delta?.content) {
                             assistantMessage += PARSED.choices[0].delta.content
                             streamMessage = PARSED.choices[0].delta.content
-                            EventBus.emit("messageStream", {message: streamMessage, model: keyData.model})
+                            EventBus.emit("messageStream", {
+                                id: DIALOGUE_ID,
+                                message: streamMessage,
+                                model: keyData.model
+                            })
                         }
                     } catch (error) {
                         console.error("[Chat Api] 流式数据解析错误", error)
@@ -159,8 +165,10 @@ export default {
                 ...chatData.data.map(item => item.message),
                 {content, role: "user"}
             ]
+            // 用户对话ID
+            const USER_DIALOGUE_ID = crypto.randomUUID()
             // 用户消息
-            EventBus.emit("userMessage", content)
+            EventBus.emit("userMessage", {id: USER_DIALOGUE_ID, message: content})
             // 调用策略
             const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages)
             if (RESULT.error) {
@@ -172,10 +180,12 @@ export default {
                 data: [
                     ...chatData.data,
                     {
+                        id: USER_DIALOGUE_ID,
                         message: {content, role: "user"},
                         timestamp: Date.now()
                     },
                     {
+                        id: DIALOGUE_ID,
                         model: keyData.model,
                         message: {content: RESULT.data, role: "assistant"},
                         timestamp: Date.now()

@@ -340,8 +340,9 @@ export default {
         // 用户消息
         async userMessage(message) {
             this.data.data.push({
+                id: message.id,
                 message: {
-                    content: message,
+                    content: message.message,
                     role: "user"
                 },
                 timestamp: Date.now()
@@ -356,6 +357,7 @@ export default {
             const LAST_MESSAGE = this.data.data[this.data.data.length - 1]
             if (!LAST_MESSAGE || LAST_MESSAGE.message.role !== "assistant") {
                 this.data.data.push({
+                    id: message.id,
                     model: message.model,
                     message: {
                         content: message.message,
@@ -405,6 +407,7 @@ export default {
                 <div class="MessageCard">
                     <div class="MessageContent" v-html="handleMarkdown(message.message.content)"></div>
                     <div class="MessageTime">{{ formatTimestamp(message.timestamp) }}</div>
+                    <div class="MessageTime">{{ message.id }}</div>
                 </div>
             </div>
         </div>
