@@ -13,18 +13,15 @@ const response = (APIKey, chatKey, data, error) => {
     }
 }
 
-// 对话ID
-const DIALOGUE_ID = crypto.randomUUID()
-
 let abortController = null
 
 // DeepSeek
-const DeepSeek = async (keyData, chatKey, messages) => {
+const DeepSeek = async (keyData, chatKey, messages, dialogueId) => {
     return response(keyData.key, chatKey, "NULL")
 }
 
 // ChatGPT
-const ChatGPT = async (keyData, chatKey, messages) => {
+const ChatGPT = async (keyData, chatKey, messages, dialogueId) => {
     if (abortController) {
         abortController.abort()
     }
@@ -81,7 +78,7 @@ const ChatGPT = async (keyData, chatKey, messages) => {
                             assistantMessage += PARSED.choices[0].delta.content
                             streamMessage = PARSED.choices[0].delta.content
                             EventBus.emit("messageStream", {
-                                id: DIALOGUE_ID,
+                                id: dialogueId,
                                 message: streamMessage,
                                 model: keyData.model
                             })
@@ -165,12 +162,14 @@ export default {
                 ...chatData.data.map(item => item.message),
                 {content, role: "user"}
             ]
+            // 对话ID
+            const DIALOGUE_ID = crypto.randomUUID()
             // 用户对话ID
             const USER_DIALOGUE_ID = crypto.randomUUID()
             // 用户消息
             EventBus.emit("userMessage", {id: USER_DIALOGUE_ID, message: content})
             // 调用策略
-            const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages)
+            const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages, DIALOGUE_ID)
             if (RESULT.error) {
                 EventBus.emit("ChatError")
                 return RESULT
