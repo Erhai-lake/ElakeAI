@@ -405,7 +405,9 @@ export default {
         <div class="MessageList">
             <div v-for="message in data.data" :key="message.timestamp" :class="['Message', message.message.role]">
                 <div class="MessageCard">
-                    <div class="MessageContent" v-html="handleMarkdown(message.message.content)"></div>
+                    <div
+                        class="MessageContent"
+                        v-html="message.message.role === 'user'? message.message.content : handleMarkdown(message.message.content)"></div>
                     <div class="MessageTime">{{ formatTimestamp(message.timestamp) }}</div>
                     <div class="MessageTime">{{ message.id }}</div>
                 </div>
