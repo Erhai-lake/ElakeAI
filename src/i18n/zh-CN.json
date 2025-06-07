@@ -147,6 +147,12 @@
                 "titleUpdated": "标题更新成功",
                 "titleUpdateError": "标题更新错误"
             },
+            "FunctionalControls": {
+                "scrollToTopMessages": "返回顶部",
+                "scrollToUpMessages": "上一条",
+                "scrollToDownMessages": "下一条",
+                "scrollToBottomMessages": "返回底部"
+            },
             "copyButton": "复制",
             "aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
         },
