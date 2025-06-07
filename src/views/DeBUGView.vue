@@ -154,10 +154,10 @@ export default {
         // 处理Data输入框
         async handleDataBlur(item, event) {
             const RAW_VALUE = event.target.value.trim()
-            if (RAW_VALUE === JSON.stringify(item.data, null)) return
+            if (RAW_VALUE === JSON.stringify(item, null)) return
             try {
                 const parsedData = JSON.parse(RAW_VALUE)
-                await this.$DB.Chats.update(item.key, {data: parsedData})
+                await this.$DB.Chats.update(item.key, parsedData)
                 item.data = JSON.parse(JSON.stringify(parsedData))
                 EventBus.emit("chatListGet")
                 this.$toast.success("数据更新成功")
