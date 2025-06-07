@@ -10,6 +10,7 @@ import mermaid from "mermaid"
 import panzoom from "@panzoom/panzoom"
 import "@/assets/styles/highlight.css"
 import "@/assets/styles/markdown.less"
+import ModelList from "@/assets/data/ModelList.json"
 import EventBus from "@/services/EventBus"
 
 export default {
@@ -180,7 +181,12 @@ export default {
                     return
                 }
                 // 写入聊天记录
-                this.data = CHAT_DATA
+                this.data = {
+                    key: CHAT_DATA.key,
+                    title: CHAT_DATA.title,
+                    timestamp: CHAT_DATA.timestamp,
+                    data: Array.isArray(CHAT_DATA.data) ? CHAT_DATA.data : []
+                }
                 this.scrollToUpAndDownMessages("bottom")
             } catch (error) {
                 console.error("[Chat View] 聊天记录获取错误", error)
@@ -345,6 +351,11 @@ export default {
             const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
             return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
         },
+        // 获取模型logo
+        modelImages(model) {
+            if (!model) return null
+            return ModelList.find(modelItem => modelItem.title === model).images
+        },
         // 标题输入
         titleInput() {
             this.editingTitle.value = this.data.title
@@ -408,6 +419,9 @@ export default {
         },
         // 消息流
         async messageStream(message) {
+            if (!Array.isArray(this.data.data)) {
+                this.data.data = []
+            }
             const LAST_MESSAGE = this.data.data[this.data.data.length - 1]
             if (!LAST_MESSAGE || LAST_MESSAGE.message.role !== "assistant") {
                 this.data.data.push({
@@ -469,7 +483,12 @@ export default {
                         v-html="message.message.role === 'user'? message.message.content : handleMarkdown(message.message.content)"></div>
                     <div class="MessageTime">{{ formatTimestamp(message.timestamp) }}</div>
                     <div class="MessageTime">{{ message.id }}</div>
+                    <img
+                        :src="modelImages(message.model ? message.model : '')"
+                        :alt="message.model ? message.model : ''"
+                        v-if="message.message.role === 'assistant'">
                 </div>
+
             </div>
         </div>
         <div></div>
@@ -580,10 +599,6 @@ export default {
     }
 }
 
-.Message[data-message-id].Current {
-    background-color: red;
-}
-
 .MessageList {
     position: absolute;
     padding: 100px 50px 200px 50px;
@@ -592,7 +607,7 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -604,20 +619,44 @@ export default {
 }
 
 .MessageCard {
+    position: relative;
     padding: 16px 20px;
     border-radius: 12px;
-    position: relative;
 
     .user & {
         background-color: var(--chat-user-background-color);
         color: var(--chat-user-text-color);
-        border-bottom-right-radius: 0;
     }
 
     .assistant & {
         background-color: var(--chat-assistant-background-color);
         color: var(--chat-assistant-text-color);
-        border-bottom-left-radius: 0;
+    }
+
+    img {
+        position: absolute;
+        top: -21px;
+        left: -21px;
+        width: 42px;
+        height: 42px;
+        z-index: 1;
+    }
+}
+
+.Message[data-message-id].Current {
+    background-color: red;
+
+    img {
+        animation: rotate 0.3s linear infinite;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 
