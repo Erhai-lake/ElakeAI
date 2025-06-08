@@ -84,11 +84,11 @@ export default {
         // 移除用户消息监听
         EventBus.off("userMessage", this.userMessage)
         // 移除消息流监听
-        EventBus.on("messageStream", this.messageStream)
+        EventBus.off("messageStream", this.messageStream)
         // 移除消息流完成监听
         EventBus.off("messageComplete", this.messageComplete)
         // 移除错误监听
-        EventBus.on("ChatError", this.chatError)
+        EventBus.off("ChatError", this.chatError)
     },
     updated() {
         clearTimeout(this._mermaidInitTimer)
