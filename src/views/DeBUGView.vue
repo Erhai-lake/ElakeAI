@@ -97,7 +97,7 @@ export default {
                 timestamp: Date.now(),
                 data: NEW_DATA
             })
-            EventBus.emit("chatListGet")
+            EventBus.emit("[function] chatListGet")
             await this.chatsLoading()
             this.$toast.success("生成完毕")
         },
@@ -116,7 +116,7 @@ export default {
             try {
                 await this.$DB.Chats.clear()
                 await this.chatsLoading()
-                EventBus.emit("chatListGet")
+                EventBus.emit("[function] chatListGet")
                 this.$toast.success("Chats数据库已清空")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据清空错误", error)
@@ -129,7 +129,7 @@ export default {
             try {
                 await this.$DB.Chats.delete(item)
                 this.chats = this.chats.filter(chat => chat.key!== item)
-                EventBus.emit("chatListGet")
+                EventBus.emit("[function] chatListGet")
                 this.$toast.success("数据删除成功")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据删除错误", error)
@@ -143,7 +143,7 @@ export default {
             try {
                 await this.$DB.Chats.update(item.key, {title: NEW_VALUE})
                 item.title = NEW_VALUE
-                EventBus.emit("chatListGet")
+                EventBus.emit("[function] chatListGet")
                 this.$toast.success("标题更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 标题更新错误", error)
@@ -159,7 +159,7 @@ export default {
                 const parsedData = JSON.parse(RAW_VALUE)
                 await this.$DB.Chats.update(item.key, parsedData)
                 item.data = JSON.parse(JSON.stringify(parsedData))
-                EventBus.emit("chatListGet")
+                EventBus.emit("[function] chatListGet")
                 this.$toast.success("数据更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 数据更新错误", error)

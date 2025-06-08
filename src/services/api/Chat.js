@@ -69,7 +69,7 @@ const ChatGPT = async (keyData, chatKey, messages, dialogueId) => {
                     if (!LINE.trim()) continue
                     const MESSAGE = LINE.replace(/^data: /, "")
                     if (MESSAGE === "[DONE]") {
-                        EventBus.emit("messageComplete")
+                        EventBus.emit("[stream] complete")
                         return response(keyData.key, chatKey, assistantMessage)
                     }
                     try {
@@ -77,7 +77,7 @@ const ChatGPT = async (keyData, chatKey, messages, dialogueId) => {
                         if (PARSED.choices?.[0]?.delta?.content) {
                             assistantMessage += PARSED.choices[0].delta.content
                             streamMessage = PARSED.choices[0].delta.content
-                            EventBus.emit("messageStream", {
+                            EventBus.emit("[stream] streamStream", {
                                 id: dialogueId,
                                 message: streamMessage,
                                 model: keyData.model
@@ -167,11 +167,11 @@ export default {
             // 用户对话ID
             const USER_DIALOGUE_ID = crypto.randomUUID()
             // 用户消息
-            EventBus.emit("userMessage", {id: USER_DIALOGUE_ID, message: content})
+            EventBus.emit("[stream] userMessage", {id: USER_DIALOGUE_ID, message: content})
             // 调用策略
             const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages, DIALOGUE_ID)
             if (RESULT.error) {
-                EventBus.emit("ChatError")
+                EventBus.emit("[stream] chatError")
                 return RESULT
             }
             // 保存消息

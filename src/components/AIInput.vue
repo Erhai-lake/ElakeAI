@@ -56,11 +56,11 @@ export default defineComponent({
             this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
         }
         // 监听消息流完成
-        EventBus.on("messageComplete", this.messageComplete)
+        EventBus.on("[stream] complete", this.streamComplete)
     },
     beforeUnmount() {
         // 移除消息流完成监听
-        EventBus.off("messageComplete", this.messageComplete)
+        EventBus.off("[stream] complete", this.streamComplete)
     },
     unmounted() {
         if (this.textareaRef) {
@@ -134,7 +134,7 @@ export default defineComponent({
                         timestamp: Date.now(),
                         data: []
                     })
-                    EventBus.emit("chatListGet")
+                    EventBus.emit("[function] chatListGet")
                 } catch (error) {
                     this.ChatInput = CONTENT
                     await this.$nextTick(() => {
@@ -195,7 +195,7 @@ export default defineComponent({
             })
         },
         // 消息流完成
-        messageComplete() {
+        streamComplete() {
             this.stopStatus = false
         },
         // 停止

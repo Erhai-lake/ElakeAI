@@ -21,11 +21,11 @@ export default defineComponent({
         // 初始化时获取聊天列表
         this.chatListGet()
         // 监听更新列表事件
-        EventBus.on("chatListGet", this.chatListGet)
+        EventBus.on("[function] chatListGet", this.chatListGet)
     },
     beforeUnmount() {
         // 移除更新列表事件监听
-        EventBus.off("chatListGet", this.chatListGet)
+        EventBus.off("[function] chatListGet", this.chatListGet)
     },
     async created() {
         if (!this.route.params.key) return

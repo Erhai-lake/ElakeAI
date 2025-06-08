@@ -67,13 +67,13 @@ export default {
             container.addEventListener("scroll", this.checkScrollPosition)
         }
         // 监听用户消息
-        EventBus.on("userMessage", this.userMessage)
+        EventBus.on("[stream] userMessage", this.userMessage)
         // 监听消息流
-        EventBus.on("messageStream", this.messageStream)
+        EventBus.on("[stream] streamStream", this.streamStream)
         // 监听消息流完成
-        EventBus.on("messageComplete", this.messageComplete)
+        EventBus.on("[stream] complete", this.streamComplete)
         // 监听错误
-        EventBus.on("ChatError", this.chatError)
+        EventBus.on("[stream] chatError", this.chatError)
     },
     beforeUnmount() {
         // 移除滚动事件
@@ -82,13 +82,13 @@ export default {
             container.removeEventListener("scroll", this.checkScrollPosition)
         }
         // 移除用户消息监听
-        EventBus.off("userMessage", this.userMessage)
+        EventBus.off("[stream] userMessage", this.userMessage)
         // 移除消息流监听
-        EventBus.off("messageStream", this.messageStream)
+        EventBus.off("[stream] streamStream", this.streamStream)
         // 移除消息流完成监听
-        EventBus.off("messageComplete", this.messageComplete)
+        EventBus.off("[stream] complete", this.streamComplete)
         // 移除错误监听
-        EventBus.off("ChatError", this.chatError)
+        EventBus.off("[stream] chatError", this.chatError)
     },
     updated() {
         clearTimeout(this._mermaidInitTimer)
@@ -178,7 +178,7 @@ export default {
                 if (!CHAT_DATA) {
                     this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
                     this.$router.push("/")
-                    EventBus.emit("chatListGet")
+                    EventBus.emit("[function] chatListGet")
                     return
                 }
                 // 写入聊天记录
@@ -381,7 +381,7 @@ export default {
                 await this.$DB.Chats.update(this.data.key, {title: NEW_TITLE})
                 this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
                 // 触发事件 更新ChatsList
-                EventBus.emit("chatListGet")
+                EventBus.emit("[function] chatListGet")
             } catch (error) {
                 console.error("[Chat View] 标题更新错误", error)
                 this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
@@ -419,7 +419,7 @@ export default {
             }
         },
         // 消息流
-        async messageStream(message) {
+        async streamStream(message) {
             if (!Array.isArray(this.data.data)) {
                 this.data.data = []
             }
@@ -443,7 +443,7 @@ export default {
             }
         },
         // 消息完成
-        async messageComplete() {
+        async streamComplete() {
             // 如果用户在底部附近会滚动到底部
             if (this.scroll.isAtBottom) {
                 this.scrollToUpAndDownMessages("bottom")
