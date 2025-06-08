@@ -161,7 +161,7 @@ export default {
             if (!container) return
             // 清除之前的防抖
             clearTimeout(this.scroll.scrollDebounce)
-            // 设置新的防抖
+            // 设置新地防抖
             this.scroll.scrollDebounce = setTimeout(() => {
                 const {scrollTop, scrollHeight, clientHeight} = container
                 // 判断是否在顶部(留出50px的缓冲区域)

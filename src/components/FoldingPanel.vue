@@ -38,11 +38,11 @@ export default {
             </div>
             <div></div>
             <div class="Arrow">
-                <svg t="1727527794943" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                     xmlns="http://www.w3.org/2000/svg" p-id="1579" width="16" height="16">
+                <svg class="icon" viewBox="0 0 1024 1024"
+                     xmlns="http://www.w3.org/2000/svg" width="16" height="16">
                     <path
                         d="M895.701333 300.117333c0 9.6-3.2 19.285333-9.6 27.392l-340.906666 423.808a43.733333 43.733333 0 0 1-68.096 0L137.984 329.301333A43.690667 43.690667 0 0 1 206.08 274.602667l305.109333 379.605333 306.773334-381.525333a43.690667 43.690667 0 0 1 77.738666 27.434666z"
-                        fill="#9ca8af" p-id="1580"></path>
+                        fill="#9ca8af"></path>
                 </svg>
             </div>
         </div>
