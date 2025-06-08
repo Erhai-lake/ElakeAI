@@ -270,10 +270,6 @@ export default defineComponent({
         &:hover {
             background-color: var(--sidebar-item-hover-background-color);
 
-            .Title {
-                color: var(--text-color-Anti);
-            }
-
             .Bottom {
                 color: var(--sidebar-expand-container-info-text-color-Anti);
             }
