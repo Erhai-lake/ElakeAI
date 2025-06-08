@@ -69,7 +69,7 @@ const ChatGPT = async (keyData, chatKey, messages, dialogueId) => {
                     if (!LINE.trim()) continue
                     const MESSAGE = LINE.replace(/^data: /, "")
                     if (MESSAGE === "[DONE]") {
-                        EventBus.emit("[stream] complete")
+                        EventBus.emit("[stream] streamComplete")
                         return response(keyData.key, chatKey, assistantMessage)
                     }
                     try {
@@ -191,6 +191,8 @@ export default {
                     }
                 ]
             })
+            // 更新列表
+            EventBus.emit("[function] chatListGet")
             return RESULT
         } catch (error) {
             console.error("[Chat Api] 聊天处理错误", error)

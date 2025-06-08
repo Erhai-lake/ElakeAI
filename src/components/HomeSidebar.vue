@@ -64,15 +64,20 @@ export default defineComponent({
                 let GROUPED_CHATS = []
                 for (const ITEM of CHAT_LIST) {
                     GROUPED_CHATS = GROUPED_CHATS || []
+                    let timestamp = ITEM.timestamp
+                    if ( ITEM.data.length > 0) {
+                        timestamp = ITEM.data[ITEM.data.length - 1].timestamp
+                    }
                     GROUPED_CHATS.push({
                         key: String(ITEM.key),
                         title: ITEM.title,
                         length: ITEM.data.length,
-                        timestamp: ITEM.timestamp,
+                        timestamp: timestamp,
                     })
                 }
                 // 按时间排序
                 this.chatList = GROUPED_CHATS.sort((a, b) => b.timestamp - a.timestamp)
+                console.log("[Home Sidebar] 聊天列表获取", this.chatList)
             } catch (error) {
                 console.error("[Home Sidebar] 聊天列表获取错误", error)
                 this.$toast.error(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)

@@ -56,11 +56,11 @@ export default defineComponent({
             this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
         }
         // 监听消息流完成
-        EventBus.on("[stream] complete", this.streamComplete)
+        EventBus.on("[stream] streamComplete", this.streamComplete)
     },
     beforeUnmount() {
         // 移除消息流完成监听
-        EventBus.off("[stream] complete", this.streamComplete)
+        EventBus.off("[stream] streamComplete", this.streamComplete)
     },
     unmounted() {
         if (this.textareaRef) {
