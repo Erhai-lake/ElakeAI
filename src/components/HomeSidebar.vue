@@ -1,20 +1,22 @@
 <script>
 import {defineComponent} from "vue"
 import EventBus from "@/services/EventBus"
+import {useRoute} from "vue-router";
 
 export default defineComponent({
     name: "HomeSidebar",
     inject: ["$DB"],
     data() {
         return {
-            SidebarStatus: 1,
-            ChatList: []
+            route: useRoute(),
+            sidebarStatus: 1,
+            chatList: []
         }
     },
     mounted() {
         // 判断是否为移动端
         if (window.innerWidth < 768) {
-            this.SidebarStatus = 0
+            this.sidebarStatus = 0
         }
         // 初始化时获取聊天列表
         this.chatListGet()
@@ -25,6 +27,11 @@ export default defineComponent({
         // 移除更新列表事件监听
         EventBus.off("chatListGet", this.chatListGet)
     },
+    async created() {
+        if (!this.route.params.key) return
+        const CHAT_DATA = await this.$DB.Chats.get(this.route.params.key)
+        console.log("CHAT_DATA", CHAT_DATA)
+    },
     methods: {
         /**
          * 侧边栏展开收起
@@ -32,18 +39,18 @@ export default defineComponent({
         sidebarSwitch() {
             const SIDEBAR_EXPAND = document.querySelector(".SidebarExpandContainer")
             const SIDEBAR_STOW = document.querySelector(".SidebarStowContainer")
-            if (this.SidebarStatus === 1) {
+            if (this.sidebarStatus === 1) {
                 if (SIDEBAR_EXPAND) {
                     SIDEBAR_EXPAND.style.transform = "translateX(-100%)"
                     setTimeout(() => {
-                        this.SidebarStatus = 0
+                        this.sidebarStatus = 0
                     }, 100)
                 }
-            } else if (this.SidebarStatus === 0) {
+            } else if (this.sidebarStatus === 0) {
                 if (SIDEBAR_STOW) {
                     SIDEBAR_STOW.style.transform = "translateX(-100%)"
                     setTimeout(() => {
-                        this.SidebarStatus = 1
+                        this.sidebarStatus = 1
                     }, 100)
                 }
             }
@@ -54,63 +61,33 @@ export default defineComponent({
         async chatListGet() {
             try {
                 const CHAT_LIST = await this.$DB.Chats.toArray()
-                const GROUPED_CHATS = {}
+                let GROUPED_CHATS = []
                 for (const ITEM of CHAT_LIST) {
-                    const SAFE_KEY = this.getTimeRangeLabel(ITEM.timestamp)
-                    GROUPED_CHATS[SAFE_KEY] = GROUPED_CHATS[SAFE_KEY] || []
-                    GROUPED_CHATS[SAFE_KEY].push({
+                    GROUPED_CHATS = GROUPED_CHATS || []
+                    GROUPED_CHATS.push({
                         key: String(ITEM.key),
-                        title: ITEM.title
+                        title: ITEM.title,
+                        length: ITEM.data.length,
+                        timestamp: ITEM.timestamp,
                     })
                 }
-                // 将分组数据转换成数组并按时间排序
-                this.ChatList = Object.entries(GROUPED_CHATS)
-                    .map(([TimeRangeLabel, Data]) => {
-                        // 计算 sortKey
-                        let sortKey
-                        if (TimeRangeLabel === this.$t("components.HomeSidebar.timeRangeLabel.1")) {
-                            sortKey = 0
-                        } else if (TimeRangeLabel === this.$t("components.HomeSidebar.timeRangeLabel.30")) {
-                            sortKey = 1
-                        } else {
-                            const [year, month] = TimeRangeLabel.split("-").map(Number)
-                            sortKey = 2 + new Date(year, month - 1).getTime()
-                        }
-                        return {TimeRangeLabel, Data, sortKey}
-                    })
-                    .sort((a, b) => a.sortKey - b.sortKey)
-                    .map(({TimeRangeLabel, Data}) => ({TimeRangeLabel, Data}))
+                // 按时间排序
+                this.chatList = GROUPED_CHATS.sort((a, b) => b.timestamp - a.timestamp)
             } catch (error) {
-                console.error("[Language Switch] 聊天列表获取错误", error)
-                this.$toast.error(`[Language Switch] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
+                console.error("[Home Sidebar] 聊天列表获取错误", error)
+                this.$toast.error(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
             }
         },
-        /**
-         * 获取时间范围标签
-         * @param timestamp 时间戳
-         */
-        getTimeRangeLabel(timestamp) {
-            const NOW = Date.now()
-            const NOEDAYMS = 24 * 60 * 60 * 1000
+        // 格式化时间戳
+        formatTimestamp(timestamp) {
             const DATE = new Date(timestamp)
-            const NOW_DATE = new Date(NOW)
-            // 检查是否是今天
-            if (
-                DATE.getDate() === NOW_DATE.getDate() &&
-                DATE.getMonth() === NOW_DATE.getMonth() &&
-                DATE.getFullYear() === NOW_DATE.getFullYear()
-            ) {
-                return this.$t("components.HomeSidebar.timeRangeLabel.1")
-            }
-            // 检查是否是30天内（不包括今天）
-            const DIFF_DAYS = Math.floor((NOW - timestamp) / NOEDAYMS)
-            if (DIFF_DAYS <= 30 && DIFF_DAYS > 0) {
-                return this.$t("components.HomeSidebar.timeRangeLabel.30")
-            }
-            // 否则返回年月格式 "YYYY-MM"
             const YEAR = DATE.getFullYear()
             const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
-            return `${YEAR}-${MONTH}`
+            const DAY = String(DATE.getDate()).padStart(2, "0")
+            const HOURS = String(DATE.getHours()).padStart(2, "0")
+            const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
+            const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
+            return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
         },
         /**
          * 打开聊天
@@ -118,80 +95,97 @@ export default defineComponent({
          */
         openChat(key) {
             this.$router.push(`/chat/${key}`)
+        },
+        /**
+         * 删除聊天
+         * @param key 聊天ID
+         */
+        async deleteChat(key) {
+            try {
+                await this.$DB.Chats.delete(key)
+                this.$toast.success(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.successDeletingChatList")}`)
+                await this.chatListGet()
+            } catch (error) {
+                console.error("[Home Sidebar] 聊天列表删除错误", error)
+                this.$toast.error(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.errorDeletingChatList")}`)
+            }
         }
     }
 })
 </script>
 
 <template>
-    <div class="SidebarContainer SidebarExpandContainer" v-if="SidebarStatus === 1">
+    <div class="SidebarContainer SidebarExpandContainer" v-if="sidebarStatus === 1">
         <div class="SidebarTop">
             <div class="SidebarTopLogo"></div>
             <p>ElakeAI</p>
             <router-link to="/" class="SidebarNew" :title="$t('components.HomeSidebar.function.new')">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-New"></use>
+                    <use xlink:href="#icon-new"></use>
                 </svg>
             </router-link>
             <div class="SidebarStow" :title="$t('components.HomeSidebar.function.stow')" @click="sidebarSwitch">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Stow"></use>
+                    <use xlink:href="#icon-stow"></use>
                 </svg>
             </div>
         </div>
         <div class="SidebarConversationList">
             <div
-                class="SidebarConversationListTimeRangeLabel"
-                v-for="(timeRangeLabelItem, timeRangeLabelIndex) in this.ChatList"
-                :key="timeRangeLabelIndex">
-                <p>{{ timeRangeLabelItem.TimeRangeLabel }}</p>
+                class="ConversationCard"
+                :class="{'Active': route.params.key === chatItem.key}"
+                v-for="chatItem in chatList"
+                :key="chatItem.key"
+                @click="openChat(chatItem.key)">
+                <p class="Title" :title="chatItem.title">{{ chatItem.title }}</p>
+                <div class="Bottom">
+                    <p>{{ $t("components.HomeSidebar.numberOfConversations", {num: chatItem.length}) }}</p>
+                    <p>{{ formatTimestamp(chatItem.timestamp) }}</p>
+                </div>
                 <div
-                    class="SidebarConversationListTitle"
-                    v-for="(titleItem, titleIndex) in timeRangeLabelItem.Data"
-                    :key="titleIndex" :title="titleItem.title" @click="openChat(titleItem.key)">
-                    <p>{{ titleItem.title }}</p>
-                    <div class="SidebarConversationListTitleMore">
-                        <svg class="icon" aria-hidden="true">
-                            <use xlink:href="#icon-More"></use>
-                        </svg>
-                    </div>
+                    class="ConversationDelete"
+                    :title="$t('components.HomeSidebar.function.delete')"
+                    @click.stop="deleteChat(chatItem.key)">
+                    <svg class="icon" aria-hidden="true">
+                        <use xlink:href="#icon-delete"></use>
+                    </svg>
                 </div>
             </div>
         </div>
         <div class="SidebarPreset" :title="$t('components.HomeSidebar.function.preset')">
             <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-Preset"></use>
+                <use xlink:href="#icon-preset"></use>
             </svg>
             <p>{{ $t("components.HomeSidebar.function.preset") }}</p>
         </div>
         <router-link to="/options" class="SidebarSetup" :title="$t('components.HomeSidebar.function.options')">
             <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-Setup"></use>
+                <use xlink:href="#icon-setup"></use>
             </svg>
             <p>{{ $t("components.HomeSidebar.function.options") }}</p>
         </router-link>
     </div>
-    <div class="SidebarContainer SidebarStowContainer" v-if="SidebarStatus === 0">
+    <div class="SidebarContainer SidebarStowContainer" v-if="sidebarStatus === 0">
         <div class="SidebarTopLogo"></div>
         <router-link to="/" class="SidebarNew" :title="$t('components.HomeSidebar.function.new')">
             <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-New"></use>
+                <use xlink:href="#icon-new"></use>
             </svg>
         </router-link>
         <div class="SidebarExpand" :title="$t('components.HomeSidebar.function.expand')" @click="sidebarSwitch">
             <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-Stow"></use>
+                <use xlink:href="#icon-expand"></use>
             </svg>
         </div>
         <div class="SidebarPreset" :title="$t('components.HomeSidebar.function.preset')">
             <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-Preset"></use>
+                <use xlink:href="#icon-preset"></use>
             </svg>
         </div>
         <div></div>
         <router-link to="/options" class="SidebarSetup" :title="$t('components.HomeSidebar.function.options')">
             <svg class="icon" aria-hidden="true">
-                <use xlink:href="#icon-Setup"></use>
+                <use xlink:href="#icon-setup"></use>
             </svg>
         </router-link>
     </div>
@@ -250,41 +244,67 @@ export default defineComponent({
     }
 
     .SidebarConversationList {
-        padding: 5px;
+        padding: 0 20px;
         white-space: nowrap;
         overflow: hidden auto;
+    }
 
-        .SidebarConversationListTimeRangeLabel {
-            p {
-                padding: 10px 5px;
-                color: var(--sidebar-expand-container-text-color);
+    .ConversationCard {
+        position: relative;
+        padding: 10px;
+        margin: 20px 0;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+
+        &.Active {
+            border-color: #80ceff;
+        }
+
+        &:hover {
+            background-color: var(--sidebar-item-hover-background-color);
+
+            .Title {
+                color: var(--text-color-Anti);
             }
 
-            .SidebarConversationListTitle {
-                padding: 0 20px;
-                height: 38px;
-                display: grid;
-                grid-template-columns: 1fr auto;
-                align-items: center;
-                border-radius: 15px;
-                cursor: pointer;
+            .Bottom {
+                color: var(--sidebar-expand-container-info-text-color-Anti);
+            }
 
-                p {
-                    overflow: hidden;
-                    color: var(--text-color);
-                }
+            .ConversationDelete {
+                opacity: 1;
+            }
+        }
 
-                .SidebarConversationListTitleMore {
-                    display: none;
-                }
+        .Title {
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-                &:hover {
-                    background-color: var(--sidebar-item-hover-background-color);
+        .Bottom {
+            margin-top: 10px;
+            color: var(--sidebar-expand-container-info-text-color);
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-                    .SidebarConversationListTitleMore {
-                        display: block;
-                    }
-                }
+        .ConversationDelete{
+            position: absolute;
+            top: 0;
+            right: 0;
+            opacity: 0;
+
+            svg {
+                width: 24px;
+                height: 24px;
             }
         }
     }

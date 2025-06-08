@@ -69,7 +69,7 @@ export default {
         try {
             const QUERY_STRATEGY = STRATEGIES[keyData.model]
             if (!QUERY_STRATEGY) {
-                console.error("不支持的模型")
+                console.error("[Balance Api] 不支持的模型")
                 return response(APIKey, "NULL", "unsupportedModel")
             }
             return await QUERY_STRATEGY(keyData)

@@ -178,6 +178,7 @@ export default {
                 if (!CHAT_DATA) {
                     this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
                     this.$router.push("/")
+                    EventBus.emit("chatListGet")
                     return
                 }
                 // 写入聊天记录
@@ -505,7 +506,7 @@ export default {
                 class="ScrollToTopMessages"
                 :title="$t('views.ChatView.FunctionalControls.scrollToTopMessages')"
                 @click="scrollToUpAndDownMessages('top')"
-                :disabled="scroll.isAtTop">
+                :disabled="scroll.isAtTop || data.data.length === 0">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-topArrow"></use>
                 </svg>
@@ -514,7 +515,8 @@ export default {
             <button
                 class="ScrollToUpMessages"
                 :title="$t('views.ChatView.FunctionalControls.scrollToUpMessages')"
-                @click="scrollToUpAndDownMessages('up')">
+                @click="scrollToUpAndDownMessages('up')"
+                :disabled="data.data.length === 0">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-upArrow"></use>
                 </svg>
@@ -523,7 +525,8 @@ export default {
             <button
                 class="ScrollToDownMessages"
                 :title="$t('views.ChatView.FunctionalControls.scrollToDownMessages')"
-                @click="scrollToUpAndDownMessages('Down')">
+                @click="scrollToUpAndDownMessages('Down')"
+                :disabled="data.data.length === 0">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-downArrow"></use>
                 </svg>
@@ -533,7 +536,7 @@ export default {
                 class="ScrollToBottomMessages"
                 :title="$t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
                 @click="scrollToUpAndDownMessages('bottom')"
-                :disabled="scroll.isAtBottom">
+                :disabled="scroll.isAtBottom || data.data.length === 0">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-bottomArrow"></use>
                 </svg>
@@ -608,8 +611,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 30px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden auto;
 }
 
 @media screen and (max-width: 768px) {

@@ -221,28 +221,28 @@ export default defineComponent({
             <!--关闭-->
             <label for="Appendix" :title="$t('components.AIInput.appendix.close')">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Close"></use>
+                    <use xlink:href="#icon-close"></use>
                 </svg>
             </label>
             <!--拍照-->
             <label for="Camera" :title="$t('components.AIInput.appendix.camera')">
                 <input type="file" id="Camera" accept="image/*" capture="environment"/>
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Photograph"></use>
+                    <use xlink:href="#icon-photograph"></use>
                 </svg>
             </label>
             <!--相册-->
             <label for="Photos" :title="$t('components.AIInput.appendix.picture')">
                 <input type="file" id="Photos" accept="image/*"/>
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-PhotoAlbum"></use>
+                    <use xlink:href="#icon-photoAlbum"></use>
                 </svg>
             </label>
             <!--文件-->
             <label for="Files" :title="$t('components.AIInput.appendix.file')">
                 <input type="file" id="Files"/>
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-File"></use>
+                    <use xlink:href="#icon-file"></use>
                 </svg>
             </label>
         </div>
@@ -261,14 +261,14 @@ export default defineComponent({
             <!--附件-->
             <label for="Appendix" :title="$t('components.AIInput.function.appendix')" @click="modelStatus = false">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Link"></use>
+                    <use xlink:href="#icon-link"></use>
                 </svg>
             </label>
             <!--联网搜索-->
             <input id="Search" type="checkbox" v-model="enableWebSearch"/>
             <label for="Search" :title="$t('components.AIInput.function.webSearch')">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Networking"></use>
+                    <use xlink:href="#icon-webSearch"></use>
                 </svg>
             </label>
             <!-- 模型选择 -->
@@ -296,7 +296,7 @@ export default defineComponent({
                 v-if="!stopStatus"
                 @click="Send">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Send"></use>
+                    <use xlink:href="#icon-send"></use>
                 </svg>
             </label>
             <!--停止-->
@@ -307,7 +307,7 @@ export default defineComponent({
                 v-if="stopStatus"
                 @click="stop">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-Close"></use>
+                    <use xlink:href="#icon-close"></use>
                 </svg>
             </label>
         </div>

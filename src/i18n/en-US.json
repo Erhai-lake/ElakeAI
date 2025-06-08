@@ -105,19 +105,19 @@
         },
         "HomeSidebar": {
             "toast": {
-                "errorGettingChatList": "Error getting chat list"
-            },
-            "timeRangeLabel": {
-                "1": "Today",
-                "30": "Last 30 days"
+                "errorGettingChatList": "Error getting chat list",
+                "successDeletingChatList": "Chat list deleted successfully",
+                "errorDeletingChatList": "Error deleting chat list"
             },
             "function": {
                 "new": "New Chat",
                 "stow": "Collapse Sidebar",
                 "expand": "Expand Sidebar",
                 "preset": "Presets",
-                "options": "Settings"
-            }
+                "options": "Settings",
+                "delete": "Delete Chats"
+            },
+            "numberOfConversations": "{num} Conversations"
         },
         "LanguageSelect": {
             "toast": {

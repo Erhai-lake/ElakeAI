@@ -144,17 +144,17 @@ export default {
                 DB.Chats.get(chatKey)
             ])
             if (!keyData || !chatData) {
-                console.error("[Balance Api] Key或ChatKey不存在")
+                console.error("[Chat Api] Key或ChatKey不存在")
                 return response(APIKey, chatKey, "NULL", keyData ? "chatKeyDoesNotExist" : "keyDoesNotExist")
             }
         } catch (error) {
-            console.error("[Balance Api] 获取Key或ChatKey信息错误", error)
+            console.error("[Chat Api] 获取Key或ChatKey信息错误", error)
             return response(APIKey, chatKey, "NULL", "getKeyError")
         }
         try {
             const QUERY_STRATEGY = STRATEGIES[keyData.model]
             if (!QUERY_STRATEGY) {
-                console.error("不支持的模型")
+                console.error("[Chat Api] 不支持的模型")
                 return response(APIKey, chatKey, "NULL", "unsupportedModel")
             }
             // 构建消息历史

@@ -105,19 +105,19 @@
         },
         "HomeSidebar": {
             "toast": {
-                "errorGettingChatList": "获取聊天列表错误"
-            },
-            "timeRangeLabel": {
-                "1": "今天",
-                "30": "30天内"
+                "errorGettingChatList": "获取聊天列表错误",
+                "successDeletingChatList": "删除聊天列表成功",
+                "errorDeletingChatList": "删除聊天列表错误"
             },
             "function": {
                 "new": "新建对话",
                 "stow": "折叠边栏",
                 "expand": "展开边栏",
                 "preset": "预设",
-                "options": "设置"
-            }
+                "options": "设置",
+                "delete": "删除对话"
+            },
+            "numberOfConversations": "{num} 条对话"
         },
         "LanguageSelect": {
             "toast": {
