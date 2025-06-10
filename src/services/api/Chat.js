@@ -177,7 +177,13 @@ const ChatGPT = async (keyData, chatKey, model, messages, dialogueId) => {
                     const MESSAGE = LINE.replace(/^data: /, "")
                     if (MESSAGE === "[DONE]") {
                         EventBus.emit("[stream] streamComplete")
-                        return response(keyData.key, chatKey, assistantMessage)
+                        return response(
+                            keyData.key,
+                            chatKey,
+                            {
+                                assistant: assistantMessage
+                            }
+                        )
                     }
                     try {
                         const PARSED = JSON.parse(MESSAGE)
