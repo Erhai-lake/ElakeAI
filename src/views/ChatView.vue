@@ -603,7 +603,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+    z-index: 2;
 
     p {
         position: absolute;
@@ -708,6 +708,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 2;
 }
 
 .AIDisclaimer {
@@ -728,7 +729,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    z-index: 1;
+    z-index: 3;
 
     button {
         margin: 10px 0;

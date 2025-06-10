@@ -94,18 +94,18 @@ export default defineComponent({
             this.selectedModel = newVal
         },
         // 选择模型
-        selectLargeModel(selectLargeModel) {
+        async selectLargeModel(selectLargeModel) {
             if (!selectLargeModel) return
             if (selectLargeModel === this.selectedLargeModel.title) return
             this.selectedLargeModel = selectLargeModel
-            this.loadKeyPools()
+            await this.loadKeyPools()
         },
         // 选择Key
-        selectKey(selectKey) {
+        async selectKey(selectKey) {
             if (!selectKey) return
             if (selectKey === this.selectedKey.name) return
             this.selectedKey = selectKey
-            this.loadModel()
+            await this.loadModel()
         },
         // 选择模型
         selectModel(selectModel) {
@@ -116,6 +116,7 @@ export default defineComponent({
         // 加载Key
         async loadKeyPools() {
             this.selectedKey = null
+            this.keyPools = null
             try {
                 // const DEFAULT = {key: "auto", title: "自动"}
                 const KEYS_DATA = await this.$DB.APIKeys
@@ -135,11 +136,11 @@ export default defineComponent({
                 console.error("[AI Input] 加载Key池错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
             }
-            await this.loadModel()
         },
         // 加载模型
         async loadModel() {
             this.selectedModel = null
+            this.modelList = null
             try {
                 const MODELS_DATA = await Models.getModel(this.selectedKey.key)
                 if (MODELS_DATA.error) {

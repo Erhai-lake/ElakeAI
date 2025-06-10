@@ -2,7 +2,7 @@ import axios from "axios"
 import General from "@/services/api/General"
 import DB from "@/services/Dexie.js"
 
-const REQUEST_TIMEOUT = 5000
+const REQUEST_TIMEOUT = 10000
 
 // 返回
 const response = (APIKey, models, error) => {
