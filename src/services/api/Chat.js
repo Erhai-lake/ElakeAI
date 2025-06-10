@@ -48,6 +48,7 @@ const DeepSeek = async (keyData, chatKey, model, messages, dialogueId) => {
         }
         const DECODER = new TextDecoder()
         let buffer = ""
+        let reasoningMessage = ""
         let assistantMessage = ""
         let streamMessage = ""
         const READER = RESPONSE.body.getReader()
@@ -63,10 +64,29 @@ const DeepSeek = async (keyData, chatKey, model, messages, dialogueId) => {
                     const MESSAGE = LINE.replace(/^data: /, "")
                     if (MESSAGE === "[DONE]") {
                         EventBus.emit("[stream] streamComplete")
-                        return response(keyData.key, chatKey, assistantMessage)
+                        return response(
+                            keyData.key,
+                            chatKey,
+                            {
+                                reasoning: reasoningMessage,
+                                assistant: assistantMessage
+                            }
+                        )
                     }
                     try {
                         const PARSED = JSON.parse(MESSAGE)
+                        if (PARSED.choices?.[0]?.delta?.reasoning_content) {
+                            reasoningMessage += PARSED.choices[0].delta.reasoning_content
+                            streamMessage = PARSED.choices[0].delta.reasoning_content
+                            EventBus.emit("[stream] streamStream", {
+                                id: dialogueId,
+                                reasoning: streamMessage,
+                                model: {
+                                    largeModel: keyData.model,
+                                    model: model
+                                }
+                            })
+                        }
                         if (PARSED.choices?.[0]?.delta?.content) {
                             assistantMessage += PARSED.choices[0].delta.content
                             streamMessage = PARSED.choices[0].delta.content
@@ -291,7 +311,11 @@ export default {
                             largeModel: keyData.model,
                             model: model,
                         },
-                        message: {content: RESULT.data, role: "assistant"},
+                        message: {
+                            reasoning: RESULT.data.reasoning,
+                            content: RESULT.data.assistant,
+                            role: "assistant"
+                        },
                         timestamp: Date.now()
                     }
                 ]

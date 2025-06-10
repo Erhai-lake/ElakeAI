@@ -12,11 +12,12 @@ import "@/assets/styles/highlight.css"
 import "@/assets/styles/markdown.less"
 import ModelList from "@/assets/data/ModelList.json"
 import EventBus from "@/services/EventBus"
+import FoldingPanel from "@/components/FoldingPanel.vue"
 
 export default {
     name: "ChatView",
     inject: ["$DB"],
-    components: {AIInput},
+    components: {FoldingPanel, AIInput},
     data() {
         return {
             route: useRoute(),
@@ -432,13 +433,18 @@ export default {
                         model: message.model.model
                     },
                     message: {
-                        content: message.message,
+                        reasoning: message.reasoning || "",
+                        content: message.message || "",
                         role: "assistant"
                     },
                     timestamp: Date.now()
                 })
             } else {
-                LAST_MESSAGE.message.content += message.message
+                if (message.reasoning) {
+                    LAST_MESSAGE.message.reasoning += message.reasoning
+                } else if (message.message) {
+                    LAST_MESSAGE.message.content += message.message
+                }
             }
             // 只有在底部附近时才自动滚动
             if (this.scroll.isAtBottom) {
@@ -482,13 +488,21 @@ export default {
                 :data-message-id="message.id"
                 @click="setCurrentMessageId(message.id)">
                 <div class="MessageCard">
+                    <FoldingPanel class="ReasoningContent" v-if="message.message.reasoning">
+                        <template #Title>
+                            <span class="ReasoningTitle">{{ $t("views.ChatView.reasoning") }}</span>
+                        </template>
+                        <template #Content>
+                            <div v-html="handleMarkdown(message.message.reasoning)"></div>
+                        </template>
+                    </FoldingPanel>
                     <div
                         class="MessageContent"
                         v-html="message.message.role === 'user'? message.message.content : handleMarkdown(message.message.content)"></div>
                     <div class="MessageInfo">
                         [{{ message.model ? message.model.largeModel : $t("views.ChatView.earthOnline") }}]
                         -
-                        [{{ message.model? message.model.model : $t("views.ChatView.players") }}]
+                        [{{ message.model ? message.model.model : $t("views.ChatView.players") }}]
                         -
                         {{ formatTimestamp(message.timestamp) }}
                     </div>
@@ -671,7 +685,7 @@ export default {
     }
 }
 
-.MessageContent {
+.ReasoningContent, .MessageContent {
     font-size: 16px;
     line-height: 1.5;
     word-wrap: break-word;
