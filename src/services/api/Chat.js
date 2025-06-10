@@ -1,4 +1,3 @@
-import axios from "axios"
 import DB from "@/services/Dexie.js"
 import EventBus from "@/services/EventBus"
 
