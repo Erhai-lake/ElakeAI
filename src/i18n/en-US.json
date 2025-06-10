@@ -131,7 +131,7 @@
                 "options": "Settings",
                 "delete": "Delete chat"
             },
-            "numberOfConversations": "{num} conversations"
+            "numberOfConversations": "{num} messages"
         },
         "LanguageSelect": {
             "toast": {

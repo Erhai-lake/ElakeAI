@@ -489,8 +489,9 @@ export default {
                         [{{ message.model ? message.model.largeModel : $t("views.ChatView.earthOnline") }}]
                         -
                         [{{ message.model? message.model.model : $t("views.ChatView.players") }}]
+                        -
+                        {{ formatTimestamp(message.timestamp) }}
                     </div>
-                    <div class="MessageInfo">{{ formatTimestamp(message.timestamp) }}</div>
                     <div class="MessageInfo">{{ message.id }}</div>
                     <img
                         :src="modelImages(message.model.largeModel ? message.model.largeModel : '')"
