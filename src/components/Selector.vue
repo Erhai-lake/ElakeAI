@@ -105,10 +105,11 @@ export default {
 }
 
 .SelectorSelected {
+    padding: 12px;
+    height: 19px;
+    border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    padding: 12px;
-    border: 1px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;

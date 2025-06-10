@@ -3,8 +3,8 @@
         "Balance": {
             "invalidKey": "Invalid API Key",
             "keyDoesNotExist": "API Key does not exist",
-            "getKeyError": "Error retrieving API Key",
-            "getBalanceError": "Error fetching balance",
+            "getKeyError": "Failed to retrieve API Key",
+            "getError": "Retrieval error",
             "unsupportedModel": "Unsupported model",
             "requestTimeout": "Request timeout",
             "badRequest": "Bad request",
@@ -13,9 +13,9 @@
             "unknownError": "Unknown error"
         },
         "Chat": {
-            "noAuto": "Auto-selection of API Keys is currently unavailable. Please manually select a key. (Key Pool feature still in development)",
+            "noAuto": "Auto-selection of API Keys is currently unavailable. Please manually select a key. (Key Pool feature in development)",
             "invalidKey": "Invalid API Key",
-            "invalidChatKey": "Invalid Chat Session Key",
+            "invalidChatKey": "Invalid chat session key",
             "invalidContent": "Invalid content",
             "invalidWebSearch": "Invalid web search request",
             "keyDoesNotExist": "API Key does not exist",
@@ -23,30 +23,43 @@
             "chatKeyDoesNotExist": "Chat session key does not exist",
             "getChatKeyError": "Failed to retrieve chat session key",
             "unsupportedModel": "Unsupported model",
-            "serverBusy": "Server is busy",
+            "serverBusy": "Server busy",
             "httpError": "HTTP error",
             "noResponseBody": "No response body",
             "networkError": "Network error",
             "invalidResponse": "Invalid response",
             "requestFailed": "Request failed",
             "requestCancelled": "Request cancelled",
-            "streamingDataParsingError": "Error parsing streaming data",
-            "streamError": "Error in streaming",
-            "chatProcessingError": "Error processing chat"
+            "streamingDataParsingError": "Stream data parsing error",
+            "streamError": "Stream error",
+            "chatProcessingError": "Chat processing error"
+        },
+        "Models": {
+            "invalidKey": "Invalid API Key",
+            "keyDoesNotExist": "API Key does not exist",
+            "getKeyError": "Failed to retrieve API Key",
+            "getError": "Retrieval error",
+            "unsupportedModel": "Unsupported model",
+            "requestTimeout": "Request timeout",
+            "badRequest": "Bad request",
+            "networkError": "Network error",
+            "noResponse": "No response",
+            "unknownError": "Unknown error"
         }
     },
     "components": {
         "AIInput": {
-            "inputTip": "Please enter your question",
+            "inputTip": "Enter your question",
             "newChat": "New Chat",
             "toast": {
-                "loadKeyPoolError": "Failed to load Key pool",
+                "loadKeyPoolError": "Failed to load Key Pool",
+                "loadModelError": "Failed to load models",
                 "sendMessageError": "Failed to send message",
                 "createNewChatError": "Failed to create new chat",
                 "stopError": "Failed to stop message"
             },
             "function": {
-                "appendix": "Appendix",
+                "appendix": "Attach",
                 "webSearch": "Web Search",
                 "send": "Send",
                 "stop": "Stop"
@@ -62,39 +75,39 @@
             "title": "API Key Pool",
             "operationButton": {
                 "add": "Add",
-                "remove": "Remove {count} Keys",
+                "remove": "Remove {count} keys",
                 "edit": "Edit",
-                "enable": "Enable {count} Keys",
-                "disable": "Disable {count} Keys"
+                "enable": "Enable {count} keys",
+                "disable": "Disable {count} keys"
             },
             "toast": {
-                "loadKeyPoolError": "Failed to load Key pool",
+                "loadKeyPoolError": "Failed to load Key Pool",
                 "errorKeyDisabled": "{remark} is disabled",
-                "errorObtainingKeyBalance": "Error obtaining Key balance",
-                "keyNull": "Key cannot be empty",
+                "errorObtainingKeyBalance": "Failed to get key balance",
+                "keyNull": "API Key cannot be empty",
                 "remarkNull": "Remarks cannot be empty",
                 "invalidUrl": "Invalid URL",
-                "addKeySuccess": "Key added successfully",
-                "addKeyError": "Failed to add key",
+                "addKeySuccess": "API Key added successfully",
+                "addKeyError": "Failed to add API Key",
                 "selectKeysOperate": "Please select keys to operate",
-                "removeKeySuccess": "API Key(s) removed successfully",
-                "removeKeysError": "Remove Key(s) Error",
-                "selectAKey": "You can only select one key at a time",
-                "getKeyError": "Get Key error",
+                "removeKeySuccess": "Key(s) removed successfully",
+                "removeKeysError": "Failed to remove keys",
+                "selectAKey": "Please select only one key",
+                "getKeyError": "Failed to retrieve key",
                 "editKeySuccess": "Key edited successfully",
                 "editKeyError": "Failed to edit key",
                 "enableSuccess": "Key enabled successfully",
                 "disableSuccess": "Key disabled successfully",
                 "batchEnableSuccess": "Batch enable successful",
                 "batchDisableSuccess": "Batch disable successful",
-                "statusUpdateError": "Status Update Error"
+                "statusUpdateError": "Status update failed"
             },
             "form": {
                 "enable": "Enabled",
                 "key": "Key",
-                "pleaseEnterKey": "Enter key",
+                "pleaseEnterKey": "Enter API key",
                 "remarks": "Remarks",
-                "pleaseEnterKeyRemarks": "Enter remarks",
+                "pleaseEnterKeyRemarks": "Enter remarks (required)",
                 "url": "URL",
                 "pleaseEnterKeyUrl": "Enter API mirror URL (default: official)",
                 "save": "Save",
@@ -105,30 +118,30 @@
         },
         "HomeSidebar": {
             "toast": {
-                "errorGettingChatList": "Error getting chat list",
+                "errorGettingChatList": "Failed to get chat list",
                 "successDeletingChatList": "Chat list deleted successfully",
-                "errorDeletingChatList": "Error deleting chat list"
+                "errorDeletingChatList": "Failed to delete chat list"
             },
             "function": {
                 "new": "New Chat",
-                "stow": "Collapse Sidebar",
-                "expand": "Expand Sidebar",
+                "stow": "Collapse sidebar",
+                "expand": "Expand sidebar",
                 "preset": "Presets",
                 "options": "Settings",
-                "delete": "Delete Chats"
+                "delete": "Delete chat"
             },
-            "numberOfConversations": "{num} Conversations"
+            "numberOfConversations": "{num} conversations"
         },
         "LanguageSelect": {
             "toast": {
-                "getLanguageError": "Get Language Error",
-                "applicationLanguageError": "Application Language Error"
+                "getLanguageError": "Failed to get language",
+                "applicationLanguageError": "Failed to apply language"
             }
         },
         "ThemeSwitch": {
             "toast": {
-                "getThemeError": "Get Theme Error",
-                "applicationThemeError": "Application Theme Error"
+                "getThemeError": "Failed to get theme",
+                "applicationThemeError": "Failed to apply theme"
             },
             "light": "Light",
             "dark": "Dark",
@@ -139,22 +152,22 @@
         "ChatView": {
             "toast": {
                 "noChatKey": "Chat does not exist",
-                "getChatLogError": "Get chat log error",
+                "getChatLogError": "Failed to get chat history",
                 "mermaidRenderingError": "Mermaid rendering error",
                 "mermaidInitializationError": "Mermaid initialization error",
-                "copied": "Copy success",
+                "copied": "Copied successfully",
                 "copyFailed": "Copy failed",
                 "titleUpdated": "Title updated successfully",
-                "titleUpdateError": "Title update error"
+                "titleUpdateError": "Failed to update title"
             },
             "FunctionalControls": {
-                "scrollToTopMessages": "Back to Top",
-                "scrollToUpMessages": "Previous Article",
-                "scrollToDownMessages": "Next Article",
-                "scrollToBottomMessages": "Back to Bottom"
+                "scrollToTopMessages": "Jump to top",
+                "scrollToUpMessages": "Previous message",
+                "scrollToDownMessages": "Next message",
+                "scrollToBottomMessages": "Jump to bottom"
             },
             "copyButton": "Copy",
-            "aiDisclaimer": "Content generated by AI, please carefully identify"
+            "aiDisclaimer": "AI-generated content. Please verify accuracy"
         },
         "Options": {
             "personalization": "Personalization",

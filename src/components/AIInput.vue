@@ -5,6 +5,7 @@ import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
 import Selector from "@/components/Selector.vue"
 import {useRoute} from "vue-router"
+import Models from "@/services/api/Models"
 
 export default defineComponent({
     name: "AIInput",
@@ -14,16 +15,17 @@ export default defineComponent({
         return {
             route: useRoute(),
             // 模型列表
-            modelList: ModelList,
+            largeModelList: ModelList,
             // Key列表
             keyPools: null,
+            // 模型列表
+            modelList: null,
             // 选中的模型
-            selectedModel: ModelList[0],
+            selectedLargeModel: ModelList[0],
             // 选中的Key
-            selectedKey: {
-                key: "auto",
-                remark: "自动",
-            },
+            selectedKey: null,
+            // 选中的模型
+            selectedModel: null,
             // 输入框
             ChatInput: "",
             // 联网搜索状态
@@ -33,13 +35,17 @@ export default defineComponent({
         }
     },
     watch: {
-        // 监听模型变化
-        selectedModel(newVal) {
-            this.selectModel(newVal)
+        // 监听大模型变化
+        selectedLargeModel(newVal) {
+            this.selectLargeModel(newVal)
         },
         // 监听Key变化
         selectedKey(newVal) {
             this.selectKey(newVal)
+        },
+        // 监听模型变化
+        selectedModel(newVal) {
+            this.selectModel(newVal)
         }
     },
     created() {
@@ -75,43 +81,81 @@ export default defineComponent({
             const newHeight = Math.min(this.textareaRef.scrollHeight, 600)
             this.textareaRef.style.height = `${Math.max(newHeight, 50)}px`
         },
-        // 更新选中项
+        // 更新大模型所选项
+        updateSelectedLargeModel(newVal) {
+            this.selectedLargeModel = newVal
+        },
+        // 更新Key所选项
+        updateSelectedKey(newVal) {
+            this.selectedKey = newVal
+        },
+        // 更新模型所选项
         updateSelectedModel(newVal) {
             this.selectedModel = newVal
         },
-        updateSelectedKey(newVal) {
-            this.selectedKey = newVal
+        // 选择模型
+        selectLargeModel(selectLargeModel) {
+            if (!selectLargeModel) return
+            if (selectLargeModel === this.selectedLargeModel.title) return
+            this.selectedLargeModel = selectLargeModel
+            this.loadKeyPools()
+        },
+        // 选择Key
+        selectKey(selectKey) {
+            if (!selectKey) return
+            if (selectKey === this.selectedKey.name) return
+            this.selectedKey = selectKey
+            this.loadModel()
         },
         // 选择模型
         selectModel(selectModel) {
             if (!selectModel) return
             if (selectModel === this.selectedModel.title) return
             this.selectedModel = selectModel
-            this.loadKeyPools()
-        },
-        // 选择模型
-        selectKey(selectKey) {
-            if (!selectKey) return
-            if (selectKey === this.selectedKey.name) return
-            this.selectedKey = selectKey
         },
         // 加载Key
         async loadKeyPools() {
+            this.selectedKey = null
             try {
-                const DEFAULT = {key: "auto", title: "自动"}
+                // const DEFAULT = {key: "auto", title: "自动"}
                 const KEYS_DATA = await this.$DB.APIKeys
                     .where("model")
-                    .equals(this.selectedModel.title)
+                    .equals(this.selectedLargeModel.title)
                     .and(key => key.enabled)
                     .toArray()
                 this.keyPools = [
-                    DEFAULT,
+                    // DEFAULT,
                     ...KEYS_DATA.map(key => ({key: key.key, title: key.remark}))
                 ]
-                this.selectedKey = DEFAULT
+                if (this.keyPools.length === 0) {
+                    return
+                }
+                this.selectedKey = this.keyPools[0]
             } catch (error) {
                 console.error("[AI Input] 加载Key池错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
+            }
+            await this.loadModel()
+        },
+        // 加载模型
+        async loadModel() {
+            this.selectedModel = null
+            try {
+                const MODELS_DATA = await Models.getModel(this.selectedKey.key)
+                if (MODELS_DATA.error) {
+                    this.$toast.warning(this.$t(`api.Models.${MODELS_DATA.error}`))
+                    return
+                }
+                this.modelList = [
+                    ...MODELS_DATA.models.map(model => ({title: model}))
+                ]
+                if (this.modelList.length === 0) {
+                    return
+                }
+                this.selectedModel = this.modelList[0]
+            } catch (error) {
+                console.error("[AI Input] 加载模型错误", error)
+                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadModelError")}`)
             }
         },
         // 发送
@@ -261,19 +305,24 @@ export default defineComponent({
                     <use xlink:href="#icon-webSearch"></use>
                 </svg>
             </label>
-            <!-- 模型选择 -->
+            <!-- 大模型选择 -->
             <Selector
-                :selectorSelected="selectedModel"
-                :selectorList="modelList"
+                :selectorSelected="selectedLargeModel || {}"
+                :selectorList="largeModelList"
                 uniqueKey="title"
-                @update:selectorSelected="updateSelectedModel"/>
+                @update:selectorSelected="updateSelectedLargeModel"/>
             <!-- Key选择 -->
             <Selector
-                :selectorSelected="selectedKey"
+                :selectorSelected="selectedKey || {}"
                 :selectorList="keyPools"
                 uniqueKey="key"
                 @update:selectorSelected="updateSelectedKey"/>
-            <div></div>
+            <!-- 模型选择 -->
+            <Selector
+                :selectorSelected="selectedModel || {}"
+                :selectorList="modelList"
+                uniqueKey="title"
+                @update:selectorSelected="updateSelectedModel"/>
         </div>
         <!--聊天输入框-->
         <div class="Input">
@@ -379,7 +428,7 @@ export default defineComponent({
     position: relative;
 
     #ChatInput {
-        padding: 10px;
+        padding: 10px 44px 10px 10px;
         box-sizing: border-box;
         width: 100%;
         min-height: 100px;

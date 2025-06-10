@@ -4,7 +4,7 @@
             "invalidKey": "无效的Key",
             "keyDoesNotExist": "Key不存在",
             "getKeyError": "获取Key错误",
-            "getBalanceError": "获取余额错误",
+            "getError": "获取错误",
             "unsupportedModel": "不支持的模型",
             "requestTimeout": "请求超时",
             "badRequest": "错误的请求",
@@ -33,6 +33,18 @@
             "streamingDataParsingError": "流式数据解析错误",
             "streamError": "流错误",
             "chatProcessingError": "Chat处理错误"
+        },
+        "Models": {
+            "invalidKey": "无效的Key",
+            "keyDoesNotExist": "Key不存在",
+            "getKeyError": "获取Key错误",
+            "getError": "获取错误",
+            "unsupportedModel": "不支持的模型",
+            "requestTimeout": "请求超时",
+            "badRequest": "错误的请求",
+            "networkError": "网络错误",
+            "noResponse": "无响应",
+            "unknownError": "未知错误"
         }
     },
     "components": {
@@ -41,6 +53,7 @@
             "newChat": "新建对话",
             "toast": {
                 "loadKeyPoolError": "加载Key池错误",
+                "loadModelError": "加载模型错误",
                 "sendMessageError": "发送消息错误",
                 "createNewChatError": "创建新对话错误",
                 "stopError": "停止消息错误"
@@ -95,7 +108,7 @@
                 "pleaseEnterKey": "请输入Key",
                 "remarks": "备注",
                 "pleaseEnterKeyRemarks": "请输入Key备注",
-                "url": "Url",
+                "url": "URL",
                 "pleaseEnterKeyUrl": "请输入API镜像站Url(默认为官方)",
                 "save": "保存",
                 "cancel": "取消",

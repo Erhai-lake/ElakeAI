@@ -118,6 +118,14 @@ const STRATEGIES = {
 }
 
 export default {
+    /**
+     * 聊天
+     * @param APIKey APIKey
+     * @param chatKey chatKey
+     * @param content 内容
+     * @param webSearch 是否启用Web搜索
+     * @returns {Promise<{error: string, data: string, key: string, chatKey: string, timestamp: number}>}
+     */
     async chat(APIKey, chatKey, content, webSearch) {
         // 参数验证
         if (!APIKey || typeof APIKey !== "string") {
