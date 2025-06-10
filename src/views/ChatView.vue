@@ -427,7 +427,10 @@ export default {
             if (!LAST_MESSAGE || LAST_MESSAGE.message.role !== "assistant") {
                 this.data.data.push({
                     id: message.id,
-                    model: message.model,
+                    model: {
+                        largeModel: message.model.largeModel,
+                        model: message.model.model
+                    },
                     message: {
                         content: message.message,
                         role: "assistant"
@@ -482,10 +485,11 @@ export default {
                     <div
                         class="MessageContent"
                         v-html="message.message.role === 'user'? message.message.content : handleMarkdown(message.message.content)"></div>
-                    <div class="MessageTime">{{ formatTimestamp(message.timestamp) }}</div>
-                    <div class="MessageTime">{{ message.id }}</div>
+                    <div class="MessageInfo" v-if="message.model">{{ `[${message.model.largeModel}]-[${message.model.model}]` }}</div>
+                    <div class="MessageInfo">{{ formatTimestamp(message.timestamp) }}</div>
+                    <div class="MessageInfo">{{ message.id }}</div>
                     <img
-                        :src="modelImages(message.model ? message.model : '')"
+                        :src="modelImages(message.model.largeModel ? message.model.largeModel : '')"
                         :alt="message.model ? message.model : ''"
                         v-if="message.message.role === 'assistant'">
                 </div>
@@ -669,7 +673,7 @@ export default {
     overflow-wrap: break-word;
 }
 
-.MessageTime {
+.MessageInfo {
     margin-top: 8px;
     font-size: 12px;
     color: var(--chat-dialogue-time-text-color);

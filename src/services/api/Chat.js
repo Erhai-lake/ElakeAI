@@ -79,7 +79,10 @@ const ChatGPT = async (keyData, chatKey, model, messages, dialogueId) => {
                             EventBus.emit("[stream] streamStream", {
                                 id: dialogueId,
                                 message: streamMessage,
-                                model: keyData.model
+                                model: {
+                                    largeModel: keyData.model,
+                                    model: model
+                                }
                             })
                         }
                     } catch (error) {
@@ -196,7 +199,10 @@ export default {
                     },
                     {
                         id: DIALOGUE_ID,
-                        model: keyData.model,
+                        model: {
+                            largeModel: keyData.model,
+                            model: model,
+                        },
                         message: {content: RESULT.data, role: "assistant"},
                         timestamp: Date.now()
                     }
