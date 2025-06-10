@@ -168,6 +168,8 @@
                 "scrollToBottomMessages": "Jump to bottom"
             },
             "copyButton": "Copy",
+            "earthOnline": "Earth Online",
+            "players": "Players",
             "aiDisclaimer": "AI-generated content. Please verify accuracy"
         },
         "Options": {

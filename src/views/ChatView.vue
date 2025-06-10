@@ -485,7 +485,11 @@ export default {
                     <div
                         class="MessageContent"
                         v-html="message.message.role === 'user'? message.message.content : handleMarkdown(message.message.content)"></div>
-                    <div class="MessageInfo" v-if="message.model">{{ `[${message.model.largeModel}]-[${message.model.model}]` }}</div>
+                    <div class="MessageInfo">
+                        [{{ message.model ? message.model.largeModel : $t("views.ChatView.earthOnline") }}]
+                        -
+                        [{{ message.model? message.model.model : $t("views.ChatView.players") }}]
+                    </div>
                     <div class="MessageInfo">{{ formatTimestamp(message.timestamp) }}</div>
                     <div class="MessageInfo">{{ message.id }}</div>
                     <img
