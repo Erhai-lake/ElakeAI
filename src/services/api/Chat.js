@@ -16,12 +16,12 @@ const response = (APIKey, chatKey, data, error) => {
 let abortController = null
 
 // DeepSeek
-const DeepSeek = async (keyData, chatKey, messages, dialogueId) => {
+const DeepSeek = async (keyData, chatKey, model, messages, dialogueId) => {
     return response(keyData.key, chatKey, "NULL")
 }
 
 // ChatGPT
-const ChatGPT = async (keyData, chatKey, messages, dialogueId) => {
+const ChatGPT = async (keyData, chatKey, model, messages, dialogueId) => {
     if (abortController) {
         abortController.abort()
     }
@@ -34,8 +34,7 @@ const ChatGPT = async (keyData, chatKey, messages, dialogueId) => {
                 "Authorization": `Bearer ${keyData.value}`
             },
             body: JSON.stringify({
-                // model: keyData.model,
-                model: "gpt-3.5-turbo",
+                model: model,
                 messages: messages,
                 stream: true
             }),
@@ -122,17 +121,21 @@ export default {
      * 聊天
      * @param APIKey APIKey
      * @param chatKey chatKey
+     * @param model 模型
      * @param content 内容
      * @param webSearch 是否启用Web搜索
      * @returns {Promise<{error: string, data: string, key: string, chatKey: string, timestamp: number}>}
      */
-    async chat(APIKey, chatKey, content, webSearch) {
+    async chat(APIKey, chatKey, model, content, webSearch) {
         // 参数验证
         if (!APIKey || typeof APIKey !== "string") {
             return response(APIKey, chatKey, "NULL", "invalidKey")
         }
         if (!chatKey || typeof chatKey !== "string") {
             return response(APIKey, chatKey, "NULL", "invalidChatKey")
+        }
+        if (!model || typeof model !== "string") {
+            return response(APIKey, chatKey, "NULL", "invalidModel")
         }
         if (!content || typeof content !== "string") {
             return response(APIKey, chatKey, "NULL", "invalidContent")
@@ -177,7 +180,7 @@ export default {
             // 用户消息
             EventBus.emit("[stream] userMessage", {id: USER_DIALOGUE_ID, message: content})
             // 调用策略
-            const RESULT = await QUERY_STRATEGY(keyData, chatKey, messages, DIALOGUE_ID)
+            const RESULT = await QUERY_STRATEGY(keyData, chatKey, model, messages, DIALOGUE_ID)
             if (RESULT.error) {
                 EventBus.emit("[stream] chatError")
                 return RESULT

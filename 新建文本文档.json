@@ -13,7 +13,10 @@
         },
         {
             "id": "04c05bb4-2d94-49f2-b41f-d9e8ec57f11d",
-            "model": "DeepSeek",
+            "model": {
+                "largeModel": "DeepSeek",
+                "model": "DeepSeek-Coder"
+            },
             "message": {
                 "content": "你好! 今天我能帮你什么?",
                 "role": "assistant"

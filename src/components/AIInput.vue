@@ -195,6 +195,7 @@ export default defineComponent({
                 const CHAT = await Chat.chat(
                     this.selectedKey.key,
                     this.route.params.key,
+                    this.selectedModel.title,
                     CONTENT.trim(),
                     this.enableWebSearch
                 )

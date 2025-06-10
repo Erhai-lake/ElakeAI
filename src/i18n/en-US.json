@@ -16,6 +16,7 @@
             "noAuto": "Auto-selection of API Keys is currently unavailable. Please manually select a key. (Key Pool feature in development)",
             "invalidKey": "Invalid API Key",
             "invalidChatKey": "Invalid chat session key",
+            "invalidModel": "Invalid model",
             "invalidContent": "Invalid content",
             "invalidWebSearch": "Invalid web search request",
             "keyDoesNotExist": "API Key does not exist",

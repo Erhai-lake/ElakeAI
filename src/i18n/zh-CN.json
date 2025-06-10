@@ -16,6 +16,7 @@
             "noAuto": "很抱歉, 目前不支持自动选择API Key, 请手动选择, Key池还没写完呢",
             "invalidKey": "无效的Key",
             "invalidChatKey": "无效的ChatKey",
+            "invalidModel": "无效的模型",
             "invalidContent": "无效的内容",
             "invalidWebSearch": "无效的WebSearch",
             "keyDoesNotExist": "Key不存在",
