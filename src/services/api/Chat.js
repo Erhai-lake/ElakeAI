@@ -16,6 +16,95 @@ let abortController = null
 
 // DeepSeek
 const DeepSeek = async (keyData, chatKey, model, messages, dialogueId) => {
+    if (abortController) {
+        abortController.abort()
+    }
+    abortController = new AbortController()
+    try {
+        const RESPONSE = await fetch(`${keyData.url}/chat/completions`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${keyData.value}`
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: messages,
+                stream: true
+            }),
+            signal: abortController.signal
+        })
+        if (!RESPONSE.ok) {
+            console.error(`[Chat Api] HTTP错误, 状态码: ${RESPONSE.status}`)
+            if (RESPONSE.status === 500) {
+                return response(keyData.key, chatKey, "NULL", "serverBusy")
+            } else {
+                return response(keyData.key, chatKey, "NULL", "httpError")
+            }
+        }
+        if (!RESPONSE.body) {
+            console.error("[Chat Api] 无响应体")
+            return response(keyData.key, chatKey, "NULL", "noResponseBody")
+        }
+        const DECODER = new TextDecoder()
+        let buffer = ""
+        let assistantMessage = ""
+        let streamMessage = ""
+        const READER = RESPONSE.body.getReader()
+        try {
+            while (true) {
+                const {done, value} = await READER.read()
+                if (done) break
+                buffer += DECODER.decode(value, {stream: true})
+                const LINES = buffer.split("\n")
+                buffer = LINES.pop()
+                for (const LINE of LINES) {
+                    if (!LINE.trim()) continue
+                    const MESSAGE = LINE.replace(/^data: /, "")
+                    if (MESSAGE === "[DONE]") {
+                        EventBus.emit("[stream] streamComplete")
+                        return response(keyData.key, chatKey, assistantMessage)
+                    }
+                    try {
+                        const PARSED = JSON.parse(MESSAGE)
+                        if (PARSED.choices?.[0]?.delta?.content) {
+                            assistantMessage += PARSED.choices[0].delta.content
+                            streamMessage = PARSED.choices[0].delta.content
+                            EventBus.emit("[stream] streamStream", {
+                                id: dialogueId,
+                                message: streamMessage,
+                                model: {
+                                    largeModel: keyData.model,
+                                    model: model
+                                }
+                            })
+                        }
+                    } catch (error) {
+                        console.error("[Chat Api] 流式数据解析错误", error)
+                        return response(keyData.key, chatKey, "NULL", "streamingDataParsingError")
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("[Chat Api] 流错误", error)
+            return response(keyData.key, chatKey, "NULL", "streamError")
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            console.error("[Chat Api] 请求已中止")
+            return response(keyData.key, chatKey, "NULL", "requestCancelled")
+        }
+        if (error.message.includes('Failed to fetch')) {
+            console.error("[Chat Api] 网络错误", error)
+            return response(keyData.key, chatKey, "NULL", "networkError");
+        } else if (error.message.includes('Unexpected token')) {
+            console.error("[Chat Api] 无效响应", error)
+            return response(keyData.key, chatKey, "NULL", "invalidResponse");
+        } else {
+            console.error("[Chat Api] 请求失败", error)
+            return response(keyData.key, chatKey, "NULL", "requestFailed");
+        }
+    }
     return response(keyData.key, chatKey, "NULL")
 }
 
