@@ -198,43 +198,11 @@ export default {
         },
         // 处理Markdown
         handleMarkdown(content) {
-            // 1. 先处理mermaid的div形式
-            content = content.replace(/<div class="?mermaid"?>([\s\S]*?)<\/div>/g, (match, diagram) => {
-                return `<div class="mermaid">${diagram}</div>`
-            })
-            // 2. 处理代码块形式的mermaid
-            content = content.replace(/```mermaid([\s\S]*?)```/g, (match, diagram) => {
-                return `<div class="mermaid">${diagram}</div>`
-            })
-            // 3. 转义所有其他HTML标签（保留mermaid不转义）
-            const tempDiv = document.createElement("div")
-            tempDiv.innerHTML = content
-            // 找到所有mermaid图表并临时存储
-            const mermaidCharts = []
-            const mermaidElements = tempDiv.querySelectorAll(".mermaid")
-            mermaidElements.forEach((el, index) => {
-                mermaidCharts.push(el.outerHTML)
-                el.outerHTML = `<!--MERMAID-${index}-->`
-            })
-            // 转义剩余HTML
-            let escapedContent = tempDiv.innerHTML
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-            // 恢复mermaid图表
-            mermaidCharts.forEach((chart, index) => {
-                escapedContent = escapedContent.replace(`<!--MERMAID-${index}-->`, chart)
-            })
-
-            if (!content.startsWith("```mermaid")) {
-                content = content.replace(/[<>]/g, function (m) {
-                    return {"<": "&lt;", ">": "&gt;"}[m]
-                })
-            }
             content = content.replace(/```mermaid([\s\S]*?)```/g, (match, diagram) => {
                 return `<div class="mermaid">${diagram}</div>`
             })
             const MD = markdownit({
-                html: false,
+                html: true,
                 linkify: true,
                 typographer: true,
                 breaks: true,
@@ -261,57 +229,53 @@ export default {
         // 初始化Mermaid
         async initMermaid() {
             try {
-                if (!window.mermaidInitialized) {
-                    mermaid.initialize({
-                        startOnLoad: false,
-                        theme: "default",
-                        flowchart: {
-                            useMaxWidth: true,
-                            htmlLabels: true,
-                            width: "100%"
-                        },
-                        securityLevel: "loose"
-                    })
-                    window.mermaidInitialized = true
-                }
+                mermaid.initialize({
+                    startOnLoad: false,
+                    theme: "default",
+                    flowchart: {
+                        useMaxWidth: true,
+                        htmlLabels: true,
+                        width: "100%"
+                    }
+                })
 
-                await this.$nextTick(async () => {
-
-                    const ELEMENTS = document.querySelectorAll(".mermaid:not([data-prendered])")
+                requestAnimationFrame(async () => {
+                    const ELEMENTS = document.querySelectorAll(".mermaid:not([data-rendered])")
                     for (const ELEMENT of ELEMENTS) {
                         try {
-                            ELEMENT.setAttribute("data-processed", "true")
+                            ELEMENT.dataset.processed = "true"
                             const CODE = ELEMENT.textContent.trim()
                             const ID = "mermaid-" + Math.random().toString(36).substr(2, 9)
                             // 渲染图表
-                            const {svg} = await mermaid.render(ID, CODE)
+                            const { svg } = await mermaid.render(ID, CODE)
                             // 创建容器
                             const CONTAINER = document.createElement("div")
                             CONTAINER.className = "mermaid-container"
+                            CONTAINER.setAttribute("data-rendered", "true")
                             CONTAINER.innerHTML = svg
                             // 插入DOM
                             ELEMENT.replaceWith(CONTAINER)
                             // Mermaid SVG 尺寸初始化
                             const SVG_ELEMENT = CONTAINER.querySelector("svg")
                             if (SVG_ELEMENT) {
+                                SVG_ELEMENT.removeAttribute("width")
+                                SVG_ELEMENT.removeAttribute("height")
                                 SVG_ELEMENT.style.width = "100%"
+                                SVG_ELEMENT.style.maxHeight = "400px"
                                 SVG_ELEMENT.style.display = "block"
                             }
                             // 处理 SVG 和缩放
                             this.setupZoom(CONTAINER)
                         } catch (error) {
-                            ELEMENT.innerHTML = `<div class="error">error.message</div>`
-                            console.error("[Chat View] Mermaid渲染错误", error)
-                            this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.mermaidRenderingError")}`)
+                            console.error("Mermaid 渲染错误", error)
+                            ELEMENT.innerHTML = `<div class="mermaid-error">流程图渲染失败</div>`
                         }
                     }
                 })
             } catch (error) {
-                console.error("[Chat View] Mermaid初始化错误", error);
-                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.mermaidInitializationError")}`)
+                console.error("Mermaid 初始化错误", error);
             }
         },
-        // 处理SVG缩放
         setupZoom(container) {
             const SVG = container.querySelector("svg")
             if (!SVG) return
@@ -326,7 +290,7 @@ export default {
                 zoomSpeed: 0.065,
                 zoomDoubleClickSpeed: 1
             })
-            container.addEventListener("wheel", INSTANCE.zoomWithWheel)
+            container.addEventListener('wheel', INSTANCE.zoomWithWheel)
             // 防止文本选择
             container.addEventListener("mousedown", e => {
                 if (e.target.tagName.toLowerCase() === "svg") {
