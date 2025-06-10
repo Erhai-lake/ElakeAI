@@ -165,7 +165,9 @@
                 "scrollToTopMessages": "返回顶部",
                 "scrollToUpMessages": "上一条",
                 "scrollToDownMessages": "下一条",
-                "scrollToBottomMessages": "返回底部"
+                "scrollToBottomMessages": "返回底部",
+                "showInputBox": "显示输入框",
+                "hideInputBox": "隐藏输入框"
             },
             "copyButton": "复制",
             "earthOnline": "地球Online",

@@ -41,7 +41,8 @@ export default {
                 title: null,
                 timestamp: null,
                 data: [],
-            }
+            },
+            showInputBox: true
         }
     },
     async created() {
@@ -517,7 +518,7 @@ export default {
         </div>
         <div></div>
         <!-- 底部输入框 -->
-        <div class="InputArea">
+        <div class="InputArea" v-if="showInputBox">
             <AIInput/>
         </div>
         <!-- AI提示信息 -->
@@ -536,7 +537,6 @@ export default {
             </button>
             <!-- 上一条按钮 -->
             <button
-                class="ScrollToUpMessages"
                 :title="$t('views.ChatView.FunctionalControls.scrollToUpMessages')"
                 @click="scrollToUpAndDownMessages('up')"
                 :disabled="data.data.length === 0">
@@ -546,7 +546,6 @@ export default {
             </button>
             <!-- 下一条按钮 -->
             <button
-                class="ScrollToDownMessages"
                 :title="$t('views.ChatView.FunctionalControls.scrollToDownMessages')"
                 @click="scrollToUpAndDownMessages('Down')"
                 :disabled="data.data.length === 0">
@@ -556,10 +555,17 @@ export default {
             </button>
             <!-- 回到底部按钮 -->
             <button
-                class="ScrollToBottomMessages"
                 :title="$t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
                 @click="scrollToUpAndDownMessages('bottom')"
                 :disabled="scroll.isAtBottom || data.data.length === 0">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-bottomArrow"></use>
+                </svg>
+            </button>
+            <!-- 显示输入框按钮 -->
+            <button
+                :title="$t('views.ChatView.FunctionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
+                @click="showInputBox = !showInputBox">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-bottomArrow"></use>
                 </svg>

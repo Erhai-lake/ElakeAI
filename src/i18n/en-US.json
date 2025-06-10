@@ -165,7 +165,9 @@
                 "scrollToTopMessages": "Jump to top",
                 "scrollToUpMessages": "Previous message",
                 "scrollToDownMessages": "Next message",
-                "scrollToBottomMessages": "Jump to bottom"
+                "scrollToBottomMessages": "Jump to bottom",
+                "showInputBox": "Show input box",
+                "hideInputBox": "Hide input box"
             },
             "copyButton": "Copy",
             "earthOnline": "Earth Online",
