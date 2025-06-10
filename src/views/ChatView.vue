@@ -481,7 +481,7 @@ export default {
                 class="TitleInput">
         </div>
         <!-- 消息列表 -->
-        <div class="MessageList">
+        <div class="MessageList" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
             <div
                 v-for="message in data.data"
                 :key="message.timestamp"
@@ -567,7 +567,7 @@ export default {
                 :title="$t('views.ChatView.FunctionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
                 @click="showInputBox = !showInputBox">
                 <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-bottomArrow"></use>
+                    <use xlink:href="#icon-inputBox"></use>
                 </svg>
             </button>
         </div>
@@ -633,7 +633,6 @@ export default {
 
 .MessageList {
     position: absolute;
-    padding: 100px 50px 280px 50px;
     box-sizing: border-box;
     width: 100%;
     height: 100%;
