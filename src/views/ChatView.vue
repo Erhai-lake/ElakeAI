@@ -604,7 +604,7 @@ export default {
 
 .MessageList {
     position: absolute;
-    padding: 100px 50px 200px 50px;
+    padding: 100px 50px 280px 50px;
     box-sizing: border-box;
     width: 100%;
     height: 100%;

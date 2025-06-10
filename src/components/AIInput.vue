@@ -246,18 +246,8 @@ export default defineComponent({
                 </svg>
             </label>
         </div>
-        <!--聊天输入框-->
-        <textarea
-            id="ChatInput"
-            :placeholder="$t('components.AIInput.inputTip')"
-            ref="textareaRef"
-            spellcheck="false"
-            v-model="ChatInput"
-            @keydown.enter.exact.prevent="Send"
-            @keydown.ctrl.enter.exact="handleNewLine"
-            @keydown.shift.enter.exact="handleNewLine"></textarea>
-        <!--按钮栏-->
-        <div class="ButtonBar">
+        <!--顶部按钮栏-->
+        <div class="TopButtonBar">
             <!--附件-->
             <label for="Appendix" :title="$t('components.AIInput.function.appendix')" @click="modelStatus = false">
                 <svg class="icon" aria-hidden="true">
@@ -272,22 +262,30 @@ export default defineComponent({
                 </svg>
             </label>
             <!-- 模型选择 -->
-            <div class="Selector">
-                <Selector
-                    :selectorSelected="selectedModel"
-                    :selectorList="modelList"
-                    uniqueKey="title"
-                    @update:selectorSelected="updateSelectedModel"/>
-            </div>
+            <Selector
+                :selectorSelected="selectedModel"
+                :selectorList="modelList"
+                uniqueKey="title"
+                @update:selectorSelected="updateSelectedModel"/>
             <!-- Key选择 -->
-            <div class="Selector">
-                <Selector
-                    :selectorSelected="selectedKey"
-                    :selectorList="keyPools"
-                    uniqueKey="key"
-                    @update:selectorSelected="updateSelectedKey"/>
-            </div>
+            <Selector
+                :selectorSelected="selectedKey"
+                :selectorList="keyPools"
+                uniqueKey="key"
+                @update:selectorSelected="updateSelectedKey"/>
             <div></div>
+        </div>
+        <!--聊天输入框-->
+        <div class="Input">
+            <textarea
+                id="ChatInput"
+                :placeholder="$t('components.AIInput.inputTip')"
+                ref="textareaRef"
+                spellcheck="false"
+                v-model="ChatInput"
+                @keydown.enter.exact.prevent="Send"
+                @keydown.ctrl.enter.exact="handleNewLine"
+                @keydown.shift.enter.exact="handleNewLine"></textarea>
             <!--发送-->
             <label
                 for="Send"
@@ -332,22 +330,25 @@ export default defineComponent({
 .AIInput {
     position: relative;
     padding: 16px;
-    margin: 0 10px;
+    box-sizing: border-box;
     width: 50%;
+    min-height: 200px;
     background-color: var(--background-color);
     border: 2px solid var(--border-color);
     border-radius: 15px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow: hidden;
 
-    .ButtonBar {
+    .TopButtonBar {
         padding: 5px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
         width: 100%;
-        display: grid;
-        grid-template-columns: auto auto auto auto 1fr auto;
+        display: flex;
+        align-items: center;
         gap: 10px;
+        z-index: 1;
 
         label {
             padding: 10px;
@@ -367,40 +368,63 @@ export default defineComponent({
                 transform: scale(0.9);
             }
         }
-
-        .Send {
-            background-color: var(--background-color);
-        }
     }
-}
-
-.Selector {
-    width: 200px;
 }
 
 #Appendix, #Camera, #Photos, #Files, #Search {
     display: none;
 }
 
-#ChatInput {
-    width: 100%;
-    min-height: 50px;
-    max-height: 600px;
-    color: var(--text-color);
-    font-size: 16px;
-    letter-spacing: 3px;
-    background: none;
-    border: none;
-    resize: none;
+.Input {
+    position: relative;
 
-    &:focus {
+    #ChatInput {
+        padding: 10px;
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 100px;
+        max-height: 600px;
+        color: var(--text-color);
+        font-size: 16px;
+        letter-spacing: 3px;
+        border-radius: 10px;
+        background: none;
+        border: 1px solid var(--border-color);
+        resize: none;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .Send, .Stop {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--background-color);
+        border: 2px solid var(--chat-input-button-border-color);
+        cursor: pointer;
         outline: none;
+        transition: all 0.2s ease-in-out, transform 0.1s ease-in-out;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover {
+            box-shadow: 0 0 5px 3px var(--box-shadow-color);
+        }
+
+        &:active {
+            transform: scale(0.9);
+        }
     }
 }
 
-
 .AppendixBar {
-    z-index: 1;
+    z-index: 2;
     position: absolute;
     top: 0;
     left: 0;
