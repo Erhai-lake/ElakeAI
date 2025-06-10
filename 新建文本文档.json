@@ -18,6 +18,7 @@
                 "model": "DeepSeek-Coder"
             },
             "message": {
+                "reasoning": null,
                 "content": "你好! 今天我能帮你什么?",
                 "role": "assistant"
             },
