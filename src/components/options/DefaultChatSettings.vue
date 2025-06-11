@@ -11,14 +11,23 @@ export default {
     data() {
         return {
             saved: false,
+            // 模型列表
             largeModelList: ModelList,
+            // Key列表
             keyPools: null,
+            // 模型列表
             modelList: null,
+            // 选中的模型
             selectedLargeModel: null,
+            // 选中的Key
             selectedKey: null,
+            // 选中的模型
             selectedModel: null,
+            // 当前模型请求
             currentModelRequest: null,
+            // 当前Key请求
             currentKeyRequest: null,
+            // 加载状态
             loading: {
                 models: false,
                 keys: false
@@ -92,7 +101,7 @@ export default {
                 }
             } catch (error) {
                 if (!requestContext.cancelled) {
-                    console.error("加载Key池错误", error)
+                    console.error("[Default Chat Settings] 加载Key池错误", error)
                     this.$toast.error(this.$t("components.DefaultChatSettings.toast.loadKeyPoolError"))
                 }
             } finally {
@@ -118,13 +127,14 @@ export default {
                 this.selectedModel = models[0] || null
             } catch (error) {
                 if (!requestContext.cancelled) {
-                    console.error("加载模型错误", error)
+                    console.error("[Default Chat Settings] 加载模型错误", error)
                     this.$toast.error(this.$t("components.DefaultChatSettings.toast.loadModelError"))
                 }
             } finally {
                 this.loading.models = false
             }
         },
+        // 获取模型的Key
         async fetchKeysForModel(modelName) {
             const keys = await this.$DB.APIKeys
                 .where("model")
@@ -137,6 +147,7 @@ export default {
                 title: key.remark || key.key
             }))
         },
+        // 获取Key的模型
         async fetchModelsForKey(key) {
             const response = await Models.getModel(key)
             if (response.error) {
