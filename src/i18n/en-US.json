@@ -144,6 +144,9 @@
             },
             "numberOfConversations": "{num} messages"
         },
+        "Selector": {
+            "loading": "Loading..."
+        },
         "LanguageSelect": {
             "toast": {
                 "getLanguageError": "Failed to get language",

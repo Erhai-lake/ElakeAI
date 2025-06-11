@@ -18,16 +18,27 @@ export default {
         num: {
             type: Number,
             default: 3
+        },
+        loading: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
         return {
             isOpen: false,
-            dropdownDirection: "bottom"
+            dropdownDirection: "bottom",
+            isLoading: false
+        }
+    },
+    computed: {
+        showLoading() {
+            return this.loading || this.isLoading
         }
     },
     methods: {
         toggleList() {
+            if (this.showLoading) return
             if (!this.isOpen) {
                 this.calculateDropdownDirection()
             }
@@ -46,8 +57,16 @@ export default {
             }
         },
         selectItem(item) {
+            if (this.showLoading) return
             this.isOpen = false
             this.$emit('update:selectorSelected', item)
+        },
+        startLoading() {
+            this.isLoading = true
+            this.isOpen = false
+        },
+        stopLoading() {
+            this.isLoading = false
         }
     },
     mounted() {
@@ -65,18 +84,25 @@ export default {
             class="SelectorSelected"
             :class="{
                  'OpenBottom': isOpen && dropdownDirection === 'bottom',
-                 'OpenTop': isOpen && dropdownDirection === 'top'
+                 'OpenTop': isOpen && dropdownDirection === 'top',
+                 'Loading': showLoading
              }"
             @click="toggleList">
-            <img class="Images"
-                 :src="selectorSelected.images"
-                 :alt="selectorSelected.title"
-                 v-if="selectorSelected.images">
-            <span class="SelectorOption">{{ selectorSelected.title }}</span>
+            <template v-if="!showLoading">
+                <img class="Images"
+                     :src="selectorSelected.images"
+                     :alt="selectorSelected.title"
+                     v-if="selectorSelected.images">
+                <span class="SelectorOption">{{ selectorSelected.title }}</span>
+            </template>
+            <div v-else class="LoadingIndicator">
+                <div class="LoadingSpinner"></div>
+                <span>{{ $t("components.Selector.loading") }}</span>
+            </div>
         </div>
         <transition :name="dropdownDirection === 'bottom' ? 'slide-down' : 'slide-up'">
             <ul
-                v-show="isOpen"
+                v-show="isOpen && !showLoading"
                 class="SelectorList"
                 :class="{
                     'DropdownTop': dropdownDirection === 'top',
@@ -115,9 +141,14 @@ export default {
     transition: all 0.3s;
     background-color: var(--background-color);
 
-    &:hover {
+    &:hover:not(.Loading) {
         border-color: #80ceff;
         box-shadow: 0 2px 8px var(--box-shadow-color);
+    }
+
+    &.Loading {
+        cursor: default;
+        opacity: 0.7;
     }
 }
 
@@ -127,6 +158,31 @@ export default {
 
 .OpenTop {
     border-radius: 0 0 8px 8px;
+}
+
+.LoadingIndicator {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .LoadingSpinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--text-color);
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+
+    span {
+        font-size: 14px;
+        color: var(--text-color);
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .SelectorList {
