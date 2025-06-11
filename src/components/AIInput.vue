@@ -155,7 +155,9 @@ export default defineComponent({
                 if (requestContext.cancelled) return
 
                 this.selector.modelList = models
-                this.selector.selectedModel = models[0] || null
+                if (!this.saved){
+                    this.selector.selectedModel = models[0] || null
+                }
             } catch (error) {
                 if (!requestContext.cancelled) {
                     console.error("[AI Input] 加载模型错误", error)

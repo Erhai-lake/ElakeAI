@@ -124,7 +124,9 @@ export default {
                 if (requestContext.cancelled) return
 
                 this.modelList = models
-                this.selectedModel = models[0] || null
+                if (!this.saved){
+                    this.selectedModel = models[0] || null
+                }
             } catch (error) {
                 if (!requestContext.cancelled) {
                     console.error("[Default Chat Settings] 加载模型错误", error)
