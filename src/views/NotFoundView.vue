@@ -16,6 +16,10 @@ export default {
             const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
             const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
             return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
+        },
+        // UUID
+        uuid() {
+            return crypto.randomUUID()
         }
     }
 }
@@ -33,6 +37,7 @@ export default {
                         <p>咦? 我要找的页面怎么不见了?</p>
                     </div>
                     <div class="MessageTime">{{ formatTimestamp(Date.now()) }}</div>
+                    <div class="MessageTime">{{ uuid() }}</div>
                 </div>
             </div>
             <div class="Message assistant">
@@ -49,12 +54,14 @@ export default {
                         </ol>
                     </div>
                     <div class="MessageTime">{{ formatTimestamp(Date.now()) }}</div>
+                    <div class="MessageTime">{{ uuid() }}</div>
                 </div>
             </div>
             <div class="Message user">
                 <div class="MessageCard">
                     <div class="MessageContent">那现在怎么办? 我需要那个页面!</div>
                     <div class="MessageTime">{{ formatTimestamp(Date.now()) }}</div>
+                    <div class="MessageTime">{{ uuid() }}</div>
                 </div>
             </div>
             <div class="Message assistant">
@@ -63,7 +70,10 @@ export default {
                         <p>别担心! 我有几个建议:</p>
                         <ol>
                             <li>🧭 检查网址是否正确</li>
-                            <li>🏠 返回<router-link to="/">首页</router-link>重新导航</li>
+                            <li>🏠 返回
+                                <router-link to="/">首页</router-link>
+                                重新导航
+                            </li>
                             <li>⏳ 稍后再试, 也许页面正在休息</li>
                             <li>📞 联系网站管理员派搜救队</li>
                             <li>🍵 先喝杯茶冷静一下️</li>
@@ -74,6 +84,7 @@ export default {
                         </ol>
                     </div>
                     <div class="MessageTime">{{ formatTimestamp(Date.now()) }}</div>
+                    <div class="MessageTime">{{ uuid() }}</div>
                 </div>
             </div>
             <div class="Message assistant">
@@ -86,16 +97,13 @@ export default {
                         <p>它很快就会回来的!</p>
                     </div>
                     <div class="MessageTime">{{ formatTimestamp(Date.now()) }}</div>
+                    <div class="MessageTime">{{ uuid() }}</div>
                 </div>
             </div>
         </div>
         <div></div>
-        <!-- 底部输入框 -->
-        <div class="InputArea">
-            <AIInput/>
-        </div>
         <!-- AI提示信息 -->
-        <div class="AIDisclaimer">*本小剧场纯属娱乐, 由DeepSeek生成, 页面可能只是被移动或删除了, 您可以在上面的输入框中, 重新问答!*</div>
+        <div class="AIDisclaimer">*本小剧场纯属娱乐, 由DeepSeek生成, 页面可能只是被移动或删除了*</div>
     </div>
 </template>
 
@@ -170,12 +178,6 @@ export default {
     font-size: 12px;
     color: var(--chat-dialogue-time-text-color);
     text-align: right;
-}
-
-.InputArea {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .AIDisclaimer {
