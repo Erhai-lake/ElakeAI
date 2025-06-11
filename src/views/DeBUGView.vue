@@ -3,13 +3,14 @@ import FoldingPanel from "@/components/FoldingPanel.vue"
 import ThemeSelect from "@/components/options/ThemeSwitch.vue"
 import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import ChatAIKey from "@/components/options/ChatsAIKey.vue"
+import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 
 export default {
     name: "DeBUGView",
     inject: ["$DB"],
-    components: {Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
+    components: {DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
     data() {
         return {
             toastOptions: {
@@ -28,17 +29,6 @@ export default {
         this.chatsLoading()
     },
     methods: {
-        // Configs特殊处理
-        Special(item) {
-            switch (item) {
-                case "Theme":
-                    return false
-                case "Language":
-                    return false
-                default:
-                    return true
-            }
-        },
         // 获取Configs数据库数据
         async configsLoading() {
             try {
@@ -152,6 +142,21 @@ export default {
                 event.target.value = JSON.stringify(item.data, null)
             }
         },
+        // 处理设置Data输入框
+        async handleConfigDataBlur(item, event) {
+            const RAW_VALUE = event.target.value.trim()
+            if (RAW_VALUE === JSON.stringify(item.value, null)) return
+            try {
+                const parsedData = JSON.parse(RAW_VALUE)
+                await this.$DB.Configs.update(item.item, parsedData)
+                item.value = JSON.parse(JSON.stringify(parsedData))
+                this.$toast.success("数据更新成功")
+            } catch (error) {
+                console.error("[DeBUG View] 数据更新错误", error)
+                this.$toast.error("[DeBUG View] JSON格式错误")
+                event.target.value = JSON.stringify(item.data, null)
+            }
+        },
         // toast测试
         toastTest(id) {
             if (id === 1) {
@@ -226,14 +231,21 @@ export default {
                     <tbody>
                     <tr v-for="(item, index) in configs" :key="index">
                         <td>{{ item.item }}</td>
-                        <td class="Value" v-if="Special(item.item)">
-                            <input type="text" :name="item.item" :value="item.value">
-                        </td>
                         <td class="Value" v-if="item.item === 'Theme'">
                             <ThemeSelect/>
                         </td>
-                        <td class="Value" v-if="item.item === 'Language'">
+                        <td class="Value" v-else-if="item.item === 'Language'">
                             <LanguageSelect/>
+                        </td>
+                        <td class="Value" v-else-if="item.item === 'DefaultChatSettings'">
+                            <DefaultChatSettings/>
+                        </td>
+                        <td class="Value" v-else>
+                            <input
+                                type="text"
+                                :name="item.item"
+                                :value="JSON.stringify(item.value, null)"
+                                @blur="handleConfigDataBlur(item, $event)">
                         </td>
                         <td>
                             <Button @click="configsDelete(item.item)">删除</Button>
