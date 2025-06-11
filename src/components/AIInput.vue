@@ -155,7 +155,7 @@ export default defineComponent({
                 if (requestContext.cancelled) return
 
                 this.selector.modelList = models
-                if (!this.saved){
+                if (!this.selector.saved){
                     this.selector.selectedModel = models[0] || null
                 }
             } catch (error) {
