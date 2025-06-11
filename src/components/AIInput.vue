@@ -382,7 +382,7 @@ export default defineComponent({
         <!--顶部按钮栏-->
         <div class="TopButtonBar">
             <!--附件-->
-            <label for="Appendix" :title="$t('components.AIInput.function.appendix')" @click="modelStatus = false">
+            <label for="Appendix" :title="$t('components.AIInput.function.appendix')">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-link"></use>
                 </svg>
