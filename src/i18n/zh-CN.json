@@ -55,6 +55,7 @@
             "toast": {
                 "loadKeyPoolError": "加载Key池错误",
                 "loadModelError": "加载模型错误",
+                "getDefaultSettingsError": "获取默认设置错误",
                 "sendMessageError": "发送消息错误",
                 "createNewChatError": "创建新对话错误",
                 "stopError": "停止消息错误"
@@ -117,6 +118,16 @@
             },
             "addTip": "请点击上方添加Key"
         },
+        "DefaultChatSettings": {
+            "toast": {
+                "getDefaultSettingsError": "获取默认设置错误",
+                "loadKeyPoolError": "加载Key池错误",
+                "loadModelError": "加载模型错误",
+                "saveSettingsError": "保存设置错误"
+            },
+            "restoreSettings": "恢复设置",
+            "saveSettings": "保存设置"
+        },
         "HomeSidebar": {
             "toast": {
                 "errorGettingChatList": "获取聊天列表错误",
@@ -175,11 +186,12 @@
             "reasoning": "推理",
             "aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
         },
-        "Options": {
+        "OptionsView": {
             "personalization": "个性化",
             "theme": "主题",
             "language": "语言",
-            "chats": "对话"
+            "chats": "对话",
+            "defaultChatSettings": "默认对话设置"
         }
     }
 }

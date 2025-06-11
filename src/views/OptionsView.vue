@@ -3,11 +3,12 @@ import FoldingPanel from "@/components/FoldingPanel.vue"
 import ThemeSelect from "@/components/options/ThemeSwitch.vue"
 import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import ChatAIKey from "@/components/options/ChatsAIKey.vue"
+import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import Button from "@/components/Button.vue"
 
 export default {
     name: "OptionsView",
-    components: {Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
+    components: {DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
 
@@ -15,25 +16,29 @@ export default {
     <div class="OptionsContainer">
         <FoldingPanel>
             <template #Title>
-                {{ $t("views.Options.personalization") }}
+                {{ $t("views.OptionsView.personalization") }}
             </template>
             <template #Content>
                 <div class="Item">
-                    {{ $t("views.Options.theme") }}
+                    {{ $t("views.OptionsView.theme") }}
                     <ThemeSelect/>
                 </div>
                 <div class="Item">
-                    {{ $t("views.Options.language") }}
+                    {{ $t("views.OptionsView.language") }}
                     <LanguageSelect/>
                 </div>
             </template>
         </FoldingPanel>
         <FoldingPanel Height="600">
             <template #Title>
-                {{ $t("views.Options.chats") }}
+                {{ $t("views.OptionsView.chats") }}
             </template>
             <template #Content>
                 <ChatAIKey/>
+                <div class="Item">
+                    {{ $t("views.OptionsView.defaultChatSettings") }}
+                    <DefaultChatSettings/>
+                </div>
             </template>
         </FoldingPanel>
         <div class="Container">
@@ -56,6 +61,8 @@ export default {
     justify-content: space-between;
     border-bottom: 1px solid var(--border-color);
     border-top: 1px solid var(--border-color);
+    white-space: nowrap;
+    gap: 10px;
 }
 
 .Container {

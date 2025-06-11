@@ -55,6 +55,7 @@
             "toast": {
                 "loadKeyPoolError": "Failed to load Key Pool",
                 "loadModelError": "Failed to load models",
+                "getDefaultSettingsError": "Failed to get default settings",
                 "sendMessageError": "Failed to send message",
                 "createNewChatError": "Failed to create new chat",
                 "stopError": "Failed to stop message"
@@ -116,6 +117,16 @@
                 "balance": "Balance"
             },
             "addTip": "Click above to add a key"
+        },
+        "DefaultChatSettings": {
+            "toast": {
+                "getDefaultSettingsError": "Failed to get default settings",
+                "loadKeyPoolError": "Failed to load Key Pool",
+                "loadModelError": "Failed to load models",
+                "saveSettingsError": "Failed to save settings"
+            },
+            "restoreSettings": "Restore Default Settings",
+            "saveSettings": "Save Settings"
         },
         "HomeSidebar": {
             "toast": {
@@ -179,7 +190,8 @@
             "personalization": "Personalization",
             "theme": "Theme",
             "language": "Language",
-            "chats": "Chats"
+            "chats": "Chats",
+            "defaultChatSettings": "Default Chat Settings"
         }
     }
 }
