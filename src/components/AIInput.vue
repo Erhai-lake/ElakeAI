@@ -13,20 +13,31 @@ export default defineComponent({
     inject: ["$DB"],
     data() {
         return {
-            saved: false,
             route: useRoute(),
-            // 模型列表
-            largeModelList: ModelList,
-            // Key列表
-            keyPools: null,
-            // 模型列表
-            modelList: null,
-            // 选中的模型
-            selectedLargeModel: ModelList[0],
-            // 选中的Key
-            selectedKey: null,
-            // 选中的模型
-            selectedModel: null,
+            selector: {
+                saved: false,
+                // 模型列表
+                largeModelList: ModelList,
+                // Key列表
+                keyPools: null,
+                // 模型列表
+                modelList: null,
+                // 选中的模型
+                selectedLargeModel: null,
+                // 选中的Key
+                selectedKey: null,
+                // 选中的模型
+                selectedModel: null,
+                // 当前模型请求
+                currentModelRequest: null,
+                // 当前Key请求
+                currentKeyRequest: null,
+                // 加载状态
+                loading: {
+                    models: false,
+                    keys: false
+                }
+            },
             // 输入框
             ChatInput: "",
             // 联网搜索状态
@@ -37,23 +48,22 @@ export default defineComponent({
     },
     watch: {
         // 监听大模型变化
-        selectedLargeModel(newVal) {
+        "selector.selectedLargeModel"(newVal) {
             this.selectLargeModel(newVal)
         },
         // 监听Key变化
-        selectedKey(newVal) {
+        "selector.selectedKey"(newVal) {
             this.selectKey(newVal)
-        },
-        // 监听模型变化
-        selectedModel(newVal) {
-            this.selectModel(newVal)
         }
     },
-    created() {
+    beforeDestroy() {
+        this.cancelAllRequests()
+    },
+    async created() {
         // 获取设置
-        this.restoreSettings()
+        await this.restoreSettings()
         // 初始化Key池
-        this.loadKeyPools()
+        await this.loadKeyPools()
     },
     setup() {
         const textareaRef = ref(null)
@@ -77,98 +87,133 @@ export default defineComponent({
         }
     },
     methods: {
-        // 调整输入框高度
-        adjustTextareaHeight() {
-            if (!this.textareaRef) return
-            this.textareaRef.style.height = "auto"
-            const newHeight = Math.min(this.textareaRef.scrollHeight, 600)
-            this.textareaRef.style.height = `${Math.max(newHeight, 50)}px`
+        // 取消所有请求
+        cancelAllRequests() {
+            if (this.currentModelRequest?.cancel) {
+                this.currentModelRequest.cancel()
+            }
+            if (this.currentKeyRequest?.cancel) {
+                this.currentKeyRequest.cancel()
+            }
         },
         // 更新大模型所选项
         updateSelectedLargeModel(newVal) {
-            this.selectedLargeModel = newVal
-            this.saved = false
+            this.selector.selectedLargeModel = newVal
+            this.selector.saved = false
         },
         // 更新Key所选项
         updateSelectedKey(newVal) {
-            this.selectedKey = newVal
+            this.selector.selectedKey = newVal
         },
         // 更新模型所选项
         updateSelectedModel(newVal) {
-            this.selectedModel = newVal
+            this.selector.selectedModel = newVal
         },
         // 选择大模型
-        async selectLargeModel(selectLargeModel) {
-            if (!selectLargeModel) return
-            if (selectLargeModel === this.selectedLargeModel.title) return
-            this.selectedLargeModel = selectLargeModel
-            await this.loadKeyPools()
+        async selectLargeModel(newModel) {
+            this.cancelAllRequests()
+            const requestContext = {cancelled: false}
+            this.currentKeyRequest = {
+                cancel: () => {
+                    requestContext.cancelled = true
+                }
+            }
+            try {
+                this.selector.loading.keys = true
+                const keys = await this.fetchKeysForModel(newModel.title)
+
+                if (requestContext.cancelled) return
+
+                this.selector.keyPools = keys
+                this.selector.selectedKey = keys[0] || null
+
+                if (this.selector.selectedKey) {
+                    await this.selectKey(this.selector.selectedKey)
+                }
+            } catch (error) {
+                if (!requestContext.cancelled) {
+                    console.error("[AI Input] 加载Key池错误", error)
+                    this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
+                }
+            } finally {
+                this.selector.loading.keys = false
+            }
         },
         // 选择Key
-        async selectKey(selectKey) {
-            if (!selectKey) return
-            if (selectKey === this.selectedKey.name) return
-            this.selectedKey = selectKey
-            await this.loadModel()
+        async selectKey(newKey) {
+            this.cancelAllRequests()
+            const requestContext = {cancelled: false}
+            this.currentModelRequest = {
+                cancel: () => {
+                    requestContext.cancelled = true
+                }
+            }
+            try {
+                this.selector.loading.models = true
+                const models = await this.fetchModelsForKey(newKey.key)
+
+                if (requestContext.cancelled) return
+
+                this.selector.modelList = models
+                this.selector.selectedModel = models[0] || null
+            } catch (error) {
+                if (!requestContext.cancelled) {
+                    console.error("[AI Input] 加载模型错误", error)
+                    this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadModelError")}`)
+                }
+            } finally {
+                this.selector.loading.models = false
+            }
         },
-        // 选择模型
-        async selectModel(selectModel) {
-            if (!selectModel) return
-            if (selectModel === this.selectedModel.title) return
-            this.selectedModel = selectModel
+        // 获取模型的Key
+        async fetchKeysForModel(modelName) {
+            const keys = await this.$DB.APIKeys
+                .where("model")
+                .equals(modelName)
+                .and(key => key.enabled)
+                .toArray()
+
+            return keys.map(key => ({
+                key: key.key,
+                title: key.remark || key.key
+            }))
+        },
+        // 获取Key的模型
+        async fetchModelsForKey(key) {
+            const response = await Models.getModel(key)
+            if (response.error) {
+                throw new Error(response.error)
+            }
+            return response.models.map(model => ({ title: model }))
         },
         // 加载Key
         async loadKeyPools() {
-            if (!this.saved) {
-                this.selectedKey = null
+            const currentRequestId = Symbol()
+            this.currentKeyPoolRequest = currentRequestId
+            if (!this.selector.saved) {
+                this.selector.selectedKey = null
             }
-            this.keyPools = null
+            this.selector.keyPools = null
             try {
                 // const DEFAULT = {key: "auto", title: "自动"}
                 const KEYS_DATA = await this.$DB.APIKeys
                     .where("model")
-                    .equals(this.selectedLargeModel.title)
+                    .equals(this.selector.selectedLargeModel.title)
                     .and(key => key.enabled)
                     .toArray()
-                this.keyPools = [
+                // 检查是否还是当前有效的请求
+                if (this.currentKeyPoolRequest !== currentRequestId) return
+                this.selector.keyPools = [
                     // DEFAULT,
                     ...KEYS_DATA.map(key => ({key: key.key, title: key.remark}))
                 ]
-                if (this.keyPools.length === 0) {
-                    return
-                }
-                if (!this.saved) {
-                    this.selectedKey = this.keyPools[0]
+                if (this.selector.keyPools.length === 0) return
+                if (!this.selector.saved) {
+                    this.selector.selectedKey = this.selector.keyPools[0]
                 }
             } catch (error) {
                 console.error("[AI Input] 加载Key池错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
-            }
-        },
-        // 加载模型
-        async loadModel() {
-            if (!this.saved) {
-                this.selectedModel = null
-            }
-            this.modelList = null
-            try {
-                const MODELS_DATA = await Models.getModel(this.selectedKey.key)
-                if (MODELS_DATA.error) {
-                    this.$toast.warning(this.$t(`api.Models.${MODELS_DATA.error}`))
-                    return
-                }
-                this.modelList = [
-                    ...MODELS_DATA.models.map(model => ({title: model}))
-                ]
-                if (this.modelList.length === 0) {
-                    return
-                }
-                if (!this.saved) {
-                    this.selectedModel = this.modelList[0]
-                }
-            } catch (error) {
-                console.error("[AI Input] 加载模型错误", error)
-                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadModelError")}`)
             }
         },
         // 获取设置
@@ -176,21 +221,28 @@ export default defineComponent({
             try {
                 const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.Configs.get("DefaultChatSettings")
                 if (DEFAULT_CHAT_SETTINGS_DATA) {
-                    this.selectedLargeModel = this.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
+                    this.selector.selectedLargeModel = this.selector.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
                     const KEY_DATA = await this.$DB.APIKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
-                    this.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
-                    this.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
-                    this.saved = true
+                    this.selector.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
+                    this.selector.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
+                    this.selector.saved = true
                 } else {
-                    this.selectedLargeModel = this.largeModelList[0]
-                    this.selectedKey = null
-                    this.selectedModel = null
-                    this.saved = false
+                    this.selector.selectedLargeModel = this.selector.largeModelList[0]
+                    this.selector.selectedKey = null
+                    this.selector.selectedModel = null
+                    this.selector.saved = false
                 }
             } catch (error) {
                 console.error("[AI Input] 默认设置获取错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.getDefaultSettingsError")}`)
             }
+        },
+        // 调整输入框高度
+        adjustTextareaHeight() {
+            if (!this.textareaRef) return
+            this.textareaRef.style.height = "auto"
+            const newHeight = Math.min(this.textareaRef.scrollHeight, 600)
+            this.textareaRef.style.height = `${Math.max(newHeight, 50)}px`
         },
         // 发送
         async Send() {
@@ -227,9 +279,9 @@ export default defineComponent({
                 this.stopStatus = true
                 // 发送请求
                 const CHAT = await Chat.chat(
-                    this.selectedKey.key,
+                    this.selector.selectedKey.key,
                     this.route.params.key,
-                    this.selectedModel.title,
+                    this.selector.selectedModel.title,
                     CONTENT.trim(),
                     this.enableWebSearch
                 )
@@ -342,20 +394,22 @@ export default defineComponent({
             </label>
             <!-- 大模型选择 -->
             <Selector
-                :selectorSelected="selectedLargeModel || {}"
-                :selectorList="largeModelList"
+                :selectorSelected="selector.selectedLargeModel || {}"
+                :selectorList="selector.largeModelList"
+                :loading="selector.loading.keys"
                 uniqueKey="title"
                 @update:selectorSelected="updateSelectedLargeModel"/>
             <!-- Key选择 -->
             <Selector
-                :selectorSelected="selectedKey || {}"
-                :selectorList="keyPools"
+                :selectorSelected="selector.selectedKey || {}"
+                :selectorList="selector.keyPools"
+                :loading="selector.loading.models"
                 uniqueKey="key"
                 @update:selectorSelected="updateSelectedKey"/>
             <!-- 模型选择 -->
             <Selector
-                :selectorSelected="selectedModel || {}"
-                :selectorList="modelList"
+                :selectorSelected="selector.selectedModel || {}"
+                :selectorList="selector.modelList"
                 uniqueKey="title"
                 @update:selectorSelected="updateSelectedModel"/>
         </div>
