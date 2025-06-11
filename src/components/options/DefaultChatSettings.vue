@@ -17,21 +17,28 @@ export default {
             selectedLargeModel: null,
             selectedKey: null,
             selectedModel: null,
+            currentModelRequest: null,
+            currentKeyRequest: null,
+            loading: {
+                models: false,
+                keys: false
+            }
         }
     },
     watch: {
         // 监听大模型变化
         selectedLargeModel(newVal) {
+            if (!newVal) return
             this.selectLargeModel(newVal)
         },
         // 监听Key变化
         selectedKey(newVal) {
+            if (!newVal) return
             this.selectKey(newVal)
-        },
-        // 监听模型变化
-        selectedModel(newVal) {
-            this.selectModel(newVal)
         }
+    },
+    beforeDestroy() {
+        this.cancelAllRequests()
     },
     async created() {
         // 获取设置
@@ -40,6 +47,15 @@ export default {
         await this.loadKeyPools()
     },
     methods: {
+        // 取消所有请求
+        cancelAllRequests() {
+            if (this.currentModelRequest?.cancel) {
+                this.currentModelRequest.cancel()
+            }
+            if (this.currentKeyRequest?.cancel) {
+                this.currentKeyRequest.cancel()
+            }
+        },
         // 更新大模型所选项
         updateSelectedLargeModel(newVal) {
             this.selectedLargeModel = newVal
@@ -54,27 +70,84 @@ export default {
             this.selectedModel = newVal
         },
         // 选择大模型
-        async selectLargeModel(selectLargeModel) {
-            if (!selectLargeModel) return
-            if (selectLargeModel === this.selectedLargeModel.title) return
-            this.selectedLargeModel = selectLargeModel
-            await this.loadKeyPools()
+        async selectLargeModel(newModel) {
+            this.cancelAllRequests()
+            const requestContext = {cancelled: false}
+            this.currentKeyRequest = {
+                cancel: () => {
+                    requestContext.cancelled = true
+                }
+            }
+            try {
+                this.loading.keys = true
+                const keys = await this.fetchKeysForModel(newModel.title)
+
+                if (requestContext.cancelled) return
+
+                this.keyPools = keys
+                this.selectedKey = keys[0] || null
+
+                if (this.selectedKey) {
+                    await this.selectKey(this.selectedKey)
+                }
+            } catch (error) {
+                if (!requestContext.cancelled) {
+                    console.error("加载Key池错误", error)
+                    this.$toast.error(this.$t("components.DefaultChatSettings.toast.loadKeyPoolError"))
+                }
+            } finally {
+                this.loading.keys = false
+            }
         },
         // 选择Key
-        async selectKey(selectKey) {
-            if (!selectKey) return
-            if (selectKey === this.selectedKey.name) return
-            this.selectedKey = selectKey
-            await this.loadModel()
+        async selectKey(newKey) {
+            this.cancelAllRequests()
+            const requestContext = {cancelled: false}
+            this.currentModelRequest = {
+                cancel: () => {
+                    requestContext.cancelled = true
+                }
+            }
+            try {
+                this.loading.models = true
+                const models = await this.fetchModelsForKey(newKey.key)
+
+                if (requestContext.cancelled) return
+
+                this.modelList = models
+                this.selectedModel = models[0] || null
+            } catch (error) {
+                if (!requestContext.cancelled) {
+                    console.error("加载模型错误", error)
+                    this.$toast.error(this.$t("components.DefaultChatSettings.toast.loadModelError"))
+                }
+            } finally {
+                this.loading.models = false
+            }
         },
-        // 选择模型
-        async selectModel(selectModel) {
-            if (!selectModel) return
-            if (selectModel === this.selectedModel.title) return
-            this.selectedModel = selectModel
+        async fetchKeysForModel(modelName) {
+            const keys = await this.$DB.APIKeys
+                .where("model")
+                .equals(modelName)
+                .and(key => key.enabled)
+                .toArray()
+
+            return keys.map(key => ({
+                key: key.key,
+                title: key.remark || key.key
+            }))
+        },
+        async fetchModelsForKey(key) {
+            const response = await Models.getModel(key)
+            if (response.error) {
+                throw new Error(response.error)
+            }
+            return response.models.map(model => ({ title: model }))
         },
         // 加载Key
         async loadKeyPools() {
+            const currentRequestId = Symbol()
+            this.currentKeyPoolRequest = currentRequestId
             if (!this.saved) {
                 this.selectedKey = null
             }
@@ -86,45 +159,19 @@ export default {
                     .equals(this.selectedLargeModel.title)
                     .and(key => key.enabled)
                     .toArray()
+                // 检查是否还是当前有效的请求
+                if (this.currentKeyPoolRequest !== currentRequestId) return
                 this.keyPools = [
                     // DEFAULT,
                     ...KEYS_DATA.map(key => ({key: key.key, title: key.remark}))
                 ]
-                if (this.keyPools.length === 0) {
-                    return
-                }
+                if (this.keyPools.length === 0) return
                 if (!this.saved) {
                     this.selectedKey = this.keyPools[0]
                 }
             } catch (error) {
                 console.error("[Default Chat Settings] 加载Key池错误", error)
                 this.$toast.error(`[Default Chat Settings] ${this.$t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
-            }
-        },
-        // 加载模型
-        async loadModel() {
-            if (!this.saved) {
-                this.selectedModel = null
-            }
-            this.modelList = null
-            try {
-                const MODELS_DATA = await Models.getModel(this.selectedKey.key)
-                if (MODELS_DATA.error) {
-                    this.$toast.warning(this.$t(`api.Models.${MODELS_DATA.error}`))
-                    return
-                }
-                this.modelList = [
-                    ...MODELS_DATA.models.map(model => ({title: model}))
-                ]
-                if (this.modelList.length === 0) {
-                    return
-                }
-                if (!this.saved) {
-                    this.selectedModel = this.modelList[0]
-                }
-            } catch (error) {
-                console.error("[Default Chat Settings] 加载模型错误", error)
-                this.$toast.error(`[Default Chat Settings] ${this.$t("components.DefaultChatSettings.toast.loadModelError")}`)
             }
         },
         // 获取设置
@@ -192,12 +239,14 @@ export default {
         <Selector
             :selectorSelected="selectedLargeModel || {}"
             :selectorList="largeModelList"
+            :loading="loading.keys"
             uniqueKey="title"
             @update:selectorSelected="updateSelectedLargeModel"/>
         <!-- Key选择 -->
         <Selector
             :selectorSelected="selectedKey || {}"
             :selectorList="keyPools"
+            :loading="loading.models"
             uniqueKey="key"
             @update:selectorSelected="updateSelectedKey"/>
         <!-- 模型选择 -->
