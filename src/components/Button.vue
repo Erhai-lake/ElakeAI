@@ -21,6 +21,7 @@ button {
     cursor: pointer;
     user-select: none;
     transition: all 0.15s;
+    white-space: nowrap;
 
     &:hover {
         background-color: var(--button-hover-background-color);
