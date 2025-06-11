@@ -13,6 +13,7 @@ export default defineComponent({
     inject: ["$DB"],
     data() {
         return {
+            saved: false,
             route: useRoute(),
             // 模型列表
             largeModelList: ModelList,
@@ -49,6 +50,8 @@ export default defineComponent({
         }
     },
     created() {
+        // 获取设置
+        this.restoreSettings()
         // 初始化Key池
         this.loadKeyPools()
     },
@@ -84,6 +87,7 @@ export default defineComponent({
         // 更新大模型所选项
         updateSelectedLargeModel(newVal) {
             this.selectedLargeModel = newVal
+            this.saved = false
         },
         // 更新Key所选项
         updateSelectedKey(newVal) {
@@ -93,7 +97,7 @@ export default defineComponent({
         updateSelectedModel(newVal) {
             this.selectedModel = newVal
         },
-        // 选择模型
+        // 选择大模型
         async selectLargeModel(selectLargeModel) {
             if (!selectLargeModel) return
             if (selectLargeModel === this.selectedLargeModel.title) return
@@ -108,14 +112,16 @@ export default defineComponent({
             await this.loadModel()
         },
         // 选择模型
-        selectModel(selectModel) {
+        async selectModel(selectModel) {
             if (!selectModel) return
             if (selectModel === this.selectedModel.title) return
             this.selectedModel = selectModel
         },
         // 加载Key
         async loadKeyPools() {
-            this.selectedKey = null
+            if (!this.saved) {
+                this.selectedKey = null
+            }
             this.keyPools = null
             try {
                 // const DEFAULT = {key: "auto", title: "自动"}
@@ -131,7 +137,9 @@ export default defineComponent({
                 if (this.keyPools.length === 0) {
                     return
                 }
-                this.selectedKey = this.keyPools[0]
+                if (!this.saved) {
+                    this.selectedKey = this.keyPools[0]
+                }
             } catch (error) {
                 console.error("[AI Input] 加载Key池错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
@@ -139,7 +147,9 @@ export default defineComponent({
         },
         // 加载模型
         async loadModel() {
-            this.selectedModel = null
+            if (!this.saved) {
+                this.selectedModel = null
+            }
             this.modelList = null
             try {
                 const MODELS_DATA = await Models.getModel(this.selectedKey.key)
@@ -153,10 +163,33 @@ export default defineComponent({
                 if (this.modelList.length === 0) {
                     return
                 }
-                this.selectedModel = this.modelList[0]
+                if (!this.saved) {
+                    this.selectedModel = this.modelList[0]
+                }
             } catch (error) {
                 console.error("[AI Input] 加载模型错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadModelError")}`)
+            }
+        },
+        // 获取设置
+        async restoreSettings() {
+            try {
+                const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.Configs.get("DefaultChatSettings")
+                if (DEFAULT_CHAT_SETTINGS_DATA) {
+                    this.selectedLargeModel = this.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
+                    const KEY_DATA = await this.$DB.APIKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+                    this.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
+                    this.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
+                    this.saved = true
+                } else {
+                    this.selectedLargeModel = this.largeModelList[0]
+                    this.selectedKey = null
+                    this.selectedModel = null
+                    this.saved = false
+                }
+            } catch (error) {
+                console.error("[AI Input] 默认设置获取错误", error)
+                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.getDefaultSettingsError")}`)
             }
         },
         // 发送
