@@ -1,8 +1,8 @@
 <script>
 import FoldingPanel from "@/components/FoldingPanel.vue"
-import ThemeSelect from "@/components/ThemeSwitch.vue"
-import LanguageSelect from "@/components/LanguageSelect.vue"
-import ChatAIKey from "@/components/ChatsAIKey.vue"
+import ThemeSelect from "@/components/options/ThemeSwitch.vue"
+import LanguageSelect from "@/components/options/LanguageSelect.vue"
+import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import Button from "@/components/Button.vue"
 
 export default {

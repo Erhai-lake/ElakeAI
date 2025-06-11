@@ -1,5 +1,5 @@
 <script>
-import LanguagesList from "@/assets/data/LanguagesList"
+import LanguagesList from "@/assets/data/LanguagesList.json"
 import Selector from "@/components/Selector.vue"
 
 export default {
