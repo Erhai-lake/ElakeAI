@@ -1,6 +1,6 @@
 <script>
 import FoldingPanel from "@/components/FoldingPanel.vue"
-import Balance from "@/services/api/Balance"
+import Balance from "@/services/api/balance/Balance2"
 import ModelList from "@/assets/data/ModelList.json"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"

@@ -1,6 +1,6 @@
 import axios from "axios"
 import General from "@/services/api/General"
-import DB from "@/services/Dexie.js"
+import DB from "@/services/Dexie"
 
 const REQUEST_TIMEOUT = 10000
 

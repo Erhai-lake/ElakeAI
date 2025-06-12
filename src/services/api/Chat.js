@@ -1,4 +1,4 @@
-import DB from "@/services/Dexie.js"
+import DB from "@/services/Dexie"
 import EventBus from "@/services/EventBus"
 
 // 返回

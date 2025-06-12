@@ -4,11 +4,11 @@
             "invalidKey": "无效的Key",
             "keyDoesNotExist": "Key不存在",
             "getKeyError": "获取Key错误",
-            "getError": "获取错误",
             "unsupportedModel": "不支持的模型",
             "requestTimeout": "请求超时",
             "badRequest": "错误的请求",
             "networkError": "网络错误",
+            "getError": "获取错误",
             "noResponse": "无响应",
             "unknownError": "未知错误"
         },

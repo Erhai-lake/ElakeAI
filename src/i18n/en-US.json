@@ -4,11 +4,11 @@
             "invalidKey": "Invalid API Key",
             "keyDoesNotExist": "API Key does not exist",
             "getKeyError": "Failed to retrieve API Key",
-            "getError": "Retrieval error",
             "unsupportedModel": "Unsupported model",
             "requestTimeout": "Request timeout",
             "badRequest": "Bad request",
             "networkError": "Network error",
+            "getError": "Retrieval error",
             "noResponse": "No response",
             "unknownError": "Unknown error"
         },
