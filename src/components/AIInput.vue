@@ -19,9 +19,9 @@ export default defineComponent({
                 // 模型列表
                 largeModelList: ModelList,
                 // Key列表
-                keyPools: null,
+                keyPools: [],
                 // 模型列表
-                modelList: null,
+                modelList: [],
                 // 选中的模型
                 selectedLargeModel: null,
                 // 选中的Key
@@ -195,7 +195,7 @@ export default defineComponent({
             if (!this.selector.saved) {
                 this.selector.selectedKey = null
             }
-            this.selector.keyPools = null
+            this.selector.keyPools = []
             try {
                 // const DEFAULT = {key: "auto", title: "自动"}
                 const KEYS_DATA = await this.$DB.APIKeys

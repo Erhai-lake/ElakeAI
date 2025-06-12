@@ -357,7 +357,7 @@ export default {
 </script>
 
 <template>
-    <FoldingPanel Height="500">
+    <FoldingPanel :Height="500">
         <template #Title>
             {{ $t("components.ChatAIKey.title") }}
         </template>

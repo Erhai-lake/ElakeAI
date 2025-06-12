@@ -29,7 +29,7 @@ export default {
                 </div>
             </template>
         </FoldingPanel>
-        <FoldingPanel Height="600">
+        <FoldingPanel :Height="600">
             <template #Title>
                 {{ $t("views.OptionsView.chats") }}
             </template>

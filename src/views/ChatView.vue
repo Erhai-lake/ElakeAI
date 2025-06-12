@@ -448,7 +448,7 @@ export default {
         <div class="MessageList" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
             <div
                 v-for="message in data.data"
-                :key="message.timestamp"
+                :key="message.id"
                 :class="['Message', scroll.currentMessageId === message.id ? 'Current' : '', message.message.role]"
                 :data-message-id="message.id"
                 @click="setCurrentMessageId(message.id)">

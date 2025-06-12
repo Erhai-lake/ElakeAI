@@ -256,7 +256,7 @@ export default {
             </template>
         </FoldingPanel>
         <ChatAIKey/>
-        <FoldingPanel Height="500">
+        <FoldingPanel :Height="500">
             <template #Title>Toast</template>
             <template #Content>
                 <div>

@@ -14,9 +14,9 @@ export default {
             // 模型列表
             largeModelList: ModelList,
             // Key列表
-            keyPools: null,
+            keyPools: [],
             // 模型列表
-            modelList: null,
+            modelList: [],
             // 选中的模型
             selectedLargeModel: null,
             // 选中的Key
@@ -162,9 +162,9 @@ export default {
             const currentRequestId = Symbol()
             this.currentKeyPoolRequest = currentRequestId
             if (!this.saved) {
-                this.selectedKey = null
+                this.selectedKey = []
             }
-            this.keyPools = null
+            this.keyPools = []
             try {
                 // const DEFAULT = {key: "auto", title: "自动"}
                 const KEYS_DATA = await this.$DB.APIKeys
