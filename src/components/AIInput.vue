@@ -155,7 +155,7 @@ export default defineComponent({
                 if (requestContext.cancelled) return
 
                 this.selector.modelList = models
-                if (!this.selector.saved){
+                if (!this.selector.saved) {
                     this.selector.selectedModel = models[0] || null
                 }
             } catch (error) {
@@ -186,7 +186,7 @@ export default defineComponent({
             if (response.error) {
                 throw new Error(response.error)
             }
-            return response.models.map(model => ({ title: model }))
+            return response.models.map(model => ({title: model}))
         },
         // 加载Key
         async loadKeyPools() {
