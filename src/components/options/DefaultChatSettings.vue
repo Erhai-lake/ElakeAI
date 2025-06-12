@@ -155,7 +155,8 @@ export default {
             if (response.error) {
                 throw new Error(response.error)
             }
-            return response.models.map(model => ({ title: model }))
+            const uniqueModels = [...new Set(response.models)]
+            return uniqueModels.map(model => ({ title: model }))
         },
         // 加载Key
         async loadKeyPools() {
