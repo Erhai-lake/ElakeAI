@@ -398,20 +398,20 @@ export default defineComponent({
             <Selector
                 :selectorSelected="selector.selectedLargeModel || {}"
                 :selectorList="selector.largeModelList"
-                :loading="selector.loading.keys"
                 uniqueKey="title"
                 @update:selectorSelected="updateSelectedLargeModel"/>
             <!-- Key选择 -->
             <Selector
                 :selectorSelected="selector.selectedKey || {}"
                 :selectorList="selector.keyPools"
-                :loading="selector.loading.models"
+                :loading="selector.loading.keys"
                 uniqueKey="key"
                 @update:selectorSelected="updateSelectedKey"/>
             <!-- 模型选择 -->
             <Selector
                 :selectorSelected="selector.selectedModel || {}"
                 :selectorList="selector.modelList"
+                :loading="selector.loading.models"
                 uniqueKey="title"
                 @update:selectorSelected="updateSelectedModel"/>
         </div>

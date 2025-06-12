@@ -252,20 +252,20 @@ export default {
         <Selector
             :selectorSelected="selectedLargeModel || {}"
             :selectorList="largeModelList"
-            :loading="loading.keys"
             uniqueKey="title"
             @update:selectorSelected="updateSelectedLargeModel"/>
         <!-- Key选择 -->
         <Selector
             :selectorSelected="selectedKey || {}"
             :selectorList="keyPools"
-            :loading="loading.models"
+            :loading="loading.keys"
             uniqueKey="key"
             @update:selectorSelected="updateSelectedKey"/>
         <!-- 模型选择 -->
         <Selector
             :selectorSelected="selectedModel || {}"
             :selectorList="modelList"
+            :loading="loading.models"
             uniqueKey="title"
             @update:selectorSelected="updateSelectedModel"/>
         <!-- 保存按钮 -->
