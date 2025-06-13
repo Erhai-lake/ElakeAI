@@ -219,7 +219,7 @@ export default defineComponent({
     .SidebarTopLogo {
         width: 48px;
         height: 48px;
-        background-image: url("//api.elake.top/Logo/");
+        background-image: url("@/assets/images/Logo.svg");
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
