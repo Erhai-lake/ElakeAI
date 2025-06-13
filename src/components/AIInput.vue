@@ -101,7 +101,9 @@ export default defineComponent({
                 }
             })
         },
-        // 取消所有请求
+        /**
+         * 取消所有请求
+         */
         cancelAllRequests() {
             if (this.currentModelRequest?.cancel) {
                 this.currentModelRequest.cancel()
@@ -110,20 +112,32 @@ export default defineComponent({
                 this.currentKeyRequest.cancel()
             }
         },
-        // 更新大模型所选项
+        /**
+         * 更新大模型所选项
+         * @param newVal {Object} - 新的大模型
+         */
         updateSelectedLargeModel(newVal) {
             this.selector.selectedLargeModel = newVal
             this.selector.saved = false
         },
-        // 更新Key所选项
+        /**
+         * 更新Key所选项
+         * @param newVal {Object} - 新的Key
+         */
         updateSelectedKey(newVal) {
             this.selector.selectedKey = newVal
         },
-        // 更新模型所选项
+        /**
+         * 更新模型所选项
+         * @param newVal {Object} - 新的模型
+         */
         updateSelectedModel(newVal) {
             this.selector.selectedModel = newVal
         },
-        // 选择大模型
+        /**
+         * 选择大模型
+         * @param newModel {Object} - 新的大模型
+         */
         async selectLargeModel(newModel) {
             this.cancelAllRequests()
             const requestContext = {cancelled: false}
@@ -153,7 +167,10 @@ export default defineComponent({
                 this.selector.loading.keys = false
             }
         },
-        // 选择Key
+        /**
+         * 选择Key
+         * @param newKey {Object} - 新的Key
+         */
         async selectKey(newKey) {
             this.cancelAllRequests()
             const requestContext = {cancelled: false}
@@ -181,7 +198,10 @@ export default defineComponent({
                 this.selector.loading.models = false
             }
         },
-        // 获取模型的Key
+        /**
+         * 获取模型的Key
+         * @param modelName {string} - 模型名称
+         */
         async fetchKeysForModel(modelName) {
             const keys = await this.$DB.APIKeys
                 .where("model")
@@ -194,7 +214,10 @@ export default defineComponent({
                 title: key.remark || key.key
             }))
         },
-        // 获取Key的模型
+        /**
+         * 获取Key的模型
+         * @param key {string} - Key
+         */
         async fetchModelsForKey(key) {
             const KEY_DATA = await this.$DB.APIKeys.get(key)
             const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
@@ -204,7 +227,9 @@ export default defineComponent({
             const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
             return UNIQUE_MODELS.map(model => ({title: model}))
         },
-        // 加载Key
+        /**
+         * 加载Key池
+         */
         async loadKeyPools() {
             const currentRequestId = Symbol()
             this.currentKeyPoolRequest = currentRequestId
@@ -234,7 +259,9 @@ export default defineComponent({
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
             }
         },
-        // 获取设置
+        /**
+         * 获取设置
+         */
         async restoreSettings() {
             try {
                 const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.Configs.get("DefaultChatSettings")
@@ -255,14 +282,18 @@ export default defineComponent({
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.getDefaultSettingsError")}`)
             }
         },
-        // 调整输入框高度
+        /**
+         * 调整输入框高度
+         */
         adjustTextareaHeight() {
             if (!this.textareaRef) return
             this.textareaRef.style.height = "auto"
             const newHeight = Math.min(this.textareaRef.scrollHeight, 600)
             this.textareaRef.style.height = `${Math.max(newHeight, 50)}px`
         },
-        // 发送
+        /**
+         * 发送消息
+         */
         async Send() {
             // 检查输入框是否为空
             if (this.ChatInput.trim() === "") return
@@ -321,11 +352,15 @@ export default defineComponent({
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.sendMessageError")}`)
             }
         },
-        // 消息流完成
+        /**
+         * 消息流完成
+         */
         streamComplete() {
             this.stopStatus = false
         },
-        // 停止
+        /**
+         * 停止
+         */
         async stop() {
             try {
                 await APIManager.execute(this.selector.selectedLargeModel.title, "stop")
@@ -336,7 +371,10 @@ export default defineComponent({
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.stopError")}`)
             }
         },
-        // 处理换行
+        /**
+         * 处理换行
+         * @param event {Event} - 事件对象
+         */
         handleNewLine(event) {
             event.preventDefault()
             const textarea = event.target
