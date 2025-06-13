@@ -481,6 +481,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    user-select: none;
 
     .TopButtonBar {
         padding: 5px;
