@@ -61,11 +61,17 @@ export default {
         }
     },
     methods: {
-        // 更新选中项
+        /**
+         * 更新选中模型
+         * @param newVal {Object} - 选中的模型
+         */
         updateSelectedModel(newVal) {
             this.selectedModel = newVal
         },
-        // 选择模型
+        /**
+         * 选择模型
+         * @param selectModel {Object} - 选中的模型
+         */
         selectModel(selectModel) {
             if (!selectModel) return
             if (selectModel === this.selectedModel.title) return
@@ -73,7 +79,9 @@ export default {
             this.operationSelection = []
             this.loadKeyPools()
         },
-        // 加载Key池
+        /**
+         * 加载Key池
+         */
         async loadKeyPools() {
             try {
                 this.keyPools = await this.$DB.APIKeys.where("model").equals(this.selectedModel.title).toArray()
@@ -94,7 +102,11 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.loadKeyPoolError")}`)
             }
         },
-        // 获取Key余额
+        /**
+         * 获取Key余额
+         * @param key {String} - Key
+         * @returns {Promise<null|boolean>} - Key余额
+         */
         async getKeyBalance(key) {
             try {
                 const KEY_DATA = await this.$DB.APIKeys.get(key)
@@ -111,7 +123,9 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.errorObtainingKeyBalance")}`)
             }
         },
-        // 添加新Key
+        /**
+         * 新增Key
+         */
         async addNewKey() {
             // 禁止key空
             if (!this.newKey.value) {
@@ -157,13 +171,20 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.addKeyError")}`)
             }
         },
-        // Key脱敏显示
+        /**
+         * Key脱敏显示
+         * @param key {String} - Key
+         * @returns {*|string} - 脱敏后的Key
+         */
         maskKey(key) {
             if (!key) return ""
             if (key.length < 8) return key
             return key.slice(0, 4) + '****' + key.slice(-4)
         },
-        // 删除Key(批量)
+        /**
+         * 删除Key(批量)
+         * @returns {Promise<void>} - 删除Key
+         */
         async removeSelectedKeys() {
             // 禁止空删除
             if (!this.operationSelection || this.operationSelection.length === 0) {
@@ -183,7 +204,10 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.removeKeysError")}`)
             }
         },
-        // 编辑Key
+        /**
+         * 编辑Key
+         * @returns {Promise<void>} - 编辑Key
+         */
         async toggleEditSelected() {
             // 禁止空编辑
             if (!this.operationSelection || this.operationSelection.length === 0) {
@@ -210,7 +234,10 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.getKeyError")}`)
             }
         },
-        // 编辑Key(写数据库)
+        /**
+         * 编辑Key(写数据库)
+         * @returns {Promise<void>} - 编辑Key
+         */
         async editSelectedKeys() {
             // 禁止空编辑
             if (!this.editKey.value) {
@@ -264,7 +291,11 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.editKeyError")}`)
             }
         },
-        // url是否是有效的url
+        /**
+         * 校验url
+         * @param url {String} - url
+         * @returns {boolean} - 是否为url
+         */
         isValidUrl(url) {
             try {
                 new URL(url)
@@ -273,7 +304,11 @@ export default {
                 return false
             }
         },
-        // 切换Key启用状态(单个)
+        /**
+         * 切换Key启用状态
+         * @param keyItem {Object} - Key
+         * @returns {Promise<void>} - 切换Key启用状态
+         */
         async toggleKeyEnable(keyItem) {
             try {
                 const NEW_STATUS = !keyItem.enabled
@@ -295,7 +330,11 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)
             }
         },
-        // 切换Key启用状态(批量)
+        /**
+         * 切换Key启用状态(批量)
+         * @param status {Boolean} - 启用状态
+         * @returns {Promise<void>} - 切换Key启用状态
+         */
         async batchToggleEnable(status) {
             if (!this.operationSelection || this.operationSelection.length === 0) {
                 this.$toast.warning(this.$t("components.ChatAIKey.toast.selectKeysOperate"))
@@ -335,7 +374,9 @@ export default {
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)
             }
         },
-        // 全选/取消全选
+        /**
+         * 切换全选状态
+         */
         toggleAllSelection() {
             if (this.isAllSelected) {
                 this.operationSelection = []
@@ -343,7 +384,10 @@ export default {
                 this.operationSelection = this.keyPools.map(item => item.key)
             }
         },
-        // 切换行选择状态
+        /**
+         * 切换行选择状态
+         * @param key {String} - Key
+         */
         toggleRowSelection(key) {
             const INDEX = this.operationSelection.indexOf(key)
             if (INDEX === -1) {
