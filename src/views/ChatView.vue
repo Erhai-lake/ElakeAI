@@ -247,7 +247,7 @@ export default {
                             const CODE = ELEMENT.textContent.trim()
                             const ID = "mermaid-" + Math.random().toString(36).substr(2, 9)
                             // 渲染图表
-                            const { svg } = await mermaid.render(ID, CODE)
+                            const {svg} = await mermaid.render(ID, CODE)
                             // 创建容器
                             const CONTAINER = document.createElement("div")
                             CONTAINER.className = "mermaid-container"
@@ -463,7 +463,9 @@ export default {
                     </FoldingPanel>
                     <div
                         class="MessageContent"
-                        v-html="message.message.role === 'user'? message.message.content : handleMarkdown(message.message.content)"></div>
+                        v-html="message.message.role === 'user'
+                                ? message.message.content.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')
+                                : handleMarkdown(message.message.content)"></div>
                     <div class="MessageInfo">
                         [{{ message.model ? message.model.largeModel : $t("views.ChatView.earthOnline") }}]
                         -
