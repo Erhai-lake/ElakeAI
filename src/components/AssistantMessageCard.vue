@@ -193,7 +193,7 @@ export default {
 
 <template>
     <div class="MessageCard">
-        <FoldingPanel class="ReasoningContent" v-if="message.message.reasoning">-->
+        <FoldingPanel class="ReasoningContent" v-if="message.message.reasoning">
             <template #Title>
                 <span class="ReasoningTitle">{{ $t("components.AssistantMessageCard.reasoning") }}</span>
             </template>
