@@ -1,11 +1,10 @@
 <script>
 import {defineComponent, ref} from "vue"
 import ModelList from "@/assets/data/ModelList.json"
-import Chat from "@/services/api/Chat"
 import EventBus from "@/services/EventBus"
 import Selector from "@/components/Selector.vue"
 import {useRoute} from "vue-router"
-import Models from "@/services/api/Models"
+import APIManager from "@/services/api/APIManager"
 
 export default defineComponent({
     name: "AIInput",
@@ -182,12 +181,13 @@ export default defineComponent({
         },
         // 获取Key的模型
         async fetchModelsForKey(key) {
-            const response = await Models.getModel(key)
-            if (response.error) {
-                throw new Error(response.error)
+            const KEY_DATA = await this.$DB.APIKeys.get(key)
+            const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
+            if (RESPONSE.error) {
+                this.$toast.error(this.$t(`api.${RESPONSE.error}`))
             }
-            const uniqueModels = [...new Set(response.models)]
-            return uniqueModels.map(model => ({ title: model }))
+            const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
+            return UNIQUE_MODELS.map(model => ({title: model}))
         },
         // 加载Key
         async loadKeyPools() {
@@ -281,28 +281,44 @@ export default defineComponent({
             try {
                 this.stopStatus = true
                 // 发送请求
-                const CHAT = await Chat.chat(
-                    this.selector.selectedKey.key,
-                    this.route.params.key,
-                    this.selector.selectedModel.title,
-                    CONTENT.trim(),
-                    this.enableWebSearch
-                )
-                if (CHAT.error) {
+                const RESPONSE = await APIManager.execute(this.selector.selectedLargeModel.title, "chat", {
+                    apiKey: this.selector.selectedKey.key,
+                    chatKey: this.route.params.key,
+                    content: CONTENT.trim(),
+                    model: this.selector.selectedModel.title,
+                })
+                if (RESPONSE.error) {
+                    EventBus.emit("[stream] chatError")
                     this.stopStatus = false
                     this.ChatInput = CONTENT
                     await this.$nextTick(() => {
                         this.adjustTextareaHeight()
                     })
-                    this.$toast.warning(this.$t(`api.Chat.${CHAT.error}`))
+                    this.$toast.warning(this.$t(`api.${RESPONSE.error}`))
                 }
             } catch (error) {
+                EventBus.emit("[stream] chatError")
                 this.ChatInput = CONTENT
                 await this.$nextTick(() => {
                     this.adjustTextareaHeight()
                 })
                 console.error("[AI Input]  发送消息错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.sendMessageError")}`)
+            }
+        },
+        // 消息流完成
+        streamComplete() {
+            this.stopStatus = false
+        },
+        // 停止
+        async stop() {
+            try {
+                await APIManager.execute(this.selector.selectedLargeModel.title, "stop")
+                this.stopStatus = false
+            } catch (error) {
+                this.stopStatus = true
+                console.error("[AI Input]  停止错误", error)
+                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.stopError")}`)
             }
         },
         // 处理换行
@@ -327,21 +343,6 @@ export default defineComponent({
                 textarea.selectionEnd = cursorPos + 1 + indent.length
                 textarea.focus()
             })
-        },
-        // 消息流完成
-        streamComplete() {
-            this.stopStatus = false
-        },
-        // 停止
-        async stop() {
-            try {
-                await Chat.stop()
-                this.stopStatus = false
-            } catch (error) {
-                this.stopStatus = true
-                console.error("[AI Input]  停止错误", error)
-                this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.stopError")}`)
-            }
         }
     }
 })

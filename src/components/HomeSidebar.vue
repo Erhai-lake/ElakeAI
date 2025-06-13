@@ -1,7 +1,7 @@
 <script>
 import {defineComponent} from "vue"
 import EventBus from "@/services/EventBus"
-import {useRoute} from "vue-router";
+import {useRoute} from "vue-router"
 
 export default defineComponent({
     name: "HomeSidebar",

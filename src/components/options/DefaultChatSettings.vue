@@ -1,7 +1,7 @@
 <script>
 import Selector from "@/components/Selector.vue"
 import ModelList from "@/assets/data/ModelList.json"
-import Models from "@/services/api/Models"
+import APIManager from "@/services/api/APIManager"
 import Button from "@/components/Button.vue"
 
 export default {
@@ -151,12 +151,13 @@ export default {
         },
         // 获取Key的模型
         async fetchModelsForKey(key) {
-            const response = await Models.getModel(key)
-            if (response.error) {
-                throw new Error(response.error)
+            const KEY_DATA = await this.$DB.APIKeys.get(key)
+            const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
+            if (RESPONSE.error) {
+                this.$toast.error(this.$t(`api.${RESPONSE.error}`))
             }
-            const uniqueModels = [...new Set(response.models)]
-            return uniqueModels.map(model => ({ title: model }))
+            const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
+            return UNIQUE_MODELS.map(model => ({ title: model }))
         },
         // 加载Key
         async loadKeyPools() {

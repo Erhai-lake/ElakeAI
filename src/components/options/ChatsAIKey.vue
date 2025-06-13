@@ -1,9 +1,9 @@
 <script>
 import FoldingPanel from "@/components/FoldingPanel.vue"
-import Balance from "@/services/api/balance/Balance2"
 import ModelList from "@/assets/data/ModelList.json"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
+import APIManager from "@/services/api/APIManager"
 
 export default {
     name: "ChatAIKey",
@@ -98,14 +98,14 @@ export default {
         async getKeyBalance(key) {
             try {
                 const KEY_DATA = await this.$DB.APIKeys.get(key)
-                const BALANCE = await Balance.getBalance(key)
-                if (BALANCE.error) {
+                const RESPONSE = await APIManager.execute(KEY_DATA.model, "balance", {apiKey: key})
+                if (RESPONSE.error) {
+                    this.$toast.error(this.$t(`api.${RESPONSE.error}`))
                     this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {remark: KEY_DATA.remark}))
-                    this.$toast.warning(this.$t(`api.Balance.${BALANCE.error}`))
-                    await this.$DB.APIKeys.update(KEY_DATA.key, {enabled: false})
+                    await this.$DB.APIKeys.update(RESPONSE.traceability.apiKey, {enabled: false})
                     return false
                 }
-                return BALANCE.balance
+                return RESPONSE.data
             } catch (error) {
                 console.error("[Chats AI Key] 获取Key余额错误", error)
                 this.$toast.error(`[Chats AI Key] ${this.$t("components.ChatAIKey.toast.errorObtainingKeyBalance")}`)
