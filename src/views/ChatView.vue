@@ -2,14 +2,13 @@
 import AIInput from "@/components/AIInput.vue"
 import {useRoute} from "vue-router"
 import EventBus from "@/services/EventBus"
-import FoldingPanel from "@/components/FoldingPanel.vue"
 import UserMessageCard from "@/components/UserMessageCard.vue"
 import AssistantMessageCard from "@/components/AssistantMessageCard.vue"
 
 export default {
     name: "ChatView",
     inject: ["$DB"],
-    components: {AssistantMessageCard, FoldingPanel, AIInput, UserMessageCard},
+    components: {AssistantMessageCard, AIInput, UserMessageCard},
     data() {
         return {
             route: useRoute(),
