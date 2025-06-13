@@ -126,8 +126,8 @@
 
     // 流程图
     .mermaid-container {
-        overflow: hidden;
-        cursor: move;
+        overflow: visible;
+        cursor: grab;
         touch-action: none;
         max-width: 100%;
         margin: 10px 0;
@@ -139,10 +139,12 @@
         }
 
         svg {
+            margin: 0 auto;
             max-width: 100%;
             max-height: 400px;
             display: block;
-            margin: 0 auto;
+            touch-action: none;
+            user-select: none;
         }
     }
 

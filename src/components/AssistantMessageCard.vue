@@ -111,11 +111,7 @@ export default {
                                 SVG_ELEMENT.style.display = "block"
                             }
                             // 处理 SVG 和缩放
-                            const observer = new MutationObserver(() => {
-                                this.setupZoom(CONTAINER)
-                                observer.disconnect()
-                            })
-                            observer.observe(CONTAINER, {childList: true, subtree: true})
+                            this.setupZoom(CONTAINER)
                         } catch (error) {
                             console.error("Mermaid 渲染错误", error)
                             ELEMENT.innerHTML = `<div class="mermaid-error">流程图渲染失败</div>`
@@ -132,18 +128,47 @@ export default {
          */
         setupZoom(container) {
             const SVG = container.querySelector("svg")
-            if (!SVG) return
+            if (!SVG || !document.body.contains(SVG)) {
+                console.warn("SVG元素未附加到DOM")
+                return
+            }
+            // 确保SVG有viewBox属性
+            if (!SVG.hasAttribute("viewBox")) {
+                const width = SVG.clientWidth || 800
+                const height = SVG.clientHeight || 600
+                SVG.setAttribute("viewBox", `0 0 ${width} ${height}`)
+            }
             // 初始化 panzoom
             const INSTANCE = panzoom(SVG, {
                 maxZoom: 10,
                 minZoom: 0.2,
-                initialZoom: 3,
+                initialZoom: 1,
                 bounds: true,
                 boundsPadding: 0.2,
                 zoomSpeed: 0.065,
                 zoomDoubleClickSpeed: 1
             })
-            container.addEventListener('wheel', INSTANCE.zoomWithWheel)
+            container.addEventListener("wheel", INSTANCE.zoomWithWheel)
+            // 处理拖拽
+            let isDragging = false
+            container.addEventListener("mousedown", (e) => {
+                if (e.button === 0) {
+                    // 左键
+                    isDragging = true
+                    INSTANCE.startDrag(e)
+                }
+            })
+            document.addEventListener("mouseup", () => {
+                if (isDragging) {
+                    isDragging = false
+                    INSTANCE.endDrag()
+                }
+            })
+            document.addEventListener("mousemove", (e) => {
+                if (isDragging) {
+                    INSTANCE.drag(e)
+                }
+            })
             // 防止文本选择
             container.addEventListener("mousedown", e => {
                 if (e.target.tagName.toLowerCase() === "svg") {
