@@ -186,9 +186,14 @@ export default {
         },
         // 保存标题
         async saveTitle() {
+            // 检查标题是否重复
             if (this.editingTitle.value.trim() === this.data.title) {
                 this.editingTitle.show = false
                 return
+            }
+            // 检查标题是否为空
+            if (!this.editingTitle.value.trim()) {
+                this.editingTitle.value = this.$t("components.AIInput.newChat")
             }
             try {
                 const NEW_TITLE = this.editingTitle.value.trim()
@@ -267,6 +272,32 @@ export default {
         },
         // 消息完成
         async streamComplete() {
+            try {
+                // 如果是第一条AI回复且是默认标题
+                if (this.data.title === this.$t("components.AIInput.newChat")) {
+                    // 如果没有AI回复, 则不更新标题
+                    if (!this.data.data?.length) return
+                    const AI_CONTENT = this.data.data[this.data.data.length - 1].message.content
+                    // 从AI回复中提取关键词
+                    const KEYWORDS = AI_CONTENT
+                            // 移除HTML标签
+                            .replace(/<[^>]+>/g, '')
+                            // 提取中文关键词(至少2个中文字符）
+                            .match(/[\u4e00-\u9fa5]{2,}/g)
+                        // 提取英文关键词(至少4个英文字符）
+                        || AI_CONTENT.match(/\b\w{4,}\b/g)
+                        || []
+                    const TITLE = KEYWORDS.length > 0 ? KEYWORDS.slice(0, 3).join(" ") : this.data.title
+                    if (TITLE !== this.data.title) {
+                        this.data.title = TITLE
+                        await this.$DB.Chats.update(this.data.key, {title: TITLE})
+                        EventBus.emit("[function] chatListGet")
+                    }
+                }
+            } catch (error) {
+                console.error("[Chat View] 标题更新错误", error)
+                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
+            }
             // 如果用户在底部附近会滚动到底部
             if (this.scroll.isAtBottom) {
                 this.scrollToUpAndDownMessages("bottom")

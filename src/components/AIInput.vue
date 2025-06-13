@@ -46,6 +46,10 @@ export default defineComponent({
         }
     },
     watch: {
+        // 监听路由变化
+        "route.path"() {
+            this.focusInput()
+        },
         // 监听大模型变化
         "selector.selectedLargeModel"(newVal) {
             this.selectLargeModel(newVal)
@@ -72,6 +76,7 @@ export default defineComponent({
         if (this.textareaRef) {
             this.adjustTextareaHeight()
             this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
+            this.focusInput()
         }
         // 监听消息流完成
         EventBus.on("[stream] streamComplete", this.streamComplete)
@@ -86,6 +91,16 @@ export default defineComponent({
         }
     },
     methods: {
+        /**
+         * 输入框获取焦点
+         */
+        focusInput() {
+            this.$nextTick(() => {
+                if (this.textareaRef) {
+                    this.textareaRef.focus()
+                }
+            })
+        },
         // 取消所有请求
         cancelAllRequests() {
             if (this.currentModelRequest?.cancel) {
