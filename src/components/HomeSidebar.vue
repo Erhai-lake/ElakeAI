@@ -109,6 +109,9 @@ export default defineComponent({
                 await this.$DB.Chats.delete(key)
                 this.$toast.success(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.successDeletingChatList")}`)
                 await this.chatListGet()
+                if (this.route.params.key === key) {
+                    this.$router.push("/")
+                }
             } catch (error) {
                 console.error("[Home Sidebar] 聊天列表删除错误", error)
                 this.$toast.error(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.errorDeletingChatList")}`)
