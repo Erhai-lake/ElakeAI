@@ -1,4 +1,10 @@
 export default class StreamChatHandler {
+    /**
+     * 初始化StreamChatHandler
+     * @param {string} platform - 平台名称
+     * @param eventBus - 事件总线
+     * @param {DB} db - 数据库实例
+     */
     constructor(platform, eventBus, db) {
         this.platform = platform
         this.eventBus = eventBus
@@ -6,6 +12,13 @@ export default class StreamChatHandler {
         this.abortController = null
     }
 
+    /**
+     * 处理流式响应
+     * @param {Object} params - 请求参数
+     * @param {Object} paramsData - 参数数据
+     * @param {Response} response - 响应对象
+     * @returns {Promise<Object>} 响应结果
+     */
     async handleStream(params, paramsData, response) {
         const DIALOGUE_ID = crypto.randomUUID()
         const USER_DIALOGUE_ID = crypto.randomUUID()
@@ -58,7 +71,7 @@ export default class StreamChatHandler {
 
                     try {
                         const PARSED = JSON.parse(MESSAGE)
-                        await this.handleStreamData(PARSED, {
+                        const UPDATED_MESSAGES = await this.handleStreamData(PARSED, {
                             dialogueId: DIALOGUE_ID,
                             model: params.model,
                             largeModel: paramsData.apiKeyData.model
@@ -67,6 +80,10 @@ export default class StreamChatHandler {
                             assistantMessage,
                             streamMessage
                         })
+                        // 更新局部变量
+                        reasoningMessage = UPDATED_MESSAGES.reasoningMessage
+                        assistantMessage = UPDATED_MESSAGES.assistantMessage
+                        streamMessage = UPDATED_MESSAGES.streamMessage
                     } catch (error) {
                         this.eventBus.emit("[stream] chatError")
                         return this.response(params, null, "streamingDataParsingError")
@@ -79,9 +96,15 @@ export default class StreamChatHandler {
         }
     }
 
+    /**
+     * 处理完成事件
+     * @param {Object} params - 请求参数
+     * @param {Object} paramsData - 参数数据
+     * @param {Object} messageData - 消息数据
+     * @returns {Promise<void>}
+     */
     async handleCompletion(params, paramsData, messageData) {
         this.eventBus.emit("[stream] streamComplete")
-
         // 保存消息到数据库
         await this.db.Chats.update(params.chatKey, {
             data: [
@@ -114,13 +137,22 @@ export default class StreamChatHandler {
         this.eventBus.emit("[function] chatListGet")
     }
 
+    /**
+     * 处理流式数据
+     * @param {Object} parsed - 解析后的数据
+     * @param {Object} ids - 标识信息
+     * @param {Object} messages - 消息对象
+     * @returns {Promise<{}>}
+     */
     async handleStreamData(parsed, ids, messages) {
+        const UPDATED_MESSAGES = {...messages}
+
         if (parsed.choices?.[0]?.delta?.reasoning_content) {
-            messages.reasoningMessage += parsed.choices[0].delta.reasoning_content
-            messages.streamMessage = parsed.choices[0].delta.reasoning_content
+            UPDATED_MESSAGES.reasoningMessage += parsed.choices[0].delta.reasoning_content
+            UPDATED_MESSAGES.streamMessage = parsed.choices[0].delta.reasoning_content
             this.eventBus.emit("[stream] streamStream", {
                 id: ids.dialogueId,
-                reasoning: messages.streamMessage,
+                reasoning: UPDATED_MESSAGES.streamMessage,
                 model: {
                     largeModel: ids.largeModel,
                     model: ids.model
@@ -129,19 +161,23 @@ export default class StreamChatHandler {
         }
 
         if (parsed.choices?.[0]?.delta?.content) {
-            messages.assistantMessage += parsed.choices[0].delta.content
-            messages.streamMessage = parsed.choices[0].delta.content
+            UPDATED_MESSAGES.assistantMessage += parsed.choices[0].delta.content
+            UPDATED_MESSAGES.streamMessage = parsed.choices[0].delta.content
             this.eventBus.emit("[stream] streamStream", {
                 id: ids.dialogueId,
-                message: messages.streamMessage,
+                message: UPDATED_MESSAGES.streamMessage,
                 model: {
                     largeModel: ids.largeModel,
                     model: ids.model
                 }
             })
         }
+        return UPDATED_MESSAGES
     }
 
+    /**
+     * 中止请求
+     */
     abort() {
         if (this.abortController) {
             this.abortController.abort()
@@ -149,6 +185,13 @@ export default class StreamChatHandler {
         }
     }
 
+    /**
+     * 构建响应对象
+     * @param {Object} params - 请求参数
+     * @param {*} data - 响应数据
+     * @param {string} [error] - 错误信息
+     * @returns {Object} 响应对象
+     */
     response(params, data, error) {
         return {
             error: error || "",
