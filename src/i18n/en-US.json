@@ -132,6 +132,14 @@
             "light": "Light",
             "dark": "Dark",
             "system": "System"
+        },
+        "UserMessageCard": {
+            "earthOnline": "Earth Online",
+            "players": "Players"
+        },
+        "AssistantMessageCard": {
+            "copyButton": "Copy",
+            "reasoning": "Reasoning"
         }
     },
     "views": {
@@ -154,10 +162,6 @@
                 "showInputBox": "Show input box",
                 "hideInputBox": "Hide input box"
             },
-            "copyButton": "Copy",
-            "earthOnline": "Earth Online",
-            "players": "Players",
-            "reasoning": "Reasoning",
             "aiDisclaimer": "AI-generated content. Please verify accuracy"
         },
         "Options": {

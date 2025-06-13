@@ -132,6 +132,14 @@
             "light": "白昼",
             "dark": "深夜",
             "system": "系统"
+        },
+        "UserMessageCard": {
+            "earthOnline": "地球Online",
+            "players": "玩家"
+        },
+        "AssistantMessageCard": {
+            "copyButton": "复制",
+            "reasoning": "推理"
         }
     },
     "views": {
@@ -154,10 +162,6 @@
                 "showInputBox": "显示输入框",
                 "hideInputBox": "隐藏输入框"
             },
-            "copyButton": "复制",
-            "earthOnline": "地球Online",
-            "players": "玩家",
-            "reasoning": "推理",
             "aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
         },
         "OptionsView": {
