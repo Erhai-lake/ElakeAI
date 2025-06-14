@@ -60,11 +60,21 @@ export default {
         color: var(--chat-user-text-color);
     }
 
+    .MessageContent{
+        font-size: 16px;
+        line-height: 1.5;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
     .MessageInfo {
         margin-top: 8px;
         font-size: 12px;
         color: var(--chat-dialogue-time-text-color);
         text-align: right;
+        white-space: pre-wrap;
+        word-break: break-word;
     }
 }
 </style>

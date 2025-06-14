@@ -70,6 +70,26 @@ export default {
                 .use(emoji)
                 // 数学公式
                 .use(markdownItMathjax3)
+            // 添加图片拖拽处理
+            const RENDERER = MD.renderer.rules.image || function(tokens, idx, options, env, self) {
+                return self.renderToken(tokens, idx, options)
+            }
+            MD.renderer.rules.image = function(tokens, idx, options, env, self) {
+                const token = tokens[idx]
+                token.attrSet("draggable", "false")
+                token.attrSet("onmousedown", "return false")
+                return RENDERER(tokens, idx, options, env, self)
+            }
+            // 添加链接在新窗口打开处理
+            const LINK_RENDERER = MD.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+                return self.renderToken(tokens, idx, options)
+            }
+            MD.renderer.rules.link_open = function(tokens, idx, options, env, self) {
+                const token = tokens[idx]
+                token.attrSet("target", "_blank")
+                token.attrSet("rel", "noopener noreferrer")
+                return LINK_RENDERER(tokens, idx, options, env, self)
+            }
             return MD.render(message)
         },
         /**
@@ -264,6 +284,7 @@ export default {
         line-height: 1.5;
         word-wrap: break-word;
         overflow-wrap: break-word;
+        white-space: pre-wrap;
     }
 
     .MessageInfo {
@@ -271,6 +292,8 @@ export default {
         font-size: 12px;
         color: var(--chat-dialogue-time-text-color);
         text-align: right;
+        white-space: pre-wrap;
+        word-break: break-word;
     }
 }
 </style>

@@ -303,6 +303,7 @@ export default defineComponent({
                 this.adjustTextareaHeight()
             })
             // 创建新的聊天
+            this.stopStatus = true
             if (this.route.name !== "ChatKey") {
                 try {
                     const NEW_CHAT_KEY = crypto.randomUUID()
@@ -335,7 +336,6 @@ export default defineComponent({
                 })
                 if (RESPONSE.error) {
                     EventBus.emit("[stream] chatError")
-                    this.stopStatus = false
                     this.ChatInput = CONTENT
                     await this.$nextTick(() => {
                         this.adjustTextareaHeight()
@@ -350,6 +350,8 @@ export default defineComponent({
                 })
                 console.error("[AI Input]  发送消息错误", error)
                 this.$toast.error(`[AI Input] ${this.$t("components.AIInput.toast.sendMessageError")}`)
+            } finally {
+                this.stopStatus = false
             }
         },
         /**
