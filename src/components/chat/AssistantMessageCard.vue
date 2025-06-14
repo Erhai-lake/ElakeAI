@@ -11,11 +11,12 @@ import mermaid from "mermaid"
 import panzoom from "@panzoom/panzoom"
 import "@/assets/styles/highlight.css"
 import "@/assets/styles/markdown.less"
-import Button from "@/components/Button.vue";
-import EventBus from "@/services/EventBus";
+import Button from "@/components/Button.vue"
+import EventBus from "@/services/EventBus"
 
 export default {
     name: "AssistantMessageCard",
+    inject: ["$DB"],
     components: {Button, FoldingPanel},
     props: {
         message: {
@@ -24,8 +25,6 @@ export default {
         }
     },
     mounted() {
-        // 初始化Mermaid
-        this.initMermaid()
         // 监听复制事件
         this.$el.addEventListener("click", (e) => {
             if (e.target.classList.contains("codecopy-btn")) {
@@ -47,20 +46,26 @@ export default {
          * @returns {String} - 格式化后的信息
          */
         formattingMessage(message) {
-            message = message.replace(/```mermaid([\s\S]*?)```/g, (match, diagram) => {
-                return `<div class="mermaid">${diagram}</div>`
-            })
             const MD = markdownit({
-                html: true,
+                html: false,
+                xhtmlOut: false,
+                breaks: false,
+                langPrefix: "language-",
                 linkify: true,
                 typographer: true,
-                breaks: true,
                 highlight: (str, lang) => {
                     if (lang && highlight.getLanguage(lang)) {
                         try {
                             const HIGHLIGHTED = highlight.highlight(str, {language: lang, ignoreIllegals: true}).value
                             const COPY_BUTTON_LANG = this.$t("components.AssistantMessageCard.copyButton")
                             return `<div class="hljs language-${lang}"><button class="codecopy-btn" data-code="${encodeURIComponent(str)}">${COPY_BUTTON_LANG}</button><pre><code>${HIGHLIGHTED}</code></pre></div>`
+                        } catch (__) {
+                        }
+                    } else if (lang === "mermaid") {
+                        // 初始化Mermaid
+                        this.initMermaid()
+                        try {
+                            return `<div class="mermaid">${str}</div>`
                         } catch (__) {
                         }
                     }
@@ -102,13 +107,11 @@ export default {
          */
         async initMermaid() {
             try {
+                // 读取主题配置
+                const THEME_DATA = (await this.$DB.Configs.get("Theme")).value
                 mermaid.initialize({
-                    startOnLoad: false,
-                    theme: "default",
-                    flowchart: {
-                        useMaxWidth: true,
-                        htmlLabels: true
-                    }
+                    startOnLoad: true,
+                    theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"
                 })
                 requestAnimationFrame(async () => {
                     const ELEMENTS = document.querySelectorAll(".mermaid:not([data-rendered])")
@@ -123,7 +126,20 @@ export default {
                             const CONTAINER = document.createElement("div")
                             CONTAINER.className = "mermaid-container"
                             CONTAINER.setAttribute("data-rendered", "true")
-                            CONTAINER.innerHTML = svg
+                            CONTAINER.innerHTML = `
+                                <div class="mermaid-toolbar">
+                                    <button class="mermaid-toolbar-btn mermaid-zoom-in">
+                                        ${this.$t("components.AssistantMessageCard.zoomIn")}
+                                    </button>
+                                    <button class="mermaid-toolbar-btn mermaid-zoom-reset">
+                                        ${this.$t("components.AssistantMessageCard.reset")}
+                                    </button>
+                                    <button class="mermaid-toolbar-btn mermaid-zoom-out">
+                                        ${this.$t("components.AssistantMessageCard.zoomOut")}
+                                    </button>
+                                </div>
+                                ${svg}
+                            `
                             // 插入DOM
                             ELEMENT.replaceWith(CONTAINER)
                             // Mermaid SVG 尺寸初始化
@@ -131,8 +147,12 @@ export default {
                             if (SVG_ELEMENT) {
                                 SVG_ELEMENT.removeAttribute("width")
                                 SVG_ELEMENT.removeAttribute("height")
+                                // 获取实际内容高度
+                                const G_ELEMENT = SVG_ELEMENT.querySelector("g")
+                                const BBOX = G_ELEMENT.getBBox()
+                                SVG_ELEMENT.setAttribute("viewBox", `0 0 ${BBOX.width} ${BBOX.height + 10.}`)
                                 SVG_ELEMENT.style.width = "100%"
-                                SVG_ELEMENT.style.maxHeight = "400px"
+                                SVG_ELEMENT.style.height = `${BBOX.height}px`
                                 SVG_ELEMENT.style.display = "block"
                             }
                             // 处理 SVG 和缩放
@@ -157,12 +177,6 @@ export default {
                 console.warn("SVG元素未附加到DOM")
                 return
             }
-            // 确保SVG有viewBox属性
-            if (!SVG.hasAttribute("viewBox")) {
-                const width = SVG.clientWidth || 800
-                const height = SVG.clientHeight || 600
-                SVG.setAttribute("viewBox", `0 0 ${width} ${height}`)
-            }
             // 初始化 panzoom
             const INSTANCE = panzoom(SVG, {
                 maxZoom: 10,
@@ -173,25 +187,47 @@ export default {
                 zoomSpeed: 0.065,
                 zoomDoubleClickSpeed: 1
             })
+            // 放大按钮点击事件
+            const ZOOM_IN_BTN = container.querySelector(".mermaid-zoom-in")
+            if (!ZOOM_IN_BTN) return
+            ZOOM_IN_BTN.addEventListener("click", () => {
+                INSTANCE.zoomIn(0.2)
+            })
+            // 复位按钮点击事件
+            const RESET_BTN = container.querySelector(".mermaid-zoom-reset")
+            if (!RESET_BTN) return
+            RESET_BTN.addEventListener("click", () => {
+                INSTANCE.zoom(1)
+                INSTANCE.pan(0, 0)
+            })
+            // 缩小按钮点击事件
+            const ZOOM_OUT_BTN = container.querySelector(".mermaid-zoom-out")
+            if (!ZOOM_OUT_BTN) return
+            ZOOM_OUT_BTN.addEventListener("click", () => {
+                INSTANCE.zoomOut(0.2)
+            })
             container.addEventListener("wheel", INSTANCE.zoomWithWheel)
             // 处理拖拽
             let isDragging = false
+            let startPos = {x: 0, y: 0}
             container.addEventListener("mousedown", (e) => {
                 if (e.button === 0) {
                     // 左键
                     isDragging = true
-                    INSTANCE.startDrag(e)
+                    startPos = {x: e.clientX, y: e.clientY}
                 }
             })
             document.addEventListener("mouseup", () => {
                 if (isDragging) {
                     isDragging = false
-                    INSTANCE.endDrag()
                 }
             })
             document.addEventListener("mousemove", (e) => {
                 if (isDragging) {
-                    INSTANCE.drag(e)
+                    const DX = e.clientX - startPos.x
+                    const DY = e.clientY - startPos.y
+                    INSTANCE.pan(DX, DY, {relative: true})
+                    startPos = {x: e.clientX, y: e.clientY}
                 }
             })
             // 防止文本选择

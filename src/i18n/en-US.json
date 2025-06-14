@@ -139,7 +139,10 @@
         },
         "AssistantMessageCard": {
             "copyButton": "Copy",
-            "reasoning": "Reasoning"
+            "reasoning": "Reasoning",
+            "zoomIn": "Zoom In",
+            "reset": "Reset",
+            "zoomOut": "Zoom Out"
         }
     },
     "views": {
