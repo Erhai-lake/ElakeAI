@@ -4,11 +4,12 @@ import {useRoute} from "vue-router"
 import EventBus from "@/services/EventBus"
 import UserMessageCard from "@/components/chat/UserMessageCard.vue"
 import AssistantMessageCard from "@/components/chat/AssistantMessageCard.vue"
+import TopTitle from "@/components/chat/TopTitle.vue"
 
 export default {
     name: "ChatView",
     inject: ["$DB"],
-    components: {AssistantMessageCard, AIInput, UserMessageCard},
+    components: {TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
     data() {
         return {
             route: useRoute(),
@@ -22,10 +23,6 @@ export default {
                 active: false,
                 cursorVisible: true,
                 currentMessageIndex: -1
-            },
-            editingTitle: {
-                show: false,
-                value: ""
             },
             data: {
                 key: null,
@@ -176,57 +173,6 @@ export default {
                 this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
             }
         },
-        // 标题输入
-        titleInput() {
-            this.editingTitle.value = this.data.title
-            this.editingTitle.show = true
-            this.$nextTick(() => {
-                const input = this.$el.querySelector(".TopTitle input")
-                if (input) {
-                    input.focus()
-                    input.select()
-                }
-            })
-        },
-        // 保存标题
-        async saveTitle() {
-            // 检查标题是否重复
-            if (this.editingTitle.value.trim() === this.data.title) {
-                this.editingTitle.show = false
-                return
-            }
-            // 检查标题是否为空
-            if (!this.editingTitle.value.trim()) {
-                this.editingTitle.value = this.$t("components.AIInput.newChat")
-            }
-            try {
-                const NEW_TITLE = this.editingTitle.value.trim()
-                this.data.title = NEW_TITLE
-                await this.$DB.Chats.update(this.data.key, {title: NEW_TITLE})
-                this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
-                // 触发事件 更新ChatsList
-                EventBus.emit("[function] chatListGet")
-            } catch (error) {
-                console.error("[Chat View] 标题更新错误", error)
-                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
-                this.editingTitle.value = this.data.title
-            } finally {
-                this.editingTitle.show = false
-            }
-        },
-        // 取消编辑标题
-        cancelEditTitle() {
-            this.editingTitle.show = false
-            this.editingTitle.value = this.data.title
-        },
-        // 处理标题键盘事件
-        handleTitleKeydown(e) {
-            if (e.key === "Enter") {
-                this.saveTitle()
-            } else if (e.key === "Escape") {
-                this.cancelEditTitle()
-            }
-        },
         // 用户消息
         async userMessage(message) {
             this.data.data.push({
@@ -336,16 +282,7 @@ export default {
 <template>
     <div class="ChatView">
         <!-- 顶部标题 -->
-        <div class="TopTitle">
-            <p v-if="!editingTitle.show" @click="titleInput" :title="data.title">{{ data.title }}</p>
-            <input
-                type="text"
-                v-else
-                v-model="editingTitle.value"
-                @blur="saveTitle"
-                @keydown="handleTitleKeydown"
-                class="TitleInput">
-        </div>
+        <TopTitle :chatTitle="data.title" :chatKey="data.key"/>
         <!-- 消息列表 -->
         <div class="MessageList" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
             <div
@@ -432,45 +369,6 @@ export default {
     display: grid;
     grid-template-rows: auto 1fr auto auto;
     overflow: hidden;
-}
-
-.TopTitle {
-    position: relative;
-    height: 65px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 0 0 20px 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 6px 15px 0 var(--box-shadow-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-
-    p {
-        position: absolute;
-        max-width: 90%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        cursor: pointer;
-    }
-
-    .TitleInput {
-        width: 500px;
-        padding: 8px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background: var(--background-color);
-        color: var(--text-color);
-        font-size: 18px;
-        font-weight: bold;
-        text-align: center;
-
-        &:focus {
-            outline: none;
-        }
-    }
 }
 
 .MessageList {
