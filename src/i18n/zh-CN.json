@@ -152,7 +152,8 @@
                 "copied": "复制成功",
                 "copyFailed": "复制失败",
                 "titleUpdated": "标题更新成功",
-                "titleUpdateError": "标题更新错误"
+                "titleUpdateError": "标题更新错误",
+                "removeMessageError": "移除消息错误"
             },
             "FunctionalControls": {
                 "scrollToTopMessages": "返回顶部",

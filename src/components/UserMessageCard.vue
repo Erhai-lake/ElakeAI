@@ -1,6 +1,10 @@
 <script>
+import Button from "@/components/Button.vue"
+import EventBus from "@/services/EventBus"
+
 export default {
     name: "UserMessageCard",
+    components: {Button},
     props: {
         message: {
             type: Object,
@@ -30,6 +34,13 @@ export default {
             const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
             const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
             return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
+        },
+        /**
+         * 移除消息
+         * @param {string} id 消息ID
+         */
+        remove(id) {
+            EventBus.emit("[function] removeMessage", id)
         }
     }
 }
@@ -38,14 +49,21 @@ export default {
 <template>
     <div class="MessageCard">
         <div class="MessageContent" v-html="formattingMessage(message.message.content)"></div>
-        <div class="MessageInfo">
-            [{{ $t("components.UserMessageCard.earthOnline") }}]
-            -
-            [{{ $t("components.UserMessageCard.players") }}]
-            -
-            {{ formatTimestamp(message.timestamp) }}
+        <div class="MessageBottom">
+            <div class="FunctionalControls">
+                <Button @click="remove(message.id)">移除</Button>
+            </div>
+            <div class="MessageInfo">
+                <div>
+                    [{{ $t("components.UserMessageCard.earthOnline") }}]
+                    -
+                    [{{ $t("components.UserMessageCard.players") }}]
+                    -
+                    {{ formatTimestamp(message.timestamp) }}
+                </div>
+                <div>{{ message.id }}</div>
+            </div>
         </div>
-        <div class="MessageInfo">{{ message.id }}</div>
     </div>
 </template>
 
@@ -68,13 +86,26 @@ export default {
         white-space: pre-wrap;
     }
 
-    .MessageInfo {
+    .MessageBottom {
         margin-top: 8px;
-        font-size: 12px;
-        color: var(--chat-dialogue-time-text-color);
-        text-align: right;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
         white-space: pre-wrap;
         word-break: break-word;
+    }
+
+    &:hover .FunctionalControls {
+        opacity: 1;
+    }
+
+    .FunctionalControls {
+        opacity: 0;
+    }
+
+    .MessageInfo {
+        font-size: 12px;
+        color: var(--chat-dialogue-time-text-color);
     }
 }
 </style>

@@ -58,6 +58,8 @@ export default {
         EventBus.on("[stream] streamComplete", this.streamComplete)
         // 监听错误
         EventBus.on("[stream] chatError", this.chatError)
+        // 监听消息移除
+        EventBus.on("[function] removeMessage", this.removeMessage)
     },
     beforeUnmount() {
         // 移除滚动事件
@@ -73,6 +75,8 @@ export default {
         EventBus.off("[stream] streamComplete", this.streamComplete)
         // 移除错误监听
         EventBus.off("[stream] chatError", this.chatError)
+        // 移除消息移除监听
+        EventBus.off("[function] removeMessage", this.removeMessage)
     },
     methods: {
         // 设置当前聚焦的消息(在滚动或点击时调用)
@@ -306,6 +310,24 @@ export default {
         // 错误处理
         async chatError() {
             this.data.data.pop()
+        },
+        // 移除消息
+        async removeMessage(id) {
+            try {
+                // 移除本地中的消息
+                const INDEX = this.data.data.findIndex((msg) => msg.id === id)
+                if (INDEX !== -1) {
+                    this.data.data.splice(INDEX, 1)
+                }
+                // 更新数据库中的消息
+                const DATA = JSON.parse(JSON.stringify(this.data.data))
+                await this.$DB.Chats.update(this.data.key, {data: DATA})
+                // 更新侧边栏
+                EventBus.emit("[function] chatListGet")
+            } catch (error) {
+                console.error("[Chat View] 消息移除错误", error)
+                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.removeMessageError")}`)
+            }
         }
     }
 }

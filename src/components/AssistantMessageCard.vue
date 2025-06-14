@@ -6,15 +6,17 @@ import highlight from "highlight.js"
 import markdownItTaskLists from "markdown-it-task-lists"
 import {full as emoji} from "markdown-it-emoji"
 import markdownItMathjax3 from "markdown-it-mathjax3"
-import { imgLazyload } from "@mdit/plugin-img-lazyload"
+import {imgLazyload} from "@mdit/plugin-img-lazyload"
 import mermaid from "mermaid"
 import panzoom from "@panzoom/panzoom"
 import "@/assets/styles/highlight.css"
 import "@/assets/styles/markdown.less"
+import Button from "@/components/Button.vue";
+import EventBus from "@/services/EventBus";
 
 export default {
     name: "AssistantMessageCard",
-    components: {FoldingPanel},
+    components: {Button, FoldingPanel},
     props: {
         message: {
             type: Object,
@@ -74,20 +76,20 @@ export default {
                 // 图片懒加载
                 .use(imgLazyload)
             // 添加图片拖拽处理
-            const RENDERER = MD.renderer.rules.image || function(tokens, idx, options, env, self) {
+            const RENDERER = MD.renderer.rules.image || function (tokens, idx, options, env, self) {
                 return self.renderToken(tokens, idx, options)
             }
-            MD.renderer.rules.image = function(tokens, idx, options, env, self) {
+            MD.renderer.rules.image = function (tokens, idx, options, env, self) {
                 const token = tokens[idx]
                 token.attrSet("draggable", "false")
                 token.attrSet("onmousedown", "return false")
                 return RENDERER(tokens, idx, options, env, self)
             }
             // 添加链接在新窗口打开处理
-            const LINK_RENDERER = MD.renderer.rules.link_open || function(tokens, idx, options, env, self) {
+            const LINK_RENDERER = MD.renderer.rules.link_open || function (tokens, idx, options, env, self) {
                 return self.renderToken(tokens, idx, options)
             }
-            MD.renderer.rules.link_open = function(tokens, idx, options, env, self) {
+            MD.renderer.rules.link_open = function (tokens, idx, options, env, self) {
                 const token = tokens[idx]
                 token.attrSet("target", "_blank")
                 token.attrSet("rel", "noopener noreferrer")
@@ -234,6 +236,13 @@ export default {
         modelImages(model) {
             if (!model) return null
             return ModelList.find(modelItem => modelItem.title === model).images
+        },
+        /**
+         * 移除消息
+         * @param {string} id 消息ID
+         */
+        remove(id) {
+            EventBus.emit("[function] removeMessage", id)
         }
     }
 }
@@ -250,14 +259,21 @@ export default {
             </template>
         </FoldingPanel>
         <div class="MessageContent" v-html="formattingMessage(message.message.content)"></div>
-        <div class="MessageInfo">
-            [{{ message.model.largeModel }}]
-            -
-            [{{ message.model.model }}]
-            -
-            {{ formatTimestamp(message.timestamp) }}
+        <div class="MessageBottom">
+            <div class="FunctionalControls">
+                <Button @click="remove(message.id)">移除</Button>
+            </div>
+            <div class="MessageInfo">
+                <div>
+                    [{{ message.model.largeModel }}]
+                    -
+                    [{{ message.model.model }}]
+                    -
+                    {{ formatTimestamp(message.timestamp) }}
+                </div>
+                <div>{{ message.id }}</div>
+            </div>
         </div>
-        <div class="MessageInfo">{{ message.id }}</div>
         <img :src="modelImages(message.model.largeModel)" :alt="message.model.largeModel" class="ModelLogo">
     </div>
 </template>
@@ -290,13 +306,26 @@ export default {
         white-space: pre-wrap;
     }
 
-    .MessageInfo {
+    .MessageBottom {
         margin-top: 8px;
-        font-size: 12px;
-        color: var(--chat-dialogue-time-text-color);
-        text-align: right;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
         white-space: pre-wrap;
         word-break: break-word;
+    }
+
+    &:hover .FunctionalControls {
+        opacity: 1;
+    }
+
+    .FunctionalControls {
+        opacity: 0;
+    }
+
+    .MessageInfo {
+        font-size: 12px;
+        color: var(--chat-dialogue-time-text-color);
     }
 }
 </style>

@@ -152,7 +152,8 @@
                 "copied": "Copied successfully",
                 "copyFailed": "Copy failed",
                 "titleUpdated": "Title updated successfully",
-                "titleUpdateError": "Failed to update title"
+                "titleUpdateError": "Failed to update title",
+                "removeMessageError": "Failed to remove message"
             },
             "FunctionalControls": {
                 "scrollToTopMessages": "Jump to top",
