@@ -6,6 +6,7 @@ import highlight from "highlight.js"
 import markdownItTaskLists from "markdown-it-task-lists"
 import {full as emoji} from "markdown-it-emoji"
 import markdownItMathjax3 from "markdown-it-mathjax3"
+import { imgLazyload } from "@mdit/plugin-img-lazyload"
 import mermaid from "mermaid"
 import panzoom from "@panzoom/panzoom"
 import "@/assets/styles/highlight.css"
@@ -70,6 +71,8 @@ export default {
                 .use(emoji)
                 // 数学公式
                 .use(markdownItMathjax3)
+                // 图片懒加载
+                .use(imgLazyload)
             // 添加图片拖拽处理
             const RENDERER = MD.renderer.rules.image || function(tokens, idx, options, env, self) {
                 return self.renderToken(tokens, idx, options)
