@@ -2,8 +2,8 @@
 import AIInput from "@/components/AIInput.vue"
 import {useRoute} from "vue-router"
 import EventBus from "@/services/EventBus"
-import UserMessageCard from "@/components/UserMessageCard.vue"
-import AssistantMessageCard from "@/components/AssistantMessageCard.vue"
+import UserMessageCard from "@/components/chat/UserMessageCard.vue"
+import AssistantMessageCard from "@/components/chat/AssistantMessageCard.vue"
 
 export default {
     name: "ChatView",
