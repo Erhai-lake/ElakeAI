@@ -21,6 +21,9 @@ export default {
         }
     },
     methods: {
+        /**
+         * 切换折叠状态
+         */
         toggleFolding() {
             this.isExpand = !this.isExpand
         }

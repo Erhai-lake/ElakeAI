@@ -37,6 +37,9 @@ export default {
         }
     },
     methods: {
+        /**
+         * 切换列表
+         */
         toggleList() {
             if (this.showLoading) return
             if (!this.isOpen) {
@@ -44,6 +47,9 @@ export default {
             }
             this.isOpen = !this.isOpen
         },
+        /**
+         * 计算下拉框的方向
+         */
         calculateDropdownDirection() {
             const DROPDOWN_HEIGHT = this.num * 44
             const DROPDOWN_RECT = this.$el.getBoundingClientRect()
@@ -51,20 +57,34 @@ export default {
             const WINDOW_HEIGHT = window.innerHeight
             this.dropdownDirection = DROPDOWN_BOTTOM > WINDOW_HEIGHT ? "top" : "bottom"
         },
+        /**
+         * 处理点击事件
+         * @param e {Event} - 事件对象
+         */
         handleClickOutside(e) {
             if (!this.$el.contains(e.target)) {
                 this.isOpen = false
             }
         },
+        /**
+         * 选择项
+         * @param item {Object} - 选择项
+         */
         selectItem(item) {
             if (this.showLoading) return
             this.isOpen = false
             this.$emit('update:selectorSelected', item)
         },
+        /**
+         * 开始加载
+         */
         startLoading() {
             this.isLoading = true
             this.isOpen = false
         },
+        /**
+         * 停止加载
+         */
         stopLoading() {
             this.isLoading = false
         }

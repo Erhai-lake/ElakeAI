@@ -56,7 +56,9 @@ export default {
         await this.loadKeyPools()
     },
     methods: {
-        // 取消所有请求
+        /**
+         * 取消所有请求
+         */
         cancelAllRequests() {
             if (this.currentModelRequest?.cancel) {
                 this.currentModelRequest.cancel()
@@ -65,20 +67,32 @@ export default {
                 this.currentKeyRequest.cancel()
             }
         },
-        // 更新大模型所选项
+        /**
+         * 更新大模型所选项
+         * @param newVal {Object} - 新的大模型选项
+         */
         updateSelectedLargeModel(newVal) {
             this.selectedLargeModel = newVal
             this.saved = false
         },
-        // 更新Key所选项
+        /**
+         * 更新Key所选项
+         * @param newVal {Object} - 新的Key选项
+         */
         updateSelectedKey(newVal) {
             this.selectedKey = newVal
         },
-        // 更新模型所选项
+        /**
+         * 更新模型所选项
+         * @param newVal {Object} - 新的模型选项
+         */
         updateSelectedModel(newVal) {
             this.selectedModel = newVal
         },
-        // 选择大模型
+        /**
+         * 选择大模型
+         * @param newModel {Object} - 新的大模型选项
+         */
         async selectLargeModel(newModel) {
             this.cancelAllRequests()
             const requestContext = {cancelled: false}
@@ -108,7 +122,10 @@ export default {
                 this.loading.keys = false
             }
         },
-        // 选择Key
+        /**
+         * 选择Key
+         * @param newKey {Object} - 新的Key选项
+         */
         async selectKey(newKey) {
             this.cancelAllRequests()
             const requestContext = {cancelled: false}
@@ -136,7 +153,11 @@ export default {
                 this.loading.models = false
             }
         },
-        // 获取模型的Key
+        /**
+         * 获取模型的Key
+         * @param modelName {String} - 模型名称
+         * @returns {Promise<{title, key: *}[]>} - 模型的Key列表
+         */
         async fetchKeysForModel(modelName) {
             const keys = await this.$DB.APIKeys
                 .where("model")
@@ -149,7 +170,11 @@ export default {
                 title: key.remark || key.key
             }))
         },
-        // 获取Key的模型
+        /**
+         * 获取Key的模型
+         * @param key {String} - Key
+         * @returns {Promise<{title: *}[]>} - Key的模型列表
+         */
         async fetchModelsForKey(key) {
             const KEY_DATA = await this.$DB.APIKeys.get(key)
             const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
@@ -159,7 +184,9 @@ export default {
             const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
             return UNIQUE_MODELS.map(model => ({ title: model }))
         },
-        // 加载Key
+        /**
+         * 加载Key
+         */
         async loadKeyPools() {
             const currentRequestId = Symbol()
             this.currentKeyPoolRequest = currentRequestId
@@ -189,7 +216,9 @@ export default {
                 this.$toast.error(`[Default Chat Settings] ${this.$t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
             }
         },
-        // 获取设置
+        /**
+         * 获取设置
+         */
         async restoreSettings() {
             try {
                 const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.Configs.get("DefaultChatSettings")
@@ -210,7 +239,9 @@ export default {
                 this.$toast.error(`[Default Chat Settings] ${this.$t("components.DefaultChatSettings.toast.getDefaultSettingsError")}`)
             }
         },
-        // 保存设置
+        /**
+         * 保存设置
+         */
         async saveDefaultChatSettings() {
             try {
                 if (!this.selectedLargeModel.title) return

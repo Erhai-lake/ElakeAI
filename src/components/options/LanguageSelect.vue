@@ -35,10 +35,17 @@ export default {
         }
     },
     methods: {
-        // 更新选中项
+        /**
+         * 更新选中的语言
+         * @param newVal {Object} - 新的选中语言
+         */
         updateSelectedLang(newVal) {
             this.selectedLang = newVal
         },
+        /**
+         * 选择语言
+         * @param selectLang {Object} - 选中的语言
+         */
         async selectLanguage(selectLang) {
             try {
                 if (!selectLang) return

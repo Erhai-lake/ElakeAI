@@ -76,11 +76,17 @@ export default {
         EventBus.off("[function] removeMessage", this.removeMessage)
     },
     methods: {
-        // 设置当前聚焦的消息(在滚动或点击时调用)
+        /**
+         * 设置当前聚焦的消息ID
+         * @param {string} id 消息ID
+         */
         setCurrentMessageId(id) {
             this.scroll.currentMessageId = id
         },
-        // 滚动到指定ID的消息
+        /**
+         * 滚动到指定消息
+         * @param {string} id 消息ID
+         */
         scrollToMessage(id) {
             this.$nextTick(() => {
                 const container = this.$el.querySelector(".MessageList")
@@ -97,7 +103,10 @@ export default {
                 }
             })
         },
-        // 向上或向下滚动消息(默认向上)
+        /**
+         * 向上或向下滚动消息(默认向上)
+         * @param type {string} - 滚动方向("up"或"down", "top"或"bottom")
+         */
         scrollToUpAndDownMessages(type = "up") {
             if (!this.data.data?.length) return
             const LAST_INDEX = this.data.data.length - 1
@@ -134,7 +143,9 @@ export default {
                 this.scrollToMessage(this.data.data[targetIndex].id)
             }
         },
-        // 检查滚动位置
+        /**
+         * 检查滚动位置
+         */
         checkScrollPosition() {
             const container = this.$el.querySelector(".MessageList")
             if (!container) return
@@ -149,7 +160,10 @@ export default {
                 this.scroll.isAtBottom = scrollHeight - (scrollTop + clientHeight) < 50
             }, 100)
         },
-        // 初始化聊天界面
+        /**
+         * 初始化聊天视图
+         * @param chatKey {string} - 聊天Key
+         */
         async initChatView(chatKey) {
             try {
                 const CHAT_DATA = await this.$DB.Chats.get(chatKey || this.route.params.key)
@@ -173,7 +187,10 @@ export default {
                 this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
             }
         },
-        // 用户消息
+        /**
+         * 用户消息
+         * @param message {Object} - 消息
+         */
         async userMessage(message) {
             this.data.data.push({
                 id: message.id,
@@ -188,7 +205,10 @@ export default {
                 this.scrollToUpAndDownMessages("bottom")
             }
         },
-        // 消息流
+        /**
+         * 消息流
+         * @param message {Object} - 消息
+         */
         async streamStream(message) {
             if (!Array.isArray(this.data.data)) {
                 this.data.data = []
@@ -220,7 +240,9 @@ export default {
                 this.scrollToUpAndDownMessages("bottom")
             }
         },
-        // 消息完成
+        /**
+         * 消息流完成
+         */
         async streamComplete() {
             try {
                 // 如果是第一条AI回复且是默认标题
@@ -253,11 +275,16 @@ export default {
                 this.scrollToUpAndDownMessages("bottom")
             }
         },
-        // 错误处理
+        /**
+         * 错误处理
+         */
         async chatError() {
             this.data.data.pop()
         },
-        // 移除消息
+        /**
+         * 移除消息
+         * @param id {string} - 消息ID
+         */
         async removeMessage(id) {
             try {
                 // 移除本地中的消息

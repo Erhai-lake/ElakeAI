@@ -82,7 +82,11 @@ export default defineComponent({
                 this.$toast.error(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
             }
         },
-        // 格式化时间戳
+        /**
+         * 格式化时间戳
+         * @param {number} timestamp 时间戳
+         * @returns {string} 格式化后的时间字符串
+         */
         formatTimestamp(timestamp) {
             const DATE = new Date(timestamp)
             const YEAR = DATE.getFullYear()
