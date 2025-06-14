@@ -7,31 +7,22 @@ export default {
     props: {
         chatTitle: {
             type: String,
-            required: true
+            required: true,
+            default: ""
         },
         chatKey: {
             type: String,
-            required: true
+            required: true,
+            default: ""
         }
     },
     data() {
         return {
-            data: {
-                title: "",
-                key: ""
-            },
+            title: this.chatTitle || this.$t("components.AIInput.newChat"),
             editingTitle: {
                 show: false,
                 value: ""
             }
-        }
-    },
-    watch: {
-        chatTitle(newTitle) {
-            this.data.title = newTitle
-        },
-        chatKey(newKey) {
-            this.data.key = newKey
         }
     },
     methods: {
@@ -39,7 +30,7 @@ export default {
          * 显示标题输入框
          */
         titleInput() {
-            this.editingTitle.value = this.data.title
+            this.editingTitle.value = this.title
             this.editingTitle.show = true
             this.$nextTick(() => {
                 const input = this.$el.querySelector(".TopTitle input")
@@ -55,7 +46,7 @@ export default {
          */
         async saveTitle() {
             // 检查标题是否重复
-            if (this.editingTitle.value.trim() === this.data.title) {
+            if (this.editingTitle.value.trim() === this.title) {
                 this.editingTitle.show = false
                 return
             }
@@ -65,14 +56,14 @@ export default {
             }
             try {
                 const NEW_TITLE = this.editingTitle.value.trim()
-                this.data.title = NEW_TITLE
-                await this.$DB.Chats.update(this.data.key, {title: NEW_TITLE})
+                this.title = NEW_TITLE
+                await this.$DB.Chats.update(this.chatKey, {title: NEW_TITLE})
                 this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
                 EventBus.emit("[function] chatListGet")
             } catch (error) {
                 console.error("[Chat View] 标题更新错误", error)
                 this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
-                this.editingTitle.value = this.data.title
+                this.editingTitle.value = this.title
             } finally {
                 this.editingTitle.show = false
             }
@@ -93,7 +84,7 @@ export default {
          */
         cancelEditTitle() {
             this.editingTitle.show = false
-            this.editingTitle.value = this.data.title
+            this.editingTitle.value = this.title
         },
     }
 }
@@ -101,7 +92,7 @@ export default {
 
 <template>
     <div class="TopTitle">
-        <p v-if="!editingTitle.show" @click="titleInput" :title="data.title">{{ data.title }}</p>
+        <p v-if="!editingTitle.show" @click="titleInput" :title="title">{{ title }}</p>
         <input
             type="text"
             v-else
