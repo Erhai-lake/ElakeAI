@@ -128,14 +128,45 @@ export default {
                             CONTAINER.setAttribute("data-rendered", "true")
                             CONTAINER.innerHTML = `
                                 <div class="mermaid-toolbar">
+                                    <!--第一排-->
+                                    <div></div>
+                                    <button class="mermaid-toolbar-btn mermaid-move-up">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-upArrow"></use>
+                                        </svg>
+                                    </button>
                                     <button class="mermaid-toolbar-btn mermaid-zoom-in">
-                                        ${this.$t("components.AssistantMessageCard.zoomIn")}
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-zoomIn"></use>
+                                        </svg>
+                                    </button>
+                                    <!--第二排-->
+                                    <button class="mermaid-toolbar-btn mermaid-move-left">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-leftArrow"></use>
+                                        </svg>
                                     </button>
                                     <button class="mermaid-toolbar-btn mermaid-zoom-reset">
-                                        ${this.$t("components.AssistantMessageCard.reset")}
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-reset"></use>
+                                        </svg>
+                                    </button>
+                                    <button class="mermaid-toolbar-btn mermaid-move-right">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-rightArrow"></use>
+                                        </svg>
+                                    </button>
+                                    <!--第三排-->
+                                    <div></div>
+                                    <button class="mermaid-toolbar-btn mermaid-move-down">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-downArrow"></use>
+                                        </svg>
                                     </button>
                                     <button class="mermaid-toolbar-btn mermaid-zoom-out">
-                                        ${this.$t("components.AssistantMessageCard.zoomOut")}
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-zoomOut"></use>
+                                        </svg>
                                     </button>
                                 </div>
                                 ${svg}
@@ -143,16 +174,18 @@ export default {
                             // 插入DOM
                             ELEMENT.replaceWith(CONTAINER)
                             // Mermaid SVG 尺寸初始化
-                            const SVG_ELEMENT = CONTAINER.querySelector("svg")
+                            const SVG_ELEMENT = CONTAINER.querySelector("svg:not(.icon)")
                             if (SVG_ELEMENT) {
                                 SVG_ELEMENT.removeAttribute("width")
                                 SVG_ELEMENT.removeAttribute("height")
                                 // 获取实际内容高度
                                 const G_ELEMENT = SVG_ELEMENT.querySelector("g")
                                 const BBOX = G_ELEMENT.getBBox()
+                                const MAX_HEIGHT = 400
+                                const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
                                 SVG_ELEMENT.setAttribute("viewBox", `0 0 ${BBOX.width} ${BBOX.height + 10.}`)
                                 SVG_ELEMENT.style.width = "100%"
-                                SVG_ELEMENT.style.height = `${BBOX.height}px`
+                                SVG_ELEMENT.style.height = `${BBOX.height * SCALE}px`
                                 SVG_ELEMENT.style.display = "block"
                             }
                             // 处理 SVG 和缩放
@@ -172,20 +205,40 @@ export default {
          * @param container {HTMLElement} - 容器
          */
         setupZoom(container) {
-            const SVG = container.querySelector("svg")
+            const SVG = container.querySelector("svg:not(.icon)")
             if (!SVG || !document.body.contains(SVG)) {
                 console.warn("SVG元素未附加到DOM")
                 return
             }
             // 初始化 panzoom
-            const INSTANCE = panzoom(SVG, {
-                maxZoom: 10,
-                minZoom: 0.2,
-                initialZoom: 1,
-                bounds: true,
-                boundsPadding: 0.2,
-                zoomSpeed: 0.065,
-                zoomDoubleClickSpeed: 1
+            const INSTANCE = panzoom(SVG)
+            // 向上移动按钮点击事件
+            const MOVE_UP_BTN = container.querySelector(".mermaid-move-up")
+            if (!MOVE_UP_BTN) return
+            MOVE_UP_BTN.addEventListener("click", () => {
+                const PAN = INSTANCE.getPan()
+                INSTANCE.pan(PAN.x, PAN.y + 30)
+            })
+            // 向下移动按钮点击事件
+            const MOVE_DOWN_BTN = container.querySelector(".mermaid-move-down")
+            if (!MOVE_DOWN_BTN) return
+            MOVE_DOWN_BTN.addEventListener("click", () => {
+                const PAN = INSTANCE.getPan()
+                INSTANCE.pan(PAN.x, PAN.y - 30)
+            })
+            // 向左移动按钮点击事件
+            const MOVE_LEFT_BTN = container.querySelector(".mermaid-move-left")
+            if (!MOVE_LEFT_BTN) return
+            MOVE_LEFT_BTN.addEventListener("click", () => {
+                const PAN = INSTANCE.getPan()
+                INSTANCE.pan(PAN.x + 30, PAN.y)
+            })
+            // 向右移动按钮点击事件
+            const MOVE_RIGHT_BTN = container.querySelector(".mermaid-move-right")
+            if (!MOVE_RIGHT_BTN) return
+            MOVE_RIGHT_BTN.addEventListener("click", () => {
+                const PAN = INSTANCE.getPan()
+                INSTANCE.pan(PAN.x - 30, PAN.y)
             })
             // 放大按钮点击事件
             const ZOOM_IN_BTN = container.querySelector(".mermaid-zoom-in")
@@ -205,36 +258,6 @@ export default {
             if (!ZOOM_OUT_BTN) return
             ZOOM_OUT_BTN.addEventListener("click", () => {
                 INSTANCE.zoomOut(0.2)
-            })
-            container.addEventListener("wheel", INSTANCE.zoomWithWheel)
-            // 处理拖拽
-            let isDragging = false
-            let startPos = {x: 0, y: 0}
-            container.addEventListener("mousedown", (e) => {
-                if (e.button === 0) {
-                    // 左键
-                    isDragging = true
-                    startPos = {x: e.clientX, y: e.clientY}
-                }
-            })
-            document.addEventListener("mouseup", () => {
-                if (isDragging) {
-                    isDragging = false
-                }
-            })
-            document.addEventListener("mousemove", (e) => {
-                if (isDragging) {
-                    const DX = e.clientX - startPos.x
-                    const DY = e.clientY - startPos.y
-                    INSTANCE.pan(DX, DY, {relative: true})
-                    startPos = {x: e.clientX, y: e.clientY}
-                }
-            })
-            // 防止文本选择
-            container.addEventListener("mousedown", e => {
-                if (e.target.tagName.toLowerCase() === "svg") {
-                    e.preventDefault()
-                }
             })
         },
         /**
