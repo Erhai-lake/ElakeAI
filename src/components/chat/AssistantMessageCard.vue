@@ -24,6 +24,11 @@ export default {
             required: true
         }
     },
+    data() {
+        return {
+            name: "AssistantMessageCard"
+        }
+    },
     mounted() {
         // 监听复制事件
         this.$el.addEventListener("click", (e) => {
@@ -59,14 +64,16 @@ export default {
                             const HIGHLIGHTED = highlight.highlight(str, {language: lang, ignoreIllegals: true}).value
                             const COPY_BUTTON_LANG = this.$t("components.AssistantMessageCard.copyButton")
                             return `<div class="hljs language-${lang}"><button class="codecopy-btn" data-code="${encodeURIComponent(str)}">${COPY_BUTTON_LANG}</button><pre><code>${HIGHLIGHTED}</code></pre></div>`
-                        } catch (__) {
+                        } catch (error) {
+                            this.$log.error(this.name, "代码高亮渲染错误", error)
                         }
                     } else if (lang === "mermaid") {
                         // 初始化Mermaid
                         this.initMermaid()
                         try {
                             return `<div class="mermaid">${str}</div>`
-                        } catch (__) {
+                        } catch (error) {
+                            this.$log.error(this.name, "mermaid渲染错误", error)
                         }
                     }
                     return `<pre class="hljs"><code>${MD.utils.escapeHtml(str)}</code></pre>`
@@ -107,12 +114,16 @@ export default {
          */
         async initMermaid() {
             try {
-                // 读取主题配置
-                const THEME_DATA = (await this.$DB.Configs.get("Theme")).value
-                mermaid.initialize({
-                    startOnLoad: true,
-                    theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"
-                })
+                try {
+                    // 读取主题配置
+                    const THEME_DATA = (await this.$DB.Configs.get("Theme")).value
+                    mermaid.initialize({
+                        startOnLoad: true,
+                        theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"
+                    })
+                } catch (error) {
+                    this.$log.error(this.name, "mermaid主题初始化错误", error)
+                }
                 requestAnimationFrame(async () => {
                     const ELEMENTS = document.querySelectorAll(".mermaid:not([data-rendered])")
                     for (const ELEMENT of ELEMENTS) {
@@ -191,13 +202,13 @@ export default {
                             // 处理 SVG 和缩放
                             this.setupZoom(CONTAINER)
                         } catch (error) {
-                            console.error("Mermaid 渲染错误", error)
+                            this.$log.error(this.name, "mermaid渲染错误", error)
                             ELEMENT.innerHTML = `<div class="mermaid-error">流程图渲染失败</div>`
                         }
                     }
                 })
             } catch (error) {
-                console.error("Mermaid 初始化错误", error)
+                this.$log.error(this.name, "mermaid初始化错误", error)
             }
         },
         /**
@@ -263,10 +274,11 @@ export default {
          */
         copyCode(code) {
             navigator.clipboard.writeText(code).then(() => {
-                this.$toast.success(this.$t("views.ChatView.toast.copied"))
-            }).catch((err) => {
-                console.error("[Chat View] 复制失败", err)
-                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.copyFailed")}`)
+                this.$log.info(this.name, "复制成功", code)
+                this.$toast.success(`[${this.name}] ${this.$t("views.ChatView.toast.copied")}`)
+            }).catch((error) => {
+                this.$log.error(this.name, "复制失败", error)
+                this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.copyFailed")}`)
             })
         },
         /**
