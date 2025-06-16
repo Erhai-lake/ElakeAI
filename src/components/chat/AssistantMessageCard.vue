@@ -206,10 +206,7 @@ export default {
          */
         setupZoom(container) {
             const SVG = container.querySelector("svg:not(.icon)")
-            if (!SVG || !document.body.contains(SVG)) {
-                console.warn("SVG元素未附加到DOM")
-                return
-            }
+            if (!SVG || !document.body.contains(SVG)) return
             // 初始化 panzoom
             const INSTANCE = panzoom(SVG)
             // 向上移动按钮点击事件
