@@ -68,6 +68,12 @@ export default {
 </template>
 
 <style scoped lang="less">
+@media screen and (max-width: 768px) {
+    .MessageInfo {
+        display: none;
+    }
+}
+
 .MessageCard {
     position: relative;
     padding: 16px 20px;

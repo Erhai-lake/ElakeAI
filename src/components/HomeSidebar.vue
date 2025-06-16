@@ -65,7 +65,7 @@ export default defineComponent({
                 for (const ITEM of CHAT_LIST) {
                     GROUPED_CHATS = GROUPED_CHATS || []
                     let timestamp = ITEM.timestamp
-                    if ( ITEM.data.length > 0) {
+                    if (ITEM.data.length > 0) {
                         timestamp = ITEM.data[ITEM.data.length - 1].timestamp
                     }
                     GROUPED_CHATS.push({
@@ -211,6 +211,15 @@ export default defineComponent({
     overflow: hidden;
 }
 
+@media screen and (max-width: 768px) {
+    .SidebarExpandContainer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+    }
+}
+
 .SidebarContainer {
     height: 100%;
     background-color: var(--sidebar-expand-container-background-color);
@@ -303,7 +312,7 @@ export default defineComponent({
             align-items: center;
         }
 
-        .ConversationDelete{
+        .ConversationDelete {
             position: absolute;
             top: 0;
             right: 0;

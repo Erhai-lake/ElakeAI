@@ -127,7 +127,7 @@ export default {
     }
 
     .TitleInput {
-        width: 500px;
+        max-width: 500px;
         padding: 8px 12px;
         border: 1px solid var(--border-color);
         border-radius: 4px;
