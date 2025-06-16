@@ -18,6 +18,7 @@ export default {
     },
     data() {
         return {
+            name: "TopTitle",
             title: this.chatTitle || this.$t("components.AIInput.newChat"),
             editingTitle: {
                 show: false,
@@ -58,11 +59,12 @@ export default {
                 const NEW_TITLE = this.editingTitle.value.trim()
                 this.title = NEW_TITLE
                 await this.$DB.Chats.update(this.chatKey, {title: NEW_TITLE})
+                this.$log.info(this.name, "标题更新成功", NEW_TITLE)
                 this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
                 EventBus.emit("[function] chatListGet")
             } catch (error) {
-                console.error("[Chat View] 标题更新错误", error)
-                this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
+                this.$log.error(this.name, "标题更新错误", error)
+                this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
                 this.editingTitle.value = this.title
             } finally {
                 this.editingTitle.show = false
