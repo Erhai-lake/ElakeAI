@@ -11,6 +11,8 @@ import i18n from "@/i18n"
 // Toast 通知
 import toastPlugin from "vue-toast-notification"
 import "vue-toast-notification/dist/theme-bootstrap.css"
+// 日志
+import Logger from "@/services/Logger"
 
 const APP = createApp(app)
 
@@ -22,7 +24,11 @@ const TOAST_OPTIONS = {
 }
 
 // 注册全局组件
-APP.use(store).use(router).use(i18n).use(toastPlugin, TOAST_OPTIONS)
+APP .use(store)
+    .use(router)
+    .use(i18n)
+    .use(toastPlugin, TOAST_OPTIONS)
+    .use(Logger)
 
 // 注册全局变量
 APP.provide('$DB', DB)
