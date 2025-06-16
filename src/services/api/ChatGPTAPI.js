@@ -102,9 +102,6 @@ export default class DeepSeekAPI extends BaseAPI {
      * 终止当前聊天请求
      */
     chatStopStrategy = () => {
-        if (this.abortController) {
-            this.abortController.abort()
-            this.abortController = null
-        }
+        this.chatHandler.abort()
     }
 }

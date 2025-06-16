@@ -53,8 +53,6 @@ export default {
         EventBus.on("[stream] streamStream", this.streamStream)
         // 监听消息流完成
         EventBus.on("[stream] streamComplete", this.streamComplete)
-        // 监听错误
-        EventBus.on("[stream] chatError", this.chatError)
         // 监听消息移除
         EventBus.on("[function] removeMessage", this.removeMessage)
     },
@@ -70,8 +68,6 @@ export default {
         EventBus.off("[stream] streamStream", this.streamStream)
         // 移除消息流完成监听
         EventBus.off("[stream] streamComplete", this.streamComplete)
-        // 移除错误监听
-        EventBus.off("[stream] chatError", this.chatError)
         // 移除消息移除监听
         EventBus.off("[function] removeMessage", this.removeMessage)
     },
@@ -274,12 +270,6 @@ export default {
             if (this.scroll.isAtBottom) {
                 this.scrollToUpAndDownMessages("bottom")
             }
-        },
-        /**
-         * 错误处理
-         */
-        async chatError() {
-            this.data.data.pop()
         },
         /**
          * 移除消息

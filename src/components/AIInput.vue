@@ -335,7 +335,6 @@ export default defineComponent({
                     model: this.selector.selectedModel.title,
                 })
                 if (RESPONSE.error) {
-                    EventBus.emit("[stream] chatError")
                     this.ChatInput = CONTENT
                     await this.$nextTick(() => {
                         this.adjustTextareaHeight()
@@ -343,7 +342,6 @@ export default defineComponent({
                     this.$toast.warning(this.$t(`api.${RESPONSE.error}`))
                 }
             } catch (error) {
-                EventBus.emit("[stream] chatError")
                 this.ChatInput = CONTENT
                 await this.$nextTick(() => {
                     this.adjustTextareaHeight()

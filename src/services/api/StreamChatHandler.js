@@ -3,7 +3,7 @@ export default class StreamChatHandler {
      * 初始化StreamChatHandler
      * @param {string} platform - 平台名称
      * @param eventBus - 事件总线
-     * @param {DB} db - 数据库实例
+     * @param {Dexie} db - 数据库实例
      */
     constructor(platform, eventBus, db) {
         this.platform = platform
@@ -85,13 +85,11 @@ export default class StreamChatHandler {
                         assistantMessage = UPDATED_MESSAGES.assistantMessage
                         streamMessage = UPDATED_MESSAGES.streamMessage
                     } catch (error) {
-                        this.eventBus.emit("[stream] chatError")
                         return this.response(params, null, "streamingDataParsingError")
                     }
                 }
             }
         } catch (error) {
-            this.eventBus.emit("[stream] chatError")
             return this.response(params, null, "streamError")
         }
     }
