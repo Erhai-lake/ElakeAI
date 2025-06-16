@@ -138,6 +138,10 @@
             "players": "Players"
         },
         "AssistantMessageCard": {
+            "toast": {
+                "copied": "复制成功",
+                "copyFailed": "复制失败"
+            },
             "copyButton": "Copy",
             "reasoning": "Reasoning"
         }
@@ -149,8 +153,6 @@
                 "getChatLogError": "Failed to get chat history",
                 "mermaidRenderingError": "Mermaid rendering error",
                 "mermaidInitializationError": "Mermaid initialization error",
-                "copied": "Copied successfully",
-                "copyFailed": "Copy failed",
                 "titleUpdated": "Title updated successfully",
                 "titleUpdateError": "Failed to update title",
                 "removeMessageError": "Failed to remove message"

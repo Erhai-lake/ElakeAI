@@ -275,10 +275,10 @@ export default {
         copyCode(code) {
             navigator.clipboard.writeText(code).then(() => {
                 this.$log.info(this.name, "复制成功", code)
-                this.$toast.success(`[${this.name}] ${this.$t("views.ChatView.toast.copied")}`)
+                this.$toast.success(`[${this.name}] ${this.$t("views.AssistantMessageCard.toast.copied")}`)
             }).catch((error) => {
                 this.$log.error(this.name, "复制失败", error)
-                this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.copyFailed")}`)
+                this.$toast.error(`[${this.name}] ${this.$t("views.AssistantMessageCard.toast.copyFailed")}`)
             })
         },
         /**
