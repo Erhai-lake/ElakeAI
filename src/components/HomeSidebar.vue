@@ -30,7 +30,6 @@ export default defineComponent({
     async created() {
         if (!this.route.params.key) return
         const CHAT_DATA = await this.$DB.Chats.get(this.route.params.key)
-        console.log("CHAT_DATA", CHAT_DATA)
     },
     methods: {
         /**
