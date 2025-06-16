@@ -24,11 +24,6 @@ export default {
             required: true
         }
     },
-    data() {
-        return {
-            reasoning: false
-        }
-    },
     mounted() {
         // 监听复制事件
         this.$el.addEventListener("click", (e) => {
@@ -314,7 +309,7 @@ export default {
 
 <template>
     <div class="MessageCard">
-        <FoldingPanel class="ReasoningContent" v-if="message.message.reasoning" :is="reasoning">
+        <FoldingPanel class="ReasoningContent" v-if="message.message.reasoning">
             <template #Title>
                 <span class="ReasoningTitle">{{ $t("components.AssistantMessageCard.reasoning") }}</span>
             </template>
