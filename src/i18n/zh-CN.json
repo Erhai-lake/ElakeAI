@@ -1,178 +1,184 @@
 {
-    "api": {
-        "unsupportedPlatform": "不支持的平台",
-        "unsupportedCallPolicy": "不支持的调用策略",
-        "requestTimeout": "请求超时",
-        "badRequest": "错误的请求",
-        "networkError": "网络错误",
-        "getError": "获取错误",
-        "noResponse": "无响应",
-        "unknownError": "未知错误",
-        "keyDoesNotExist": "Key不存在",
-        "getKeyError": "获取Key错误",
-        "serverBusy": "服务器繁忙",
-        "httpError": "HTTP错误",
-        "noResponseBody": "无响应体",
-        "streamingDataParsingError": "流式数据解析错误",
-        "streamError": "流错误",
-        "requestCancelled": "请求已取消",
-        "invalidResponse": "无效的响应",
-        "requestFailed": "请求失败"
-    },
-    "components": {
-        "AIInput": {
-            "inputTip": "请输入您的问题",
-            "newChat": "新建对话",
-            "toast": {
-                "loadKeyPoolError": "加载Key池错误",
-                "loadModelError": "加载模型错误",
-                "getDefaultSettingsError": "获取默认设置错误",
-                "sendMessageError": "发送消息错误",
-                "createNewChatError": "创建新对话错误",
-                "stopError": "停止消息错误"
-            },
-            "function": {
-                "appendix": "附录",
-                "webSearch": "联网搜索",
-                "send": "发送",
-                "stop": "停止"
-            },
-            "appendix": {
-                "close": "关闭",
-                "camera": "相机",
-                "picture": "照片",
-                "file": "文件"
-            }
-        },
-        "ChatAIKey": {
-            "title": "API Key池",
-            "operationButton": {
-                "add": "添加",
-                "remove": "移除{count}个Key",
-                "edit": "编辑",
-                "enable": "启用{count}个Key",
-                "disable": "禁用{count}个Key"
-            },
-            "toast": {
-                "loadKeyPoolError": "加载Key池错误",
-                "errorKeyDisabled": "{remark} 已禁用",
-                "errorObtainingKeyBalance": "获取Key余额错误",
-                "keyNull": "Key不能为空",
-                "remarkNull": "备注不能为空",
-                "invalidUrl": "无效的URL",
-                "addKeySuccess": "添加Key成功",
-                "addKeyError": "添加Key错误",
-                "selectKeysOperate": "请选择要操作的Key",
-                "removeKeySuccess": "移除Key成功",
-                "removeKeysError": "移除Keys错误",
-                "selectAKey": "您只能同时选择一个Key",
-                "getKeyError": "获取Key错误",
-                "editKeySuccess": "编辑Key成功",
-                "editKeyError": "编辑Key错误",
-                "enableSuccess": "启用Key成功",
-                "disableSuccess": "禁用Key成功",
-                "batchEnableSuccess": "批量启用Key成功",
-                "batchDisableSuccess": "批量禁用Key成功",
-                "statusUpdateError": "状态更新错误"
-            },
-            "form": {
-                "enable": "启用",
-                "key": "Key",
-                "pleaseEnterKey": "请输入Key",
-                "remarks": "备注",
-                "pleaseEnterKeyRemarks": "请输入Key备注",
-                "url": "URL",
-                "pleaseEnterKeyUrl": "请输入API镜像站Url(默认为官方)",
-                "save": "保存",
-                "cancel": "取消",
-                "balance": "余额"
-            },
-            "addTip": "请点击上方添加Key"
-        },
-        "DefaultChatSettings": {
-            "toast": {
-                "getDefaultSettingsError": "获取默认设置错误",
-                "loadKeyPoolError": "加载Key池错误",
-                "loadModelError": "加载模型错误",
-                "saveSettingsError": "保存设置错误"
-            },
-            "restoreSettings": "恢复设置",
-            "saveSettings": "保存设置"
-        },
-        "Selector": {
-            "loading": "加载中..."
-        },
-        "HomeSidebar": {
-            "toast": {
-                "errorGettingChatList": "获取聊天列表错误",
-                "successDeletingChatList": "删除聊天列表成功",
-                "errorDeletingChatList": "删除聊天列表错误"
-            },
-            "function": {
-                "new": "新建对话",
-                "stow": "折叠边栏",
-                "expand": "展开边栏",
-                "preset": "预设",
-                "options": "设置",
-                "delete": "删除对话"
-            },
-            "numberOfConversations": "{num} 条对话"
-        },
-        "LanguageSelect": {
-            "toast": {
-                "getLanguageError": "获取语言错误",
-                "applicationLanguageError": "应用语言错误"
-            }
-        },
-        "ThemeSwitch": {
-            "toast": {
-                "getThemeError": "获取主题错误",
-                "applicationThemeError": "应用主题错误"
-            },
-            "light": "白昼",
-            "dark": "深夜",
-            "system": "系统"
-        },
-        "UserMessageCard": {
-            "earthOnline": "地球Online",
-            "players": "玩家"
-        },
-        "AssistantMessageCard": {
-            "toast": {
-                "copied": "复制成功",
-                "copyFailed": "复制失败"
-            },
-            "copyButton": "复制",
-            "reasoning": "推理"
-        }
-    },
-    "views": {
-        "ChatView": {
-            "toast": {
-                "noChatKey": "聊天不存在",
-                "getChatLogError": "获取聊天记录错误",
-                "mermaidRenderingError": "Mermaid渲染错误",
-                "mermaidInitializationError": "Mermaid初始化错误",
-                "titleUpdated": "标题更新成功",
-                "titleUpdateError": "标题更新错误",
-                "removeMessageError": "移除消息错误"
-            },
-            "FunctionalControls": {
-                "scrollToTopMessages": "返回顶部",
-                "scrollToUpMessages": "上一条",
-                "scrollToDownMessages": "下一条",
-                "scrollToBottomMessages": "返回底部",
-                "showInputBox": "显示输入框",
-                "hideInputBox": "隐藏输入框"
-            },
-            "aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
-        },
-        "OptionsView": {
-            "personalization": "个性化",
-            "theme": "主题",
-            "language": "语言",
-            "chats": "对话",
-            "defaultChatSettings": "默认对话设置"
-        }
-    }
+	"app": {
+		"IEDetected": "你还在用IE {version}? 你在开玩笑吗?! 你将无法使用 ElakeAI 的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!",
+		"indexedDBNotSupported": "很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该 ElakeAI 的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!",
+		"iDBTransactionNotSupported": "很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该 ElakeAI 的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!",
+		"configInitializationError": "配置初始化错误"
+	},
+	"api": {
+		"unsupportedPlatform": "不支持的平台",
+		"unsupportedCallPolicy": "不支持的调用策略",
+		"requestTimeout": "请求超时",
+		"badRequest": "错误的请求",
+		"networkError": "网络错误",
+		"getError": "获取错误",
+		"noResponse": "无响应",
+		"unknownError": "未知错误",
+		"keyDoesNotExist": "Key不存在",
+		"getKeyError": "获取Key错误",
+		"serverBusy": "服务器繁忙",
+		"httpError": "HTTP错误",
+		"noResponseBody": "无响应体",
+		"streamingDataParsingError": "流式数据解析错误",
+		"streamError": "流错误",
+		"requestCancelled": "请求已取消",
+		"invalidResponse": "无效的响应",
+		"requestFailed": "请求失败"
+	},
+	"components": {
+		"AIInput": {
+			"inputTip": "请输入您的问题",
+			"newChat": "新建对话",
+			"toast": {
+				"loadKeyPoolError": "加载Key池错误",
+				"loadModelError": "加载模型错误",
+				"getDefaultSettingsError": "获取默认设置错误",
+				"sendMessageError": "发送消息错误",
+				"createNewChatError": "创建新对话错误",
+				"stopError": "停止消息错误"
+			},
+			"function": {
+				"appendix": "附录",
+				"webSearch": "联网搜索",
+				"send": "发送",
+				"stop": "停止"
+			},
+			"appendix": {
+				"close": "关闭",
+				"camera": "相机",
+				"picture": "照片",
+				"file": "文件"
+			}
+		},
+		"ChatAIKey": {
+			"title": "API Key池",
+			"operationButton": {
+				"add": "添加",
+				"remove": "移除{count}个Key",
+				"edit": "编辑",
+				"enable": "启用{count}个Key",
+				"disable": "禁用{count}个Key"
+			},
+			"toast": {
+				"loadKeyPoolError": "加载Key池错误",
+				"errorKeyDisabled": "{remark} 已禁用",
+				"errorObtainingKeyBalance": "获取Key余额错误",
+				"keyNull": "Key不能为空",
+				"remarkNull": "备注不能为空",
+				"invalidUrl": "无效的URL",
+				"addKeySuccess": "添加Key成功",
+				"addKeyError": "添加Key错误",
+				"selectKeysOperate": "请选择要操作的Key",
+				"removeKeySuccess": "移除Key成功",
+				"removeKeysError": "移除Keys错误",
+				"selectAKey": "您只能同时选择一个Key",
+				"getKeyError": "获取Key错误",
+				"editKeySuccess": "编辑Key成功",
+				"editKeyError": "编辑Key错误",
+				"enableSuccess": "启用Key成功",
+				"disableSuccess": "禁用Key成功",
+				"batchEnableSuccess": "批量启用Key成功",
+				"batchDisableSuccess": "批量禁用Key成功",
+				"statusUpdateError": "状态更新错误"
+			},
+			"form": {
+				"enable": "启用",
+				"key": "Key",
+				"pleaseEnterKey": "请输入Key",
+				"remarks": "备注",
+				"pleaseEnterKeyRemarks": "请输入Key备注",
+				"url": "URL",
+				"pleaseEnterKeyUrl": "请输入API镜像站Url(默认为官方)",
+				"save": "保存",
+				"cancel": "取消",
+				"balance": "余额"
+			},
+			"addTip": "请点击上方添加Key"
+		},
+		"DefaultChatSettings": {
+			"toast": {
+				"getDefaultSettingsError": "获取默认设置错误",
+				"loadKeyPoolError": "加载Key池错误",
+				"loadModelError": "加载模型错误",
+				"saveSettingsError": "保存设置错误"
+			},
+			"restoreSettings": "恢复设置",
+			"saveSettings": "保存设置"
+		},
+		"Selector": {
+			"loading": "加载中..."
+		},
+		"HomeSidebar": {
+			"toast": {
+				"errorGettingChatList": "获取聊天列表错误",
+				"successDeletingChatList": "删除聊天列表成功",
+				"errorDeletingChatList": "删除聊天列表错误"
+			},
+			"function": {
+				"new": "新建对话",
+				"stow": "折叠边栏",
+				"expand": "展开边栏",
+				"preset": "预设",
+				"options": "设置",
+				"delete": "删除对话"
+			},
+			"numberOfConversations": "{num} 条对话"
+		},
+		"LanguageSelect": {
+			"toast": {
+				"getLanguageError": "获取语言错误",
+				"applicationLanguageError": "应用语言错误"
+			}
+		},
+		"ThemeSwitch": {
+			"toast": {
+				"getThemeError": "获取主题错误",
+				"applicationThemeError": "应用主题错误"
+			},
+			"light": "白昼",
+			"dark": "深夜",
+			"system": "系统"
+		},
+		"UserMessageCard": {
+			"earthOnline": "地球Online",
+			"players": "玩家"
+		},
+		"AssistantMessageCard": {
+			"toast": {
+				"copied": "复制成功",
+				"copyFailed": "复制失败"
+			},
+			"copyButton": "复制",
+			"reasoning": "推理"
+		}
+	},
+	"views": {
+		"ChatView": {
+			"toast": {
+				"noChatKey": "聊天不存在",
+				"getChatLogError": "获取聊天记录错误",
+				"mermaidRenderingError": "Mermaid渲染错误",
+				"mermaidInitializationError": "Mermaid初始化错误",
+				"titleUpdated": "标题更新成功",
+				"titleUpdateError": "标题更新错误",
+				"removeMessageError": "移除消息错误"
+			},
+			"FunctionalControls": {
+				"scrollToTopMessages": "返回顶部",
+				"scrollToUpMessages": "上一条",
+				"scrollToDownMessages": "下一条",
+				"scrollToBottomMessages": "返回底部",
+				"showInputBox": "显示输入框",
+				"hideInputBox": "隐藏输入框"
+			},
+			"aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
+		},
+		"OptionsView": {
+			"personalization": "个性化",
+			"theme": "主题",
+			"language": "语言",
+			"chats": "对话",
+			"defaultChatSettings": "默认对话设置"
+		}
+	}
 }

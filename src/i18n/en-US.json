@@ -1,178 +1,184 @@
 {
-    "api": {
-        "unsupportedPlatform": "Unsupported platform",
-        "unsupportedCallPolicy": "Unsupported call policy",
-        "requestTimeout": "Timeout",
-        "badRequest": "Bad request",
-        "networkError": "Network error",
-        "getError": "Fetch error",
-        "noResponse": "No response",
-        "unknownError": "Unknown error",
-        "keyDoesNotExist": "Invalid API key",
-        "getKeyError": "Key fetch failed",
-        "serverBusy": "Server busy",
-        "httpError": "HTTP error",
-        "noResponseBody": "Empty response",
-        "streamingDataParsingError": "Stream parse error",
-        "streamError": "Stream error",
-        "requestCancelled": "Cancelled",
-        "invalidResponse": "Invalid response",
-        "requestFailed": "Request failed"
-    },
-    "components": {
-        "AIInput": {
-            "inputTip": "Enter your question",
-            "newChat": "New Chat",
-            "toast": {
-                "loadKeyPoolError": "Failed to load Key Pool",
-                "loadModelError": "Failed to load models",
-                "getDefaultSettingsError": "Failed to get default settings",
-                "sendMessageError": "Failed to send message",
-                "createNewChatError": "Failed to create new chat",
-                "stopError": "Failed to stop message"
-            },
-            "function": {
-                "appendix": "Attach",
-                "webSearch": "Web Search",
-                "send": "Send",
-                "stop": "Stop"
-            },
-            "appendix": {
-                "close": "Close",
-                "camera": "Camera",
-                "picture": "Photo",
-                "file": "File"
-            }
-        },
-        "ChatAIKey": {
-            "title": "API Key Pool",
-            "operationButton": {
-                "add": "Add",
-                "remove": "Remove {count} keys",
-                "edit": "Edit",
-                "enable": "Enable {count} keys",
-                "disable": "Disable {count} keys"
-            },
-            "toast": {
-                "loadKeyPoolError": "Failed to load Key Pool",
-                "errorKeyDisabled": "{remark} is disabled",
-                "errorObtainingKeyBalance": "Failed to get key balance",
-                "keyNull": "API Key cannot be empty",
-                "remarkNull": "Remarks cannot be empty",
-                "invalidUrl": "Invalid URL",
-                "addKeySuccess": "API Key added successfully",
-                "addKeyError": "Failed to add API Key",
-                "selectKeysOperate": "Please select keys to operate",
-                "removeKeySuccess": "Key(s) removed successfully",
-                "removeKeysError": "Failed to remove keys",
-                "selectAKey": "Please select only one key",
-                "getKeyError": "Failed to retrieve key",
-                "editKeySuccess": "Key edited successfully",
-                "editKeyError": "Failed to edit key",
-                "enableSuccess": "Key enabled successfully",
-                "disableSuccess": "Key disabled successfully",
-                "batchEnableSuccess": "Batch enable successful",
-                "batchDisableSuccess": "Batch disable successful",
-                "statusUpdateError": "Status update failed"
-            },
-            "form": {
-                "enable": "Enabled",
-                "key": "Key",
-                "pleaseEnterKey": "Enter API key",
-                "remarks": "Remarks",
-                "pleaseEnterKeyRemarks": "Enter remarks (required)",
-                "url": "URL",
-                "pleaseEnterKeyUrl": "Enter API mirror URL (default: official)",
-                "save": "Save",
-                "cancel": "Cancel",
-                "balance": "Balance"
-            },
-            "addTip": "Click above to add a key"
-        },
-        "DefaultChatSettings": {
-            "toast": {
-                "getDefaultSettingsError": "Failed to get default settings",
-                "loadKeyPoolError": "Failed to load Key Pool",
-                "loadModelError": "Failed to load models",
-                "saveSettingsError": "Failed to save settings"
-            },
-            "restoreSettings": "Restore Default Settings",
-            "saveSettings": "Save Settings"
-        },
-        "HomeSidebar": {
-            "toast": {
-                "errorGettingChatList": "Failed to get chat list",
-                "successDeletingChatList": "Chat list deleted successfully",
-                "errorDeletingChatList": "Failed to delete chat list"
-            },
-            "function": {
-                "new": "New Chat",
-                "stow": "Collapse sidebar",
-                "expand": "Expand sidebar",
-                "preset": "Presets",
-                "options": "Settings",
-                "delete": "Delete chat"
-            },
-            "numberOfConversations": "{num} messages"
-        },
-        "Selector": {
-            "loading": "Loading..."
-        },
-        "LanguageSelect": {
-            "toast": {
-                "getLanguageError": "Failed to get language",
-                "applicationLanguageError": "Failed to apply language"
-            }
-        },
-        "ThemeSwitch": {
-            "toast": {
-                "getThemeError": "Failed to get theme",
-                "applicationThemeError": "Failed to apply theme"
-            },
-            "light": "Light",
-            "dark": "Dark",
-            "system": "System"
-        },
-        "UserMessageCard": {
-            "earthOnline": "Earth Online",
-            "players": "Players"
-        },
-        "AssistantMessageCard": {
-            "toast": {
-                "copied": "复制成功",
-                "copyFailed": "复制失败"
-            },
-            "copyButton": "Copy",
-            "reasoning": "Reasoning"
-        }
-    },
-    "views": {
-        "ChatView": {
-            "toast": {
-                "noChatKey": "Chat does not exist",
-                "getChatLogError": "Failed to get chat history",
-                "mermaidRenderingError": "Mermaid rendering error",
-                "mermaidInitializationError": "Mermaid initialization error",
-                "titleUpdated": "Title updated successfully",
-                "titleUpdateError": "Failed to update title",
-                "removeMessageError": "Failed to remove message"
-            },
-            "FunctionalControls": {
-                "scrollToTopMessages": "Jump to top",
-                "scrollToUpMessages": "Previous message",
-                "scrollToDownMessages": "Next message",
-                "scrollToBottomMessages": "Jump to bottom",
-                "showInputBox": "Show input box",
-                "hideInputBox": "Hide input box"
-            },
-            "aiDisclaimer": "AI-generated content. Please verify accuracy"
-        },
-        "Options": {
-            "personalization": "Personalization",
-            "theme": "Theme",
-            "language": "Language",
-            "chats": "Chats",
-            "defaultChatSettings": "Default Chat Settings"
-        }
-    }
+	"app": {
+		"IEDetected": "Are you still using IE {version}? Are you kidding?! You will not be able to use all the features of the ElakeAI! Please use Chrome, Firefox, Edge and other modern browsers! Please understand!",
+		"indexedDBNotSupported": "Sorry, your browser does not support 'IndexedDB', will not be able to use the full functionality of the ElakeAI! Please use Chrome, Firefox, Edge and other modern browsers! Please understand!",
+		"iDBTransactionNotSupported": "Sorry, your browser does not support 'IDBTransaction', will not be able to use the full functionality of the ElakeAI! Please use Chrome, Firefox, Edge and other modern browsers! Please understand!",
+		"configInitializationError": "Configuration initialization error"
+	},
+	"api": {
+		"unsupportedPlatform": "Unsupported platform",
+		"unsupportedCallPolicy": "Unsupported call policy",
+		"requestTimeout": "Timeout",
+		"badRequest": "Bad request",
+		"networkError": "Network error",
+		"getError": "Fetch error",
+		"noResponse": "No response",
+		"unknownError": "Unknown error",
+		"keyDoesNotExist": "Invalid API key",
+		"getKeyError": "Key fetch failed",
+		"serverBusy": "Server busy",
+		"httpError": "HTTP error",
+		"noResponseBody": "Empty response",
+		"streamingDataParsingError": "Stream parse error",
+		"streamError": "Stream error",
+		"requestCancelled": "Cancelled",
+		"invalidResponse": "Invalid response",
+		"requestFailed": "Request failed"
+	},
+	"components": {
+		"AIInput": {
+			"inputTip": "Enter your question",
+			"newChat": "New Chat",
+			"toast": {
+				"loadKeyPoolError": "Failed to load Key Pool",
+				"loadModelError": "Failed to load models",
+				"getDefaultSettingsError": "Failed to get default settings",
+				"sendMessageError": "Failed to send message",
+				"createNewChatError": "Failed to create new chat",
+				"stopError": "Failed to stop message"
+			},
+			"function": {
+				"appendix": "Attach",
+				"webSearch": "Web Search",
+				"send": "Send",
+				"stop": "Stop"
+			},
+			"appendix": {
+				"close": "Close",
+				"camera": "Camera",
+				"picture": "Photo",
+				"file": "File"
+			}
+		},
+		"ChatAIKey": {
+			"title": "API Key Pool",
+			"operationButton": {
+				"add": "Add",
+				"remove": "Remove {count} keys",
+				"edit": "Edit",
+				"enable": "Enable {count} keys",
+				"disable": "Disable {count} keys"
+			},
+			"toast": {
+				"loadKeyPoolError": "Failed to load Key Pool",
+				"errorKeyDisabled": "{remark} is disabled",
+				"errorObtainingKeyBalance": "Failed to get key balance",
+				"keyNull": "API Key cannot be empty",
+				"remarkNull": "Remarks cannot be empty",
+				"invalidUrl": "Invalid URL",
+				"addKeySuccess": "API Key added successfully",
+				"addKeyError": "Failed to add API Key",
+				"selectKeysOperate": "Please select keys to operate",
+				"removeKeySuccess": "Key(s) removed successfully",
+				"removeKeysError": "Failed to remove keys",
+				"selectAKey": "Please select only one key",
+				"getKeyError": "Failed to retrieve key",
+				"editKeySuccess": "Key edited successfully",
+				"editKeyError": "Failed to edit key",
+				"enableSuccess": "Key enabled successfully",
+				"disableSuccess": "Key disabled successfully",
+				"batchEnableSuccess": "Batch enable successful",
+				"batchDisableSuccess": "Batch disable successful",
+				"statusUpdateError": "Status update failed"
+			},
+			"form": {
+				"enable": "Enabled",
+				"key": "Key",
+				"pleaseEnterKey": "Enter API key",
+				"remarks": "Remarks",
+				"pleaseEnterKeyRemarks": "Enter remarks (required)",
+				"url": "URL",
+				"pleaseEnterKeyUrl": "Enter API mirror URL (default: official)",
+				"save": "Save",
+				"cancel": "Cancel",
+				"balance": "Balance"
+			},
+			"addTip": "Click above to add a key"
+		},
+		"DefaultChatSettings": {
+			"toast": {
+				"getDefaultSettingsError": "Failed to get default settings",
+				"loadKeyPoolError": "Failed to load Key Pool",
+				"loadModelError": "Failed to load models",
+				"saveSettingsError": "Failed to save settings"
+			},
+			"restoreSettings": "Restore Default Settings",
+			"saveSettings": "Save Settings"
+		},
+		"HomeSidebar": {
+			"toast": {
+				"errorGettingChatList": "Failed to get chat list",
+				"successDeletingChatList": "Chat list deleted successfully",
+				"errorDeletingChatList": "Failed to delete chat list"
+			},
+			"function": {
+				"new": "New Chat",
+				"stow": "Collapse sidebar",
+				"expand": "Expand sidebar",
+				"preset": "Presets",
+				"options": "Settings",
+				"delete": "Delete chat"
+			},
+			"numberOfConversations": "{num} messages"
+		},
+		"Selector": {
+			"loading": "Loading..."
+		},
+		"LanguageSelect": {
+			"toast": {
+				"getLanguageError": "Failed to get language",
+				"applicationLanguageError": "Failed to apply language"
+			}
+		},
+		"ThemeSwitch": {
+			"toast": {
+				"getThemeError": "Failed to get theme",
+				"applicationThemeError": "Failed to apply theme"
+			},
+			"light": "Light",
+			"dark": "Dark",
+			"system": "System"
+		},
+		"UserMessageCard": {
+			"earthOnline": "Earth Online",
+			"players": "Players"
+		},
+		"AssistantMessageCard": {
+			"toast": {
+				"copied": "复制成功",
+				"copyFailed": "复制失败"
+			},
+			"copyButton": "Copy",
+			"reasoning": "Reasoning"
+		}
+	},
+	"views": {
+		"ChatView": {
+			"toast": {
+				"noChatKey": "Chat does not exist",
+				"getChatLogError": "Failed to get chat history",
+				"mermaidRenderingError": "Mermaid rendering error",
+				"mermaidInitializationError": "Mermaid initialization error",
+				"titleUpdated": "Title updated successfully",
+				"titleUpdateError": "Failed to update title",
+				"removeMessageError": "Failed to remove message"
+			},
+			"FunctionalControls": {
+				"scrollToTopMessages": "Jump to top",
+				"scrollToUpMessages": "Previous message",
+				"scrollToDownMessages": "Next message",
+				"scrollToBottomMessages": "Jump to bottom",
+				"showInputBox": "Show input box",
+				"hideInputBox": "Hide input box"
+			},
+			"aiDisclaimer": "AI-generated content. Please verify accuracy"
+		},
+		"Options": {
+			"personalization": "Personalization",
+			"theme": "Theme",
+			"language": "Language",
+			"chats": "Chats",
+			"defaultChatSettings": "Default Chat Settings"
+		}
+	}
 }
