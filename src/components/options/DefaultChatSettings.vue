@@ -116,7 +116,7 @@ export default {
                 }
             } catch (error) {
                 if (!requestContext.cancelled) {
-                    this.$log.error(this.name, "加载Key池错误", error)
+                    this.$log.error(`[${this.name}] 加载Key池失败`, error)
                     this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
                 }
             } finally {
@@ -147,7 +147,7 @@ export default {
                 }
             } catch (error) {
                 if (!requestContext.cancelled) {
-                    this.$log.error(this.name, "加载模型错误", error)
+                    this.$log.error(`[${this.name}] 加载模型失败`, error)
                     this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.loadModelError")}`)
                 }
             } finally {
@@ -180,7 +180,7 @@ export default {
             const KEY_DATA = await this.$DB.APIKeys.get(key)
             const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
             if (RESPONSE.error) {
-                this.$log.error(this.name, "获取Key的模型错误", RESPONSE.error)
+                this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE.error)
                 this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
             }
             const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
@@ -214,7 +214,7 @@ export default {
                     this.selectedKey = this.keyPools[0]
                 }
             } catch (error) {
-                this.$log.error(this.name, "加载Key池错误", error)
+                this.$log.error(`[${this.name}] 加载Key池失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
             }
         },
@@ -237,7 +237,7 @@ export default {
                     this.saved = false
                 }
             } catch (error) {
-                this.$log.error(this.name, "默认设置获取错误", error)
+                this.$log.error(`[${this.name}] 默认设置获取失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.getDefaultSettingsError")}`)
             }
         },
@@ -269,7 +269,7 @@ export default {
                     })
                 }
             } catch (error) {
-                this.$log.error(this.name, "保存设置错误", error)
+                this.$log.error(`[${this.name}] 保存设置失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.saveSettingsError")}`)
             }
         }

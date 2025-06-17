@@ -16,20 +16,20 @@ export default {
         // if (process.env.NODE_ENV === "development") {
         //     eruda.init()
         // }
-        this.$log.info(this.name, "环境信息", this.getEnvInfo())
+        this.$log.info(`[${this.name}] 环境信息`, this.getEnvInfo())
         const VERSION = this.getIEVersion()
         if (VERSION) {
-            this.$log.error(this.name, "检测到IE浏览器", VERSION)
+            this.$log.error(`[${this.name}] 检测到IE浏览器`, VERSION)
             this.$toast.error(`[${this.name}] ${this.$t("app.IEDetected", {version: VERSION})}`)
         }
         // 检查浏览器是否支持 IndexedDB
         if (!"indexedDB" in window) {
-            this.$log.error(this.name, "浏览器不支持'IndexedDB'")
+            this.$log.error(`[${this.name}] 浏览器不支持'IndexedDB'`)
             this.$toast.error(`[${this.name}] ${this.$t("app.indexedDBNotSupported")}`)
         }
         // 检查浏览器是否支持 IDBTransaction
         if (!"IDBTransaction" in window) {
-            this.$log.error(this.name, "浏览器不支持'IDBTransaction'")
+            this.$log.error(`[${this.name}] 浏览器不支持'IDBTransaction'`)
             this.$toast.error(`[${this.name}] ${this.$t("app.iDBTransactionNotSupported")}`)
         }
         await this.configInitialization()
@@ -114,7 +114,7 @@ export default {
                 const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
                 this.$i18n.locale = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
             } catch (error) {
-                this.$log.error(this.name, "配置初始化错误", error)
+                this.$log.error(`[${this.name}] 配置初始化失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("app.configInitializationError")}`)
             }
         }

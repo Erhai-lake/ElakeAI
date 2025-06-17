@@ -31,7 +31,7 @@ export default {
             }
             this.$i18n.locale = this.selectedLang.code
         } catch (error) {
-            this.$log.error(this.name, "语言获取错误", error)
+            this.$log.error(`[${this.name}] 语言获取失败`, error)
             this.$toast.error(`[${this.name}] ${this.$t("components.LanguageSelect.toast.getLanguageError")}`)
         }
     },
@@ -65,7 +65,7 @@ export default {
                     })
                 }
             } catch (error) {
-                this.$log.error(this.name, "语言应用错误", error)
+                this.$log.error(`[${this.name}] 语言应用失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.LanguageSelect.toast.applicationLanguageError")}`)
             }
         }

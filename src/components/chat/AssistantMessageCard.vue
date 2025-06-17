@@ -65,7 +65,7 @@ export default {
                             const COPY_BUTTON_LANG = this.$t("components.AssistantMessageCard.copyButton")
                             return `<div class="hljs language-${lang}"><button class="codecopy-btn" data-code="${encodeURIComponent(str)}">${COPY_BUTTON_LANG}</button><pre><code>${HIGHLIGHTED}</code></pre></div>`
                         } catch (error) {
-                            this.$log.error(this.name, "代码高亮渲染错误", error)
+                            this.$log.error(`[${this.name}] 代码高亮渲染失败`, error)
                         }
                     } else if (lang === "mermaid") {
                         // 初始化Mermaid
@@ -73,7 +73,7 @@ export default {
                         try {
                             return `<div class="mermaid">${str}</div>`
                         } catch (error) {
-                            this.$log.error(this.name, "mermaid渲染错误", error)
+                            this.$log.error(`[${this.name}] mermaid渲染失败`, error)
                         }
                     }
                     return `<pre class="hljs"><code>${MD.utils.escapeHtml(str)}</code></pre>`
@@ -122,7 +122,7 @@ export default {
                         theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"
                     })
                 } catch (error) {
-                    this.$log.error(this.name, "mermaid主题初始化错误", error)
+                    this.$log.error(`[${this.name}] mermaid主题初始化失败`, error)
                 }
                 requestAnimationFrame(async () => {
                     const ELEMENTS = document.querySelectorAll(".mermaid:not([data-rendered])")
@@ -202,13 +202,13 @@ export default {
                             // 处理 SVG 和缩放
                             this.setupZoom(CONTAINER)
                         } catch (error) {
-                            this.$log.error(this.name, "mermaid渲染错误", error)
-                            ELEMENT.innerHTML = `<div class="mermaid-error">流程图渲染失败</div>`
+                            this.$log.error(`[${this.name}] mermaid渲染失败`, error)
+                            ELEMENT.innerHTML = `<div class="mermaid-error">mermaid渲染失败</div>`
                         }
                     }
                 })
             } catch (error) {
-                this.$log.error(this.name, "mermaid初始化错误", error)
+                this.$log.error(`[${this.name}] mermaid初始化失败`, error)
             }
         },
         /**
@@ -276,7 +276,7 @@ export default {
             navigator.clipboard.writeText(code).then(() => {
                 this.$toast.success(`[${this.name}] ${this.$t("views.AssistantMessageCard.toast.copied")}`)
             }).catch((error) => {
-                this.$log.error(this.name, "复制失败", error)
+                this.$log.error(`[${this.name}] 复制失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("views.AssistantMessageCard.toast.copyFailed")}`)
             })
         },

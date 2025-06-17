@@ -161,7 +161,7 @@ export default defineComponent({
                 }
             } catch (error) {
                 if (!requestContext.cancelled) {
-                    this.$log.error(this.name, "加载Key池错误", error)
+                    this.$log.error(`[${this.name}] 加载Key池错误`, error)
                     this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
                 }
             } finally {
@@ -192,7 +192,7 @@ export default defineComponent({
                 }
             } catch (error) {
                 if (!requestContext.cancelled) {
-                    this.$log.error(this.name, "加载模型错误", error)
+                    this.$log.error(`[${this.name}] 加载模型失败`, error)
                     this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.loadModelError")}`)
                 }
             } finally {
@@ -256,7 +256,7 @@ export default defineComponent({
                     this.selector.selectedKey = this.selector.keyPools[0]
                 }
             } catch (error) {
-                this.$log.error(this.name, "加载Key池错误", error)
+                this.$log.error(`[${this.name}] 加载Key池失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
             }
         },
@@ -279,7 +279,7 @@ export default defineComponent({
                     this.selector.saved = false
                 }
             } catch (error) {
-                this.$log.error(this.name, "默认设置获取错误", error)
+                this.$log.error(`[${this.name}] 默认设置获取失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.getDefaultSettingsError")}`)
             }
         },
@@ -321,7 +321,7 @@ export default defineComponent({
                     await this.$nextTick(() => {
                         this.adjustTextareaHeight()
                     })
-                    this.$log.error(this.name, "创建新聊天错误", error)
+                    this.$log.error(`[${this.name}] 创建新聊天失败`, error)
                     this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.createNewChatError")}`)
                 }
             }
@@ -340,7 +340,7 @@ export default defineComponent({
                     await this.$nextTick(() => {
                         this.adjustTextareaHeight()
                     })
-                    this.$log.error(this.name, "发送消息错误", error)
+                    this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE.error)
                     this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
                 }
             } catch (error) {
@@ -348,7 +348,7 @@ export default defineComponent({
                 await this.$nextTick(() => {
                     this.adjustTextareaHeight()
                 })
-                this.$log.error(this.name, "发送消息错误", error)
+                this.$log.error(`[${this.name}] 发送消息失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.sendMessageError")}`)
             } finally {
                 this.stopStatus = false
@@ -369,7 +369,7 @@ export default defineComponent({
                 this.stopStatus = false
             } catch (error) {
                 this.stopStatus = true
-                this.$log.error(this.name, "停止错误", error)
+                this.$log.error(`[${this.name}] 停止失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.stopError")}`)
             }
         },

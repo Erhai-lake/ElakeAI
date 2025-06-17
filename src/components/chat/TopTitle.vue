@@ -62,7 +62,7 @@ export default {
                 this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
                 EventBus.emit("[function] chatListGet")
             } catch (error) {
-                this.$log.error(this.name, "标题更新错误", error)
+                this.$log.error(`[${this.name}] 标题更新失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
                 this.editingTitle.value = this.title
             } finally {

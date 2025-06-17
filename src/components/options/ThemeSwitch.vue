@@ -21,7 +21,7 @@ export default defineComponent({
             const THEME_DATA = await this.$DB.Configs.get("Theme")
             this.Theme = THEME_DATA ? THEME_DATA.value : "System"
         } catch (error) {
-            this.$log.error(this.name, "主题获取错误", error)
+            this.$log.error(`[${this.name}] 主题获取失败`, error)
             this.$toast.error(`[${this.name}] ${this.$t("components.ThemeSwitch.toast.getThemeError")}`)
         }
     },
@@ -52,7 +52,7 @@ export default defineComponent({
                     })
                 }
             } catch (error) {
-                this.$log.error(this.name, "主题应用错误", error)
+                this.$log.error(`[${this.name}] 主题应用失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ThemeSwitch.toast.applicationThemeError")}`)
             }
         }

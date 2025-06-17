@@ -74,7 +74,7 @@ export default defineComponent({
                 // 按时间排序
                 this.chatList = GROUPED_CHATS.sort((a, b) => b.timestamp - a.timestamp)
             } catch (error) {
-                this.$log.error(this.name, "聊天列表获取错误", error)
+                this.$log.error(`[${this.name}] 聊天列表获取失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
             }
         },
@@ -113,7 +113,7 @@ export default defineComponent({
                     this.$router.push("/")
                 }
             } catch (error) {
-                this.$log.error(this.name, "聊天列表删除错误", error)
+                this.$log.error(`[${this.name}] 聊天列表删除失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.HomeSidebar.toast.errorDeletingChatList")}`)
             }
         }

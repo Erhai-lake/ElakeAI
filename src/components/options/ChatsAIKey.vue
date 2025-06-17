@@ -99,7 +99,7 @@ export default {
                     }
                 }
             } catch (error) {
-                this.$log.error(this.name, "加载Key池错误", error)
+                this.$log.error(`[${this.name}] 加载Key池失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.loadKeyPoolError")}`)
             }
         },
@@ -113,16 +113,16 @@ export default {
                 const KEY_DATA = await this.$DB.APIKeys.get(key)
                 const RESPONSE = await APIManager.execute(KEY_DATA.model, "balance", {apiKey: key})
                 if (RESPONSE.error) {
-                    this.$log.error(this.name, "获取Key余额错误", RESPONSE)
+                    this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE.error)
                     this.$toast.error(this.$t(`api.${RESPONSE.error}`))
-                    this.$log.warn(this.name, "禁用Key", KEY_DATA.remark)
+                    this.$log.warn(`[${this.name}] 禁用Key: ${KEY_DATA.remark}`)
                     this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {remark: KEY_DATA.remark}))
                     await this.$DB.APIKeys.update(RESPONSE.traceability.apiKey, {enabled: false})
                     return false
                 }
                 return RESPONSE.data
             } catch (error) {
-                this.$log.error(this.name, "获取Key余额错误", error)
+                this.$log.error(`[${this.name}] 获取Key余额失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.errorObtainingKeyBalance")}`)
             }
         },
@@ -132,13 +132,13 @@ export default {
         async addNewKey() {
             // 禁止key空
             if (!this.newKey.value) {
-                this.$log.warn(this.name, "新建key", "key为空")
+                this.$log.warn(`[${this.name}] 新建Key时Key为空`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.keyNull")}`)
                 return
             }
             // 禁止备注为空
             if (!this.newKey.remark) {
-                this.$log.warn(this.name, "新建key", "备注为空")
+                this.$log.warn(`[${this.name}] 新建Key时备注为空`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.remarkNull")}`)
                 return
             }
@@ -148,7 +148,7 @@ export default {
             }
             // 校验url
             if (!this.isValidUrl(this.newKey.url)) {
-                this.$log.warn(this.name, "新建key", "URL校验失败")
+                this.$log.warn(`[${this.name}] 新建Key时URL校验失败`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.invalidUrl")}`)
                 return
             }
@@ -173,7 +173,7 @@ export default {
                 this.status.addFormStatus = false
                 this.$toast.success(this.$t("components.ChatAIKey.toast.addKeySuccess"))
             } catch (error) {
-                this.$log.error(this.name, "添加Key错误", error)
+                this.$log.error(`[${this.name}] 添加Key失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.addKeyError")}`)
             }
         },
@@ -194,7 +194,7 @@ export default {
         async removeSelectedKeys() {
             // 禁止空删除
             if (!this.operationSelection || this.operationSelection.length === 0) {
-                this.$log.warn(this.name, "删除Key", "未选中任何key")
+                this.$log.warn(`[${this.name}] 删除Key时未选中任何Key`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.selectKeysOperate")}`)
                 return
             }
@@ -207,7 +207,7 @@ export default {
                 this.operationSelection = []
                 this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.removeKeySuccess")}`)
             } catch (error) {
-                this.$log.error(this.name, "移除Keys错误", error)
+                this.$log.error(`[${this.name}] 移除Keys失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.removeKeysError")}`)
             }
         },
@@ -218,13 +218,13 @@ export default {
         async toggleEditSelected() {
             // 禁止空编辑
             if (!this.operationSelection || this.operationSelection.length === 0) {
-                this.$log.warn(this.name, "编辑Key", "未选中任何key")
+                this.$log.warn(`[${this.name}] 编辑Key时未选中任何Key`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.selectKeysOperate")}`)
                 return
             }
             // 禁止多选编辑
             if (this.operationSelection.length > 1) {
-                this.$log.warn(this.name, "编辑Key", "选中了过多的key")
+                this.$log.warn(`[${this.name}] 编辑Key时选中了过多的key`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.selectAKey")}`)
                 return
             }
@@ -239,7 +239,7 @@ export default {
                 }
                 this.status.editFormStatus = !this.status.editFormStatus
             } catch (error) {
-                this.$log.error(this.name, "获取Key错误", error)
+                this.$log.error(`[${this.name}] 获取Key失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.getKeyError")}`)
             }
         },
@@ -250,13 +250,13 @@ export default {
         async editSelectedKeys() {
             // 禁止空编辑
             if (!this.editKey.value) {
-                this.$log.warn(this.name, "编辑Key", "key为空")
+                this.$log.warn(`[${this.name}] 编辑Key时选Key为空`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.keyNull")}`)
                 return
             }
             // 禁止备注为空
             if (!this.editKey.remark) {
-                this.$log.warn(this.name, "编辑Key", "备注为空")
+                this.$log.warn(`[${this.name}] 编辑Key时备注为空`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.remarkNull")}`)
                 return
             }
@@ -266,7 +266,7 @@ export default {
             }
             // 校验url
             if (!this.isValidUrl(this.editKey.url)) {
-                this.$log.warn(this.name, "编辑Key", "URL校验失败")
+                this.$log.warn(`[${this.name}] 删除Key时URL校验失败`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.invalidUrl")}`)
                 return
             }
@@ -299,7 +299,7 @@ export default {
                 this.status.editFormStatus = false
                 this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.editKeySuccess")}`)
             } catch (error) {
-                this.$log.error(this.name, "编辑Key错误", error)
+                this.$log.error(`[${this.name}] 编辑Key失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.editKeyError")}`)
             }
         },
@@ -338,7 +338,7 @@ export default {
                 }
                 this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
             } catch (error) {
-                this.$log.error(this.name, "状态更新错误", error)
+                this.$log.error(`[${this.name}] 状态更新失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)
             }
         },
@@ -349,7 +349,7 @@ export default {
          */
         async batchToggleEnable(status) {
             if (!this.operationSelection || this.operationSelection.length === 0) {
-                this.$log.warn(this.name, "切换Key启用状态", "未选中任何key")
+                this.$log.warn(`[${this.name}] 切换Key启用状态时未选中任何key`)
                 this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.selectKeysOperate")}`)
                 return
             }
@@ -383,7 +383,7 @@ export default {
                 this.keyPools = UPDATED_POOLS
                 this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
             } catch (error) {
-                this.$log.error(this.name, "状态更新失败", error)
+                this.$log.error(`[${this.name}] 状态更新失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)
             }
         },
