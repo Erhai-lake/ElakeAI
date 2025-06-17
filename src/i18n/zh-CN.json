@@ -1,9 +1,9 @@
 {
 	"app": {
-		"IEDetected": "你还在用IE {version}? 你在开玩笑吗?! 你将无法使用 ElakeAI 的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!",
-		"indexedDBNotSupported": "很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该 ElakeAI 的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!",
-		"iDBTransactionNotSupported": "很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该 ElakeAI 的全部功能! 请使用Chrome, Firefox, Edge等现代浏览器! 请谅解!",
-		"configInitializationError": "配置初始化错误"
+		"IEDetected": "你还在用IE {version}? 真是滑天下之大稽, 如果你确定要用IE的话你将无法使用 ElakeAI 的部分功能! 请使用Google Chrome, Mozilla Firefox或Microsoft Edge等现代浏览器! 请谅解!",
+		"indexedDBNotSupported": "很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该 ElakeAI 的部分功能! 请使用请使用Google Chrome, Firefox或Microsoft Edge等现代浏览器! 请谅解!",
+		"iDBTransactionNotSupported": "很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该 ElakeAI 的部分功能! 请使用请使用Google Chrome, Firefox或Microsoft Edge等现代浏览器! 请谅解!",
+		"configInitializationError": "配置初始化失败"
 	},
 	"api": {
 		"unsupportedPlatform": "不支持的平台",
@@ -11,15 +11,15 @@
 		"requestTimeout": "请求超时",
 		"badRequest": "错误的请求",
 		"networkError": "网络错误",
-		"getError": "获取错误",
+		"getError": "获取失败",
 		"noResponse": "无响应",
-		"unknownError": "未知错误",
+		"unknownError": "未知报错",
 		"keyDoesNotExist": "Key不存在",
-		"getKeyError": "获取Key错误",
+		"getKeyError": "获取Key失败",
 		"serverBusy": "服务器繁忙",
 		"httpError": "HTTP错误",
 		"noResponseBody": "无响应体",
-		"streamingDataParsingError": "流式数据解析错误",
+		"streamingDataParsingError": "流式数据解析失败",
 		"streamError": "流错误",
 		"requestCancelled": "请求已取消",
 		"invalidResponse": "无效的响应",
@@ -30,12 +30,12 @@
 			"inputTip": "请输入您的问题",
 			"newChat": "新建对话",
 			"toast": {
-				"loadKeyPoolError": "加载Key池错误",
-				"loadModelError": "加载模型错误",
-				"getDefaultSettingsError": "获取默认设置错误",
-				"sendMessageError": "发送消息错误",
-				"createNewChatError": "创建新对话错误",
-				"stopError": "停止消息错误"
+				"loadKeyPoolError": "加载Key池失败",
+				"loadModelError": "加载模型失败",
+				"getDefaultSettingsError": "获取默认设置失败",
+				"sendMessageError": "发送消息失败",
+				"createNewChatError": "创建新对话失败",
+				"stopError": "停止消息失败"
 			},
 			"function": {
 				"appendix": "附录",
@@ -60,26 +60,26 @@
 				"disable": "禁用{count}个Key"
 			},
 			"toast": {
-				"loadKeyPoolError": "加载Key池错误",
+				"loadKeyPoolError": "加载Key池失败",
 				"errorKeyDisabled": "{remark} 已禁用",
-				"errorObtainingKeyBalance": "获取Key余额错误",
+				"errorObtainingKeyBalance": "获取Key余额失败",
 				"keyNull": "Key不能为空",
 				"remarkNull": "备注不能为空",
 				"invalidUrl": "无效的URL",
 				"addKeySuccess": "添加Key成功",
-				"addKeyError": "添加Key错误",
+				"addKeyError": "添加Key失败",
 				"selectKeysOperate": "请选择要操作的Key",
 				"removeKeySuccess": "移除Key成功",
-				"removeKeysError": "移除Keys错误",
+				"removeKeysError": "移除Keys失败",
 				"selectAKey": "您只能同时选择一个Key",
-				"getKeyError": "获取Key错误",
+				"getKeyError": "获取Key失败",
 				"editKeySuccess": "编辑Key成功",
-				"editKeyError": "编辑Key错误",
+				"editKeyError": "编辑Key失败",
 				"enableSuccess": "启用Key成功",
 				"disableSuccess": "禁用Key成功",
 				"batchEnableSuccess": "批量启用Key成功",
 				"batchDisableSuccess": "批量禁用Key成功",
-				"statusUpdateError": "状态更新错误"
+				"statusUpdateError": "状态更新失败"
 			},
 			"form": {
 				"enable": "启用",
@@ -88,7 +88,7 @@
 				"remarks": "备注",
 				"pleaseEnterKeyRemarks": "请输入Key备注",
 				"url": "URL",
-				"pleaseEnterKeyUrl": "请输入API镜像站Url(默认为官方)",
+				"pleaseEnterKeyUrl": "请输入API镜像站URL(默认为官方)",
 				"save": "保存",
 				"cancel": "取消",
 				"balance": "余额"
@@ -97,10 +97,10 @@
 		},
 		"DefaultChatSettings": {
 			"toast": {
-				"getDefaultSettingsError": "获取默认设置错误",
-				"loadKeyPoolError": "加载Key池错误",
-				"loadModelError": "加载模型错误",
-				"saveSettingsError": "保存设置错误"
+				"getDefaultSettingsError": "获取默认设置失败",
+				"loadKeyPoolError": "加载Key池失败",
+				"loadModelError": "加载模型失败",
+				"saveSettingsError": "保存设置失败"
 			},
 			"restoreSettings": "恢复设置",
 			"saveSettings": "保存设置"
@@ -110,9 +110,9 @@
 		},
 		"HomeSidebar": {
 			"toast": {
-				"errorGettingChatList": "获取聊天列表错误",
+				"errorGettingChatList": "获取聊天列表失败",
 				"successDeletingChatList": "删除聊天列表成功",
-				"errorDeletingChatList": "删除聊天列表错误"
+				"errorDeletingChatList": "删除聊天列表失败"
 			},
 			"function": {
 				"new": "新建对话",
@@ -126,14 +126,14 @@
 		},
 		"LanguageSelect": {
 			"toast": {
-				"getLanguageError": "获取语言错误",
-				"applicationLanguageError": "应用语言错误"
+				"getLanguageError": "获取语言失败",
+				"applicationLanguageError": "应用语言失败"
 			}
 		},
 		"ThemeSwitch": {
 			"toast": {
-				"getThemeError": "获取主题错误",
-				"applicationThemeError": "应用主题错误"
+				"getThemeError": "获取主题失败",
+				"applicationThemeError": "应用主题失败"
 			},
 			"light": "白昼",
 			"dark": "深夜",
@@ -156,12 +156,12 @@
 		"ChatView": {
 			"toast": {
 				"noChatKey": "聊天不存在",
-				"getChatLogError": "获取聊天记录错误",
-				"mermaidRenderingError": "Mermaid渲染错误",
-				"mermaidInitializationError": "Mermaid初始化错误",
+				"getChatLogError": "获取聊天记录失败",
+				"mermaidRenderingError": "Mermaid渲染失败",
+				"mermaidInitializationError": "Mermaid初始化失败",
 				"titleUpdated": "标题更新成功",
-				"titleUpdateError": "标题更新错误",
-				"removeMessageError": "移除消息错误"
+				"titleUpdateError": "标题更新失败",
+				"removeMessageError": "移除消息失败"
 			},
 			"FunctionalControls": {
 				"scrollToTopMessages": "返回顶部",

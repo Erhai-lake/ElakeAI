@@ -1,44 +1,44 @@
 {
 	"app": {
-		"IEDetected": "Are you still using IE {version}? Are you kidding?! You will not be able to use all the features of the ElakeAI! Please use Chrome, Firefox, Edge and other modern browsers! Please understand!",
-		"indexedDBNotSupported": "Sorry, your browser does not support 'IndexedDB', will not be able to use the full functionality of the ElakeAI! Please use Chrome, Firefox, Edge and other modern browsers! Please understand!",
-		"iDBTransactionNotSupported": "Sorry, your browser does not support 'IDBTransaction', will not be able to use the full functionality of the ElakeAI! Please use Chrome, Firefox, Edge and other modern browsers! Please understand!",
-		"configInitializationError": "Configuration initialization error"
+		"IEDetected": "You're still using IE {version}? That's quite surprising! If you insist on using Internet Explorer, some features of ElakeAI may not work properly. Please use a modern browser like Google Chrome, Mozilla Firefox, or Microsoft Edge. Thank you for your understanding!",
+		"indexedDBNotSupported": "Sorry, your browser does not support 'IndexedDB', which means some features of ElakeAI will not be available. Please use a modern browser like Google Chrome, Firefox, or Microsoft Edge. Thank you for your understanding!",
+		"iDBTransactionNotSupported": "Sorry, your browser does not support 'IDBTransaction', which means some features of ElakeAI will not be available. Please use a modern browser like Google Chrome, Firefox, or Microsoft Edge. Thank you for your understanding!",
+		"configInitializationError": "Failed to initialize configuration"
 	},
 	"api": {
 		"unsupportedPlatform": "Unsupported platform",
 		"unsupportedCallPolicy": "Unsupported call policy",
-		"requestTimeout": "Timeout",
+		"requestTimeout": "Request timed out",
 		"badRequest": "Bad request",
 		"networkError": "Network error",
-		"getError": "Fetch error",
+		"getError": "Failed to retrieve",
 		"noResponse": "No response",
 		"unknownError": "Unknown error",
-		"keyDoesNotExist": "Invalid API key",
-		"getKeyError": "Key fetch failed",
-		"serverBusy": "Server busy",
+		"keyDoesNotExist": "Key does not exist",
+		"getKeyError": "Failed to retrieve key",
+		"serverBusy": "Server is busy",
 		"httpError": "HTTP error",
-		"noResponseBody": "Empty response",
-		"streamingDataParsingError": "Stream parse error",
-		"streamError": "Stream error",
-		"requestCancelled": "Cancelled",
+		"noResponseBody": "No response body",
+		"streamingDataParsingError": "Failed to parse streaming data",
+		"streamError": "Streaming error",
+		"requestCancelled": "Request cancelled",
 		"invalidResponse": "Invalid response",
 		"requestFailed": "Request failed"
 	},
 	"components": {
 		"AIInput": {
-			"inputTip": "Enter your question",
+			"inputTip": "Please enter your question",
 			"newChat": "New Chat",
 			"toast": {
-				"loadKeyPoolError": "Failed to load Key Pool",
-				"loadModelError": "Failed to load models",
+				"loadKeyPoolError": "Failed to load key pool",
+				"loadModelError": "Failed to load model",
 				"getDefaultSettingsError": "Failed to get default settings",
 				"sendMessageError": "Failed to send message",
 				"createNewChatError": "Failed to create new chat",
 				"stopError": "Failed to stop message"
 			},
 			"function": {
-				"appendix": "Attach",
+				"appendix": "Appendix",
 				"webSearch": "Web Search",
 				"send": "Send",
 				"stop": "Stop"
@@ -46,7 +46,7 @@
 			"appendix": {
 				"close": "Close",
 				"camera": "Camera",
-				"picture": "Photo",
+				"picture": "Picture",
 				"file": "File"
 			}
 		},
@@ -54,41 +54,41 @@
 			"title": "API Key Pool",
 			"operationButton": {
 				"add": "Add",
-				"remove": "Remove {count} keys",
+				"remove": "Remove {count} Keys",
 				"edit": "Edit",
-				"enable": "Enable {count} keys",
-				"disable": "Disable {count} keys"
+				"enable": "Enable {count} Keys",
+				"disable": "Disable {count} Keys"
 			},
 			"toast": {
-				"loadKeyPoolError": "Failed to load Key Pool",
-				"errorKeyDisabled": "{remark} is disabled",
+				"loadKeyPoolError": "Failed to load key pool",
+				"errorKeyDisabled": "{remark} has been disabled",
 				"errorObtainingKeyBalance": "Failed to get key balance",
-				"keyNull": "API Key cannot be empty",
-				"remarkNull": "Remarks cannot be empty",
+				"keyNull": "Key cannot be empty",
+				"remarkNull": "Remark cannot be empty",
 				"invalidUrl": "Invalid URL",
-				"addKeySuccess": "API Key added successfully",
-				"addKeyError": "Failed to add API Key",
-				"selectKeysOperate": "Please select keys to operate",
-				"removeKeySuccess": "Key(s) removed successfully",
+				"addKeySuccess": "Key added successfully",
+				"addKeyError": "Failed to add key",
+				"selectKeysOperate": "Please select the keys to operate",
+				"removeKeySuccess": "Key removed successfully",
 				"removeKeysError": "Failed to remove keys",
-				"selectAKey": "Please select only one key",
+				"selectAKey": "You can only select one key at a time",
 				"getKeyError": "Failed to retrieve key",
 				"editKeySuccess": "Key edited successfully",
 				"editKeyError": "Failed to edit key",
 				"enableSuccess": "Key enabled successfully",
 				"disableSuccess": "Key disabled successfully",
-				"batchEnableSuccess": "Batch enable successful",
-				"batchDisableSuccess": "Batch disable successful",
-				"statusUpdateError": "Status update failed"
+				"batchEnableSuccess": "Keys enabled in batch successfully",
+				"batchDisableSuccess": "Keys disabled in batch successfully",
+				"statusUpdateError": "Failed to update status"
 			},
 			"form": {
-				"enable": "Enabled",
+				"enable": "Enable",
 				"key": "Key",
-				"pleaseEnterKey": "Enter API key",
+				"pleaseEnterKey": "Please enter the key",
 				"remarks": "Remarks",
-				"pleaseEnterKeyRemarks": "Enter remarks (required)",
+				"pleaseEnterKeyRemarks": "Please enter remarks for the key",
 				"url": "URL",
-				"pleaseEnterKeyUrl": "Enter API mirror URL (default: official)",
+				"pleaseEnterKeyUrl": "Please enter the API mirror URL (defaults to official)",
 				"save": "Save",
 				"cancel": "Cancel",
 				"balance": "Balance"
@@ -98,35 +98,35 @@
 		"DefaultChatSettings": {
 			"toast": {
 				"getDefaultSettingsError": "Failed to get default settings",
-				"loadKeyPoolError": "Failed to load Key Pool",
-				"loadModelError": "Failed to load models",
+				"loadKeyPoolError": "Failed to load key pool",
+				"loadModelError": "Failed to load model",
 				"saveSettingsError": "Failed to save settings"
 			},
-			"restoreSettings": "Restore Default Settings",
+			"restoreSettings": "Restore Settings",
 			"saveSettings": "Save Settings"
+		},
+		"Selector": {
+			"loading": "Loading..."
 		},
 		"HomeSidebar": {
 			"toast": {
-				"errorGettingChatList": "Failed to get chat list",
+				"errorGettingChatList": "Failed to retrieve chat list",
 				"successDeletingChatList": "Chat list deleted successfully",
 				"errorDeletingChatList": "Failed to delete chat list"
 			},
 			"function": {
 				"new": "New Chat",
-				"stow": "Collapse sidebar",
-				"expand": "Expand sidebar",
+				"stow": "Collapse Sidebar",
+				"expand": "Expand Sidebar",
 				"preset": "Presets",
 				"options": "Settings",
-				"delete": "Delete chat"
+				"delete": "Delete Chat"
 			},
-			"numberOfConversations": "{num} messages"
-		},
-		"Selector": {
-			"loading": "Loading..."
+			"numberOfConversations": "{num} conversations"
 		},
 		"LanguageSelect": {
 			"toast": {
-				"getLanguageError": "Failed to get language",
+				"getLanguageError": "Failed to get language list",
 				"applicationLanguageError": "Failed to apply language"
 			}
 		},
@@ -145,8 +145,8 @@
 		},
 		"AssistantMessageCard": {
 			"toast": {
-				"copied": "复制成功",
-				"copyFailed": "复制失败"
+				"copied": "Copied successfully",
+				"copyFailed": "Failed to copy"
 			},
 			"copyButton": "Copy",
 			"reasoning": "Reasoning"
@@ -156,24 +156,24 @@
 		"ChatView": {
 			"toast": {
 				"noChatKey": "Chat does not exist",
-				"getChatLogError": "Failed to get chat history",
-				"mermaidRenderingError": "Mermaid rendering error",
-				"mermaidInitializationError": "Mermaid initialization error",
+				"getChatLogError": "Failed to retrieve chat history",
+				"mermaidRenderingError": "Mermaid rendering failed",
+				"mermaidInitializationError": "Mermaid initialization failed",
 				"titleUpdated": "Title updated successfully",
 				"titleUpdateError": "Failed to update title",
 				"removeMessageError": "Failed to remove message"
 			},
 			"FunctionalControls": {
-				"scrollToTopMessages": "Jump to top",
-				"scrollToUpMessages": "Previous message",
-				"scrollToDownMessages": "Next message",
-				"scrollToBottomMessages": "Jump to bottom",
-				"showInputBox": "Show input box",
-				"hideInputBox": "Hide input box"
+				"scrollToTopMessages": "Scroll to Top",
+				"scrollToUpMessages": "Previous",
+				"scrollToDownMessages": "Next",
+				"scrollToBottomMessages": "Scroll to Bottom",
+				"showInputBox": "Show Input Box",
+				"hideInputBox": "Hide Input Box"
 			},
-			"aiDisclaimer": "AI-generated content. Please verify accuracy"
+			"aiDisclaimer": "This content is AI-generated. Please verify carefully."
 		},
-		"Options": {
+		"OptionsView": {
 			"personalization": "Personalization",
 			"theme": "Theme",
 			"language": "Language",
