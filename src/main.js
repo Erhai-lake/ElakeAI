@@ -12,7 +12,7 @@ import i18n from "@/i18n"
 import toastPlugin from "vue-toast-notification"
 import "vue-toast-notification/dist/theme-bootstrap.css"
 // 日志
-import Logger from "@/services/Logger"
+import VueLogger from "vuejs3-logger"
 
 const APP = createApp(app)
 
@@ -23,12 +23,22 @@ const TOAST_OPTIONS = {
     dismissible: false
 }
 
+const LOGGER_OPTIONS = {
+    isEnabled: true,
+    logLevel: process.env.NODE_ENV === "production" ? "error" : "debug",
+    stringifyArguments: false,
+    showLogLevel: true,
+    showMethodName: false,
+    separator: "|",
+    showConsoleColors: true
+}
+
 // 注册全局组件
 APP .use(store)
     .use(router)
     .use(i18n)
     .use(toastPlugin, TOAST_OPTIONS)
-    .use(Logger)
+    .use(VueLogger, LOGGER_OPTIONS)
 
 // 注册全局变量
 APP.provide('$DB', DB)
