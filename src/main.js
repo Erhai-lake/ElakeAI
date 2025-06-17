@@ -34,11 +34,46 @@ const LOGGER_OPTIONS = {
 }
 
 // 注册全局组件
-APP .use(store)
+APP.use(store)
     .use(router)
     .use(i18n)
     .use(toastPlugin, TOAST_OPTIONS)
     .use(VueLogger, LOGGER_OPTIONS)
+
+// 扩展 $log 方法
+APP.config.globalProperties.$log = {
+    debug: (...args) => {
+        console.debug(...args)
+        storeLog("debug", ...args)
+    },
+    info: (...args) => {
+        console.info(...args)
+        storeLog("info", ...args)
+    },
+    warn: (...args) => {
+        console.warn(...args)
+        storeLog("warn", ...args)
+    },
+    error: (...args) => {
+        console.error(...args)
+        storeLog("error", ...args)
+    }
+}
+const storeLog = (level, ...args) => {
+    try {
+        const LOG_ENTRY = {
+            timestamp: new Date().toISOString(),
+            level,
+            message: args.map(m => typeof m === "string" ? m : JSON.stringify(m)).join("|")
+        }
+        const LOGS = JSON.parse(localStorage.getItem("ElakeAILogs") || "[]")
+        const MAX_LOGS = 100
+        const UPDATED_LOGS = [...LOGS, LOG_ENTRY].slice(-MAX_LOGS)
+        localStorage.setItem("ElakeAILogs", JSON.stringify(UPDATED_LOGS))
+    } catch (e) {
+        console.error("日志存储失败:", e)
+    }
+}
 
 // 注册全局变量
 APP.provide('$DB', DB)
