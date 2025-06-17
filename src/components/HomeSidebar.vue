@@ -8,6 +8,7 @@ export default defineComponent({
     inject: ["$DB"],
     data() {
         return {
+            name: "HomeSidebar",
             route: useRoute(),
             sidebarStatus: 1,
             chatList: []
@@ -26,10 +27,6 @@ export default defineComponent({
     beforeUnmount() {
         // 移除更新列表事件监听
         EventBus.off("[function] chatListGet", this.chatListGet)
-    },
-    async created() {
-        if (!this.route.params.key) return
-        const CHAT_DATA = await this.$DB.Chats.get(this.route.params.key)
     },
     methods: {
         /**
@@ -77,8 +74,8 @@ export default defineComponent({
                 // 按时间排序
                 this.chatList = GROUPED_CHATS.sort((a, b) => b.timestamp - a.timestamp)
             } catch (error) {
-                console.error("[Home Sidebar] 聊天列表获取错误", error)
-                this.$toast.error(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
+                this.$log.error(this.name, "聊天列表获取错误", error)
+                this.$toast.error(`[${this.name}] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
             }
         },
         /**
@@ -110,14 +107,14 @@ export default defineComponent({
         async deleteChat(key) {
             try {
                 await this.$DB.Chats.delete(key)
-                this.$toast.success(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.successDeletingChatList")}`)
+                this.$toast.success(`[${this.name}] ${this.$t("components.HomeSidebar.toast.successDeletingChatList")}`)
                 await this.chatListGet()
                 if (this.route.params.key === key) {
                     this.$router.push("/")
                 }
             } catch (error) {
-                console.error("[Home Sidebar] 聊天列表删除错误", error)
-                this.$toast.error(`[Home Sidebar] ${this.$t("components.HomeSidebar.toast.errorDeletingChatList")}`)
+                this.$log.error(this.name, "聊天列表删除错误", error)
+                this.$toast.error(`[${this.name}] ${this.$t("components.HomeSidebar.toast.errorDeletingChatList")}`)
             }
         }
     }
