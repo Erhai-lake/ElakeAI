@@ -8,6 +8,7 @@ export default {
     inject: ["$DB"],
     data() {
         return {
+            name: "LanguageSelect",
             languages: LanguagesList,
             selectedLang: LanguagesList[0]
         }
@@ -30,8 +31,8 @@ export default {
             }
             this.$i18n.locale = this.selectedLang.code
         } catch (error) {
-            console.error("[Language Switch] 语言获取错误", error)
-            this.$toast.error(`[Language Select] ${this.$t("components.LanguageSelect.toast.getLanguageError")}`)
+            this.$log.error(this.name, "语言获取错误", error)
+            this.$toast.error(`[${this.name}] ${this.$t("components.LanguageSelect.toast.getLanguageError")}`)
         }
     },
     methods: {
@@ -64,8 +65,8 @@ export default {
                     })
                 }
             } catch (error) {
-                console.error("[Language Switch] 语言应用错误", error)
-                this.$toast.error(`[Language Select] ${this.$t("components.LanguageSelect.toast.applicationLanguageError")}`)
+                this.$log.error(this.name, "语言应用错误", error)
+                this.$toast.error(`[${this.name}] ${this.$t("components.LanguageSelect.toast.applicationLanguageError")}`)
             }
         }
     }
