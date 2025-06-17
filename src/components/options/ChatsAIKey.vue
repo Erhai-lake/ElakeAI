@@ -98,7 +98,6 @@ export default {
                         item.balance = "NULL"
                     }
                 }
-                this.$log.info(this.name, "加载Key池成功", this.keyPools)
             } catch (error) {
                 this.$log.error(this.name, "加载Key池错误", error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.loadKeyPoolError")}`)
@@ -121,7 +120,6 @@ export default {
                     await this.$DB.APIKeys.update(RESPONSE.traceability.apiKey, {enabled: false})
                     return false
                 }
-                this.$log.info(this.name, "获取Key余额成功", RESPONSE.data)
                 return RESPONSE.data
             } catch (error) {
                 this.$log.error(this.name, "获取Key余额错误", error)
@@ -173,7 +171,6 @@ export default {
                 // 重置表单
                 this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
                 this.status.addFormStatus = false
-                this.$log.info(this.name, "添加Key成功")
                 this.$toast.success(this.$t("components.ChatAIKey.toast.addKeySuccess"))
             } catch (error) {
                 this.$log.error(this.name, "添加Key错误", error)
@@ -208,7 +205,6 @@ export default {
                     !this.operationSelection.includes(item.key)
                 )
                 this.operationSelection = []
-                this.$log.info(this.name, "移除Key成功")
                 this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.removeKeySuccess")}`)
             } catch (error) {
                 this.$log.error(this.name, "移除Keys错误", error)
@@ -242,7 +238,6 @@ export default {
                     url: KEY_DATA.url
                 }
                 this.status.editFormStatus = !this.status.editFormStatus
-                this.$log.info(this.name, "获取Key成功")
             } catch (error) {
                 this.$log.error(this.name, "获取Key错误", error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.getKeyError")}`)
@@ -302,7 +297,6 @@ export default {
                     enabled: true
                 }
                 this.status.editFormStatus = false
-                this.$log.info(this.name, "编辑Key成功")
                 this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.editKeySuccess")}`)
             } catch (error) {
                 this.$log.error(this.name, "编辑Key错误", error)
@@ -342,7 +336,6 @@ export default {
                 } else {
                     keyItem.balance = "NULL"
                 }
-                this.$log.info(this.name, "Key状态更新成功")
                 this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
             } catch (error) {
                 this.$log.error(this.name, "状态更新错误", error)
@@ -388,7 +381,6 @@ export default {
                     }
                 }
                 this.keyPools = UPDATED_POOLS
-                this.$log.info(this.name, "批量Key状态更新成功")
                 this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
             } catch (error) {
                 this.$log.error(this.name, "状态更新失败", error)

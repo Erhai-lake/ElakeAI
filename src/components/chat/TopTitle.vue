@@ -59,7 +59,6 @@ export default {
                 const NEW_TITLE = this.editingTitle.value.trim()
                 this.title = NEW_TITLE
                 await this.$DB.Chats.update(this.chatKey, {title: NEW_TITLE})
-                this.$log.info(this.name, "标题更新成功", NEW_TITLE)
                 this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
                 EventBus.emit("[function] chatListGet")
             } catch (error) {
