@@ -126,6 +126,38 @@ export default {
                 this.$log.error(`[${this.name}] 悬浮窗设置保存失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.saveLogSuspensionWindowError")}`)
             }
+        },
+        /**
+         * 导出日志
+         */
+        exportLogs() {
+            try {
+                // 构造日志内容
+                const LOG_CONTENT = this.logs.map(log => {
+                    return `[${this.formatTimestamp(log.timestamp)}] [${log.level.toUpperCase()}] [${log.component || "Global"}] ${log.message}`;
+                }).join("\n")
+                // 创建Blob对象
+                const BLOB = new Blob([LOG_CONTENT], { type: "text/plain" })
+                // 创建下载链接
+                const DOWNLOAD_URL = URL.createObjectURL(BLOB)
+                const DOWNLOAD_LINK = document.createElement("a")
+                DOWNLOAD_LINK.href = DOWNLOAD_URL
+                // 设置文件名(包含当前时间)
+                const NOW = new Date()
+                DOWNLOAD_LINK.download = `elakeai-logs-${NOW.getFullYear()}${String(NOW.getMonth() + 1).padStart(2, "0")}${String(NOW.getDate()).padStart(2, "0")}-${String(NOW.getHours()).padStart(2, "0")}${String(NOW.getMinutes()).padStart(2, "0")}${String(NOW.getSeconds()).padStart(2, "0")}.log`
+                // 触发下载
+                document.body.appendChild(DOWNLOAD_LINK)
+                DOWNLOAD_LINK.click()
+                // 清理
+                setTimeout(() => {
+                    document.body.removeChild(DOWNLOAD_LINK)
+                    URL.revokeObjectURL(DOWNLOAD_URL)
+                }, 100)
+                this.$toast.success(`[${this.name}] ${this.$t("components.Log.toast.exportSuccess")}`)
+            } catch (error) {
+                this.$log.error(`[${this.name}] 导出日志失败`, error)
+                this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.exportError")}`)
+            }
         }
     }
 }
@@ -137,6 +169,7 @@ export default {
             <span class="LogCount">{{ $t("components.Log.count", {count: logs.length}) }}</span>
             <Button @click="loadLogs">🔄 {{ $t("components.Log.function.load") }}</Button>
             <Button @click="clearLogs">🗑️ {{ $t("components.Log.function.clear") }}</Button>
+            <Button @click="exportLogs">📤 {{ $t("components.Log.function.export") }}</Button>
             <Button @click="keepScrollToBottom">
                 {{ $t("components.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
             </Button>
@@ -148,7 +181,7 @@ export default {
             <div v-for="(log, index) in logs" :key="index" :class="['LogItem', log.level]">
                 <span class="LogTime">{{ formatTimestamp(log.timestamp) }}</span>
                 <span class="LogLevel">[{{ log.level.toUpperCase() || "NULL" }}]</span>
-                <span class="LogComponent">[{{ log.component || "NULL" }}]</span>
+                <span class="LogComponent">[{{ log.component || "Global" }}]</span>
                 <span class="LogMessage">{{ log.message || "NULL" }}</span>
             </div>
             <div v-if="logs.length === 0" class="EmptyTip">{{ $t("components.Log.empty") }}</div>

@@ -156,11 +156,14 @@
 				"getLogSuspensionWindowError": "Failed to get floating window status for logs",
 				"saveLogSuspensionWindowError": "Failed to save floating window status for logs",
 				"loadError": "Failed to load logs",
-				"clearError": "Failed to clear logs"
+				"clearError": "Failed to clear logs",
+				"exportSuccess": "Logs exported successfully",
+				"exportError": "Failed to export logs"
 			},
 			"function": {
 				"load": "Load Logs",
 				"clear": "Clear Logs",
+				"export": "Export Logs",
 				"keepScrollToBottom": "Keep scrolled to bottom {is}",
 				"suspensionWindow": "Floating Window {is}"
 			},
