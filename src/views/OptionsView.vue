@@ -42,8 +42,11 @@ export default {
             </template>
         </FoldingPanel>
         <div class="Container">
-            <router-link :to="{ path: '/debug' }">
+            <router-link :to="{ path: '/options/debug' }">
                 <Button>BeBUG</Button>
+            </router-link>
+            <router-link :to="{ path: '/options/log' }">
+                <Button>Log</Button>
             </router-link>
         </div>
     </div>
@@ -71,5 +74,7 @@ export default {
     border-radius: 10px;
     user-select: none;
     background-color: #b3b3b33f;
+    display: flex;
+    gap: 10px;
 }
 </style>

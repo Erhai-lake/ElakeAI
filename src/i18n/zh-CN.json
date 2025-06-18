@@ -150,6 +150,23 @@
 			},
 			"copyButton": "复制",
 			"reasoning": "推理"
+		},
+		"Log": {
+			"toast": {
+				"getLogSuspensionWindowError": "获取日志悬浮窗状态失败",
+				"saveLogSuspensionWindowError": "保存日志悬浮窗状态失败",
+				"loadError": "加载日志失败",
+				"clearError": "清空日志失败"
+			},
+			"function": {
+				"load": "加载日志",
+				"clear": "清空日志",
+				"keepScrollToBottom": "保持滚动到底部 {is}",
+				"suspensionWindow": "悬浮窗 {is}"
+			},
+			"name": "日志",
+			"count": "共 {count} 条日志",
+			"empty": "暂无日志"
 		}
 	},
 	"views": {

@@ -150,6 +150,23 @@
 			},
 			"copyButton": "Copy",
 			"reasoning": "Reasoning"
+		},
+		"Log": {
+			"toast": {
+				"getLogSuspensionWindowError": "Failed to get floating window status for logs",
+				"saveLogSuspensionWindowError": "Failed to save floating window status for logs",
+				"loadError": "Failed to load logs",
+				"clearError": "Failed to clear logs"
+			},
+			"function": {
+				"load": "Load Logs",
+				"clear": "Clear Logs",
+				"keepScrollToBottom": "Keep scrolled to bottom {is}",
+				"suspensionWindow": "Floating Window {is}"
+			},
+			"name": "Logs",
+			"count": "Total {count} logs",
+			"empty": "No logs available"
 		}
 	},
 	"views": {
