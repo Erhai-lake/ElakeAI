@@ -164,7 +164,6 @@
 				"keepScrollToBottom": "Keep scrolled to bottom {is}",
 				"suspensionWindow": "Floating Window {is}"
 			},
-			"name": "Logs",
 			"count": "Total {count} logs",
 			"empty": "No logs available"
 		}

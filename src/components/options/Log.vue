@@ -134,7 +134,6 @@ export default {
 <template>
     <div class="Log">
         <div class="Header">
-            <h3>{{ $t("components.Log.name") }}</h3>
             <span class="LogCount">{{ $t("components.Log.count", {count: logs.length}) }}</span>
             <Button @click="loadLogs">🔄 {{ $t("components.Log.function.load") }}</Button>
             <Button @click="clearLogs">🗑️ {{ $t("components.Log.function.clear") }}</Button>

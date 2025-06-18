@@ -4,13 +4,14 @@ import ThemeSelect from "@/components/options/ThemeSwitch.vue"
 import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
+import Log from "@/components/options/Log.vue"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 
 export default {
     name: "DeBUGView",
     inject: ["$DB"],
-    components: {DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
+    components: {Log, DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel},
     data() {
         return {
             toastOptions: {
@@ -393,6 +394,12 @@ export default {
                     <Button @click="toastTest(1)">清空</Button>
                     <Button @click="toastTest">提示</Button>
                 </div>
+            </template>
+        </FoldingPanel>
+        <FoldingPanel :Height="600">
+            <template #Title>Log</template>
+            <template #Content>
+                <Log/>
             </template>
         </FoldingPanel>
     </div>
