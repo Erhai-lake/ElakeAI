@@ -119,13 +119,25 @@ export default {
                 const THEME_DATA = await this.$DB.Configs.get("Theme")
                 const THEME = THEME_DATA ? THEME_DATA.value : "System"
                 if (THEME === "System") {
-                    document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
+                    const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
+                    document.documentElement.setAttribute("data-theme", SYSTEM_THEME)
+                    this.$log.info(`[${this.name}] 主题`, SYSTEM_THEME)
                 } else {
                     document.documentElement.setAttribute("data-theme", THEME)
+                    this.$log.info(`[${this.name}] 主题`, THEME)
                 }
+
                 // 应用语言
                 const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
-                this.$i18n.locale = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
+                const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
+                if (LANGUAGE === "System") {
+                    const SYSTEM_LANG = window.navigator.language || "zh-CN"
+                    this.$i18n.locale = SYSTEM_LANG
+                    this.$log.info(`[${this.name}] 语言`, SYSTEM_LANG)
+                } else {
+                    this.$i18n.locale = LANGUAGE
+                    this.$log.info(`[${this.name}] 语言`, LANGUAGE)
+                }
                 // Log悬浮窗
                 const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.Configs.get("LogSuspensionWindow")
                 this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
@@ -169,7 +181,7 @@ export default {
     scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
 }
 
-.IsLog{
+.IsLog {
     position: absolute;
     top: 10px;
     right: 10px;

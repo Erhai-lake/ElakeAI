@@ -23,13 +23,21 @@ export default {
         // 获取语言
         try {
             const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
-            const languages = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
-            this.selectedLang = {
-                code: languages,
-                title: this.languages.find(lang => lang.code === languages).title,
-                images: this.languages.find(lang => lang.code === languages).images
+            const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
+            if (LANGUAGE === "System") {
+                const SYSTEM_LANG = navigator.language || "zh-CN"
+                this.selectedLang = this.languages.find(lang => lang.code === SYSTEM_LANG) ||
+                    this.languages.find(lang => lang.code.startsWith(SYSTEM_LANG.split("-")[0])) ||
+                    this.languages[0]
+                this.$i18n.locale = SYSTEM_LANG
+            } else {
+                this.selectedLang = {
+                    code: LANGUAGE,
+                    title: this.languages.find(lang => lang.code === LANGUAGE).title,
+                    images: this.languages.find(lang => lang.code === LANGUAGE).images
+                }
+                this.$i18n.locale = this.selectedLang.code
             }
-            this.$i18n.locale = this.selectedLang.code
         } catch (error) {
             this.$log.error(`[${this.name}] 语言获取失败`, error)
             this.$toast.error(`[${this.name}] ${this.$t("components.LanguageSelect.toast.getLanguageError")}`)
@@ -51,7 +59,11 @@ export default {
             try {
                 if (!selectLang) return
                 this.selectedLang = selectLang
-                this.$i18n.locale = this.selectedLang.code
+                if (this.selectedLang.code === "System") {
+                    this.$i18n.locale = navigator.language || "zh-CN"
+                } else {
+                    this.$i18n.locale = this.selectedLang.code
+                }
                 // 保存设置
                 if (await this.$DB.Configs.get("Language")) {
                     await this.$DB.Configs.put({

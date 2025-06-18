@@ -1,4 +1,9 @@
 [
+	{
+		"code": "System",
+		"title": "系统",
+		"images": ""
+	},
     {
         "code": "zh-CN",
         "title": "简体中文",
