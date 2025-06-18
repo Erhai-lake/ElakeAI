@@ -73,7 +73,7 @@ export default {
         selectItem(item) {
             if (this.showLoading) return
             this.isOpen = false
-            this.$emit('update:selectorSelected', item)
+            this.$emit("update:selectorSelected", item)
         },
         /**
          * 开始加载
@@ -212,7 +212,7 @@ export default {
     list-style: none;
     border: 1px solid var(--border-color);
     background-color: var(--background-color);
-    z-index: 100;
+    z-index: 10;
     overflow: hidden;
     max-height: 132px;
 
