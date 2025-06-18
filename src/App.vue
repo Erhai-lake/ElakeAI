@@ -1,14 +1,18 @@
 <script>
 import HomeSidebar from "@/components/HomeSidebar.vue"
+import Log from "@/components/options/Log.vue"
+import Button from "@/components/Button.vue"
 // import eruda from "eruda"
 
 export default {
     name: "App",
     inject: ["$DB"],
-    components: {HomeSidebar},
+    components: {Button, Log, HomeSidebar},
     data() {
         return {
-            name: "App"
+            name: "App",
+            isLogSuspensionWindow: false,
+            isLogView: false
         }
     },
     async created() {
@@ -113,6 +117,9 @@ export default {
                 // 应用语言
                 const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
                 this.$i18n.locale = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
+                // Log悬浮窗
+                const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.Configs.get("LogSuspensionWindow")
+                this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
             } catch (error) {
                 this.$log.error(`[${this.name}] 配置初始化失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("app.configInitializationError")}`)
@@ -127,6 +134,10 @@ export default {
     <div class="RouterView">
         <router-view/>
     </div>
+    <Button class="IsLog" v-if="isLogSuspensionWindow" @click="isLogView = !isLogView">Log</Button>
+    <div class="IsLogSuspensionWindow" v-if="isLogView">
+        <Log/>
+    </div>
 </template>
 
 <style lang="less">
@@ -135,11 +146,26 @@ export default {
     grid-template-columns: auto 1fr;
     grid-template-rows: 100vh;
     overflow: hidden;
+}
 
-    .RouterView {
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
-    }
+.RouterView {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+.IsLog{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.IsLogSuspensionWindow {
+    position: absolute;
+    bottom: 0;
+    height: 600px;
+    z-index: 3;
 }
 </style>
