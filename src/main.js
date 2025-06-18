@@ -1,7 +1,8 @@
-import {createApp} from "vue"
+import {createApp, getCurrentInstance} from "vue"
 import app from "@/App.vue"
 import router from "@/router"
 import store from "@/store"
+import EventBus from "@/services/EventBus"
 // 全局样式
 import "@/assets/styles/theme.less"
 // 数据库操作
@@ -61,18 +62,44 @@ APP.config.globalProperties.$log = {
 }
 const storeLog = (level, ...args) => {
     try {
+		const formatMessage = (arg) => {
+			if (arg instanceof Error) {
+				return `Error: ${arg.message}\nStack: ${arg.stack}`
+			}
+			if (typeof arg === "object") {
+				try {
+					return JSON.stringify(arg, null, 2)
+				} catch {
+					return "[Circular Object]"
+				}
+			}
+			return String(arg)
+		}
+
         const LOG_ENTRY = {
-            timestamp: new Date().toISOString(),
+            timestamp: Date.now(),
             level,
-            message: args.map(m => typeof m === "string" ? m : JSON.stringify(m)).join("|")
+			message: args.map(formatMessage).join(" "),
+			component: getCurrentComponentName()
         }
         const LOGS = JSON.parse(localStorage.getItem("ElakeAILogs") || "[]")
         const MAX_LOGS = 100
         const UPDATED_LOGS = [...LOGS, LOG_ENTRY].slice(-MAX_LOGS)
+        EventBus.emit("[function] log", LOG_ENTRY)
         localStorage.setItem("ElakeAILogs", JSON.stringify(UPDATED_LOGS))
     } catch (e) {
         console.error("日志存储失败:", e)
     }
+}
+
+// 获取当前组件名
+const getCurrentComponentName = () => {
+	try {
+		const instance = getCurrentInstance()
+		return instance?.type.__name || instance?.type.name || "Global"
+	} catch {
+		return "Global"
+	}
 }
 
 // 注册全局变量
