@@ -10,7 +10,7 @@ export default {
         return {
             name: "LanguageSelect",
             languages: LanguagesList,
-            selectedLang: LanguagesList[0]
+            selectedLang: null
         }
     },
     watch: {
@@ -23,20 +23,11 @@ export default {
         // 获取语言
         try {
             const LANGUAGE_DATA = await this.$DB.configs.get("Language")
-            const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
-            if (LANGUAGE === "System") {
-                const SYSTEM_LANG = navigator.language || "zh-CN"
-                this.selectedLang = this.languages.find(lang => lang.code === SYSTEM_LANG) ||
-                    this.languages.find(lang => lang.code.startsWith(SYSTEM_LANG.split("-")[0])) ||
-                    this.languages[0]
-                this.$i18n.locale = SYSTEM_LANG
-            } else {
-                this.selectedLang = {
-                    code: LANGUAGE,
-                    title: this.languages.find(lang => lang.code === LANGUAGE).title,
-                    images: this.languages.find(lang => lang.code === LANGUAGE).images
-                }
-                this.$i18n.locale = this.selectedLang.code
+            const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
+            this.selectedLang = {
+                code: LANGUAGE,
+                title: this.languages.find(lang => lang.code === LANGUAGE).title,
+                images: this.languages.find(lang => lang.code === LANGUAGE).images
             }
         } catch (error) {
             this.$log.error(`[${this.name}] 语言获取失败`, error)
@@ -58,13 +49,11 @@ export default {
         async selectLanguage(selectLang) {
             try {
                 if (!selectLang) return
-                this.selectedLang = selectLang
-                if (this.selectedLang.code === "System") {
+                if (selectLang.code === "System") {
                     this.$i18n.locale = navigator.language || "zh-CN"
                 } else {
-                    this.$i18n.locale = this.selectedLang.code
+                    this.$i18n.locale = selectLang.code
                 }
-                // 保存设置
                 if (await this.$DB.configs.get("Language")) {
                     await this.$DB.configs.put({
                         item: "Language",
@@ -88,7 +77,7 @@ export default {
 <template>
     <div class="LanguageSelect">
         <Selector
-            :selectorSelected="selectedLang"
+            :selectorSelected="selectedLang || {}"
             :selectorList="languages"
             uniqueKey="code"
             @update:selectorSelected="updateSelectedLang"/>
