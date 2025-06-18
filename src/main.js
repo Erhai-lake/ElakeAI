@@ -94,7 +94,7 @@ const storeLog = (level, ...args) => {
 }
 
 // 注册全局变量
-APP.provide('$DB', DB)
+APP.provide("$DB", DB)
 
 // 挂载应用
 APP.mount("#app")
