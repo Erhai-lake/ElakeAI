@@ -28,7 +28,7 @@ const LOGGER_OPTIONS = {
 	isEnabled: true,
 	logLevel: process.env.NODE_ENV === "production" ? "error" : "debug",
 	stringifyArguments: false,
-	showLogLevel: true,
+	showLogLevel: false,
 	showMethodName: false,
 	separator: "|",
 	showConsoleColors: true
@@ -48,11 +48,11 @@ APP.config.globalProperties.$log = {
 		storeLog("debug", ...args)
 	},
 	info: (...args) => {
-		console.info(...args)
+		// console.info(...args)
 		storeLog("info", ...args)
 	},
 	warn: (...args) => {
-		console.warn(...args)
+		// console.warn(...args)
 		storeLog("warn", ...args)
 	},
 	error: (...args) => {

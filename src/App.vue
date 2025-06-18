@@ -114,6 +114,7 @@ export default {
          * 配置初始化
          */
         async configInitialization() {
+            let info = {}
             try {
                 // 应用主题
                 const THEME_DATA = await this.$DB.Configs.get("Theme")
@@ -121,10 +122,10 @@ export default {
                 if (THEME === "System") {
                     const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
                     document.documentElement.setAttribute("data-theme", SYSTEM_THEME)
-                    this.$log.info(`[${this.name}] 主题`, SYSTEM_THEME)
+                    info.Theme = SYSTEM_THEME
                 } else {
                     document.documentElement.setAttribute("data-theme", THEME)
-                    this.$log.info(`[${this.name}] 主题`, THEME)
+                    info.Theme = THEME
                 }
 
                 // 应用语言
@@ -133,14 +134,16 @@ export default {
                 if (LANGUAGE === "System") {
                     const SYSTEM_LANG = window.navigator.language || "zh-CN"
                     this.$i18n.locale = SYSTEM_LANG
-                    this.$log.info(`[${this.name}] 语言`, SYSTEM_LANG)
+                    info.Language = SYSTEM_LANG
                 } else {
                     this.$i18n.locale = LANGUAGE
-                    this.$log.info(`[${this.name}] 语言`, LANGUAGE)
+                    info.Language = LANGUAGE
                 }
                 // Log悬浮窗
                 const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.Configs.get("LogSuspensionWindow")
                 this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
+                info.LogSuspensionWindow = this.isLogSuspensionWindow
+                this.$log.info(`[${this.name}] 初始化配置`, info)
             } catch (error) {
                 this.$log.error(`[${this.name}] 配置初始化失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("app.configInitializationError")}`)
