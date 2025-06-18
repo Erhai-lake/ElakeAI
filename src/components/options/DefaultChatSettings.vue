@@ -128,6 +128,7 @@ export default {
          * @param newKey {Object} - 新的Key选项
          */
         async selectKey(newKey) {
+            if (!newKey?.key) return
             this.cancelAllRequests()
             const requestContext = {cancelled: false}
             this.currentModelRequest = {
@@ -138,9 +139,7 @@ export default {
             try {
                 this.loading.models = true
                 const models = await this.fetchModelsForKey(newKey.key)
-
                 if (requestContext.cancelled) return
-
                 this.modelList = models
                 if (!this.saved) {
                     this.selectedModel = models[0] || null

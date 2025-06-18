@@ -173,6 +173,7 @@ export default defineComponent({
          * @param newKey {Object} - 新的Key
          */
         async selectKey(newKey) {
+            if (!newKey?.key) return
             this.cancelAllRequests()
             const requestContext = {cancelled: false}
             this.currentModelRequest = {
@@ -183,9 +184,7 @@ export default defineComponent({
             try {
                 this.selector.loading.models = true
                 const models = await this.fetchModelsForKey(newKey.key)
-
                 if (requestContext.cancelled) return
-
                 this.selector.modelList = models
                 if (!this.selector.saved) {
                     this.selector.selectedModel = models[0] || null
