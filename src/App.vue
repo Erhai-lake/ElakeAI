@@ -2,6 +2,7 @@
 import HomeSidebar from "@/components/HomeSidebar.vue"
 import Log from "@/components/options/Log.vue"
 import Button from "@/components/Button.vue"
+import EventBus from "@/services/EventBus";
 // import eruda from "eruda"
 
 export default {
@@ -14,6 +15,14 @@ export default {
             isLogSuspensionWindow: false,
             isLogView: false
         }
+    },
+    mounted() {
+        // 监听日志悬浮窗设置
+        EventBus.on("[function] logSuspensionWindow", this.logSuspensionWindow)
+    },
+    beforeUnmount() {
+        // 移除日志悬浮窗设置监听
+        EventBus.off("[function] logSuspensionWindow", this.logSuspensionWindow)
     },
     async created() {
         // 移动端调试工具eruda
@@ -124,6 +133,12 @@ export default {
                 this.$log.error(`[${this.name}] 配置初始化失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("app.configInitializationError")}`)
             }
+        },
+        /**
+         * 日志悬浮窗
+         */
+        logSuspensionWindow() {
+            this.isLogSuspensionWindow = !this.isLogSuspensionWindow
         }
     }
 }
@@ -135,7 +150,7 @@ export default {
         <router-view/>
     </div>
     <Button class="IsLog" v-if="isLogSuspensionWindow" @click="isLogView = !isLogView">Log</Button>
-    <div class="IsLogSuspensionWindow" v-if="isLogView">
+    <div class="IsLogSuspensionWindow" v-if="isLogView && isLogSuspensionWindow">
         <Log/>
     </div>
 </template>
@@ -165,6 +180,7 @@ export default {
 .IsLogSuspensionWindow {
     position: absolute;
     bottom: 0;
+    width: 100%;
     height: 600px;
     z-index: 3;
 }

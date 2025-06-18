@@ -16,6 +16,7 @@ export default {
         }
     },
     async created() {
+        // 加载日志
         this.loadLogs()
         // 获取悬浮窗设置
         try {
@@ -31,7 +32,7 @@ export default {
         EventBus.on("[function] log", this.addLog)
     },
     beforeUnmount() {
-        // 移除用户消息监听
+        // 移除日志监听
         EventBus.off("[function] log", this.addLog)
     },
     methods: {
@@ -121,6 +122,7 @@ export default {
                         value: !this.isLogSuspensionWindow
                     })
                 }
+                EventBus.emit("[function] logSuspensionWindow")
                 this.isLogSuspensionWindow = !this.isLogSuspensionWindow
             } catch (error) {
                 this.$log.error(`[${this.name}] 悬浮窗设置保存失败`, error)
@@ -206,6 +208,7 @@ export default {
     align-items: center;
     margin-bottom: 10px;
     gap: 10px;
+    overflow-x: auto;
 }
 
 .LogList {
