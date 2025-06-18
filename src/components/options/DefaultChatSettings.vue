@@ -160,7 +160,7 @@ export default {
          * @returns {Promise<{title, key: *}[]>} - 模型的Key列表
          */
         async fetchKeysForModel(modelName) {
-            const keys = await this.$DB.APIKeys
+            const keys = await this.$DB.apiKeys
                 .where("model")
                 .equals(modelName)
                 .and(key => key.enabled)
@@ -177,7 +177,7 @@ export default {
          * @returns {Promise<{title: *}[]>} - Key的模型列表
          */
         async fetchModelsForKey(key) {
-            const KEY_DATA = await this.$DB.APIKeys.get(key)
+            const KEY_DATA = await this.$DB.apiKeys.get(key)
             const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
             if (RESPONSE.error) {
                 this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE.error)
@@ -198,7 +198,7 @@ export default {
             this.keyPools = []
             try {
                 // const DEFAULT = {key: "auto", title: "自动"}
-                const KEYS_DATA = await this.$DB.APIKeys
+                const KEYS_DATA = await this.$DB.apiKeys
                     .where("model")
                     .equals(this.selectedLargeModel.title)
                     .and(key => key.enabled)
@@ -223,10 +223,10 @@ export default {
          */
         async restoreSettings() {
             try {
-                const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.Configs.get("DefaultChatSettings")
+                const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.configs.get("DefaultChatSettings")
                 if (DEFAULT_CHAT_SETTINGS_DATA) {
                     this.selectedLargeModel = this.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
-                    const KEY_DATA = await this.$DB.APIKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+                    const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
                     this.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
                     this.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
                     this.saved = true
@@ -249,8 +249,8 @@ export default {
                 if (!this.selectedLargeModel.title) return
                 if (!this.selectedKey.key) return
                 if (!this.selectedModel.title) return
-                if (await this.$DB.Configs.get("DefaultChatSettings")) {
-                    await this.$DB.Configs.put({
+                if (await this.$DB.configs.get("DefaultChatSettings")) {
+                    await this.$DB.configs.put({
                         item: "DefaultChatSettings",
                         value: {
                             largeModel: this.selectedLargeModel.title,
@@ -259,7 +259,7 @@ export default {
                         }
                     })
                 } else {
-                    await this.$DB.Configs.add({
+                    await this.$DB.configs.add({
                         item: "DefaultChatSettings",
                         value: {
                             largeModel: this.selectedLargeModel.title,

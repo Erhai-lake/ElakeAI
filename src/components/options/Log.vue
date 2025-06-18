@@ -20,7 +20,7 @@ export default {
         this.loadLogs()
         // 获取悬浮窗设置
         try {
-            const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.Configs.get("LogSuspensionWindow")
+            const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.configs.get("LogSuspensionWindow")
             this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
         } catch (error) {
             this.$log.error(`[${this.name}] 日志悬浮窗设置获取失败`, error)
@@ -111,13 +111,13 @@ export default {
         async suspensionWindow() {
             // 保存设置
             try {
-                if (await this.$DB.Configs.get("LogSuspensionWindow")) {
-                    await this.$DB.Configs.put({
+                if (await this.$DB.configs.get("LogSuspensionWindow")) {
+                    await this.$DB.configs.put({
                         item: "LogSuspensionWindow",
                         value: !this.isLogSuspensionWindow
                     })
                 } else {
-                    await this.$DB.Configs.add({
+                    await this.$DB.configs.add({
                         item: "LogSuspensionWindow",
                         value: !this.isLogSuspensionWindow
                     })

@@ -33,7 +33,7 @@ export default {
         // 获取Configs数据库数据
         async configsLoading() {
             try {
-                this.configs = await this.$DB.Configs.toArray()
+                this.configs = await this.$DB.configs.toArray()
             } catch (error) {
                 console.error("[DeBUG View] Configs数据获取错误", error)
                 this.$toast.error("[DeBUG View] Configs数据获取错误")
@@ -43,7 +43,7 @@ export default {
         async configsClear() {
             if (!confirm("确定要清空Configs数据库吗?")) return
             try {
-                await this.$DB.Configs.clear()
+                await this.$DB.configs.clear()
                 await this.configsLoading()
                 this.$toast.success("Configs数据库已清空")
             } catch (error) {
@@ -55,7 +55,7 @@ export default {
         async configsDelete(item) {
             if (!confirm("确定要删除Configs数据吗?")) return
             try {
-                await this.$DB.Configs.delete(item)
+                await this.$DB.configs.delete(item)
                 this.configs = this.configs.filter(config => config.item !== item)
                 this.$toast.success("数据删除成功")
             } catch (error) {
@@ -143,7 +143,7 @@ export default {
                 }
             ]
             for (const chat of DEBUG_CHAT) {
-                await this.$DB.Chats.add({
+                await this.$DB.chats.add({
                     key: crypto.randomUUID(),
                     title: chat.title,
                     timestamp: Date.now(),
@@ -169,7 +169,7 @@ export default {
         // 获取Chats数据库数据
         async chatsLoading() {
             try {
-                this.chats = await this.$DB.Chats.toArray()
+                this.chats = await this.$DB.chats.toArray()
             } catch (error) {
                 console.error("[DeBUG View] Chats数据获取错误", error)
                 this.$toast.error("[DeBUG View] Chats数据获取错误")
@@ -179,7 +179,7 @@ export default {
         async chatsClear() {
             if (!confirm("确定要清空Chats数据库吗?")) return
             try {
-                await this.$DB.Chats.clear()
+                await this.$DB.chats.clear()
                 await this.chatsLoading()
                 EventBus.emit("[function] chatListGet")
                 this.$toast.success("Chats数据库已清空")
@@ -192,7 +192,7 @@ export default {
         async chatsDelete(item) {
             if (!confirm("确定要删除Chats数据吗?")) return
             try {
-                await this.$DB.Chats.delete(item)
+                await this.$DB.chats.delete(item)
                 this.chats = this.chats.filter(chat => chat.key !== item)
                 EventBus.emit("[function] chatListGet")
                 this.$toast.success("数据删除成功")
@@ -206,7 +206,7 @@ export default {
             const NEW_VALUE = event.target.value.trim()
             if (NEW_VALUE === item.title) return
             try {
-                await this.$DB.Chats.update(item.key, {title: NEW_VALUE})
+                await this.$DB.chats.update(item.key, {title: NEW_VALUE})
                 item.title = NEW_VALUE
                 EventBus.emit("[function] chatListGet")
                 this.$toast.success("标题更新成功")
@@ -222,7 +222,7 @@ export default {
             if (RAW_VALUE === JSON.stringify(item, null)) return
             try {
                 const parsedData = JSON.parse(RAW_VALUE)
-                await this.$DB.Chats.update(item.key, parsedData)
+                await this.$DB.chats.update(item.key, parsedData)
                 item.data = JSON.parse(JSON.stringify(parsedData))
                 EventBus.emit("[function] chatListGet")
                 this.$toast.success("数据更新成功")
@@ -238,7 +238,7 @@ export default {
             if (RAW_VALUE === JSON.stringify(item.value, null)) return
             try {
                 const parsedData = JSON.parse(RAW_VALUE)
-                await this.$DB.Configs.update(item.item, parsedData)
+                await this.$DB.configs.update(item.item, parsedData)
                 item.value = JSON.parse(JSON.stringify(parsedData))
                 this.$toast.success("数据更新成功")
             } catch (error) {

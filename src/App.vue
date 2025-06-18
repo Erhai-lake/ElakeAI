@@ -117,7 +117,7 @@ export default {
             let info = {}
             try {
                 // 应用主题
-                const THEME_DATA = await this.$DB.Configs.get("Theme")
+                const THEME_DATA = await this.$DB.configs.get("Theme")
                 const THEME = THEME_DATA ? THEME_DATA.value : "System"
                 if (THEME === "System") {
                     const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
@@ -129,7 +129,7 @@ export default {
                 }
 
                 // 应用语言
-                const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
+                const LANGUAGE_DATA = await this.$DB.configs.get("Language")
                 const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
                 if (LANGUAGE === "System") {
                     const SYSTEM_LANG = window.navigator.language || "zh-CN"
@@ -140,7 +140,7 @@ export default {
                     info.Language = LANGUAGE
                 }
                 // Log悬浮窗
-                const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.Configs.get("LogSuspensionWindow")
+                const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.configs.get("LogSuspensionWindow")
                 this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
                 info.LogSuspensionWindow = this.isLogSuspensionWindow
                 this.$log.info(`[${this.name}] 初始化配置`, info)

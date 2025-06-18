@@ -56,7 +56,7 @@ export default defineComponent({
          */
         async chatListGet() {
             try {
-                const CHAT_LIST = await this.$DB.Chats.toArray()
+                const CHAT_LIST = await this.$DB.chats.toArray()
                 let GROUPED_CHATS = []
                 for (const ITEM of CHAT_LIST) {
                     GROUPED_CHATS = GROUPED_CHATS || []
@@ -106,7 +106,7 @@ export default defineComponent({
          */
         async deleteChat(key) {
             try {
-                await this.$DB.Chats.delete(key)
+                await this.$DB.chats.delete(key)
                 this.$toast.success(`[${this.name}] ${this.$t("components.HomeSidebar.toast.successDeletingChatList")}`)
                 await this.chatListGet()
                 if (this.route.params.key === key) {

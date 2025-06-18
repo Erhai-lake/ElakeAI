@@ -22,7 +22,7 @@ export default {
     async created() {
         // 获取语言
         try {
-            const LANGUAGE_DATA = await this.$DB.Configs.get("Language")
+            const LANGUAGE_DATA = await this.$DB.configs.get("Language")
             const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "zh-CN"
             if (LANGUAGE === "System") {
                 const SYSTEM_LANG = navigator.language || "zh-CN"
@@ -65,13 +65,13 @@ export default {
                     this.$i18n.locale = this.selectedLang.code
                 }
                 // 保存设置
-                if (await this.$DB.Configs.get("Language")) {
-                    await this.$DB.Configs.put({
+                if (await this.$DB.configs.get("Language")) {
+                    await this.$DB.configs.put({
                         item: "Language",
                         value: this.selectedLang.code
                     })
                 } else {
-                    await this.$DB.Configs.add({
+                    await this.$DB.configs.add({
                         item: "Language",
                         value: this.selectedLang.code
                     })

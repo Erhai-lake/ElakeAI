@@ -204,7 +204,7 @@ export default defineComponent({
          * @param modelName {string} - 模型名称
          */
         async fetchKeysForModel(modelName) {
-            const keys = await this.$DB.APIKeys
+            const keys = await this.$DB.apiKeys
                 .where("model")
                 .equals(modelName)
                 .and(key => key.enabled)
@@ -220,7 +220,7 @@ export default defineComponent({
          * @param key {string} - Key
          */
         async fetchModelsForKey(key) {
-            const KEY_DATA = await this.$DB.APIKeys.get(key)
+            const KEY_DATA = await this.$DB.apiKeys.get(key)
             const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
             if (RESPONSE.error) {
                 this.$toast.error(this.$t(`api.${RESPONSE.error}`))
@@ -240,7 +240,7 @@ export default defineComponent({
             this.selector.keyPools = []
             try {
                 // const DEFAULT = {key: "auto", title: "自动"}
-                const KEYS_DATA = await this.$DB.APIKeys
+                const KEYS_DATA = await this.$DB.apiKeys
                     .where("model")
                     .equals(this.selector.selectedLargeModel.title)
                     .and(key => key.enabled)
@@ -265,10 +265,10 @@ export default defineComponent({
          */
         async restoreSettings() {
             try {
-                const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.Configs.get("DefaultChatSettings")
+                const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.configs.get("DefaultChatSettings")
                 if (DEFAULT_CHAT_SETTINGS_DATA) {
                     this.selector.selectedLargeModel = this.selector.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
-                    const KEY_DATA = await this.$DB.APIKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+                    const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
                     this.selector.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
                     this.selector.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
                     this.selector.saved = true
@@ -309,7 +309,7 @@ export default defineComponent({
                 try {
                     const NEW_CHAT_KEY = crypto.randomUUID()
                     this.$router.push(`/chat/${NEW_CHAT_KEY}`)
-                    await this.$DB.Chats.add({
+                    await this.$DB.chats.add({
                         key: NEW_CHAT_KEY,
                         title: this.$t("components.AIInput.newChat"),
                         timestamp: Date.now(),

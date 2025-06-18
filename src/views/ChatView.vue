@@ -162,7 +162,7 @@ export default {
          */
         async initChatView(chatKey) {
             try {
-                const CHAT_DATA = await this.$DB.Chats.get(chatKey || this.route.params.key)
+                const CHAT_DATA = await this.$DB.chats.get(chatKey || this.route.params.key)
                 // 检查ChatKey是否存在
                 if (!CHAT_DATA) {
                     this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
@@ -258,7 +258,7 @@ export default {
                     const TITLE = KEYWORDS.length > 0 ? KEYWORDS.slice(0, 3).join(" ") : this.data.title
                     if (TITLE !== this.data.title) {
                         this.data.title = TITLE
-                        await this.$DB.Chats.update(this.data.key, {title: TITLE})
+                        await this.$DB.chats.update(this.data.key, {title: TITLE})
                         EventBus.emit("[function] chatListGet")
                     }
                 }
@@ -284,7 +284,7 @@ export default {
                 }
                 // 更新数据库中的消息
                 const DATA = JSON.parse(JSON.stringify(this.data.data))
-                await this.$DB.Chats.update(this.data.key, {data: DATA})
+                await this.$DB.chats.update(this.data.key, {data: DATA})
                 // 更新侧边栏
                 EventBus.emit("[function] chatListGet")
             } catch (error) {

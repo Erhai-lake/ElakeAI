@@ -18,7 +18,7 @@ export default defineComponent({
     async created() {
         // 获取主题
         try {
-            const THEME_DATA = await this.$DB.Configs.get("Theme")
+            const THEME_DATA = await this.$DB.configs.get("Theme")
             this.Theme = THEME_DATA ? THEME_DATA.value : "System"
         } catch (error) {
             this.$log.error(`[${this.name}] 主题获取失败`, error)
@@ -40,13 +40,13 @@ export default defineComponent({
                 }
                 void document.body.offsetWidth
                 // 保存设置
-                if (await this.$DB.Configs.get("Theme")) {
-                    await this.$DB.Configs.put({
+                if (await this.$DB.configs.get("Theme")) {
+                    await this.$DB.configs.put({
                         item: "Theme",
                         value: theme
                     })
                 } else {
-                    await this.$DB.Configs.add({
+                    await this.$DB.configs.add({
                         item: "Theme",
                         value: theme
                     })

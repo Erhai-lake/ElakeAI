@@ -116,7 +116,7 @@ export default {
             try {
                 try {
                     // 读取主题配置
-                    const THEME_DATA = (await this.$DB.Configs.get("Theme")).value
+                    const THEME_DATA = (await this.$DB.configs.get("Theme")).value
                     mermaid.initialize({
                         startOnLoad: true,
                         theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"

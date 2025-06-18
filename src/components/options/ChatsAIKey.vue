@@ -85,7 +85,7 @@ export default {
          */
         async loadKeyPools() {
             try {
-                this.keyPools = await this.$DB.APIKeys.where("model").equals(this.selectedModel.title).toArray()
+                this.keyPools = await this.$DB.apiKeys.where("model").equals(this.selectedModel.title).toArray()
                 for (const item of this.keyPools) {
                     if (!item.enabled) {
                         item.balance = "NULL"
@@ -110,14 +110,14 @@ export default {
          */
         async getKeyBalance(key) {
             try {
-                const KEY_DATA = await this.$DB.APIKeys.get(key)
+                const KEY_DATA = await this.$DB.apiKeys.get(key)
                 const RESPONSE = await APIManager.execute(KEY_DATA.model, "balance", {apiKey: key})
                 if (RESPONSE.error) {
                     this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE.error)
                     this.$toast.error(this.$t(`api.${RESPONSE.error}`))
                     this.$log.warn(`[${this.name}] 禁用Key: ${KEY_DATA.remark}`)
                     this.$toast.warning(this.$t("components.ChatAIKey.toast.errorKeyDisabled", {remark: KEY_DATA.remark}))
-                    await this.$DB.APIKeys.update(RESPONSE.traceability.apiKey, {enabled: false})
+                    await this.$DB.apiKeys.update(RESPONSE.traceability.apiKey, {enabled: false})
                     return false
                 }
                 return RESPONSE.data
@@ -158,7 +158,7 @@ export default {
             }
             try {
                 // 写入数据库
-                await this.$DB.APIKeys.add({
+                await this.$DB.apiKeys.add({
                     key: crypto.randomUUID(),
                     model: this.selectedModel.title,
                     value: this.newKey.value,
@@ -199,7 +199,7 @@ export default {
                 return
             }
             try {
-                await this.$DB.APIKeys.bulkDelete(this.operationSelection)
+                await this.$DB.apiKeys.bulkDelete(this.operationSelection)
                 // 删除Key池
                 this.keyPools = this.keyPools.filter(item =>
                     !this.operationSelection.includes(item.key)
@@ -230,7 +230,7 @@ export default {
             }
             try {
                 // 加载编辑数据
-                const KEY_DATA = await this.$DB.APIKeys.get(this.operationSelection[0])
+                const KEY_DATA = await this.$DB.apiKeys.get(this.operationSelection[0])
                 this.editKey = {
                     key: KEY_DATA.key,
                     value: KEY_DATA.value,
@@ -276,7 +276,7 @@ export default {
             }
             try {
                 // 写入数据库
-                await this.$DB.APIKeys.update(this.editKey.key, {
+                await this.$DB.apiKeys.update(this.editKey.key, {
                     value: this.editKey.value,
                     remark: this.editKey.remark,
                     url: this.editKey.url
@@ -324,7 +324,7 @@ export default {
         async toggleKeyEnable(keyItem) {
             try {
                 const NEW_STATUS = !keyItem.enabled
-                await this.$DB.APIKeys.update(keyItem.key, {enabled: NEW_STATUS})
+                await this.$DB.apiKeys.update(keyItem.key, {enabled: NEW_STATUS})
                 keyItem.enabled = NEW_STATUS
                 if (keyItem.enabled) {
                     const BALANCE = await this.getKeyBalance(keyItem.key)
@@ -358,7 +358,7 @@ export default {
                     key: key,
                     changes: {enabled: status}
                 }))
-                await this.$DB.APIKeys.bulkUpdate(UPDATES)
+                await this.$DB.apiKeys.bulkUpdate(UPDATES)
                 // 本地更新选中项状态
                 const UPDATED_POOLS = []
                 for (const item of this.keyPools) {
@@ -370,7 +370,7 @@ export default {
                             if (!BALANCE) {
                                 updatedItem.enabled = false
                                 updatedItem.balance = "NULL"
-                                await this.$DB.APIKeys.update(item.key, {enabled: false})
+                                await this.$DB.apiKeys.update(item.key, {enabled: false})
                             }
                         } else {
                             updatedItem.balance = "NULL"
