@@ -127,7 +127,7 @@ export default class BaseAPI {
      */
     async getAPIKeyData(key, params) {
         try {
-            const KEY_DATA = await DB.APIKeys.get(key)
+            const KEY_DATA = await DB.apiKeys.get(key)
             if (!KEY_DATA) {
                 return this.response(params, null, "keyDoesNotExist")
             }
@@ -145,7 +145,7 @@ export default class BaseAPI {
      */
     async getChatKeyData(key, params) {
         try {
-            const KEY_DATA = await DB.Chats.get(key)
+            const KEY_DATA = await DB.chats.get(key)
             if (!KEY_DATA) {
                 return this.response(params, null, "keyDoesNotExist")
             }
