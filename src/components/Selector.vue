@@ -76,6 +76,19 @@ export default {
             this.$emit("update:selectorSelected", item)
         },
         /**
+         * 标题
+         * @param title {String} - 标题
+         * @returns {String} - 标题
+         */
+		getTitle (title) {
+			if (!title) return ''
+			if (title.startsWith("i18n:")) {
+				const I18N_KEY = title.slice(5)
+				return this.$t(I18N_KEY)
+			}
+			return title
+		},
+        /**
          * 开始加载
          */
         startLoading() {
@@ -111,9 +124,9 @@ export default {
             <template v-if="!showLoading">
                 <img class="Images"
                      :src="selectorSelected.images"
-                     :alt="selectorSelected.title"
+                     :alt="getTitle(selectorSelected.title)"
                      v-if="selectorSelected.images">
-                <span class="SelectorOption">{{ selectorSelected.title }}</span>
+                <span class="SelectorOption">{{ getTitle(selectorSelected.title) }}</span>
             </template>
             <div v-else class="LoadingIndicator">
                 <div class="LoadingSpinner"></div>
@@ -135,8 +148,8 @@ export default {
                     :key="item[uniqueKey]"
                     @click="selectItem(item)"
                     :class="{ 'Active': item[uniqueKey] === selectorSelected[uniqueKey] }">
-                    <img :src="item.images" class="Images" :alt="item.title" v-if="item.images">
-                    <span class="LangOption">{{ item.title }}</span>
+                    <img :src="item.images" class="Images" :alt="getTitle(item.title)" v-if="item.images">
+                    <span class="LangOption">{{ getTitle(item.title) }}</span>
                 </li>
             </ul>
         </transition>
