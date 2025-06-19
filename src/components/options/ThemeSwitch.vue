@@ -6,19 +6,19 @@ export default defineComponent({
     inject: ["$DB"],
     data() {
         return {
-            Theme: "",
+			theme: "",
         }
     },
     watch: {
         // 监听主题变化
-        Theme(newVal) {
+		theme(newVal) {
             this.applyTheme(newVal)
         }
     },
     async created() {
         // 获取主题
         try {
-            const THEME_DATA = await this.$DB.configs.get("Theme")
+            const THEME_DATA = await this.$DB.configs.get("theme")
             this.Theme = THEME_DATA ? THEME_DATA.value : "System"
         } catch (error) {
             this.$log.error(`[${this.name}] 主题获取失败`, error)
@@ -40,14 +40,14 @@ export default defineComponent({
                 }
                 void document.body.offsetWidth
                 // 保存设置
-                if (await this.$DB.configs.get("Theme")) {
+                if (await this.$DB.configs.get("theme")) {
                     await this.$DB.configs.put({
-                        item: "Theme",
+                        item: "theme",
                         value: theme
                     })
                 } else {
                     await this.$DB.configs.add({
-                        item: "Theme",
+                        item: "theme",
                         value: theme
                     })
                 }
@@ -62,15 +62,15 @@ export default defineComponent({
 
 <template>
     <div class="Switch">
-        <input type="radio" id="Light" name="Theme" value="Light" v-model="Theme"/>
+        <input type="radio" id="Light" name="theme" value="Light" v-model="theme"/>
         <label for="Light">
             {{ $t("components.ThemeSwitch.light") }}
         </label>
-        <input type="radio" id="System" name="Theme" value="System" v-model="Theme"/>
+        <input type="radio" id="System" name="theme" value="System" v-model="theme"/>
         <label for="System">
             {{ $t("components.ThemeSwitch.system") }}
         </label>
-        <input type="radio" id="Dark" name="Theme" value="Dark" v-model="Theme"/>
+        <input type="radio" id="Dark" name="theme" value="Dark" v-model="theme"/>
         <label for="Dark">
             {{ $t("components.ThemeSwitch.dark") }}
         </label>

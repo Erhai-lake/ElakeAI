@@ -22,7 +22,7 @@ export default {
     async created() {
         // 获取语言
         try {
-            const LANGUAGE_DATA = await this.$DB.configs.get("Language")
+            const LANGUAGE_DATA = await this.$DB.configs.get("language")
             const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
             this.selectedLang = {
                 code: LANGUAGE,
@@ -54,14 +54,14 @@ export default {
                 } else {
                     this.$i18n.locale = selectLang.code
                 }
-                if (await this.$DB.configs.get("Language")) {
+                if (await this.$DB.configs.get("language")) {
                     await this.$DB.configs.put({
-                        item: "Language",
+                        item: "language",
                         value: this.selectedLang.code
                     })
                 } else {
                     await this.$DB.configs.add({
-                        item: "Language",
+                        item: "language",
                         value: this.selectedLang.code
                     })
                 }
