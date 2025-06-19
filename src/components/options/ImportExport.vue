@@ -386,7 +386,7 @@ export default {
 	background-color: var(--background-color);
 	border-radius: 8px;
 	display: grid;
-	grid-template-rows: 1fr auto;
+	grid-template-rows: auto 1fr auto;
 	overflow: hidden;
 
 	.ConfigSelection {
