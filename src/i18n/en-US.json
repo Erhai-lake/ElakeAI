@@ -61,7 +61,6 @@
 			},
 			"toast": {
 				"loadKeyPoolError": "Failed to load key pool",
-				"errorKeyDisabled": "{remark} has been disabled",
 				"errorObtainingKeyBalance": "Failed to get key balance",
 				"keyNull": "Key cannot be empty",
 				"remarkNull": "Remark cannot be empty",

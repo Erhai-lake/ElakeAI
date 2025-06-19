@@ -61,7 +61,6 @@
 			},
 			"toast": {
 				"loadKeyPoolError": "加载Key池失败",
-				"errorKeyDisabled": "{remark} 已禁用",
 				"errorObtainingKeyBalance": "获取Key余额失败",
 				"keyNull": "Key不能为空",
 				"remarkNull": "备注不能为空",
