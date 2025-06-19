@@ -250,7 +250,7 @@ export default {
     }
 
     .info {
-        color: #2196F3;
+        color: #80ceff;
     }
 
     .warn {
