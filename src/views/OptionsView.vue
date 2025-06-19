@@ -5,10 +5,11 @@ import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import Button from "@/components/Button.vue"
+import ImportExport from "@/components/options/ImportExport.vue"
 
 export default {
 	name: "OptionsView",
-	components: {DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
+	components: {ImportExport, DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
 }
 </script>
 
@@ -41,13 +42,12 @@ export default {
 				</div>
 			</template>
 		</FoldingPanel>
-		<FoldingPanel :Height="50">
+		<FoldingPanel :Height="500" :is="true">
 			<template #Title>
 				{{ $t("views.OptionsView.importExport") }}
 			</template>
 			<template #Content>
-				<Button>{{ $t("views.OptionsView.import") }}</Button>
-				<Button>{{ $t("views.OptionsView.export") }}</Button>
+				<ImportExport/>
 			</template>
 		</FoldingPanel>
 		<div class="Container">

@@ -168,6 +168,29 @@
 			},
 			"count": "Total {count} logs",
 			"empty": "No logs available"
+		},
+		"ImportExport": {
+			"toast": {
+				"failedToLoadSubOptions": "Failed to load sub-options",
+				"failedToGetData": "Failed to retrieve data",
+				"noDataToExport": "No data available for export",
+				"exportSuccess": "Export successful",
+				"exportFailed": "Export failed",
+				"importInProgress": "Importing data...",
+				"invalidJsonFormat": "Invalid JSON format",
+				"fileReadError": "Failed to read file",
+				"importSuccess": "Import completed. Please refresh the page",
+				"importFailed": "Import failed",
+				"importFailedSkipped": "Import failed. Some items were skipped"
+			},
+			"confirmImport": "Confirm import? This action cannot be undone!",
+			"selectConfigurationItemPrompt": "Please select the configuration items to export",
+			"selectAll": "Select all {item}",
+			"configs": "Configurations",
+			"apiKeys": "API Keys",
+			"chats": "Chats",
+			"export": "Export",
+			"import": "Import"
 		}
 	},
 	"views": {
@@ -197,9 +220,7 @@
 			"language": "Language",
 			"chats": "Chats",
 			"defaultChatSettings": "Default Chat Settings",
-			"importExport": "Import/Export",
-			"export": "Export",
-			"import": "Import"
+			"importExport": "Import/Export"
 		}
 	}
 }

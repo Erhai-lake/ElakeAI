@@ -168,6 +168,29 @@
 			},
 			"count": "共 {count} 条日志",
 			"empty": "暂无日志"
+		},
+		"ImportExport": {
+			"toast": {
+				"failedToLoadSubOptions": "加载子选项失败",
+				"failedToGetData": "获取数据失败",
+				"noDataToExport": "没有数据可导出",
+				"exportSuccess": "导出成功",
+				"exportFailed": "导出失败",
+				"importInProgress": "正在导入数据...",
+				"invalidJsonFormat": "无效的JSON格式",
+				"fileReadError": "读取文件失败",
+				"importSuccess": "导入完成, 请刷新页面",
+				"importFailed": "导入失败",
+				"importFailedSkipped": "导入失败, 已跳过"
+			},
+			"confirmImport": "确认导入? 这是一个不可逆操作!",
+			"selectConfigurationItemPrompt": "请选择要导出的配置项",
+			"selectAll": "全选 {item}",
+			"configs": "配置",
+			"apiKeys": "API Keys",
+			"chats": "对话",
+			"export": "导出",
+			"import": "导入"
 		}
 	},
 	"views": {
@@ -197,9 +220,7 @@
 			"language": "语言",
 			"chats": "对话",
 			"defaultChatSettings": "默认对话设置",
-			"importExport": "导入/导出",
-			"export": "导出",
-			"import": "导入"
+			"importExport": "导入/导出"
 		}
 	}
 }
