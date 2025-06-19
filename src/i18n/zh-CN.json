@@ -196,7 +196,10 @@
 			"theme": "主题",
 			"language": "语言",
 			"chats": "对话",
-			"defaultChatSettings": "默认对话设置"
+			"defaultChatSettings": "默认对话设置",
+			"importExport": "导入/导出",
+			"export": "导出",
+			"import": "导入"
 		}
 	}
 }

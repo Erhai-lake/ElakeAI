@@ -196,7 +196,10 @@
 			"theme": "Theme",
 			"language": "Language",
 			"chats": "Chats",
-			"defaultChatSettings": "Default Chat Settings"
+			"defaultChatSettings": "Default Chat Settings",
+			"importExport": "Import/Export",
+			"export": "Export",
+			"import": "Import"
 		}
 	}
 }
