@@ -42,7 +42,7 @@ export default {
 				</div>
 			</template>
 		</FoldingPanel>
-		<FoldingPanel :Height="500" :is="true">
+		<FoldingPanel :Height="500">
 			<template #Title>
 				{{ $t("views.OptionsView.importExport") }}
 			</template>
