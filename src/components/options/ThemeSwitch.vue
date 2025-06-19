@@ -1,54 +1,85 @@
 <script>
 import {defineComponent} from "vue"
+import Selector from "@/components/Selector.vue";
 
 export default defineComponent({
     name: "ThemeSelect",
+	components: {Selector},
     inject: ["$DB"],
     data() {
         return {
-			theme: "",
+			theme: [
+				{
+					code: "System",
+					title: "i18n:components.ThemeSwitch.system",
+					images: ""
+				},
+				{
+					code: "Light",
+					title: "i18n:components.ThemeSwitch.light",
+					images: ""
+				},
+				{
+					code: "Dark",
+					title: "i18n:components.ThemeSwitch.dark",
+					images: ""
+				}
+			],
+			selectedTheme: null,
         }
     },
     watch: {
         // 监听主题变化
-		theme(newVal) {
-            this.applyTheme(newVal)
+		selectedTheme(newVal) {
+            this.selectTheme(newVal)
         }
     },
     async created() {
         // 获取主题
         try {
             const THEME_DATA = await this.$DB.configs.get("theme")
-            this.Theme = THEME_DATA ? THEME_DATA.value : "System"
+			const THEME = THEME_DATA ? THEME_DATA.value : "System"
+			this.selectedTheme = {
+				code: THEME,
+				title: this.theme.find(lang => lang.code === THEME).title,
+				images: this.theme.find(lang => lang.code === THEME).images
+			}
         } catch (error) {
             this.$log.error(`[${this.name}] 主题获取失败`, error)
             this.$toast.error(`[${this.name}] ${this.$t("components.ThemeSwitch.toast.getThemeError")}`)
         }
     },
     methods: {
+		/**
+		 * 更新选中的主题
+		 * @param newVal {Object} - 新的选中主题
+		 */
+		updateSelectedTheme(newVal) {
+			this.selectedTheme = newVal
+		},
         /**
-         * 应用主题
+         * 选择主题
          * @param theme 主题名称
          */
-        async applyTheme(theme) {
+        async selectTheme(theme) {
             try {
                 if (!theme) return
-                if (theme === "System") {
+                if (theme.code === "System") {
                     document.documentElement.setAttribute("data-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
                 } else {
-                    document.documentElement.setAttribute("data-theme", theme)
+                    document.documentElement.setAttribute("data-theme", theme.code)
                 }
                 void document.body.offsetWidth
                 // 保存设置
                 if (await this.$DB.configs.get("theme")) {
                     await this.$DB.configs.put({
                         item: "theme",
-                        value: theme
+                        value: theme.code
                     })
                 } else {
                     await this.$DB.configs.add({
                         item: "theme",
-                        value: theme
+                        value: theme.code
                     })
                 }
             } catch (error) {
@@ -62,68 +93,16 @@ export default defineComponent({
 
 <template>
     <div class="Switch">
-        <input type="radio" id="Light" name="theme" value="Light" v-model="theme"/>
-        <label for="Light">
-            {{ $t("components.ThemeSwitch.light") }}
-        </label>
-        <input type="radio" id="System" name="theme" value="System" v-model="theme"/>
-        <label for="System">
-            {{ $t("components.ThemeSwitch.system") }}
-        </label>
-        <input type="radio" id="Dark" name="theme" value="Dark" v-model="theme"/>
-        <label for="Dark">
-            {{ $t("components.ThemeSwitch.dark") }}
-        </label>
-        <div class="Mask"></div>
+		<Selector
+			:selectorSelected="selectedTheme || {}"
+			:selectorList="theme"
+			uniqueKey="code"
+			@update:selectorSelected="updateSelectedTheme"/>
     </div>
 </template>
 
 <style scoped lang="less">
 .Switch {
-    position: relative;
-    width: 240px;
-    border-radius: 50px;
-    border: 1px solid var(--border-color);
-    background-color: var(--background-color);
-    display: flex;
-    overflow: hidden;
-
-    .Mask {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 80px;
-        height: 100%;
-        background-color: rgba(179, 179, 179, 0.6);
-    }
-
-    label {
-        padding: 10px 0;
-        width: 80px;
-        text-align: center;
-        font-size: 14px;
-    }
-
-    input {
-        display: none;
-    }
-}
-
-#Light:checked {
-    ~ .Mask {
-        transform: translateX(0);
-    }
-}
-
-#System:checked {
-    ~ .Mask {
-        transform: translateX(80px);
-    }
-}
-
-#Dark:checked {
-    ~ .Mask {
-        transform: translateX(160px);
-    }
+	width: 240px;
 }
 </style>

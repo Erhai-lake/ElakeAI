@@ -271,7 +271,6 @@ export default {
 }
 
 .Images {
-    width: 24px;
     height: 18px;
     margin-right: 12px;
     border-radius: 2px;

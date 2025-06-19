@@ -127,7 +127,8 @@
 			"toast": {
 				"getLanguageError": "Failed to get language list",
 				"applicationLanguageError": "Failed to apply language"
-			}
+			},
+			"system": "System"
 		},
 		"ThemeSwitch": {
 			"toast": {

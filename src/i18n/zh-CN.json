@@ -127,7 +127,8 @@
 			"toast": {
 				"getLanguageError": "获取语言失败",
 				"applicationLanguageError": "应用语言失败"
-			}
+			},
+			"system": "系统"
 		},
 		"ThemeSwitch": {
 			"toast": {

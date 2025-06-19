@@ -57,12 +57,12 @@ export default {
                 if (await this.$DB.configs.get("language")) {
                     await this.$DB.configs.put({
                         item: "language",
-                        value: this.selectedLang.code
+                        value: selectLang.code
                     })
                 } else {
                     await this.$DB.configs.add({
                         item: "language",
-                        value: this.selectedLang.code
+                        value: selectLang.code
                     })
                 }
             } catch (error) {
