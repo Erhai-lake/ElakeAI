@@ -60,7 +60,7 @@ APP.config.globalProperties.$log = {
 		storeLog("error", ...args)
 	}
 }
-const storeLog = (level, ...args) => {
+const storeLog = async (level, ...args) => {
 	try {
 		const formatMessage = (arg) => {
 			if (arg instanceof Error) {
@@ -78,20 +78,28 @@ const storeLog = (level, ...args) => {
 		const MATCH = args[0].match(/^\[(.*?)](.*)$/)
 		args.shift()
 		const LOG_ENTRY = {
-			timestamp: Date.now(),
-			level,
+			level: level,
+			component: MATCH[1],
 			message: [MATCH[2], ...args].map(formatMessage).join(" "),
-			component: MATCH[1]
+			timestamp: Date.now()
 		}
-		const LOGS = JSON.parse(localStorage.getItem("ElakeAILogs") || "[]")
-		const MAX_LOGS = 100
-		const UPDATED_LOGS = [...LOGS, LOG_ENTRY].slice(-MAX_LOGS)
 		EventBus.emit("[function] log", LOG_ENTRY)
-		localStorage.setItem("ElakeAILogs", JSON.stringify(UPDATED_LOGS))
+		await DB.logs.add(LOG_ENTRY)
 	} catch (e) {
 		console.error("日志存储失败:", e)
 	}
 }
+
+const setupLogCleanup = async () => {
+	const THIRTY_ONE_DAYS = 7 * 24 * 60 * 60 * 1000
+	try {
+		await DB.logs.where("timestamp").below(Date.now() - THIRTY_ONE_DAYS).delete()
+	} catch (error) {
+		console.error("[main] 日志清理失败:", error)
+	}
+}
+setupLogCleanup()
+setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
 
 // 注册全局变量
 APP.provide("$DB", DB)

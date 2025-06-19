@@ -17,7 +17,7 @@ export default {
     },
     async created() {
         // 加载日志
-        this.loadLogs()
+        await this.loadLogs()
         // 获取悬浮窗设置
         try {
             const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.configs.get("logSuspensionWindow")
@@ -39,10 +39,9 @@ export default {
         /**
          * 加载日志
          */
-        loadLogs() {
+        async loadLogs() {
             try {
-                const STORED_LOGS = localStorage.getItem("ElakeAILogs")
-                this.logs = STORED_LOGS ? JSON.parse(STORED_LOGS) : []
+				this.logs = await this.$DB.logs.toArray()
             } catch (error) {
                 this.$log.error(`[${this.name}] 加载日志失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.loadError")}`)
@@ -58,18 +57,18 @@ export default {
             if (this.keepScrollToBottom) this.scrollToBottom()
         },
         /**
-         * 清空日志
-         */
-        clearLogs() {
-            try {
-                localStorage.removeItem("ElakeAILogs")
-                this.logs = []
-            } catch (error) {
-                this.$log.error(`[${this.name}] 清空日志失败`, error)
-                this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.clearError")}`)
-            }
-            if (this.keepScrollToBottom) this.scrollToBottom()
-        },
+		 * 清空日志
+		 */
+		async clearLogs() {
+			try {
+				await this.$DB.logs.clear()
+				this.logs = []
+			} catch (error) {
+				this.$log.error(`[${this.name}] 清空日志失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.clearError")}`)
+			}
+			if (this.keepScrollToBottom) this.scrollToBottom()
+		},
         /**
          * 格式化时间戳
          * @param {number} timestamp 时间戳
@@ -136,7 +135,7 @@ export default {
             try {
                 // 构造日志内容
                 const LOG_CONTENT = this.logs.map(log => {
-                    return `[${this.formatTimestamp(log.timestamp)}] [${log.level.toUpperCase()}] [${log.component || "Global"}] ${log.message}`;
+                    return `[${this.formatTimestamp(log.timestamp)}] [${log.level.toUpperCase()}] [${log.component || "Global"}] ${log.message}`
                 }).join("\n")
                 // 创建Blob对象
                 const BLOB = new Blob([LOG_CONTENT], { type: "text/plain" })
