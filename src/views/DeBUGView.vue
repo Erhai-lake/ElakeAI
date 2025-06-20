@@ -133,7 +133,7 @@ export default {
                 },
                 {
                     title: "数学公式测试",
-                    content: "假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$",
+                    content: "假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$\n\nKaTeX:\n\n$$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$\n\nMathJax3:\n\n$$ \\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$",
                     model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
                 },
                 {

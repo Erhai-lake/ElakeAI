@@ -2,15 +2,17 @@
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import ModelList from "@/assets/data/ModelList.json"
 import markdownit from "markdown-it"
+import "@/assets/styles/markdown.less"
 import highlight from "highlight.js"
+import "@/assets/styles/highlight.css"
 import markdownItTaskLists from "markdown-it-task-lists"
 import {full as emoji} from "markdown-it-emoji"
+import markdownItKatex from "@iktakahiro/markdown-it-katex"
+import "katex/dist/katex.min.css"
 import markdownItMathjax3 from "markdown-it-mathjax3"
 import {imgLazyload} from "@mdit/plugin-img-lazyload"
 import mermaid from "mermaid"
 import panzoom from "@panzoom/panzoom"
-import "@/assets/styles/highlight.css"
-import "@/assets/styles/markdown.less"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 
@@ -84,6 +86,7 @@ export default {
                 //Emoji
                 .use(emoji)
                 // 数学公式
+				.use(markdownItKatex)
                 .use(markdownItMathjax3)
                 // 图片懒加载
                 .use(imgLazyload)
