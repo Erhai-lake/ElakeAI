@@ -194,6 +194,17 @@
 			"export": "导出",
 			"import": "导入",
 			"confirmImport": "确认导入"
+		},
+		"HazardousOperations": {
+			"toast": {
+				"operationSuccess": "操作成功",
+				"operationFailed": "操作失败"
+			},
+			"confirmOperationTip": "确认执行此操作? 此操作将不可撤销!",
+			"clearChat": "清空所有对话",
+			"clearApiKey": "清空所有API Key",
+			"clearConfig": "清空所有设置",
+			"clearLog": "清空所有日志"
 		}
 	},
 	"views": {
@@ -223,7 +234,8 @@
 			"language": "语言",
 			"chats": "对话",
 			"defaultChatSettings": "默认对话设置",
-			"importExport": "导入/导出"
+			"importExport": "导入/导出",
+			"hazardousOperations": "危险操作"
 		}
 	}
 }

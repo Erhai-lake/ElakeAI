@@ -1,0 +1,86 @@
+<script>
+import Button from "@/components/Button.vue"
+import EventBus from "@/services/EventBus"
+
+export default {
+	name: "HazardousOperations",
+	inject: ["$DB"],
+	components: {Button},
+	data() {
+		return {
+			name: "HazardousOperations"
+		}
+	},
+	methods: {
+		/**
+		 * 清除所有聊天记录
+		 */
+		async clearChat() {
+			if (!confirm(this.$t("components.HazardousOperations.confirmOperationTip"))) return
+			try {
+				await this.$DB.chats.clear()
+				EventBus.emit("[function] chatListGet")
+				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 操作失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)
+			}
+		},
+		/**
+		 * 清除所有API Key
+		 */
+		async clearApiKey() {
+			if (!confirm(this.$t("components.HazardousOperations.confirmOperationTip"))) return
+			try {
+				await this.$DB.apiKeys.clear()
+				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 操作失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)
+			}
+		},
+		/**
+		 * 清除所有配置项
+		 */
+		async clearConfigs() {
+			if (!confirm(this.$t("components.HazardousOperations.confirmOperationTip"))) return
+			try {
+				await this.$DB.configs.clear()
+				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 操作失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)
+			}
+		},
+		/**
+		 * 清除所有日志
+		 */
+		async clearLog() {
+			if (!confirm(this.$t("components.HazardousOperations.confirmOperationTip"))) return
+			try {
+				await this.$DB.logs.clear()
+				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 操作失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)
+			}
+		}
+	}
+}
+</script>
+
+<template>
+	<div class="HazardousOperation">
+		<Button @click="clearChat">{{ $t("components.HazardousOperations.clearChat") }}</Button>
+		<Button @click="clearApiKey">{{ $t("components.HazardousOperations.clearApiKey") }}</Button>
+		<Button @click="clearConfigs">{{ $t("components.HazardousOperations.clearConfig") }}</Button>
+		<Button @click="clearLog">{{ $t("components.HazardousOperations.clearLog") }}</Button>
+	</div>
+</template>
+
+<style scoped lang="less">
+.HazardousOperation {
+	display: flex;
+	gap: 10px;
+}
+</style>

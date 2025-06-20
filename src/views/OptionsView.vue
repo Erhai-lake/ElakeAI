@@ -4,12 +4,16 @@ import ThemeSelect from "@/components/options/ThemeSwitch.vue"
 import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
-import Button from "@/components/Button.vue"
 import ImportExport from "@/components/options/ImportExport.vue"
+import HazardousOperations from "@/components/options/HazardousOperations.vue"
+import Button from "@/components/Button.vue"
 
 export default {
 	name: "OptionsView",
-	components: {ImportExport, DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel}
+	components: {
+		HazardousOperations,
+		ImportExport, DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel
+	}
 }
 </script>
 
@@ -48,6 +52,14 @@ export default {
 			</template>
 			<template #Content>
 				<ImportExport/>
+			</template>
+		</FoldingPanel>
+		<FoldingPanel style="--bg-color: #F44336" :Height="50">
+			<template #Title>
+				{{ $t("views.OptionsView.hazardousOperations") }}
+			</template>
+			<template #Content>
+				<HazardousOperations/>
 			</template>
 		</FoldingPanel>
 		<div class="Container">

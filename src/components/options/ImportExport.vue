@@ -261,7 +261,7 @@ export default {
 					this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noDataToImport")}`)
 					return
 				}
-				if (!window.confirm(this.$t("components.ImportExport.confirmImportTip"))) return
+				if (!confirm(this.$t("components.ImportExport.confirmImportTip"))) return
 				await Promise.all(IMPORT_TASKS)
 				await this.loadExportData()
 				EventBus.emit("[function] configInitialization")

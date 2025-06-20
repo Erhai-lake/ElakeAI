@@ -194,6 +194,17 @@
 			"export": "Export",
 			"import": "Import",
 			"confirmImport": "Confirm Import"
+		},
+		"HazardousOperations": {
+			"toast": {
+				"operationSuccess": "Operation successful",
+				"operationFailed": "Operation failed"
+			},
+			"confirmOperationTip": "Are you sure you want to proceed? This action cannot be undone!",
+			"clearChat": "Clear all chats",
+			"clearApiKey": "Clear all API Keys",
+			"clearConfig": "Clear all settings",
+			"clearLog": "Clear all logs"
 		}
 	},
 	"views": {
@@ -223,7 +234,8 @@
 			"language": "Language",
 			"chats": "Chats",
 			"defaultChatSettings": "Default Chat Settings",
-			"importExport": "Import/Export"
+			"importExport": "Import/Export",
+			"hazardousOperations": "Hazardous Operations"
 		}
 	}
 }

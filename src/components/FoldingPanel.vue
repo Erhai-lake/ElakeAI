@@ -56,6 +56,7 @@ export default {
 
 <style scoped lang="less">
 .FoldingPanel {
+	--bg-color: #b3b3b33f;
 	margin: 5px 0;
 	width: 100%;
 	overflow: hidden;
@@ -65,7 +66,7 @@ export default {
 	.FoldingPanelTitle {
 		padding: 0 20px;
 		height: 60px;
-		background-color: #b3b3b33f;
+		background-color: var(--bg-color);
 		cursor: pointer;
 		display: grid;
 		grid-template-columns: 2fr 1fr 16px;
@@ -87,7 +88,7 @@ export default {
 	.FoldingPanelContent {
 		padding: 0 20px;
 		height: 0;
-		background-color: #b3b3b33f;
+		background-color: var(--bg-color);
 		transition: height 0.2s;
 		overflow-y: auto;
 	}
