@@ -66,6 +66,7 @@ export default {
 				selected: [],
 				selectAll: false
 			}
+			this.importFileData = null
 		},
 		/**
 		 * 初始化导出数据
@@ -141,10 +142,6 @@ export default {
 			if (this.configs.selected.length === 0) {
 				return null
 			}
-			if (this.configs.options.length === 0) {
-				this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noConfigsToExport")}`)
-				return null
-			}
 			try {
 				const CONFIGS_DATA = await this.$DB.configs.toArray()
 				const CONFIGS = CONFIGS_DATA.filter(item => this.configs.selected.includes(item.item))
@@ -164,10 +161,6 @@ export default {
 		 */
 		async handleExportApiKey() {
 			if (this.apiKeys.selected.length === 0) {
-				return null
-			}
-			if (this.apiKeys.options.length === 0) {
-				this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noApiKeysToExport")}`)
 				return null
 			}
 			try {
@@ -216,31 +209,21 @@ export default {
 		async handleFileChange(event) {
 			const FILE = event.target.files[0]
 			if (!FILE) return
-			this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.parsingInProgress")}`)
 			try {
-				this.importFileData = await this.readJsonFile(FILE)
-				this.$log.info(`[${this.name}] 开始解析数据`, this.importFileData)
 				this.initialization()
 				this.title = "selectConfigurationItemPromptImport"
+				this.importFileData = await this.readJsonFile(FILE)
+				this.$log.info(`[${this.name}] 开始解析数据`, this.importFileData)
 				if (this.importFileData.chats && this.importFileData.chats.length > 0) {
 					this.singleSelection.optional.push("chats")
 				}
 				if (this.importFileData.configs && this.importFileData.configs.length > 0) {
-					this.configs = {
-						options: this.importFileData.configs,
-						selected: [],
-						selectAll: false
-					}
+					this.configs.options = this.importFileData.configs
 				}
 				if (this.importFileData.apiKeys && this.importFileData.apiKeys.length > 0) {
-					this.apiKeys = {
-						options: this.importFileData.apiKeys,
-						selected: [],
-						selectAll: false
-					}
+					this.apiKeys.options = this.importFileData.apiKeys
 				}
 				this.$log.info(`[${this.name}] 解析完成`)
-				this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.parsingSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 解析失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.parsingFailed")}`)
@@ -253,7 +236,6 @@ export default {
 		 */
 		async confirmImport() {
 			try {
-				this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.importInProgress")}`)
 				const IMPORT_TASKS = []
 				if (this.singleSelection.selectedOptions.includes("chats") && this.importFileData.chats) {
 					IMPORT_TASKS.push(this.importChats(this.importFileData.chats))
@@ -275,6 +257,7 @@ export default {
 					}
 				}
 				if (IMPORT_TASKS.length === 0) {
+					this.$log.warn(`[${this.name}] 没有数据可导入`, IMPORT_TASKS)
 					this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noDataToImport")}`)
 					return
 				}
@@ -283,7 +266,6 @@ export default {
 				await this.loadExportData()
 				EventBus.emit("[function] configInitialization")
 				this.$log.info(`[${this.name}] 导入完成`)
-				this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.importSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailed")}`)
@@ -447,7 +429,10 @@ export default {
 			</div>
 			<div>
 				<Button @click="handleImport">{{ $t("components.ImportExport.import") }}</Button>
-				<Button @click="confirmImport">{{ $t("components.ImportExport.confirmImport") }}</Button>
+				<Button @click="confirmImport" v-if="importFileData">{{
+						$t("components.ImportExport.confirmImport")
+					}}
+				</Button>
 			</div>
 		</div>
 		<input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" accept=".json"/>
