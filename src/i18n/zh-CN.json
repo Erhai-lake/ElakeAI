@@ -101,7 +101,6 @@
 				"loadModelError": "加载模型失败",
 				"saveSettingsError": "保存设置失败"
 			},
-			"restoreSettings": "恢复设置",
 			"saveSettings": "保存设置"
 		},
 		"Selector": {

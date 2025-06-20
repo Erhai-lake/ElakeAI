@@ -101,7 +101,6 @@
 				"loadModelError": "Failed to load model",
 				"saveSettingsError": "Failed to save settings"
 			},
-			"restoreSettings": "Restore Settings",
 			"saveSettings": "Save Settings"
 		},
 		"Selector": {

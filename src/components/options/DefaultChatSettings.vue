@@ -278,10 +278,6 @@ export default {
 
 <template>
     <div class="DefaultChatSettings">
-        <!-- 恢复设置 -->
-        <Button @click="restoreSettings">
-            {{ $t("components.DefaultChatSettings.restoreSettings") }}
-        </Button>
         <!-- 大模型选择 -->
         <Selector
             :selectorSelected="selectedLargeModel || {}"
