@@ -34,6 +34,8 @@
   * 支持highlight.js代码高亮
   * 支持mermaid流程图
   * 支持mermaid流程图缩放移动
+  * 支持flowchart流程图(没写完...就这样吧...嗯...)
+  * 支持flowchart流程图缩放移动
   * 支持lazyload图片懒加载
   * 支持代码块复制
 * **数据管理**

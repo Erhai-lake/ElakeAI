@@ -12,6 +12,7 @@ import "katex/dist/katex.min.css"
 import markdownItMathjax3 from "markdown-it-mathjax3"
 import {imgLazyload} from "@mdit/plugin-img-lazyload"
 import mermaid from "mermaid"
+import flowchart from "flowchart.js"
 import panzoom from "@panzoom/panzoom"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
@@ -70,14 +71,23 @@ export default {
                             this.$log.error(`[${this.name}] 代码高亮渲染失败`, error)
                         }
                     } else if (lang === "mermaid") {
-                        // 初始化Mermaid
-                        this.initMermaid()
                         try {
                             return `<div class="mermaid">${str}</div>`
                         } catch (error) {
                             this.$log.error(`[${this.name}] mermaid渲染失败`, error)
+                        } finally {
+                            this.initMermaid()
                         }
-                    }
+                    } else if (lang === "flow") {
+                        try {
+							return `<div class="flowchart-container">${str}</div>`
+                        } catch (error) {
+							this.$log.error(`[${this.name}] flowchart渲染失败`, error)
+							return `<div class="flowchart-error">flowchart渲染失败</div>`
+						} finally {
+							this.initFlowchart()
+						}
+					}
                     return `<pre class="hljs"><code>${MD.utils.escapeHtml(str)}</code></pre>`
                 }
             })
@@ -119,7 +129,7 @@ export default {
             try {
                 try {
                     // 读取主题配置
-                    const THEME_DATA = (await this.$DB.configs.get("Theme")).value
+                    const THEME_DATA = (await this.$DB.configs.get("theme")).value
                     mermaid.initialize({
                         startOnLoad: true,
                         theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"
@@ -141,43 +151,43 @@ export default {
                             CONTAINER.className = "mermaid-container"
                             CONTAINER.setAttribute("data-rendered", "true")
                             CONTAINER.innerHTML = `
-                                <div class="mermaid-toolbar">
+                                <div class="toolbar">
                                     <!--第一排-->
                                     <div></div>
-                                    <button class="mermaid-toolbar-btn mermaid-move-up">
+                                    <button class="toolbar-btn move-up">
                                         <svg class="icon" aria-hidden="true">
                                             <use xlink:href="#icon-upArrow"></use>
                                         </svg>
                                     </button>
-                                    <button class="mermaid-toolbar-btn mermaid-zoom-in">
+                                    <button class="toolbar-btn zoom-in">
                                         <svg class="icon" aria-hidden="true">
                                             <use xlink:href="#icon-zoomIn"></use>
                                         </svg>
                                     </button>
                                     <!--第二排-->
-                                    <button class="mermaid-toolbar-btn mermaid-move-left">
+                                    <button class="toolbar-btn move-left">
                                         <svg class="icon" aria-hidden="true">
                                             <use xlink:href="#icon-leftArrow"></use>
                                         </svg>
                                     </button>
-                                    <button class="mermaid-toolbar-btn mermaid-zoom-reset">
+                                    <button class="toolbar-btn zoom-reset">
                                         <svg class="icon" aria-hidden="true">
                                             <use xlink:href="#icon-reset"></use>
                                         </svg>
                                     </button>
-                                    <button class="mermaid-toolbar-btn mermaid-move-right">
+                                    <button class="toolbar-btn move-right">
                                         <svg class="icon" aria-hidden="true">
                                             <use xlink:href="#icon-rightArrow"></use>
                                         </svg>
                                     </button>
                                     <!--第三排-->
                                     <div></div>
-                                    <button class="mermaid-toolbar-btn mermaid-move-down">
+                                    <button class="toolbar-btn move-down">
                                         <svg class="icon" aria-hidden="true">
                                             <use xlink:href="#icon-downArrow"></use>
                                         </svg>
                                     </button>
-                                    <button class="mermaid-toolbar-btn mermaid-zoom-out">
+                                    <button class="toolbar-btn zoom-out">
                                         <svg class="icon" aria-hidden="true">
                                             <use xlink:href="#icon-zoomOut"></use>
                                         </svg>
@@ -214,6 +224,134 @@ export default {
                 this.$log.error(`[${this.name}] mermaid初始化失败`, error)
             }
         },
+		/**
+         * 初始化Flowchart
+         */
+        async initFlowchart() {
+			try {
+				requestAnimationFrame(async () => {
+					const ELEMENTS = document.querySelectorAll(".flowchart-container:not([data-rendered])")
+					for (const ELEMENT of ELEMENTS) {
+						try {
+							ELEMENT.dataset.processed = "true"
+							const CODE = ELEMENT.textContent.trim()
+							// 解析流程图
+							const DIAGRAM = flowchart.parse(CODE)
+							// 创建容器
+							const CONTAINER = document.createElement("div")
+							CONTAINER.className = "flowchart-container"
+							CONTAINER.setAttribute("data-rendered", "true")
+							CONTAINER.innerHTML = `
+								<p>燃尽了, 是我的问题, 就先这样吧, 可以帮我写交PR, 实在要用, 请转mermaid, 谅解一下~</p>
+                                <div class="toolbar">
+                                    <!--第一排-->
+                                    <div></div>
+                                    <button class="toolbar-btn move-up">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-upArrow"></use>
+                                        </svg>
+                                    </button>
+                                    <button class="toolbar-btn zoom-in">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-zoomIn"></use>
+                                        </svg>
+                                    </button>
+                                    <!--第二排-->
+                                    <button class="toolbar-btn move-left">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-leftArrow"></use>
+                                        </svg>
+                                    </button>
+                                    <button class="toolbar-btn zoom-reset">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-reset"></use>
+                                        </svg>
+                                    </button>
+                                    <button class="toolbar-btn move-right">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-rightArrow"></use>
+                                        </svg>
+                                    </button>
+                                    <!--第三排-->
+                                    <div></div>
+                                    <button class="toolbar-btn move-down">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-downArrow"></use>
+                                        </svg>
+                                    </button>
+                                    <button class="toolbar-btn zoom-out">
+                                        <svg class="icon" aria-hidden="true">
+                                            <use xlink:href="#icon-zoomOut"></use>
+                                        </svg>
+                                    </button>
+                                </div>
+                            `
+							// 渲染SVG到临时容器
+							const SVG_CONTAINER = document.createElement("div")
+							DIAGRAM.drawSVG(SVG_CONTAINER)
+							CONTAINER.appendChild(SVG_CONTAINER.firstChild)
+							// 调整SVG尺寸
+							const SVG_ELEMENT = CONTAINER.querySelector("svg:not(.icon)")
+							if (SVG_ELEMENT) {
+								requestAnimationFrame(() => {
+									requestAnimationFrame(() => {
+										const SVG_CHILDREN = Array.from(SVG_ELEMENT.children)
+										for (let i = 0; i < SVG_CHILDREN.length; i++) {
+											const el = SVG_CHILDREN[i]
+											if (el.tagName === "rect") {
+												const rect = el
+												const text = SVG_CHILDREN[i + 1]
+												if (text && text.tagName === "text") {
+													const bbox = text.getBBox()
+													// 添加 padding
+													const paddingX = 20
+													const paddingY = 10
+													const width = bbox.width + paddingX
+													const height = bbox.height + paddingY
+													// 设置 rect 尺寸
+													rect.setAttribute("width", width)
+													rect.setAttribute("height", height)
+													rect.setAttribute("x", -width / 2)
+													rect.setAttribute("y", -height / 2)
+													const transform = text.getAttribute("transform")
+													const match = transform.match(/matrix\(([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*([^,]+),\s*([^)]+)\)/)
+													if (match) {
+														const a = parseFloat(match[1])
+														const b = parseFloat(match[2])
+														const c = parseFloat(match[3])
+														const d = parseFloat(match[4])
+														let tx = parseFloat(match[5])
+														let ty = parseFloat(match[6])
+														// 向左上微调
+														const adjustX = 25
+														const adjustY = 15
+														// 修改 matrix 平移部分
+														const newMatrix = `matrix(${a},${b},${c},${d},${tx - adjustX},${ty - adjustY})`
+														text.setAttribute("transform", newMatrix)
+													}
+												}
+											}
+										}
+									})
+								})
+								// 将调整后的SVG添加到容器
+								CONTAINER.appendChild(SVG_ELEMENT)
+								SVG_ELEMENT.style.width = "100%"
+								SVG_ELEMENT.style.display = "block"
+							}
+							// 插入DOM
+							ELEMENT.replaceWith(CONTAINER)
+							this.setupZoom(CONTAINER)
+						} catch (error) {
+							this.$log.error(`[${this.name}] flowchart渲染失败`, error)
+							ELEMENT.innerHTML = `<div class="flowchart-error">flowchart渲染失败</div>`
+						}
+					}
+				})
+			} catch (error) {
+				this.$log.error(`[${this.name}] flowchart初始化失败`, error)
+			}
+        },
         /**
          * 初始化缩放
          * @param container {HTMLElement} - 容器
@@ -224,48 +362,48 @@ export default {
             // 初始化 panzoom
             const INSTANCE = panzoom(SVG)
             // 向上移动按钮点击事件
-            const MOVE_UP_BTN = container.querySelector(".mermaid-move-up")
+            const MOVE_UP_BTN = container.querySelector(".move-up")
             if (!MOVE_UP_BTN) return
             MOVE_UP_BTN.addEventListener("click", () => {
                 const PAN = INSTANCE.getPan()
                 INSTANCE.pan(PAN.x, PAN.y + 30)
             })
             // 向下移动按钮点击事件
-            const MOVE_DOWN_BTN = container.querySelector(".mermaid-move-down")
+            const MOVE_DOWN_BTN = container.querySelector(".move-down")
             if (!MOVE_DOWN_BTN) return
             MOVE_DOWN_BTN.addEventListener("click", () => {
                 const PAN = INSTANCE.getPan()
                 INSTANCE.pan(PAN.x, PAN.y - 30)
             })
             // 向左移动按钮点击事件
-            const MOVE_LEFT_BTN = container.querySelector(".mermaid-move-left")
+            const MOVE_LEFT_BTN = container.querySelector(".move-left")
             if (!MOVE_LEFT_BTN) return
             MOVE_LEFT_BTN.addEventListener("click", () => {
                 const PAN = INSTANCE.getPan()
                 INSTANCE.pan(PAN.x + 30, PAN.y)
             })
             // 向右移动按钮点击事件
-            const MOVE_RIGHT_BTN = container.querySelector(".mermaid-move-right")
+            const MOVE_RIGHT_BTN = container.querySelector(".move-right")
             if (!MOVE_RIGHT_BTN) return
             MOVE_RIGHT_BTN.addEventListener("click", () => {
                 const PAN = INSTANCE.getPan()
                 INSTANCE.pan(PAN.x - 30, PAN.y)
             })
             // 放大按钮点击事件
-            const ZOOM_IN_BTN = container.querySelector(".mermaid-zoom-in")
+            const ZOOM_IN_BTN = container.querySelector(".zoom-in")
             if (!ZOOM_IN_BTN) return
             ZOOM_IN_BTN.addEventListener("click", () => {
                 INSTANCE.zoomIn(0.2)
             })
             // 复位按钮点击事件
-            const RESET_BTN = container.querySelector(".mermaid-zoom-reset")
+            const RESET_BTN = container.querySelector(".zoom-reset")
             if (!RESET_BTN) return
             RESET_BTN.addEventListener("click", () => {
                 INSTANCE.zoom(1)
                 INSTANCE.pan(0, 0)
             })
             // 缩小按钮点击事件
-            const ZOOM_OUT_BTN = container.querySelector(".mermaid-zoom-out")
+            const ZOOM_OUT_BTN = container.querySelector(".zoom-out")
             if (!ZOOM_OUT_BTN) return
             ZOOM_OUT_BTN.addEventListener("click", () => {
                 INSTANCE.zoomOut(0.2)

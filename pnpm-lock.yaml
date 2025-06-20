@@ -26,6 +26,9 @@ importers:
       dexie:
         specifier: ^4.0.11
         version: 4.0.11
+      flowchart.js:
+        specifier: ^1.18.0
+        version: 1.18.0
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
@@ -2221,6 +2224,9 @@ packages:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
 
+  eve-raphael@0.5.0:
+    resolution: {integrity: sha1-F8dUt5K+7z+maE15z1pHxjxM2jA=}
+
   event-pubsub@4.3.0:
     resolution: {integrity: sha512-z7IyloorXvKbFx9Bpie2+vMJKKx1fH1EN5yiTfp8CiLOTptSYy1g8H4yDpGlEdshL1PBiFtBHepF2cNsqeEeFQ==}
     engines: {node: '>=4.0.0'}
@@ -2290,6 +2296,10 @@ packages:
   flat@5.0.2:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
     hasBin: true
+
+  flowchart.js@1.18.0:
+    resolution: {integrity: sha512-1rZflSLyrj5/+ryzU+qIQr6IGysPIHT4UrgN+6IaVv7pLDSLu7CvC9e0X7FU6ocpRAEtHk5+UaFXv9NZKRoG3g==}
+    engines: {node: '>=4.0.0'}
 
   follow-redirects@1.15.9:
     resolution: {integrity: sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==}
@@ -3488,6 +3498,9 @@ packages:
   range-parser@1.2.1:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
+
+  raphael@2.3.0:
+    resolution: {integrity: sha512-w2yIenZAQnp257XUWGni4bLMVxpUpcIl7qgxEgDIXtmSypYtlNxfXWpOBxs7LBTps5sDwhRnrToJrMUrivqNTQ==}
 
   raw-body@2.5.2:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
@@ -6753,6 +6766,8 @@ snapshots:
 
   etag@1.8.1: {}
 
+  eve-raphael@0.5.0: {}
+
   event-pubsub@4.3.0: {}
 
   eventemitter3@4.0.7: {}
@@ -6873,6 +6888,10 @@ snapshots:
       path-exists: 4.0.0
 
   flat@5.0.2: {}
+
+  flowchart.js@1.18.0:
+    dependencies:
+      raphael: 2.3.0
 
   follow-redirects@1.15.9(debug@4.4.1):
     optionalDependencies:
@@ -8011,6 +8030,10 @@ snapshots:
       safe-buffer: 5.2.1
 
   range-parser@1.2.1: {}
+
+  raphael@2.3.0:
+    dependencies:
+      eve-raphael: 0.5.0
 
   raw-body@2.5.2:
     dependencies:
