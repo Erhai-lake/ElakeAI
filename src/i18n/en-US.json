@@ -180,11 +180,11 @@
 				"importInProgress": "Importing data...",
 				"invalidJsonFormat": "Invalid JSON format",
 				"fileReadError": "Failed to read file",
-				"importSuccess": "Import completed. Please refresh the page",
+				"importSuccess": "Import completed",
 				"importFailed": "Import failed",
 				"importFailedSkipped": "Import failed. Some items were skipped"
 			},
-			"confirmImport": "Confirm import? This action cannot be undone!",
+			"confirmImport": "Confirm import? The imported data will be merged with the current data!",
 			"selectConfigurationItemPrompt": "Please select the configuration items to export",
 			"selectAll": "Select all {item}",
 			"configs": "Configurations",

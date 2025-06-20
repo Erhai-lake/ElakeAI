@@ -180,11 +180,11 @@
 				"importInProgress": "正在导入数据...",
 				"invalidJsonFormat": "无效的JSON格式",
 				"fileReadError": "读取文件失败",
-				"importSuccess": "导入完成, 请刷新页面",
+				"importSuccess": "导入完成",
 				"importFailed": "导入失败",
 				"importFailedSkipped": "导入失败, 已跳过"
 			},
-			"confirmImport": "确认导入? 这是一个不可逆操作!",
+			"confirmImport": "确认导入? 导入后将合并当前数据!",
 			"selectConfigurationItemPrompt": "请选择要导出的配置项",
 			"selectAll": "全选 {item}",
 			"configs": "配置",

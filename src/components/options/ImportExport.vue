@@ -1,5 +1,6 @@
 <script>
 import Button from "@/components/Button.vue"
+import EventBus from "@/services/EventBus"
 
 export default {
 	name: "ImportExport",
@@ -39,15 +40,21 @@ export default {
 		}
 	},
 	async created() {
-		try {
-			this.configs.options = await this.$DB.configs.toArray()
-			this.apiKeys.options = await this.$DB.apiKeys.toArray()
-		} catch (error) {
-			this.$log.error(`[${this.name}] 加载子选项失败`, error)
-			this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToLoadSubOptions")}`)
-		}
+		await this.loadSubOptions()
 	},
 	methods: {
+		/**
+		 * 加载子选项
+		 */
+		async loadSubOptions() {
+			try {
+				this.configs.options = await this.$DB.configs.toArray()
+				this.apiKeys.options = await this.$DB.apiKeys.toArray()
+			} catch (error) {
+				this.$log.error(`[${this.name}] 加载子选项失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToLoadSubOptions")}`)
+			}
+		},
 		/**
 		 * 全选/取消全选configs
 		 */
@@ -195,6 +202,8 @@ export default {
 					DATA.apiKeys && this.importApiKeys(DATA.apiKeys),
 					DATA.chats && this.importChats(DATA.chats)
 				])
+				await this.loadSubOptions()
+				EventBus.emit("[function] configInitialization")
 				this.$log.info(`[${this.name}] 导入完成`)
 				this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.importSuccess")}`)
 			} catch (error) {
@@ -230,7 +239,7 @@ export default {
 			})
 		},
 		/**
-		 * 导入配置项
+		 * 导入configs
 		 * @param configs - 配置项
 		 */
 		async importConfigs(configs) {
@@ -240,7 +249,6 @@ export default {
 						// 检查是否已存在相同item的配置
 						const EXISTING = await this.$DB.configs.get({item: config.item})
 						if (EXISTING) {
-							console.log(EXISTING, config)
 							// 更新现有配置
 							await this.$DB.configs.update(EXISTING.item, config)
 							this.$log.info(`[${this.name}] 更新config`, config.item)
@@ -268,17 +276,9 @@ export default {
 						// 生成新的key避免冲突
 						const NEW_KEY = crypto.randomUUID()
 						const NEW_API_KEY = {...apiKey, key: NEW_KEY}
-						// 检查是否已存在相同value的API Key
-						const EXISTING = await this.$DB.apiKeys.get({value: apiKey.value})
-						if (EXISTING) {
-							// 更新现有API Key
-							await this.$DB.apiKeys.update(EXISTING.id, NEW_API_KEY)
-							this.$log.info(`[${this.name}] 更新apiKey`, apiKey.remark)
-						} else {
-							// 添加新API Key
-							await this.$DB.apiKeys.add(NEW_API_KEY)
-							this.$log.info(`[${this.name}] 添加新apiKey`, apiKey.remark)
-						}
+						// 添加新apiKey
+						await this.$DB.apiKeys.add(NEW_API_KEY)
+						this.$log.info(`[${this.name}] 添加新apiKey`, apiKey.remark)
 					}
 				})
 				this.$log.info(`[${this.name}] 成功导入 ${apiKeys.length} 个apiKey`)
