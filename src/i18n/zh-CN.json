@@ -190,6 +190,7 @@
 			"configs": "配置",
 			"apiKeys": "API Keys",
 			"chats": "对话",
+			"loadExportData": "重新加载导出数据",
 			"export": "导出",
 			"import": "导入"
 		}

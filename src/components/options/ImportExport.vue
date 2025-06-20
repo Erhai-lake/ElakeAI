@@ -9,8 +9,11 @@ export default {
 	data() {
 		return {
 			name: "ImportExport",
-			// 选中的一级选项
-			selectedOptions: [],
+			title: "selectConfigurationItemPrompt",
+			singleSelection: {
+				optional: [],
+				selectedOptions: []
+			},
 			configs: {
 				// 所有选项
 				options: [],
@@ -33,28 +36,16 @@ export default {
 	},
 	watch: {
 		"configs.selected"(newVal) {
-			this.configs.selectAll = newVal.length === this.configs.options.length
+			this.configs.selectAll = this.configs.options.length > 0 && newVal.length === this.configs.options.length
 		},
 		"apiKeys.selected"(newVal) {
-			this.apiKeys.selectAll = newVal.length === this.apiKeys.options.length
+			this.apiKeys.selectAll = this.apiKeys.options.length > 0 && newVal.length === this.apiKeys.options.length
 		}
 	},
 	async created() {
-		await this.loadSubOptions()
+		await this.loadExportData()
 	},
 	methods: {
-		/**
-		 * 加载子选项
-		 */
-		async loadSubOptions() {
-			try {
-				this.configs.options = await this.$DB.configs.toArray()
-				this.apiKeys.options = await this.$DB.apiKeys.toArray()
-			} catch (error) {
-				this.$log.error(`[${this.name}] 加载子选项失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToLoadSubOptions")}`)
-			}
-		},
 		/**
 		 * 全选/取消全选configs
 		 */
@@ -76,66 +67,42 @@ export default {
 			}
 		},
 		/**
-		 * 处理导出configs
-		 * @returns {Promise<*>}
+		 * 初始化导出数据
 		 */
-		async handleExportConfigs() {
-			if (this.configs.selected.length > 0) {
-				try {
-					const CONFIGS_DATA = await this.$DB.configs.toArray()
-					const CONFIGS = CONFIGS_DATA.filter(item => this.configs.selected.includes(item.item))
-					if (CONFIGS.length === 0) {
-						return null
-					}
-					return CONFIGS
-				} catch (error) {
-					this.$log.error(`[${this.name}] 获取configs数据失败`, error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToGetData")}`)
-					return null
-				}
+		async loadExportData() {
+			// 初始化
+			this.title = "selectConfigurationItemPrompt"
+			this.singleSelection = {
+				optional: [],
+				selectedOptions: []
 			}
-			return null
-		},
-		/**
-		 * 处理导出apiKeys
-		 * @returns {Promise<*>}
-		 */
-		async handleExportApiKey() {
-			if (this.apiKeys.selected.length > 0) {
-				try {
-					const API_KEYS_DATA = await this.$DB.apiKeys.toArray()
-					const API_KEYS = API_KEYS_DATA.filter(item => this.apiKeys.selected.includes(item.key))
-					if (API_KEYS.length === 0) {
-						return null
-					}
-					return API_KEYS
-				} catch (error) {
-					this.$log.error(`[${this.name}] 获取apiKeys数据失败`, error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToGetData")}`)
-					return null
-				}
+			this.configs = {
+				options: [],
+				selected: [],
+				selectAll: false
 			}
-			return null
-		},
-		/**
-		 * 处理导出chats
-		 * @returns {Promise<*>}
-		 */
-		async handleExportChats() {
-			if (this.selectedOptions.includes("chats")) {
-				try {
-					const CHATS_DATA = await this.$DB.chats.toArray()
-					if (CHATS_DATA.length === 0) {
-						return null
-					}
-					return CHATS_DATA
-				} catch (error) {
-					this.$log.error(`[${this.name}] 获取chats数据失败`, error)
-					this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
-					return null
-				}
+			this.apiKeys = {
+				options: [],
+				selected: [],
+				selectAll: false
 			}
-			return null
+			// 加载子选项数据
+			try {
+				this.configs.options = await this.$DB.configs.toArray()
+				this.apiKeys.options = await this.$DB.apiKeys.toArray()
+			} catch (error) {
+				this.$log.error(`[${this.name}] 加载子选项失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToLoadSubOptions")}`)
+			}
+			// 加载单选项数据
+			try {
+				if (await this.$DB.chats.toArray().length > 0) this.singleSelection.optional.push("chats")
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取数据失败`, error)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
+				return null
+			}
+			this.$log.info(`[${this.name}] 初始化导出完成`)
 		},
 		/**
 		 * 处理导出
@@ -180,6 +147,76 @@ export default {
 			}
 		},
 		/**
+		 * 处理导出configs
+		 * @returns {Promise<*>}
+		 */
+		async handleExportConfigs() {
+			if (this.configs.selected.length === 0) {
+				return null
+			}
+			if (this.configs.options.length === 0) {
+				this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noConfigsToExport")}`)
+				return null
+			}
+			try {
+				const CONFIGS_DATA = await this.$DB.configs.toArray()
+				const CONFIGS = CONFIGS_DATA.filter(item => this.configs.selected.includes(item.item))
+				if (CONFIGS.length === 0) {
+					return null
+				}
+				return CONFIGS
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取configs数据失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToGetData")}`)
+				return null
+			}
+		},
+		/**
+		 * 处理导出apiKeys
+		 * @returns {Promise<*>}
+		 */
+		async handleExportApiKey() {
+			if (this.apiKeys.selected.length === 0) {
+				return null
+			}
+			if (this.apiKeys.options.length === 0) {
+				this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noApiKeysToExport")}`)
+				return null
+			}
+			try {
+				const API_KEYS_DATA = await this.$DB.apiKeys.toArray()
+				const API_KEYS = API_KEYS_DATA.filter(item => this.apiKeys.selected.includes(item.key))
+				if (API_KEYS.length === 0) {
+					return null
+				}
+				return API_KEYS
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取apiKeys数据失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToGetData")}`)
+				return null
+			}
+		},
+		/**
+		 * 处理导出chats
+		 * @returns {Promise<*>}
+		 */
+		async handleExportChats() {
+			if (!this.singleSelection.selectedOptions.includes("chats")) {
+				return null
+			}
+			try {
+				const CHATS_DATA = await this.$DB.chats.toArray()
+				if (CHATS_DATA.length === 0) {
+					return null
+				}
+				return CHATS_DATA
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取chats数据失败`, error)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
+				return null
+			}
+		},
+		/**
 		 * 处理导入
 		 */
 		handleImport() {
@@ -190,7 +227,8 @@ export default {
 		/**
 		 * 处理文件导入回调
 		 * @param event
-		 */ async handleFileChange(event) {
+		 */
+		async handleFileChange(event) {
 			const FILE = event.target.files[0]
 			if (!FILE) return
 			this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.importInProgress")}`)
@@ -202,7 +240,7 @@ export default {
 					DATA.apiKeys && this.importApiKeys(DATA.apiKeys),
 					DATA.chats && this.importChats(DATA.chats)
 				])
-				await this.loadSubOptions()
+				await this.loadExportData()
 				EventBus.emit("[function] configInitialization")
 				this.$log.info(`[${this.name}] 导入完成`)
 				this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.importSuccess")}`)
@@ -315,15 +353,23 @@ export default {
 
 <template>
 	<div class="ImportExport">
-		<h3>{{ $t("components.ImportExport.selectConfigurationItemPrompt") }}</h3>
+		<h3>{{ $t(`components.ImportExport.${title}`) }}</h3>
 		<div class="ConfigSelection">
-			<div class="OptionGroup">
+			<div class="OptionGroup" v-if="singleSelection.optional.includes('chats')">
+				<h4>Chats</h4>
+				<label class="OptionItem">
+					<input type="checkbox" v-model="singleSelection.selectedOptions" value="chats"/>
+					<span class="CustomCheckbox"></span>
+					<span>{{ $t("components.ImportExport.chats") }}</span>
+				</label>
+			</div>
+			<div class="OptionGroup" v-if="configs.options.length > 0">
 				<label class="OptionItem">
 					<input type="checkbox" v-model="configs.selectAll" @change="toggleAllConfigs"/>
 					<span class="CustomCheckbox"></span>
-					<span>{{
-							$t("components.ImportExport.selectAll", {item: $t("components.ImportExport.configs")})
-						}}</span>
+					<span>
+						{{ $t("components.ImportExport.selectAll", {item: $t("components.ImportExport.configs")}) }}
+					</span>
 				</label>
 				<div class="SubOptions" v-if="configs.options.length">
 					<label
@@ -336,14 +382,13 @@ export default {
 					</label>
 				</div>
 			</div>
-
-			<div class="OptionGroup">
+			<div class="OptionGroup" v-if="apiKeys.options.length > 0">
 				<label class="OptionItem">
 					<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAllApiKeys"/>
 					<span class="CustomCheckbox"></span>
-					<span>{{
-							$t("components.ImportExport.selectAll", {item: $t("components.ImportExport.apiKeys")})
-						}}</span>
+					<span>
+						{{ $t("components.ImportExport.selectAll", {item: $t("components.ImportExport.apiKeys")}) }}
+					</span>
 				</label>
 				<div class="SubOptions" v-if="apiKeys.options.length">
 					<label
@@ -356,18 +401,12 @@ export default {
 					</label>
 				</div>
 			</div>
-
-			<div class="OptionGroup">
-				<h4>Chats</h4>
-				<label class="OptionItem">
-					<input type="checkbox" v-model="selectedOptions" value="chats"/>
-					<span class="CustomCheckbox"></span>
-					<span>{{ $t("components.ImportExport.chats") }}</span>
-				</label>
-			</div>
 		</div>
 		<div class="ActionButtons">
-			<Button @click="handleExport">{{ $t("components.ImportExport.export") }}</Button>
+			<div>
+				<Button @click="loadExportData">{{ $t("components.ImportExport.loadExportData") }}</Button>
+				<Button @click="handleExport">{{ $t("components.ImportExport.export") }}</Button>
+			</div>
 			<Button @click="handleImport">{{ $t("components.ImportExport.import") }}</Button>
 		</div>
 		<input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" accept=".json"/>
@@ -388,6 +427,10 @@ export default {
 	display: grid;
 	grid-template-rows: auto 1fr auto;
 	overflow: hidden;
+
+	h3 {
+		margin-bottom: 20px;
+	}
 
 	.ConfigSelection {
 		padding-right: 10px;
@@ -454,5 +497,10 @@ export default {
 .ActionButtons {
 	display: flex;
 	justify-content: space-between;
+
+	div {
+		display: flex;
+		gap: 10px;
+	}
 }
 </style>

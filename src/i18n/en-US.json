@@ -190,6 +190,7 @@
 			"configs": "Configurations",
 			"apiKeys": "API Keys",
 			"chats": "Chats",
+			"loadExportData": "Reload the exported data",
 			"export": "Export",
 			"import": "Import"
 		}
