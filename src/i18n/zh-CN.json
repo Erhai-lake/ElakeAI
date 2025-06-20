@@ -177,22 +177,28 @@
 				"noDataToExport": "没有数据可导出",
 				"exportSuccess": "导出成功",
 				"exportFailed": "导出失败",
-				"importInProgress": "正在导入数据...",
+				"parsingInProgress": "正在解析数据...",
+				"parsingSuccess": "解析完成",
+				"parsingFailed": "解析失败",
 				"invalidJsonFormat": "无效的JSON格式",
 				"fileReadError": "读取文件失败",
+				"importInProgress": "正在导入数据...",
+				"noDataToImport": "没有数据可导入",
 				"importSuccess": "导入完成",
 				"importFailed": "导入失败",
 				"importFailedSkipped": "导入失败, 已跳过"
 			},
-			"confirmImport": "确认导入? 导入后将合并当前数据!",
-			"selectConfigurationItemPrompt": "请选择要导出的配置项",
+			"confirmImportTip": "确认导入? 导入后将合并当前数据!",
+			"selectConfigurationItemPromptExport": "请选择要导出的配置项",
+			"selectConfigurationItemPromptImport": "请选择要导入的配置项",
 			"selectAll": "全选 {item}",
 			"configs": "配置",
 			"apiKeys": "API Keys",
 			"chats": "对话",
 			"loadExportData": "重新加载导出数据",
 			"export": "导出",
-			"import": "导入"
+			"import": "导入",
+			"confirmImport": "确认导入"
 		}
 	},
 	"views": {
