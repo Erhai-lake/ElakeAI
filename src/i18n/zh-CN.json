@@ -99,6 +99,7 @@
 				"getDefaultSettingsError": "获取默认设置失败",
 				"loadKeyPoolError": "加载Key池失败",
 				"loadModelError": "加载模型失败",
+				"saveSettingsSuccess": "保存设置成功",
 				"saveSettingsError": "保存设置失败"
 			},
 			"saveSettings": "保存设置"

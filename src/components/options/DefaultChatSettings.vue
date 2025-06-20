@@ -267,6 +267,7 @@ export default {
                         }
                     })
                 }
+				this.$toast.success(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.saveSettingsSuccess")}`)
             } catch (error) {
                 this.$log.error(`[${this.name}] 保存设置失败`, error)
                 this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.saveSettingsError")}`)

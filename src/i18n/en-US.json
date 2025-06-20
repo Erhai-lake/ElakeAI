@@ -99,6 +99,7 @@
 				"getDefaultSettingsError": "Failed to get default settings",
 				"loadKeyPoolError": "Failed to load key pool",
 				"loadModelError": "Failed to load model",
+				"saveSettingsSuccess": "Settings saved successfully",
 				"saveSettingsError": "Failed to save settings"
 			},
 			"saveSettings": "Save Settings"

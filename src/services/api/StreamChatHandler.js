@@ -104,7 +104,7 @@ export default class StreamChatHandler {
     async handleCompletion(params, paramsData, messageData) {
         this.eventBus.emit("[stream] streamComplete")
         // 保存消息到数据库
-        await this.db.Chats.update(params.chatKey, {
+        await this.db.chats.update(params.chatKey, {
             data: [
                 ...paramsData.chatKeyData.data,
                 {
