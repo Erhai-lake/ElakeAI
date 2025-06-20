@@ -178,25 +178,27 @@
 				"exportSuccess": "Export successful",
 				"exportFailed": "Export failed",
 				"parsingInProgress": "Parsing data...",
-				"importInProgress": "Importing data...",
-				"invalidJsonFormat": "Invalid JSON format",
-				"fileReadError": "Failed to read file",
 				"parsingSuccess": "Parsing completed",
 				"parsingFailed": "Parsing failed",
+				"invalidJsonFormat": "Invalid JSON format",
+				"fileReadError": "Failed to read file",
+				"importInProgress": "Importing data...",
+				"noDataToImport": "No data available for import",
 				"importSuccess": "Import completed",
 				"importFailed": "Import failed",
-				"importFailedSkipped": "Import failed. Some items were skipped"
+				"importFailedSkipped": "Import failed, some items were skipped"
 			},
-			"confirmImport": "Confirm import? The imported data will be merged with the current data!",
+			"confirmImportTip": "Confirm import? Imported data will be merged with the current data!",
 			"selectConfigurationItemPromptExport": "Please select the configuration items to export",
 			"selectConfigurationItemPromptImport": "Please select the configuration items to import",
 			"selectAll": "Select all {item}",
 			"configs": "Configurations",
 			"apiKeys": "API Keys",
 			"chats": "Chats",
-			"loadExportData": "Reload the exported data",
+			"loadExportData": "Reload export data",
 			"export": "Export",
-			"import": "Import"
+			"import": "Import",
+			"confirmImport": "Confirm Import"
 		}
 	},
 	"views": {
