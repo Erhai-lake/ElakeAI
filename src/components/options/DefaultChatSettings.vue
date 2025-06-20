@@ -30,8 +30,8 @@ export default {
             currentKeyRequest: null,
             // 加载状态
             loading: {
-                models: false,
-                keys: false
+				keys: false,
+                models: false
             }
         }
     },
@@ -112,6 +112,7 @@ export default {
                 this.selectedKey = keys[0] || null
 
                 if (this.selectedKey) {
+					this.loading.keys = false
                     await this.selectKey(this.selectedKey)
                 }
             } catch (error) {

@@ -34,8 +34,8 @@ export default defineComponent({
                 currentKeyRequest: null,
                 // 加载状态
                 loading: {
-                    models: false,
-                    keys: false
+					keys: false,
+                    models: false
                 }
             },
             // 输入框
@@ -157,6 +157,7 @@ export default defineComponent({
                 this.selector.selectedKey = keys[0] || null
 
                 if (this.selector.selectedKey) {
+					this.selector.loading.keys = false
                     await this.selectKey(this.selector.selectedKey)
                 }
             } catch (error) {
