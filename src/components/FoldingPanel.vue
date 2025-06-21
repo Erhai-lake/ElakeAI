@@ -37,24 +37,21 @@ export default {
 </script>
 
 <template>
-	<div class="FoldingPanel">
-		<div class="FoldingPanelTitle" @click="toggleFolding">
-			<div class="Left">
+	<div class="folding-panel">
+		<div class="folding-panel-title" @click="toggleFolding">
+			<div class="left">
 				<slot name="Title">
 					使用 &lt;template #Title&gt;&lt;/template&gt;插入标题
 				</slot>
 			</div>
 			<div></div>
-			<div class="Arrow" :class="{ expanded: isExpand }">
-				<svg class="icon" viewBox="0 0 1024 1024"
-					 xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-					<path
-						d="M895.701333 300.117333c0 9.6-3.2 19.285333-9.6 27.392l-340.906666 423.808a43.733333 43.733333 0 0 1-68.096 0L137.984 329.301333A43.690667 43.690667 0 0 1 206.08 274.602667l305.109333 379.605333 306.773334-381.525333a43.690667 43.690667 0 0 1 77.738666 27.434666z"
-						fill="#9ca8af"></path>
+			<div class="arrow" :class="{ expanded: isExpand }">
+				<svg class="icon" aria-hidden="true">
+					<use xlink:href="#icon-downArrow"></use>
 				</svg>
 			</div>
 		</div>
-		<div class="FoldingPanelContent" :style="{ height: isExpand ? contentHeight + 'px' : '0px' }">
+		<div class="folding-panel-content" :style="{ height: isExpand ? contentHeight + 'px' : '0px' }">
 			<slot name="Content">
 				使用 &lt;template #Content&gt;&lt;/template&gt;插入内容
 			</slot>
@@ -63,7 +60,15 @@ export default {
 </template>
 
 <style scoped lang="less">
-.FoldingPanel {
+.icon {
+	width: 1em;
+	height: 1em;
+	vertical-align: -0.15em;
+	fill: currentColor;
+	overflow: hidden;
+}
+
+.folding-panel {
 	--bg-color: #b3b3b33f;
 	margin: 5px 0;
 	width: 100%;
@@ -71,7 +76,7 @@ export default {
 	border-radius: 10px;
 	user-select: none;
 
-	.FoldingPanelTitle {
+	.folding-panel-title {
 		padding: 0 20px;
 		height: 60px;
 		background-color: var(--bg-color);
@@ -84,7 +89,7 @@ export default {
 			align-items: center;
 		}
 
-		.Arrow {
+		.arrow {
 			transition: transform 0.2s;
 
 			&.expanded {
@@ -93,7 +98,7 @@ export default {
 		}
 	}
 
-	.FoldingPanelContent {
+	.folding-panel-content {
 		padding: 0 20px;
 		height: 0;
 		background-color: var(--bg-color);

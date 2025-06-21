@@ -75,7 +75,7 @@ export default {
 </script>
 
 <template>
-    <div class="LanguageSelect">
+    <div class="language-select">
         <Selector
             :selectorSelected="selectedLang || {}"
             :selectorList="languages"
@@ -85,7 +85,7 @@ export default {
 </template>
 
 <style scoped lang="less">
-.LanguageSelect {
+.language-select {
     width: 240px;
 }
 </style>

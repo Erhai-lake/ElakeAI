@@ -372,57 +372,57 @@ export default {
 </script>
 
 <template>
-	<div class="ImportExport">
+	<div class="import-export">
 		<h3>{{ $t(`components.ImportExport.${title}`) }}</h3>
-		<div class="ConfigSelection">
-			<div class="OptionGroup" v-if="singleSelection.optional.includes('chats')">
+		<div class="config-selection">
+			<div class="option-group" v-if="singleSelection.optional.includes('chats')">
 				<h4>Chats</h4>
-				<label class="OptionItem">
+				<label class="option-item">
 					<input type="checkbox" v-model="singleSelection.selectedOptions" value="chats"/>
-					<span class="CustomCheckbox"></span>
+					<span class="custom-checkbox"></span>
 					<span>{{ $t("components.ImportExport.chats") }}</span>
 				</label>
 			</div>
-			<div class="OptionGroup" v-if="configs.options.length > 0">
-				<label class="OptionItem">
+			<div class="option-group" v-if="configs.options.length > 0">
+				<label class="option-item">
 					<input type="checkbox" v-model="configs.selectAll" @change="toggleAllConfigs"/>
-					<span class="CustomCheckbox"></span>
+					<span class="custom-checkbox"></span>
 					<span>
 						{{ $t("components.ImportExport.selectAll", {item: $t("components.ImportExport.configs")}) }}
 					</span>
 				</label>
-				<div class="SubOptions" v-if="configs.options.length">
+				<div class="sub-options" v-if="configs.options.length">
 					<label
-						class="OptionItem SubOption"
+						class="option-item sub-option"
 						v-for="(option, index) in configs.options"
 						:key="'configs-'+index">
 						<input type="checkbox" v-model="configs.selected" :value="option.item"/>
-						<span class="CustomCheckbox"></span>
+						<span class="custom-checkbox"></span>
 						<span>{{ option.item }}</span>
 					</label>
 				</div>
 			</div>
-			<div class="OptionGroup" v-if="apiKeys.options.length > 0">
-				<label class="OptionItem">
+			<div class="option-group v-if="apiKeys.options.length > 0">
+				<label class="option-item">
 					<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAllApiKeys"/>
-					<span class="CustomCheckbox"></span>
+					<span class="custom-checkbox"></span>
 					<span>
 						{{ $t("components.ImportExport.selectAll", {item: $t("components.ImportExport.apiKeys")}) }}
 					</span>
 				</label>
-				<div class="SubOptions" v-if="apiKeys.options.length">
+				<div class="sub-options" v-if="apiKeys.options.length">
 					<label
-						class="OptionItem SubOption"
+						class="option-item sub-option"
 						v-for="(option, index) in apiKeys.options"
 						:key="'apiKeys-'+index">
 						<input type="checkbox" v-model="apiKeys.selected" :value="option.key"/>
-						<span class="CustomCheckbox"></span>
+						<span class="custom-checkbox"></span>
 						<span>[{{ option.model }}] {{ option.remark }}</span>
 					</label>
 				</div>
 			</div>
 		</div>
-		<div class="ActionButtons">
+		<div class="action-buttons">
 			<div>
 				<Button @click="loadExportData">{{ $t("components.ImportExport.loadExportData") }}</Button>
 				<Button @click="handleExport">{{ $t("components.ImportExport.export") }}</Button>
@@ -441,7 +441,7 @@ export default {
 
 
 <style scoped lang="less">
-.ImportExport {
+.import-export {
 	padding: 20px;
 	margin: 0 auto;
 	box-sizing: border-box;
@@ -458,20 +458,20 @@ export default {
 		margin-bottom: 20px;
 	}
 
-	.ConfigSelection {
+	.config-selection {
 		padding-right: 10px;
 		margin-bottom: 20px;
 		overflow: auto;
 	}
 }
 
-.OptionGroup {
+.option-group {
 	margin-bottom: 15px;
 	padding: 10px;
 	border-radius: 5px;
 	border: 1px solid var(--border-color);
 
-	.OptionItem {
+	.option-item {
 		display: flex;
 		align-items: center;
 		padding: 8px 0;
@@ -480,13 +480,13 @@ export default {
 		input[type="checkbox"] {
 			display: none;
 
-			&:checked + .CustomCheckbox::after {
+			&:checked + .custom-checkbox::after {
 				opacity: 1;
 
 			}
 		}
 
-		.CustomCheckbox {
+		.custom-checkbox {
 			margin-right: 10px;
 			display: inline-block;
 			width: 20px;
@@ -513,14 +513,14 @@ export default {
 		}
 	}
 
-	.SubOptions {
+	.sub-options {
 		margin-left: 20px;
 		padding-left: 10px;
 		border-left: 2px solid var(--border-color);
 	}
 }
 
-.ActionButtons {
+.action-buttons {
 	display: flex;
 	justify-content: space-between;
 

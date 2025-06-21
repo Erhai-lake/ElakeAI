@@ -18,17 +18,17 @@ export default {
 </script>
 
 <template>
-	<div class="OptionsContainer">
+	<div class="options-container">
 		<FoldingPanel>
 			<template #Title>
 				{{ $t("views.OptionsView.personalization") }}
 			</template>
 			<template #Content>
-				<div class="Item">
+				<div class="item">
 					{{ $t("views.OptionsView.theme") }}
 					<ThemeSelect/>
 				</div>
-				<div class="Item">
+				<div class="item">
 					{{ $t("views.OptionsView.language") }}
 					<LanguageSelect/>
 				</div>
@@ -40,7 +40,7 @@ export default {
 			</template>
 			<template #Content>
 				<ChatAIKey/>
-				<div class="Item">
+				<div class="item">
 					{{ $t("views.OptionsView.defaultChatSettings") }}
 					<DefaultChatSettings/>
 				</div>
@@ -62,7 +62,7 @@ export default {
 				<HazardousOperations/>
 			</template>
 		</FoldingPanel>
-		<div class="Container">
+		<div class="container">
 			<router-link :to="{ path: '/options/debug' }">
 				<Button>BeBUG</Button>
 			</router-link>
@@ -74,11 +74,11 @@ export default {
 </template>
 
 <style scoped lang="less">
-.OptionsContainer {
+.options-container {
 	padding: 20px;
 }
 
-.Item {
+.item {
 	padding: 10px;
 	display: flex;
 	align-items: center;
@@ -89,7 +89,7 @@ export default {
 	gap: 10px;
 }
 
-.Container {
+.container {
 	padding: 20px;
 	margin: 5px 0;
 	border-radius: 10px;

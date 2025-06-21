@@ -10,7 +10,3 @@ export default {
 <template>
     <Log/>
 </template>
-
-<style scoped lang="less">
-
-</style>

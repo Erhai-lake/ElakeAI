@@ -70,7 +70,7 @@ export default {
 </script>
 
 <template>
-	<div class="HazardousOperation">
+	<div class="hazardous-operation">
 		<Button @click="clearChat">{{ $t("components.HazardousOperations.clearChat") }}</Button>
 		<Button @click="clearApiKey">{{ $t("components.HazardousOperations.clearApiKey") }}</Button>
 		<Button @click="clearConfigs">{{ $t("components.HazardousOperations.clearConfig") }}</Button>
@@ -79,7 +79,7 @@ export default {
 </template>
 
 <style scoped lang="less">
-.HazardousOperation {
+.hazardous-operation {
 	display: flex;
 	gap: 10px;
 }

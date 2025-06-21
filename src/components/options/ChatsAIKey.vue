@@ -110,7 +110,7 @@ export default {
 				if (RESPONSE.error) {
 					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE.error)
 					this.$toast.error(this.$t(`api.${RESPONSE.error}`))
-					return false
+					return RESPONSE.data
 				}
 				return RESPONSE.data
 			} catch (error) {
@@ -149,9 +149,10 @@ export default {
 				this.newKey.url = this.newKey.url.slice(0, -1)
 			}
 			try {
+				const NEW_KEY_ID = crypto.randomUUID()
 				// 写入数据库
 				await this.$DB.apiKeys.add({
-					key: crypto.randomUUID(),
+					key: NEW_KEY_ID,
 					model: this.selectedModel.title,
 					value: this.newKey.value,
 					remark: this.newKey.remark,
@@ -159,7 +160,11 @@ export default {
 					enabled: this.newKey.enabled
 				})
 				// 写入Key池
-				this.keyPools.push({...this.newKey})
+				this.keyPools.push({
+					key: NEW_KEY_ID,
+					model: this.selectedModel.title,
+					...this.newKey
+				})
 				// 重置表单
 				this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
 				this.status.addFormStatus = false
@@ -400,8 +405,8 @@ export default {
 			{{ $t("components.ChatAIKey.title") }}
 		</template>
 		<template #Content>
-			<div class="ChatAIKey">
-				<div class="Top">
+			<div class="chat-ai-key">
+				<div class="top">
 					<!-- 模型选择 -->
 					<Selector
 						:selectorSelected="selectedModel"
@@ -431,24 +436,24 @@ export default {
 					<div/>
 				</div>
 				<!-- 新增表单 -->
-				<div v-if="status.addFormStatus" class="AddForm">
+				<div v-if="status.addFormStatus" class="add-form">
 					<h3>{{ $t("components.ChatAIKey.operationButton.add") }}</h3>
-					<div class="FormGroup">
+					<div class="form-group">
 						<label>{{ $t("components.ChatAIKey.form.key") }}</label>
 						<input type="text" v-model="newKey.value"
 							   :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
 					</div>
-					<div class="FormGroup">
+					<div class="form-group">
 						<label>{{ $t("components.ChatAIKey.form.remarks") }}</label>
 						<input type="text" v-model="newKey.remark"
 							   :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyRemarks')">
 					</div>
-					<div class="FormGroup">
+					<div class="form-group">
 						<label>{{ $t("components.ChatAIKey.form.url") }}</label>
 						<input type="text" v-model="newKey.url"
 							   :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
 					</div>
-					<div class="FormActions">
+					<div class="form-actions">
 						<Button @click="addNewKey">{{ $t("components.ChatAIKey.form.save") }}</Button>
 						<Button @click="status.addFormStatus = false">
 							{{ $t("components.ChatAIKey.form.cancel") }}
@@ -456,33 +461,33 @@ export default {
 					</div>
 				</div>
 				<!-- 编辑表单 -->
-				<div v-if="status.editFormStatus" class="AddForm">
+				<div v-if="status.editFormStatus" class="add-form">
 					<h3>{{ $t("components.ChatAIKey.operationButton.edit") }}</h3>
-					<div class="FormGroup">
+					<div class="form-group">
 						<label>{{ $t("components.ChatAIKey.form.key") }}</label>
 						<input type="text" v-model="editKey.value"
 							   :placeholder="$t('components.ChatAIKey.form.pleaseEnterKey')">
 					</div>
-					<div class="FormGroup">
+					<div class="form-group">
 						<label>{{ $t("components.ChatAIKey.form.remarks") }}</label>
 						<input type="text" v-model="editKey.remark"
 							   :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyRemarks')">
 					</div>
-					<div class="FormGroup">
+					<div class="form-group">
 						<label>{{ $t("components.ChatAIKey.form.url") }}</label>
 						<input type="text" v-model="editKey.url"
 							   :placeholder="$t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
 					</div>
-					<div class="FormActions">
+					<div class="form-actions">
 						<Button @click="editSelectedKeys">{{ $t("components.ChatAIKey.form.save") }}</Button>
 						<Button @click="status.editFormStatus = false">
 							{{ $t("components.ChatAIKey.form.cancel") }}
 						</Button>
 					</div>
 				</div>
-				<div class="Bottom">
+				<div class="bottom">
 					<!-- APIKey列表 -->
-					<div class="KeyPool">
+					<div class="key-pool">
 						<table>
 							<thead>
 							<tr>
@@ -491,7 +496,7 @@ export default {
 										<input type="checkbox"
 											   :checked="isAllSelected"
 											   @change="toggleAllSelection">
-										<span class="CustomCheckbox"></span>
+										<span class="custom-checkbox"></span>
 									</label>
 								</th>
 								<th>{{ $t("components.ChatAIKey.form.enable") }}</th>
@@ -506,14 +511,14 @@ export default {
 								v-for="keyItem in keyPools || []"
 								:key="keyItem.key"
 								@click="toggleRowSelection(keyItem.key)"
-								:class="{ 'SelectedRow': operationSelection.includes(keyItem.key) }">
+								:class="{ 'selected-row': operationSelection.includes(keyItem.key) }">
 								<td @click.stop>
 									<label>
 										<input type="checkbox"
 											   :value="keyItem.key"
 											   v-model="operationSelection"
 											   @click.stop>
-										<span class="CustomCheckbox"></span>
+										<span class="custom-checkbox"></span>
 									</label>
 								</td>
 								<td>
@@ -522,7 +527,7 @@ export default {
 											type="checkbox"
 											:checked="keyItem.enabled"
 											@change="toggleKeyEnable(keyItem)">
-										<span class="CustomCheckbox"></span>
+										<span class="custom-checkbox"></span>
 									</label>
 								</td>
 								<td :title="keyItem.value">{{ maskKey(keyItem.value) }}</td>
@@ -531,7 +536,7 @@ export default {
 								<td :title="keyItem.balance">{{ keyItem.balance }}</td>
 							</tr>
 							<tr v-if="(keyPools || []).length === 0">
-								<td colspan="6" class="EmptyTip">{{ $t("components.ChatAIKey.addTip") }}</td>
+								<td colspan="6" class="empty-tip">{{ $t("components.ChatAIKey.addTip") }}</td>
 							</tr>
 							</tbody>
 						</table>
@@ -543,22 +548,19 @@ export default {
 </template>
 
 <style scoped lang="less">
-.ChatAIKey {
-}
-
-.Top {
+.top {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, 200px);
 	gap: 10px;
 }
 
-.AddForm {
+.add-form {
 	padding: 15px;
 	margin: 20px 0;
 	border: 1px solid var(--border-color);
 	border-radius: 8px;
 
-	.FormGroup {
+	.form-group {
 
 		label {
 			width: 80px;
@@ -573,7 +575,7 @@ export default {
 		}
 	}
 
-	.FormActions {
+	.form-actions {
 		margin-top: 15px;
 
 		Button {
@@ -583,14 +585,14 @@ export default {
 	}
 }
 
-.Bottom {
+.bottom {
 	margin: 20px 0;
 	width: 100%;
 	height: 400px;
 	border: 1px solid var(--border-color);
 	overflow-y: auto;
 
-	.KeyPool {
+	.key-pool {
 		table {
 			min-width: 1000px;
 			width: 100%;
@@ -615,7 +617,7 @@ export default {
 					color: var(--text-color-Anti);
 					background-color: var(--background-color-Anti);
 
-					.CustomCheckbox {
+					.custom-checkbox {
 						&::after {
 							background-color: var(--background-color);
 						}
@@ -648,7 +650,7 @@ export default {
 				width: 10%;
 			}
 
-			.SelectedRow {
+			.selected-row {
 				--Active-Background-Color: rgba(107, 130, 145, 0.5);
 				color: var(--text-color);
 				background-color: var(--Active-Background-Color);
@@ -657,7 +659,7 @@ export default {
 					color: var(--text-color);
 					background-color: var(--Active-Background-Color);
 
-					.CustomCheckbox {
+					.custom-checkbox {
 						&::after {
 							background-color: var(--background-color-Anti);
 						}
@@ -671,13 +673,13 @@ export default {
 input[type="checkbox"] {
 	display: none;
 
-	&:checked + .CustomCheckbox::after {
+	&:checked + .custom-checkbox::after {
 		opacity: 1;
 
 	}
 }
 
-.CustomCheckbox {
+.custom-checkbox {
 	display: inline-block;
 	width: 20px;
 	height: 20px;

@@ -227,6 +227,11 @@ export default {
                 if (DEFAULT_CHAT_SETTINGS_DATA) {
                     this.selectedLargeModel = this.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
                     const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+                    if (!KEY_DATA) {
+                        this.selectedKey = null
+                        this.selectedModel = null
+                        return
+                    }
                     this.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
                     this.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
                     this.saved = true
@@ -279,7 +284,7 @@ export default {
 </script>
 
 <template>
-    <div class="DefaultChatSettings">
+    <div class="default-chat-settings">
         <!-- 大模型选择 -->
         <Selector
             :selectorSelected="selectedLargeModel || {}"
@@ -308,7 +313,7 @@ export default {
 </template>
 
 <style scoped lang="less">
-.DefaultChatSettings {
+.default-chat-settings {
     width: 100%;
     display: flex;
     align-items: center;

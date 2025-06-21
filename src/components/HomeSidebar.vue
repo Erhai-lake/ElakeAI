@@ -33,8 +33,8 @@ export default defineComponent({
 		 * 侧边栏展开收起
 		 */
 		sidebarSwitch() {
-			const SIDEBAR_EXPAND = document.querySelector(".SidebarExpandContainer")
-			const SIDEBAR_STOW = document.querySelector(".SidebarStowContainer")
+			const SIDEBAR_EXPAND = document.querySelector(".sidebar-expand-container")
+			const SIDEBAR_STOW = document.querySelector(".sidebar-stow-container")
 			if (this.sidebarStatus) {
 				if (SIDEBAR_EXPAND) {
 					SIDEBAR_EXPAND.style.transform = "translateX(-100%)"
@@ -122,76 +122,76 @@ export default defineComponent({
 </script>
 
 <template>
-	<div class="SidebarContainer SidebarExpandContainer" v-if="sidebarStatus">
-		<div class="SidebarTop">
-			<div class="SidebarTopLogo"></div>
+	<div class="sidebar-container sidebar-expand-container" v-if="sidebarStatus">
+		<div class="sidebar-top">
+			<div class="sidebar-top-logo"></div>
 			<p>ElakeAI</p>
-			<router-link to="/" class="SidebarNew" :title="$t('components.HomeSidebar.function.new')">
-				<svg class="icon" aria-hidden="true">
+			<router-link to="/" class="sidebar-new" :title="$t('components.HomeSidebar.function.new')">
+				<svg class="icon">
 					<use xlink:href="#icon-new"></use>
 				</svg>
 			</router-link>
-			<div class="SidebarStow" :title="$t('components.HomeSidebar.function.stow')" @click="sidebarSwitch">
-				<svg class="icon" aria-hidden="true">
+			<div class="sidebar-stow" :title="$t('components.HomeSidebar.function.stow')" @click="sidebarSwitch">
+				<svg class="icon">
 					<use xlink:href="#icon-stow"></use>
 				</svg>
 			</div>
 		</div>
-		<div class="SidebarConversationList">
+		<div class="sidebar-conversation-list">
 			<div
-				class="ConversationCard"
-				:class="{'Active': route.params.key === chatItem.key}"
+				class="conversation-card"
+				:class="{ active: route.params.key === chatItem.key }"
 				v-for="chatItem in chatList"
 				:key="chatItem.key"
 				@click="openChat(chatItem.key)">
-				<p class="Title" :title="chatItem.title">{{ chatItem.title }}</p>
-				<div class="Bottom">
+				<p class="title" :title="chatItem.title">{{ chatItem.title }}</p>
+				<div class="bottom">
 					<p>{{ $t("components.HomeSidebar.numberOfConversations", {num: chatItem.length}) }}</p>
 					<p>{{ formatTimestamp(chatItem.timestamp) }}</p>
 				</div>
 				<div
-					class="ConversationDelete"
+					class="conversation-delete"
 					:title="$t('components.HomeSidebar.function.delete')"
 					@click.stop="deleteChat(chatItem.key)">
-					<svg class="icon" aria-hidden="true">
+					<svg class="icon">
 						<use xlink:href="#icon-delete"></use>
 					</svg>
 				</div>
 			</div>
 		</div>
-		<div class="SidebarPreset" :title="$t('components.HomeSidebar.function.preset')">
-			<svg class="icon" aria-hidden="true">
+		<div class="sidebar-preset" :title="$t('components.HomeSidebar.function.preset')">
+			<svg class="icon">
 				<use xlink:href="#icon-preset"></use>
 			</svg>
 			<p>{{ $t("components.HomeSidebar.function.preset") }}</p>
 		</div>
-		<router-link to="/options" class="SidebarSetup" :title="$t('components.HomeSidebar.function.options')">
-			<svg class="icon" aria-hidden="true">
+		<router-link to="/options" class="sidebar-setup" :title="$t('components.HomeSidebar.function.options')">
+			<svg class="icon">
 				<use xlink:href="#icon-setup"></use>
 			</svg>
 			<p>{{ $t("components.HomeSidebar.function.options") }}</p>
 		</router-link>
 	</div>
-	<div class="SidebarContainer SidebarStowContainer" v-else>
-		<div class="SidebarTopLogo"></div>
-		<router-link to="/" class="SidebarNew" :title="$t('components.HomeSidebar.function.new')">
-			<svg class="icon" aria-hidden="true">
+	<div class="sidebar-container sidebar-stow-container" v-else>
+		<div class="sidebar-top-logo"></div>
+		<router-link to="/" class="sidebar-new" :title="$t('components.HomeSidebar.function.new')">
+			<svg class="icon">
 				<use xlink:href="#icon-new"></use>
 			</svg>
 		</router-link>
-		<div class="SidebarExpand" :title="$t('components.HomeSidebar.function.expand')" @click="sidebarSwitch">
-			<svg class="icon" aria-hidden="true">
+		<div class="sidebar-expand" :title="$t('components.HomeSidebar.function.expand')" @click="sidebarSwitch">
+			<svg class="icon">
 				<use xlink:href="#icon-expand"></use>
 			</svg>
 		</div>
-		<div class="SidebarPreset" :title="$t('components.HomeSidebar.function.preset')">
-			<svg class="icon" aria-hidden="true">
+		<div class="sidebar-preset" :title="$t('components.HomeSidebar.function.preset')">
+			<svg class="icon">
 				<use xlink:href="#icon-preset"></use>
 			</svg>
 		</div>
 		<div></div>
-		<router-link to="/options" class="SidebarSetup" :title="$t('components.HomeSidebar.function.options')">
-			<svg class="icon" aria-hidden="true">
+		<router-link to="/options" class="sidebar-setup" :title="$t('components.HomeSidebar.function.options')">
+			<svg class="icon">
 				<use xlink:href="#icon-setup"></use>
 			</svg>
 		</router-link>
@@ -208,7 +208,7 @@ export default defineComponent({
 }
 
 @media screen and (max-width: 768px) {
-	.SidebarExpandContainer {
+	.sidebar-expand-container {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -216,7 +216,7 @@ export default defineComponent({
 	}
 }
 
-.SidebarContainer {
+.sidebar-container {
 	height: 100%;
 	background-color: var(--sidebar-expand-container-background-color);
 	border-right: 1px solid var(--border-color);
@@ -225,7 +225,7 @@ export default defineComponent({
 	transform: translateX(0%);
 	transition: transform 0.3s ease;
 
-	.SidebarTopLogo {
+	.sidebar-top-logo {
 		width: 48px;
 		height: 48px;
 		background-image: url("@/assets/images/Logo.svg");
@@ -234,16 +234,19 @@ export default defineComponent({
 		background-position: center;
 	}
 
-	.SidebarNew, .SidebarStow, .SidebarPreset, .SidebarSetup {
+	.sidebar-new,
+	.sidebar-stow,
+	.sidebar-preset,
+	.sidebar-setup {
 		cursor: pointer;
 	}
 }
 
-.SidebarExpandContainer {
+.sidebar-expand-container {
 	width: 256px;
 	grid-template-rows: auto 1fr auto auto;
 
-	.SidebarTop {
+	.sidebar-top {
 		padding: 0 8px;
 		border-bottom: 1px solid var(--border-color);
 		display: grid;
@@ -259,13 +262,13 @@ export default defineComponent({
 		}
 	}
 
-	.SidebarConversationList {
+	.sidebar-conversation-list {
 		padding: 0 20px;
 		white-space: nowrap;
 		overflow: hidden auto;
 	}
 
-	.ConversationCard {
+	.conversation-card {
 		position: relative;
 		padding: 10px;
 		margin: 20px 0;
@@ -274,23 +277,23 @@ export default defineComponent({
 		overflow: hidden;
 		cursor: pointer;
 
-		&.Active {
+		&.active {
 			border-color: #80ceff;
 		}
 
 		&:hover {
 			background-color: var(--sidebar-item-hover-background-color);
 
-			.Bottom {
+			.bottom {
 				color: var(--sidebar-expand-container-info-text-color-Anti);
 			}
 
-			.ConversationDelete {
+			.conversation-delete {
 				opacity: 1;
 			}
 		}
 
-		.Title {
+		.title {
 			color: var(--text-color);
 			font-size: 16px;
 			font-weight: bold;
@@ -299,7 +302,7 @@ export default defineComponent({
 			white-space: nowrap;
 		}
 
-		.Bottom {
+		.bottom {
 			margin-top: 10px;
 			color: var(--sidebar-expand-container-info-text-color);
 			font-size: 12px;
@@ -308,7 +311,7 @@ export default defineComponent({
 			align-items: center;
 		}
 
-		.ConversationDelete {
+		.conversation-delete {
 			position: absolute;
 			top: 0;
 			right: 0;
@@ -321,7 +324,8 @@ export default defineComponent({
 		}
 	}
 
-	.SidebarPreset, .SidebarSetup {
+	.sidebar-preset,
+	.sidebar-setup {
 		padding: 0 8px;
 		border-top: 1px solid var(--border-color);
 		display: grid;
@@ -332,16 +336,19 @@ export default defineComponent({
 	}
 }
 
-.SidebarStowContainer {
+.sidebar-stow-container {
 	width: 64px;
 	grid-template-rows: auto auto auto auto 1fr auto;
 	justify-items: center;
 
-	.SidebarTopLogo {
+	.sidebar-top-logo {
 		margin: 15px 0;
 	}
 
-	.SidebarNew, .SidebarExpand, .SidebarPreset, .SidebarSetup {
+	.sidebar-new,
+	.sidebar-expand,
+	.sidebar-preset,
+	.sidebar-setup {
 		padding: 5px;
 		margin: 10px 0;
 		border-radius: 10px;

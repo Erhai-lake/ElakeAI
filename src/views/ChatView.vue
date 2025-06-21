@@ -43,7 +43,7 @@ export default {
 	},
 	mounted() {
 		// 监听滚动事件
-		const container = this.$el.querySelector(".MessageList")
+		const container = this.$el.querySelector(".message-list")
 		if (container) {
 			container.addEventListener("scroll", this.checkScrollPosition)
 		}
@@ -58,7 +58,7 @@ export default {
 	},
 	beforeUnmount() {
 		// 移除滚动事件
-		const container = this.$el.querySelector(".MessageList")
+		const container = this.$el.querySelector(".message-list")
 		if (container) {
 			container.removeEventListener("scroll", this.checkScrollPosition)
 		}
@@ -86,7 +86,7 @@ export default {
 		 */
 		scrollToMessage(id, position = "bottom") {
 			this.$nextTick(() => {
-				const container = this.$el.querySelector(".MessageList")
+				const container = this.$el.querySelector(".message-list")
 				if (!container) return
 				const messageElement = this.$el.querySelector(`[data-message-id="${id}"]`)
 				if (messageElement) {
@@ -149,7 +149,7 @@ export default {
 		 * 检查滚动位置
 		 */
 		checkScrollPosition() {
-			const container = this.$el.querySelector(".MessageList")
+			const container = this.$el.querySelector(".message-list")
 			if (!container) return
 			// 清除之前的防抖
 			clearTimeout(this.scroll.scrollDebounce)
@@ -303,15 +303,15 @@ export default {
 </script>
 
 <template>
-	<div class="ChatView">
+	<div class="chat-view">
 		<!-- 顶部标题 -->
 		<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
 		<!-- 消息列表 -->
-		<div class="MessageList" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
+		<div class="message-list" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
 			<div
 				v-for="message in data.data"
 				:key="message.id"
-				:class="['Message', scroll.currentMessageId === message.id ? 'Current' : '', message.message.role]"
+				:class="['message', scroll.currentMessageId === message.id ? 'current' : '', message.message.role]"
 				:data-message-id="message.id"
 				@click="setCurrentMessageId(message.id)">
 				<UserMessageCard v-if="message.message.role === 'user'" :message="message"/>
@@ -320,16 +320,16 @@ export default {
 		</div>
 		<div></div>
 		<!-- 底部输入框 -->
-		<div class="InputArea" v-if="showInputBox">
+		<div class="input-area" v-if="showInputBox">
 			<AIInput/>
 		</div>
 		<!-- AI提示信息 -->
-		<div class="AIDisclaimer">{{ $t("views.ChatView.aiDisclaimer") }}</div>
+		<div class="ai-disclaimer">{{ $t("views.ChatView.aiDisclaimer") }}</div>
 		<!-- 功能控件 -->
-		<div class="FunctionalControls">
+		<div class="functional-controls">
 			<!-- 回到顶部按钮 -->
 			<button
-				class="ScrollToTopMessages"
+				class="scroll-to-top-messages"
 				:title="$t('views.ChatView.FunctionalControls.scrollToTopMessages')"
 				@click="scrollToUpAndDownMessages('top')"
 				:disabled="scroll.isAtTop || data.data.length === 0">
@@ -385,7 +385,7 @@ export default {
 	overflow: hidden;
 }
 
-.ChatView {
+.chat-view {
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -394,7 +394,7 @@ export default {
 	overflow: hidden;
 }
 
-.MessageList {
+.message-list {
 	position: absolute;
 	box-sizing: border-box;
 	width: 100%;
@@ -406,23 +406,23 @@ export default {
 }
 
 @media screen and (max-width: 768px) {
-	.MessageList {
+	.message-list {
 		padding: 100px 0 200px 0;
 	}
 }
 
-.Message[data-message-id].Current {
+.message[data-message-id].current {
 	background-color: red;
 }
 
-.InputArea {
+.input-area {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	z-index: 2;
 }
 
-.AIDisclaimer {
+.ai-disclaimer {
 	padding: 10px 0;
 	text-align: center;
 	font-size: 12px;
@@ -432,7 +432,7 @@ export default {
 	z-index: 1;
 }
 
-.FunctionalControls {
+.functional-controls {
 	position: fixed;
 	top: 50%;
 	right: 20px;

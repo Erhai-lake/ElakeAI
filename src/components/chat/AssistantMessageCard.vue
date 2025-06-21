@@ -196,7 +196,7 @@ export default {
 </script>
 
 <template>
-	<div class="message-card">
+	<div class="assistant-message-card">
 		<FoldingPanel class="reasoning-content" v-if="message.message.reasoning" :is="isReasoningExpanded">
 			<template #Title>
 				<span>{{ $t("components.AssistantMessageCard.reasoning") }}</span>
@@ -239,7 +239,7 @@ export default {
 	}
 }
 
-.message-card {
+.assistant-message-card {
 	position: relative;
 	padding: 16px 20px;
 	border-radius: 12px;

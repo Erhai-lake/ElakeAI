@@ -39,7 +39,7 @@ export default {
             this.editingTitle.value = this.title
             this.editingTitle.show = true
             this.$nextTick(() => {
-                const input = this.$el.querySelector(".TopTitle input")
+                const input = this.$el.querySelector(".top-title input")
                 if (input) {
                     input.focus()
                     input.select()
@@ -97,7 +97,7 @@ export default {
 </script>
 
 <template>
-    <div class="TopTitle">
+    <div class="top-title">
         <p v-if="!editingTitle.show" @click="titleInput" :title="title">{{ title }}</p>
         <input
             type="text"
@@ -105,12 +105,12 @@ export default {
             v-model="editingTitle.value"
             @blur="saveTitle"
             @keydown="handleTitleKeydown"
-            class="TitleInput">
+            class="title-input">
     </div>
 </template>
 
 <style scoped lang="less">
-.TopTitle {
+.top-title {
     position: relative;
     height: 65px;
     font-size: 18px;
@@ -132,7 +132,7 @@ export default {
         cursor: pointer;
     }
 
-    .TitleInput {
+    .title-input {
         max-width: 500px;
         padding: 8px 12px;
         border: 1px solid var(--border-color);

@@ -269,6 +269,11 @@ export default defineComponent({
                 if (DEFAULT_CHAT_SETTINGS_DATA) {
                     this.selector.selectedLargeModel = this.selector.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
                     const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+					if (!KEY_DATA) {
+						this.selector.selectedKey = null
+						this.selector.selectedModel = null
+						return
+					}
                     this.selector.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
                     this.selector.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
                     this.selector.saved = true

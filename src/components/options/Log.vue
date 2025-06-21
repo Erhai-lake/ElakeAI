@@ -165,9 +165,9 @@ export default {
 </script>
 
 <template>
-    <div class="Log">
-        <div class="Header">
-            <span class="LogCount">{{ $t("components.Log.count", {count: logs.length}) }}</span>
+    <div class="log">
+        <div class="header">
+            <span class="log-count">{{ $t("components.Log.count", {count: logs.length}) }}</span>
             <Button @click="loadLogs">🔄 {{ $t("components.Log.function.load") }}</Button>
             <Button @click="clearLogs">🗑️ {{ $t("components.Log.function.clear") }}</Button>
             <Button @click="exportLogs">📤 {{ $t("components.Log.function.export") }}</Button>
@@ -178,20 +178,20 @@ export default {
                 {{ $t("components.Log.function.suspensionWindow", {is: isLogSuspensionWindow}) }}
             </Button>
         </div>
-        <div class="LogList">
-            <div v-for="(log, index) in logs" :key="index" :class="['LogItem', log.level]">
-                <span class="LogTime">{{ formatTimestamp(log.timestamp) }}</span>
-                <span class="LogLevel">[{{ log.level.toUpperCase() || "NULL" }}]</span>
-                <span class="LogComponent">[{{ log.component || "Global" }}]</span>
-                <span class="LogMessage">{{ log.message || "NULL" }}</span>
+        <div class="log-list">
+            <div v-for="(log, index) in logs" :key="index" :class="['log-item', log.level]">
+                <span class="log-time">{{ formatTimestamp(log.timestamp) }}</span>
+                <span class="log-level">[{{ log.level.toUpperCase() || "NULL" }}]</span>
+                <span class="log-component">[{{ log.component || "Global" }}]</span>
+                <span class="log-message">{{ log.message || "NULL" }}</span>
             </div>
-            <div v-if="logs.length === 0" class="EmptyTip">{{ $t("components.Log.empty") }}</div>
+            <div v-if="logs.length === 0" class="empty-tip">{{ $t("components.Log.empty") }}</div>
         </div>
     </div>
 </template>
 
 <style scoped lang="less">
-.Log {
+.log {
     padding: 10px;
     box-sizing: border-box;
     height: 100%;
@@ -202,7 +202,7 @@ export default {
     flex-direction: column;
 }
 
-.Header {
+.header {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
@@ -210,33 +210,33 @@ export default {
     overflow-x: auto;
 }
 
-.LogList {
+.log-list {
     flex: 1;
     overflow-y: auto;
     padding: 5px;
     border-top: 1px solid var(--border-color);
     background-color: var(--background-color);
 
-    .LogItem {
+    .log-item {
         margin-bottom: 5px;
         padding: 3px 5px;
         border-bottom: 1px solid var(--border-color);
         word-break: break-word;
     }
 
-    .LogTime {
+    .log-time {
         margin-right: 10px;
         min-width: 80px;
         display: inline-block;
     }
 
-    .LogLevel, .LogComponent {
+    .log-level, .log-component {
         font-weight: bold;
         margin-right: 10px;
         display: inline-block;
     }
 
-    .LogMessage {
+    .log-message {
         margin: 0;
         white-space: pre-wrap;
         word-break: break-word;
@@ -260,7 +260,7 @@ export default {
         color: #F44336;
     }
 
-    .EmptyTip {
+    .empty-tip {
         padding: 20px;
         text-align: center;
         border: 1px solid var(--border-color);

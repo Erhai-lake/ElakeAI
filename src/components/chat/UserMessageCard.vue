@@ -47,13 +47,13 @@ export default {
 </script>
 
 <template>
-    <div class="MessageCard">
-        <div class="MessageContent" v-html="formattingMessage(message.message.content)"></div>
-        <div class="MessageBottom">
-            <div class="FunctionalControls">
+    <div class="user-message-card">
+        <div class="message-content" v-html="formattingMessage(message.message.content)"></div>
+        <div class="message-bottom">
+            <div class="functional-controls">
                 <Button @click="remove(message.id)">移除</Button>
             </div>
-            <div class="MessageInfo">
+            <div class="message-info">
                 <div>
                     [{{ $t("components.UserMessageCard.earthOnline") }}]
                     -
@@ -69,12 +69,12 @@ export default {
 
 <style scoped lang="less">
 @media screen and (max-width: 768px) {
-    .MessageInfo {
+    .message-info {
         display: none;
     }
 }
 
-.MessageCard {
+.user-message-card {
     position: relative;
     padding: 16px 20px;
     border-radius: 12px;
@@ -84,7 +84,7 @@ export default {
         color: var(--chat-user-text-color);
     }
 
-    .MessageContent{
+    .message-content{
         font-size: 16px;
         line-height: 1.5;
         word-wrap: break-word;
@@ -92,7 +92,7 @@ export default {
         white-space: pre-wrap;
     }
 
-    .MessageBottom {
+    .message-bottom {
         margin-top: 8px;
         display: flex;
         justify-content: space-between;
@@ -101,15 +101,15 @@ export default {
         word-break: break-word;
     }
 
-    &:hover .FunctionalControls {
+    &:hover .functional-controls {
         opacity: 1;
     }
 
-    .FunctionalControls {
+    .functional-controls {
         opacity: 0;
     }
 
-    .MessageInfo {
+    .message-info {
         font-size: 12px;
         color: var(--chat-dialogue-time-text-color);
     }

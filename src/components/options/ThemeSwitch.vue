@@ -92,7 +92,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="Switch">
+    <div class="theme-select">
 		<Selector
 			:selectorSelected="selectedTheme || {}"
 			:selectorList="theme"
@@ -102,7 +102,7 @@ export default defineComponent({
 </template>
 
 <style scoped lang="less">
-.Switch {
+.theme-select {
 	width: 240px;
 }
 </style>
