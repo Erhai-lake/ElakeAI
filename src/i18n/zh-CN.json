@@ -143,12 +143,12 @@
 			"earthOnline": "地球Online",
 			"players": "玩家"
 		},
+		"CodeBlockRenderer": {
+			"copy": "复制",
+			"copied": "已复制",
+			"failed": "失败"
+		},
 		"AssistantMessageCard": {
-			"toast": {
-				"copied": "复制成功",
-				"copyFailed": "复制失败"
-			},
-			"copyButton": "复制",
 			"reasoning": "推理"
 		},
 		"Log": {

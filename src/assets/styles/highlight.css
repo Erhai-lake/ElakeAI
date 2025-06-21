@@ -1,24 +1,3 @@
-/*codecopy*/
-.codecopy-btn {
-    position: absolute;
-    transition: all 0.5s;
-    top: 5px;
-    right: 20px;
-    width: 90px;
-    border-radius: 5px;
-    background-color: rgba(221, 221, 221, .1);
-    color: #999;
-    text-align: center;
-    font-weight: 700;
-    font-size: 14px
-}
-
-.codecopy-btn:hover {
-    background-color: rgba(221, 221, 221, .2);
-    top: 5px
-}
-
-/*语法高亮*/
 .hljs {
     position: relative;
     margin: 10px 0;

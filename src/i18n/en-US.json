@@ -143,12 +143,12 @@
 			"earthOnline": "Earth Online",
 			"players": "Players"
 		},
+		"CodeBlockRenderer": {
+			"copy": "Copy",
+			"copied": "Copied",
+			"failed": "Failed"
+		},
 		"AssistantMessageCard": {
-			"toast": {
-				"copied": "Copied successfully",
-				"copyFailed": "Failed to copy"
-			},
-			"copyButton": "Copy",
 			"reasoning": "Reasoning"
 		},
 		"Log": {

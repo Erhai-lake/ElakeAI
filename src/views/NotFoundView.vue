@@ -1,6 +1,5 @@
 <script>
 import AIInput from "@/components/AIInput.vue"
-import "@/assets/styles/markdown.less"
 
 export default {
     name: "NotFoundView",

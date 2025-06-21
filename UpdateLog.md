@@ -32,10 +32,15 @@
   * 支持mathjax3数学公式
   * 支持katex数学公式
   * 支持highlight.js代码高亮
-  * 支持mermaid流程图
-  * 支持mermaid流程图缩放移动
-  * 支持flowchart流程图(没写完...就这样吧...嗯...)
-  * 支持flowchart流程图缩放移动
+  * 支持Mermaid流程图
+  * 支持Mermaid流程图缩放移动
+  * Mermaid按需加载
+  * 支持Flowchart流程图
+  * 支持Flowchart流程图缩放移动
+  * Flowchart流程图按需加载
+  * 支持PlantUML流程图(https://www.plantuml.com/plantuml/svg/{encoded})
+  * 支持PlantUML流程图缩放移动
+  * PlantUML流程图按需加载
   * 支持lazyload图片懒加载
   * 支持代码块复制
 * **数据管理**
