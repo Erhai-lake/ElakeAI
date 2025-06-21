@@ -138,7 +138,7 @@ export default {
                 },
                 {
                     title: "流程图测试",
-                    content: "```mermaid\nflowchart TD\n    A[Christmas] -->|Get money| B(Go shopping)\n    B --> C{Let me think}\n    C -->|One| D[Laptop]\n    C -->|Two| E[iPhone]\n    C -->|Three| F[fa:fa-car Car]\n    C --> D((This is the <br  />text<br  /> in the circle))\n```",
+                    content: "Mermaid\n\n```mermaid\nflowchart TD;A[Christmas] -->|Get money| B(Go shopping);B --> C{Let me think};C -->|One| D[Laptop];C -->|Two| E[iPhone];C -->|Three| F[fa:fa-car Car];C --> D((This is the <br  />text<br  /> in the circle))\n```\n\n```mermaid\ngraph TD; A[开始] --> B{是否登录？}; B -- 是 --> C[进入系统]; B -- 否 --> D[跳转登录页]; D --> E[登录后返回]; E --> C\n```\n\nFlowchart\n\n```flow\nst=>start: 开始\ne=>end: 结束\nop=>operation: 输入用户名和密码\ncond=>condition: 验证成功？\nerr=>operation: 提示错误\nlogin=>operation: 跳转首页\n\nst->op->cond\ncond(yes)->login->e\ncond(no)->err->op\n```",
                     model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
                 }
             ]
