@@ -59,7 +59,7 @@ export default class DeepSeekAPI extends BaseAPI {
 
 		try {
 			// 构建消息历史
-			const MESSAGES = await this.buildingMessageHistory(paramsData.chatKeyData, params.content)
+			const MESSAGES = this.buildingMessageHistory(paramsData.chatKeyData, params.content)
 			const RESPONSE = await fetch(`${paramsData.apiKeyData.url}/chat/completions`, {
 				method: "POST",
 				headers: {
