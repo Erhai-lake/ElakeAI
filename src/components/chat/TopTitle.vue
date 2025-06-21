@@ -26,7 +26,12 @@ export default {
             }
         }
     },
-    methods: {
+	watch: {
+		chatTitle(newTitle) {
+			this.title = newTitle || this.$t("components.AIInput.newChat")
+		}
+	},
+	methods: {
         /**
          * 显示标题输入框
          */
