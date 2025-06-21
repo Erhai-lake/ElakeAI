@@ -11,6 +11,14 @@ export default {
 			default: false
 		}
 	},
+	watch: {
+		Height(newVal) {
+			this.contentHeight = newVal
+		},
+		is(newVal) {
+			this.isExpand = newVal
+		}
+	},
 	data() {
 		return {
 			contentHeight: this.Height,
