@@ -402,7 +402,7 @@ export default {
 					</label>
 				</div>
 			</div>
-			<div class="option-group v-if="apiKeys.options.length > 0">
+			<div class="option-group" v-if="apiKeys.options.length">
 				<label class="option-item">
 					<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAllApiKeys"/>
 					<span class="custom-checkbox"></span>
