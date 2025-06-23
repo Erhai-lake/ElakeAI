@@ -556,10 +556,12 @@ export default defineComponent({
 	position: relative;
 	padding: 16px;
 	box-sizing: border-box;
-	width: 50%;
+	width: 100%;
+	max-width: 773px;
 	min-height: 200px;
-	background-color: var(--background-color);
 	border: 2px solid var(--border-color);
+	background-color: var(--box-shadow-color-Anti);
+	backdrop-filter: blur(10px);
 	border-radius: 15px;
 	display: flex;
 	flex-direction: column;
@@ -610,12 +612,12 @@ export default defineComponent({
 		width: 100%;
 		min-height: 100px;
 		max-height: 600px;
+		background-color: var(--box-shadow-color-Anti);
 		color: var(--text-color);
 		font-size: 16px;
 		letter-spacing: 3px;
 		border-radius: 10px;
-		background: none;
-		border: 1px solid var(--border-color);
+		border: none;
 		resize: none;
 
 		&:focus {

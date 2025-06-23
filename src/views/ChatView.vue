@@ -320,7 +320,7 @@ export default {
 		</div>
 		<div></div>
 		<!-- 底部输入框 -->
-		<div class="input-area" v-if="showInputBox">
+		<div class="input-area" :class="{'show-input-box': !showInputBox}">
 			<AIInput/>
 		</div>
 		<!-- AI提示信息 -->
@@ -390,7 +390,7 @@ export default {
 	width: 100%;
 	height: 100%;
 	display: grid;
-	grid-template-rows: auto 1fr auto auto;
+	grid-template-rows: auto 1fr auto;
 	overflow: hidden;
 }
 
@@ -416,10 +416,19 @@ export default {
 }
 
 .input-area {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	position: absolute;
+	left: 50%;
+	bottom: 40px;
+	transform: translateX(-50%);
+	width: 100%;
+	max-width: 773px;
+	opacity: 1;
 	z-index: 2;
+}
+
+.show-input-box {
+	transform: translate(-50%, 120%);
+	opacity: 0;
 }
 
 .ai-disclaimer {
@@ -429,7 +438,7 @@ export default {
 	background-color: var(--background-color);
 	color: var(--chat-disclaimer-text-color);
 	user-select: none;
-	z-index: 1;
+	z-index: 2;
 }
 
 .functional-controls {
