@@ -52,7 +52,7 @@ export default {
 
 <template>
 	<div class="code-block-wrapper">
-		<pre ref="codeRef" :class="`language-${language}`"><code>{{ code }}</code></pre>
+		<pre ref="codeRef" class="hljs" :class="`language-${language}`"><code>{{ code }}</code></pre>
 		<Button class="code-copy-btn" @click="copyCode">{{ copyButtonText }}</Button>
 	</div>
 </template>
