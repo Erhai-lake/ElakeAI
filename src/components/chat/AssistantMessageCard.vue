@@ -114,11 +114,13 @@ export default {
 				const TOKEN = tokens[idx]
 				const CODE = TOKEN.content
 				const LANG = TOKEN.info.trim().toLowerCase()
-				if (LANG === "mermaid" || LANG === "flow" || LANG === "plantuml") {
-					return `<div data-lang="${LANG}" data-code="${encodeURIComponent(CODE)}"></div>`
+				const TYPE_MAP = {
+					mermaid: "mermaid",
+					flow: "flowchart",
+					plantuml: "plantuml",
 				}
-				const safeLang = LANG || "plaintext"
-				return `<div data-lang="code" data-language="${safeLang}" data-code="${encodeURIComponent(CODE)}"></div>`
+				const safeLang = TYPE_MAP[LANG] || "code"
+				return `<div data-lang="${safeLang}" data-language="${LANG || "plaintext"}" data-code="${encodeURIComponent(CODE)}"></div>`
 			}
 			const RAW_HTML = MD.render(this.message.message.content)
 			const CONTAINER = document.createElement("div")
