@@ -84,7 +84,7 @@ export default {
 			}
 			// 加载单选项数据
 			try {
-				if (await this.$DB.chats.toArray().length > 0) this.singleSelection.optional.push("chats")
+				if (await this.$DB.chats.count() > 0) this.singleSelection.optional.push("chats")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取数据失败`, error)
 				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
@@ -375,9 +375,8 @@ export default {
 	<div class="import-export">
 		<h3>{{ $t(`components.ImportExport.${title}`) }}</h3>
 		<div class="config-selection">
-			<div class="option-group" v-if="singleSelection.optional.includes('chats')">
-				<h4>Chats</h4>
-				<label class="option-item">
+			<div class="option-group" v-if="singleSelection.optional.length > 0">
+				<label class="option-item" v-if="singleSelection.optional.includes('chats')">
 					<input type="checkbox" v-model="singleSelection.selectedOptions" value="chats"/>
 					<span class="custom-checkbox"></span>
 					<span>{{ $t("components.ImportExport.chats") }}</span>
@@ -402,7 +401,7 @@ export default {
 					</label>
 				</div>
 			</div>
-			<div class="option-group" v-if="apiKeys.options.length">
+			<div class="option-group" v-if="apiKeys.options.length > 0">
 				<label class="option-item">
 					<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAllApiKeys"/>
 					<span class="custom-checkbox"></span>
@@ -429,9 +428,8 @@ export default {
 			</div>
 			<div>
 				<Button @click="handleImport">{{ $t("components.ImportExport.import") }}</Button>
-				<Button @click="confirmImport" v-if="importFileData">{{
-						$t("components.ImportExport.confirmImport")
-					}}
+				<Button @click="confirmImport" v-if="importFileData">
+					{{ $t("components.ImportExport.confirmImport") }}
 				</Button>
 			</div>
 		</div>
