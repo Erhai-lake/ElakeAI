@@ -1,8 +1,12 @@
 <script>
-import { initZoom  } from "@/services/ZoomManager"
+import {initZoom} from "@/services/ZoomManager"
+import Tabs from "@/components/Tabs.vue"
+import TabsTab from "@/components/TabsTab.vue"
+import CodeBlockRenderer from "@/components/chat/CodeBlockRenderer.vue"
 
 export default {
 	name: "PlantUMLRenderer",
+	components: {CodeBlockRenderer, TabsTab, Tabs},
 	props: {
 		code: {
 			type: String,
@@ -11,7 +15,15 @@ export default {
 	},
 	data() {
 		return {
+			activeTab: "preview",
 			error: null
+		}
+	},
+	watch: {
+		activeTab(newVal) {
+			if (newVal === "preview") {
+				this.renderPlantUML()
+			}
 		}
 	},
 	mounted() {
@@ -47,60 +59,69 @@ export default {
 </script>
 
 <template>
-	<div ref="containerRef" class="plantuml-renderer">
-		<div class="toolbar">
-			<!--第一排-->
-			<div></div>
-			<button class="toolbar-btn move-up">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-upArrow"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn zoom-in">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-zoomIn"></use>
-				</svg>
-			</button>
-			<!--第二排-->
-			<button class="toolbar-btn move-left">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-leftArrow"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn zoom-reset">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-reset"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn move-right">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-rightArrow"></use>
-				</svg>
-			</button>
-			<!--第三排-->
-			<div></div>
-			<button class="toolbar-btn move-down">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-downArrow"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn zoom-out">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-zoomOut"></use>
-				</svg>
-			</button>
-		</div>
+	<div class="plantuml-renderer">
+		<Tabs v-model="activeTab">
+			<TabsTab name="preview">
+				<template #label>{{ $t("components.PlantUMLRenderer.preview") }}</template>
+				<div ref="containerRef">
+					<div v-if="error" class="plantuml-error">
+						{{ $t("components.PlantUMLRenderer.renderError") }}
+						<br>
+						{{ error }}
+					</div>
+					<div class="toolbar">
+						<!--第一排-->
+						<div></div>
+						<button class="toolbar-btn move-up">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-upArrow"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn zoom-in">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-zoomIn"></use>
+							</svg>
+						</button>
+						<!--第二排-->
+						<button class="toolbar-btn move-left">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-leftArrow"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn zoom-reset">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-reset"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn move-right">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-rightArrow"></use>
+							</svg>
+						</button>
+						<!--第三排-->
+						<div></div>
+						<button class="toolbar-btn move-down">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-downArrow"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn zoom-out">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-zoomOut"></use>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</TabsTab>
+			<TabsTab name="code">
+				<template #label>{{ $t("components.PlantUMLRenderer.preview") }}</template>
+				<CodeBlockRenderer :code="code"/>
+			</TabsTab>
+		</Tabs>
 	</div>
-	<div v-if="error" class="plantuml-error">{{ error }}</div>
 </template>
 
 <style lang="less">
-.plantuml-error {
-	color: red;
-	font-weight: bold;
-	padding: 10px;
-}
-
 .plantuml-renderer {
 	position: relative;
 	padding: 0;
@@ -160,6 +181,12 @@ export default {
 		&:active {
 			background-color: var(--button-active-background-color);
 		}
+	}
+
+	.plantuml-error {
+		color: red;
+		font-weight: bold;
+		padding: 10px;
 	}
 }
 </style>

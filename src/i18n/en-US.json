@@ -206,6 +206,21 @@
 			"clearApiKey": "Clear all API Keys",
 			"clearConfig": "Clear all settings",
 			"clearLog": "Clear all logs"
+		},
+		"MermaidRenderer": {
+			"preview": "Preview",
+			"code": "Code",
+			"renderError": "Mermaid rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content"
+		},
+		"FlowchartRenderer": {
+			"preview": "Preview",
+			"code": "Code",
+			"renderError": "Flowchart rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content"
+		},
+		"PlantUMLRenderer": {
+			"preview": "Preview",
+			"code": "Code",
+			"renderError": "PlantUML rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content"
 		}
 	},
 	"views": {

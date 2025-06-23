@@ -1,8 +1,12 @@
 <script>
 import {initZoom} from "@/services/ZoomManager"
+import Tabs from "@/components/Tabs.vue"
+import TabsTab from "@/components/TabsTab.vue"
+import CodeBlockRenderer from "@/components/chat/CodeBlockRenderer.vue"
 
 export default {
 	name: "MermaidRenderer",
+	components: {CodeBlockRenderer, TabsTab, Tabs},
 	inject: ["$DB"],
 	props: {
 		code: {
@@ -13,7 +17,15 @@ export default {
 	data() {
 		return {
 			name: "MermaidRenderer",
+			activeTab: "preview",
 			error: null
+		}
+	},
+	watch: {
+		activeTab(newVal) {
+			if (newVal === "preview") {
+				this.renderMermaid()
+			}
 		}
 	},
 	mounted() {
@@ -54,16 +66,18 @@ export default {
 					SVG_ELEMENT.style.display = "block"
 					// 获取实际内容高度
 					const G_ELEMENT = SVG_ELEMENT.querySelector("g")
-					const BBOX = G_ELEMENT.getBBox()
-					const MAX_HEIGHT = 400
-					const MIN_HEIGHT = 138
-					const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
-					const PADDING = 50
-					const WIDTH_WITH_PADDING = BBOX.width + PADDING * 2
-					const HEIGHT_WITH_PADDING = BBOX.height + PADDING * 2
-					const FINAL_HEIGHT = Math.max(HEIGHT_WITH_PADDING * SCALE, MIN_HEIGHT)
-					SVG_ELEMENT.setAttribute("viewBox", `${BBOX.x - PADDING} ${BBOX.y - PADDING} ${WIDTH_WITH_PADDING} ${HEIGHT_WITH_PADDING}`)
-					SVG_ELEMENT.style.height = `${FINAL_HEIGHT}px`
+					if (G_ELEMENT) {
+						const BBOX = G_ELEMENT.getBBox()
+						const MAX_HEIGHT = 400
+						const MIN_HEIGHT = 138
+						const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
+						const PADDING = 50
+						const WIDTH_WITH_PADDING = BBOX.width + PADDING * 2
+						const HEIGHT_WITH_PADDING = BBOX.height + PADDING * 2
+						const FINAL_HEIGHT = Math.max(HEIGHT_WITH_PADDING * SCALE, MIN_HEIGHT)
+						SVG_ELEMENT.setAttribute("viewBox", `${BBOX.x - PADDING} ${BBOX.y - PADDING} ${WIDTH_WITH_PADDING} ${HEIGHT_WITH_PADDING}`)
+						SVG_ELEMENT.style.height = `${FINAL_HEIGHT}px`
+					}
 				}
 				initZoom(this.$refs.containerRef)
 			} catch (error) {
@@ -76,59 +90,69 @@ export default {
 </script>
 
 <template>
-	<div ref="containerRef" class="mermaid-renderer">
-		<div class="toolbar">
-			<!--第一排-->
-			<div></div>
-			<button class="toolbar-btn move-up">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-upArrow"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn zoom-in">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-zoomIn"></use>
-				</svg>
-			</button>
-			<!--第二排-->
-			<button class="toolbar-btn move-left">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-leftArrow"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn zoom-reset">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-reset"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn move-right">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-rightArrow"></use>
-				</svg>
-			</button>
-			<!--第三排-->
-			<div></div>
-			<button class="toolbar-btn move-down">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-downArrow"></use>
-				</svg>
-			</button>
-			<button class="toolbar-btn zoom-out">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-zoomOut"></use>
-				</svg>
-			</button>
-		</div>
+	<div class="mermaid-renderer">
+		<Tabs v-model="activeTab">
+			<TabsTab name="preview">
+				<template #label>{{ $t("components.MermaidRenderer.preview") }}</template>
+				<div ref="containerRef">
+					<div v-if="error" class="mermaid-error">
+						{{ $t("components.MermaidRenderer.renderError") }}
+						<br>
+						{{ error }}
+					</div>
+					<div class="toolbar">
+						<!--第一排-->
+						<div></div>
+						<button class="toolbar-btn move-up">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-upArrow"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn zoom-in">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-zoomIn"></use>
+							</svg>
+						</button>
+						<!--第二排-->
+						<button class="toolbar-btn move-left">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-leftArrow"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn zoom-reset">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-reset"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn move-right">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-rightArrow"></use>
+							</svg>
+						</button>
+						<!--第三排-->
+						<div></div>
+						<button class="toolbar-btn move-down">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-downArrow"></use>
+							</svg>
+						</button>
+						<button class="toolbar-btn zoom-out">
+							<svg class="icon" aria-hidden="true">
+								<use xlink:href="#icon-zoomOut"></use>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</TabsTab>
+			<TabsTab name="code">
+				<template #label>{{ $t("components.MermaidRenderer.code") }}</template>
+				<CodeBlockRenderer :code="code"/>
+			</TabsTab>
+		</Tabs>
 	</div>
-	<div v-if="error" class="mermaid-error">Mermaid 渲染失败</div>
 </template>
 
 <style lang="less">
-.mermaid-error {
-	color: red;
-	font-weight: bold;
-}
-
 .mermaid-renderer {
 	position: relative;
 	padding: 0;
@@ -183,6 +207,11 @@ export default {
 		&:active {
 			background-color: var(--button-active-background-color);
 		}
+	}
+
+	.mermaid-error {
+		color: red;
+		font-weight: bold;
 	}
 }
 </style>
