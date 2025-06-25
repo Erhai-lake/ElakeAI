@@ -126,8 +126,8 @@ export default {
 						</Button>
 					</div>
 					<div class="toolbar-export">
-						<Button class="save-png">导出PNG</Button>
-						<Button class="save-svg">导出SVG</Button>
+						<Button class="save-png">{{ $t("components.MermaidRenderer.export") }}PNG</Button>
+						<Button class="save-svg">{{ $t("components.MermaidRenderer.export") }}SVG</Button>
 					</div>
 				</div>
 			</TabsTab>
@@ -187,7 +187,7 @@ export default {
 		}
 	}
 
-	.toolbar-export{
+	.toolbar-export {
 		position: absolute;
 		top: 47px;
 		right: 10px;

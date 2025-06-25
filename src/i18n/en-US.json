@@ -224,17 +224,20 @@
 		"MermaidRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "Mermaid rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content"
+			"renderError": "Mermaid rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content",
+			"export": "Export"
 		},
 		"FlowchartRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "Flowchart rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content"
+			"renderError": "Flowchart rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content",
+			"export": "Export"
 		},
 		"PlantUMLRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "PlantUML rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content"
+			"renderError": "PlantUML rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content",
+			"export": "Export"
 		}
 	},
 	"views": {

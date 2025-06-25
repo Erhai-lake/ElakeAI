@@ -224,17 +224,20 @@
 		"MermaidRenderer": {
 			"preview": "预览",
 			"code": "代码",
-			"renderError": "Mermaid渲染失败! 请检查代码或切换到\"代码\"标签查看原始内容"
+			"renderError": "Mermaid渲染失败! 请检查代码或切换到\"代码\"标签查看原始内容",
+			"export": "导出"
 		},
 		"FlowchartRenderer": {
 			"preview": "预览",
 			"code": "代码",
-			"renderError": "Flowchart渲染失败! 请检查代码或切换到\"代码\"标签查看原始内容"
+			"renderError": "Flowchart渲染失败! 请检查代码或切换到\"代码\"标签查看原始内容",
+			"export": "导出"
 		},
 		"PlantUMLRenderer": {
 			"preview": "预览",
 			"code": "代码",
-			"renderError": "PlantUML渲染失败! 请检查代码或切换到\"代码\"标签查看原始内容"
+			"renderError": "PlantUML渲染失败! 请检查代码或切换到\"代码\"标签查看原始内容",
+			"export": "导出"
 		}
 	},
 	"views": {
