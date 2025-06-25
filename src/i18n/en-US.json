@@ -8,6 +8,22 @@
 	"api": {
 		"unsupportedPlatform": "Unsupported platform",
 		"unsupportedCallPolicy": "Unsupported call policy",
+		"ChatGPT": {
+			"401": "Authentication failed",
+			"403": "Invalid region",
+			"429": "Too many requests or quota exceeded",
+			"500": "Server error",
+			"503": "Service unavailable"
+		},
+		"DeepSeek": {
+			"400": "Invalid request",
+			"401": "Authentication failed",
+			"402": "Insufficient balance",
+			"422": "Invalid request parameters",
+			"429": "Too many requests or quota exceeded",
+			"500": "Server error",
+			"503": "Service unavailable"
+		},
 		"requestTimeout": "Request timed out",
 		"badRequest": "Bad request",
 		"networkError": "Network error",
@@ -16,12 +32,10 @@
 		"unknownError": "Unknown error",
 		"keyDoesNotExist": "Key does not exist",
 		"getKeyError": "Failed to retrieve key",
-		"serverBusy": "Server is busy",
-		"httpError": "HTTP error",
 		"noResponseBody": "No response body",
 		"streamingDataParsingError": "Failed to parse streaming data",
 		"streamError": "Streaming error",
-		"requestCancelled": "Request cancelled",
+		"requestCancelled": "Request was cancelled",
 		"invalidResponse": "Invalid response",
 		"requestFailed": "Request failed"
 	},

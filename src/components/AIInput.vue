@@ -368,7 +368,7 @@ export default defineComponent({
 					await this.$nextTick(() => {
 						this.adjustTextareaHeight()
 					})
-					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE.error)
+					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
 					this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
 				}
 			} catch (error) {

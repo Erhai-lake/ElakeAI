@@ -8,6 +8,22 @@
 	"api": {
 		"unsupportedPlatform": "不支持的平台",
 		"unsupportedCallPolicy": "不支持的调用策略",
+		"ChatGPT": {
+			"401": "认证失败",
+			"403": "无效的地区",
+			"429": "请求过快或额度不足",
+			"500": "服务器错误",
+			"503": "服务繁忙"
+		},
+		"DeepSeek": {
+			"400": "无效的请求",
+			"401": "认证失败",
+			"402": "余额不足",
+			"422": "请求参数错误",
+			"429": "请求过快或额度不足",
+			"500": "服务器错误",
+			"503": "服务繁忙"
+		},
 		"requestTimeout": "请求超时",
 		"badRequest": "错误的请求",
 		"networkError": "网络错误",
@@ -16,8 +32,6 @@
 		"unknownError": "未知报错",
 		"keyDoesNotExist": "Key不存在",
 		"getKeyError": "获取Key失败",
-		"serverBusy": "服务器繁忙",
-		"httpError": "HTTP错误",
 		"noResponseBody": "无响应体",
 		"streamingDataParsingError": "流式数据解析失败",
 		"streamError": "流错误",

@@ -22,7 +22,7 @@ export default class DeepSeekAPI extends BaseAPI {
 	 * @returns {Promise<Object>} 余额信息
 	 */
 	balanceStrategy = async (params) => {
-		return this.response(params, "NULL")
+		return this.response(params, null)
 	}
 
 	/**
@@ -32,10 +32,14 @@ export default class DeepSeekAPI extends BaseAPI {
 	 * @returns {Promise<Object>} 模型信息
 	 */
 	modelsStrategy = async (params, paramsData) => {
-		const CLIENT = this.createClient(paramsData.apiKeyData)
-		const RESPONSE = await CLIENT.get("v1/models")
-		const MODELS = RESPONSE.data.data.map(model => model.id)
-		return this.response(params, MODELS)
+		try {
+			const CLIENT = this.createClient(paramsData.apiKeyData)
+			const RESPONSE = await CLIENT.get("v1/models")
+			const MODELS = RESPONSE.data.data.map(model => model.id)
+			return this.response(params, MODELS)
+		} catch (error) {
+			return this.errorHandler(error, params)
+		}
 	}
 
 	/**
@@ -65,11 +69,7 @@ export default class DeepSeekAPI extends BaseAPI {
 				signal: this.chatHandler.abortController.signal
 			})
 			if (!RESPONSE.ok) {
-				if (RESPONSE.status === 500) {
-					return this.response(params, null, "serverBusy")
-				} else {
-					return this.response(params, null, "httpError")
-				}
+				return this.errorHandler(RESPONSE, params)
 			}
 			return await this.chatHandler.handleStream(params, paramsData, RESPONSE)
 		} catch (error) {

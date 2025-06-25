@@ -108,8 +108,8 @@ export default {
 				const KEY_DATA = await this.$DB.apiKeys.get(key)
 				const RESPONSE = await APIManager.execute(KEY_DATA.model, "balance", {apiKey: key})
 				if (RESPONSE.error) {
-					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE.error)
-					this.$toast.error(this.$t(`api.${RESPONSE.error}`))
+					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE)
+					this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
 					return RESPONSE.data
 				}
 				return RESPONSE.data

@@ -55,16 +55,6 @@ export default class BaseAPI {
 	}
 
 	/**
-	 * 检查API响应是否有效
-	 * @param {Object} response - API响应对象
-	 * @returns {boolean} 是否为有效的API响应
-	 */
-	isValidApiResponse(response) {
-		const contentType = response.headers["content-type"]
-		return contentType && contentType.includes("application/json")
-	}
-
-	/**
 	 * 执行API调用
 	 * @param {string} callPolicy - 调用策略
 	 * @param {Object} params - 请求参数
@@ -88,37 +78,48 @@ export default class BaseAPI {
 				return this.response(params, null, CHAT_KEY_DATA.error)
 			}
 		}
+		const STRATEGY = this.strategies[callPolicy]
+		if (!STRATEGY) {
+			return this.response(params, null, "unsupportedCallPolicy")
+		}
+		return await STRATEGY(params, paramsData)
+	}
+
+	/**
+	 * 错误处理
+	 * @param {Object} error - 错误对象
+	 * @param {Object} params - 请求参数
+	 * @returns {{data: *, error: (string|string), traceability: *, timestamp: number}} 错误信息
+	 */
+
+	errorHandler(error, params) {
 		try {
-			const STRATEGY = this.strategies[callPolicy]
-			if (!STRATEGY) {
-				return this.response(params, null, "unsupportedCallPolicy")
+			if (error.response.status !== 200) {
+				return this.response(params, null, `${this.platform}.${error.response.status}`)
 			}
-			return await STRATEGY(params, paramsData)
-		} catch (error) {
 			if (error.code === "ECONNABORTED") {
 				// 处理超时错误
-				return this.response(params, "NULL", "requestTimeout")
+				return this.response(params, null, "requestTimeout")
 			}
 			if (error.code === "ERR_BAD_REQUEST") {
 				// 处理错误的请求
-				return this.response(params, "NULL", "badRequest")
+				return this.response(params, null, "badRequest")
 			}
 			if (error.code === "ERR_NETWORK") {
 				// 处理网络错误
-				return this.response(params, "NULL", "networkError")
+				return this.response(params, null, "networkError")
 			}
 			if (error.response) {
-				// 服务器返回了响应但状态码不在2xx范围
-				if (!this.isValidApiResponse(error.response)) {
-					return this.response(params, "NULL", "getError")
-				}
+				return this.response(params, null, "getError")
 			}
 			if (error.request) {
 				// 请求已发出但没有收到响应
-				return this.response(params, "NULL", "noResponse")
+				return this.response(params, null, "noResponse")
 			}
-			// 请求配置出错
-			return this.response(params, "NULL", "unknownError")
+			// 其他未知错误
+			return this.response(params, null, "unknownError")
+		} catch (error) {
+			return this.response(params, null, "unknownError")
 		}
 	}
 

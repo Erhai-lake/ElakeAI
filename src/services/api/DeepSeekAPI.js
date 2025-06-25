@@ -23,9 +23,13 @@ export default class DeepSeekAPI extends BaseAPI {
 	 * @returns {Promise<Object>} 余额信息
 	 */
 	balanceStrategy = async (params, paramsData) => {
-		const CLIENT = this.createClient(paramsData.apiKeyData)
-		const RESPONSE = await CLIENT.get("/user/balance")
-		return this.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
+		try {
+			const CLIENT = this.createClient(paramsData.apiKeyData)
+			const RESPONSE = await CLIENT.get("/user/balance")
+			return this.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
+		} catch (error) {
+			return this.errorHandler(error, params)
+		}
 	}
 
 	/**
@@ -35,10 +39,14 @@ export default class DeepSeekAPI extends BaseAPI {
 	 * @returns {Promise<Object>} 模型信息
 	 */
 	modelsStrategy = async (params, paramsData) => {
-		const CLIENT = this.createClient(paramsData.apiKeyData)
-		const RESPONSE = await CLIENT.get("/models")
-		const MODELS = RESPONSE.data.data.map(model => model.id)
-		return this.response(params, MODELS)
+		try {
+			const CLIENT = this.createClient(paramsData.apiKeyData)
+			const RESPONSE = await CLIENT.get("/models")
+			const MODELS = RESPONSE.data.data.map(model => model.id)
+			return this.response(params, MODELS)
+		} catch (error) {
+			return this.errorHandler(error, params)
+		}
 	}
 
 	/**
@@ -68,11 +76,7 @@ export default class DeepSeekAPI extends BaseAPI {
 				signal: this.chatHandler.abortController.signal
 			})
 			if (!RESPONSE.ok) {
-				if (RESPONSE.status === 500) {
-					return this.response(params, null, "serverBusy")
-				} else {
-					return this.response(params, null, "httpError")
-				}
+				return this.errorHandler(RESPONSE, params)
 			}
 			return await this.chatHandler.handleStream(params, paramsData, RESPONSE)
 		} catch (error) {
