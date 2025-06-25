@@ -2,7 +2,6 @@ import {createApp} from "vue"
 import app from "@/App.vue"
 import router from "@/router"
 import store from "@/store"
-import EventBus from "@/services/EventBus"
 // 全局样式
 import "@/assets/styles/theme.less"
 // 数据库操作
@@ -13,7 +12,7 @@ import i18n from "@/i18n"
 import toastPlugin from "vue-toast-notification"
 import "vue-toast-notification/dist/theme-bootstrap.css"
 // 日志
-import VueLogger from "vuejs3-logger"
+import Logger, {setupLogCleanup} from "@/services/Logger"
 
 const APP = createApp(app)
 
@@ -24,94 +23,18 @@ const TOAST_OPTIONS = {
 	dismissible: false
 }
 
-const LOGGER_OPTIONS = {
-	isEnabled: true,
-	logLevel: process.env.NODE_ENV === "production" ? "error" : "debug",
-	stringifyArguments: false,
-	showLogLevel: false,
-	showMethodName: false,
-	separator: "|",
-	showConsoleColors: true
-}
-
 // 注册全局组件
 APP.use(store)
 	.use(router)
 	.use(i18n)
 	.use(toastPlugin, TOAST_OPTIONS)
-	.use(VueLogger, LOGGER_OPTIONS)
-
-// 扩展 $log 方法
-APP.config.globalProperties.$log = {
-	debug: (...args) => {
-		console.debug(...args)
-		storeLog("debug", ...args)
-	},
-	info: (...args) => {
-		// console.info(...args)
-		storeLog("info", ...args)
-	},
-	warn: (...args) => {
-		// console.warn(...args)
-		storeLog("warn", ...args)
-	},
-	error: (...args) => {
-		console.error(...args)
-		storeLog("error", ...args)
-	}
-}
-const storeLog = async (level, ...args) => {
-	try {
-		const formatMessage = (arg) => {
-			if (arg instanceof Error) {
-				return `Error: ${arg.message}\nStack: ${arg.stack}`
-			}
-			if (typeof arg === "object") {
-				try {
-					return JSON.stringify(arg, null)
-				} catch {
-					return "[Circular Object]"
-				}
-			}
-			return String(arg)
-		}
-		const MATCH = args[0].match(/^\[(.*?)](.*)$/) || ["NULL", "NULL"]
-		args.shift()
-		const LOG_ENTRY = {
-			level: level,
-			component: MATCH[1],
-			message: [MATCH[2], ...args].map(formatMessage).join(" "),
-			timestamp: Date.now()
-		}
-		EventBus.emit("[function] log", LOG_ENTRY)
-		if (DB && DB.logs) {
-			try {
-				await DB.logs.add(LOG_ENTRY)
-			} catch (dbError) {
-				console.error("日志数据库操作失败", dbError)
-				setTimeout(() => storeLog(level, ...args), 100)
-			}
-		} else {
-			setTimeout(() => storeLog(level, ...args), 100)
-		}
-	} catch (error) {
-		console.error("日志存储失败", error)
-	}
-}
-
-const setupLogCleanup = async () => {
-	const THIRTY_ONE_DAYS = 7 * 24 * 60 * 60 * 1000
-	try {
-		await DB.logs.where("timestamp").below(Date.now() - THIRTY_ONE_DAYS).delete()
-	} catch (error) {
-		console.error("[main] 日志清理失败:", error)
-	}
-}
-setupLogCleanup()
-setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
 
 // 注册全局变量
+APP.config.globalProperties.$log = Logger
 APP.provide("$DB", DB)
+
+void setupLogCleanup()
+setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
 
 // 挂载应用
 APP.mount("#app")
