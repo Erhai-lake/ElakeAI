@@ -75,7 +75,7 @@ const storeLog = async (level, ...args) => {
 			}
 			return String(arg)
 		}
-		const MATCH = args[0].match(/^\[(.*?)](.*)$/)
+		const MATCH = args[0].match(/^\[(.*?)](.*)$/) || ["NULL", "NULL"]
 		args.shift()
 		const LOG_ENTRY = {
 			level: level,
@@ -84,9 +84,18 @@ const storeLog = async (level, ...args) => {
 			timestamp: Date.now()
 		}
 		EventBus.emit("[function] log", LOG_ENTRY)
-		await DB.logs.add(LOG_ENTRY)
-	} catch (e) {
-		console.error("日志存储失败:", e)
+		if (DB && DB.logs) {
+			try {
+				await DB.logs.add(LOG_ENTRY)
+			} catch (dbError) {
+				console.error("日志数据库操作失败", dbError)
+				setTimeout(() => storeLog(level, ...args), 100)
+			}
+		} else {
+			setTimeout(() => storeLog(level, ...args), 100)
+		}
+	} catch (error) {
+		console.error("日志存储失败", error)
 	}
 }
 

@@ -6,7 +6,7 @@
 - 支持 markdownItTaskLists 任务列表(使用 `- [ ]` 格式).
 - 支持 markdownItEmoji 表情(使用 `:emoji:` 格式).
 - 支持 Mermaid 流程图(使用 ```mermaid 代码块).
-- 支持 Flowchart 流程图(使用 ```flowchart 代码块).
+- 支持 Flowchart 流程图(使用 ```flowchart 或者 ```flow 代码块).
 - 支持 PlantUML 流程图(使用 ```plantuml 代码块).
 - 支持 lazyload 图片懒加载(使用 `![图片描述](图片地址)` 格式).
 以下是一些使用注意事项:

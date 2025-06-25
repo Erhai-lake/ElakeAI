@@ -114,7 +114,7 @@ export default {
 				</div>
 			</TabsTab>
 			<TabsTab name="code">
-				<template #label>{{ $t("components.PlantUMLRenderer.preview") }}</template>
+				<template #label>{{ $t("components.PlantUMLRenderer.code") }}</template>
 				<CodeBlockRenderer :code="code"/>
 			</TabsTab>
 		</Tabs>

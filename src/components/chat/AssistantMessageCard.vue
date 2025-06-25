@@ -117,6 +117,7 @@ export default {
 				const TYPE_MAP = {
 					mermaid: "mermaid",
 					flow: "flowchart",
+					flowchart: "flowchart",
 					plantuml: "plantuml",
 				}
 				const safeLang = TYPE_MAP[LANG] || "code"
@@ -143,7 +144,7 @@ export default {
 							code: decodeURIComponent(NODE.dataset.code)
 						}
 					})
-				} else if (NODE.nodeType === 1 && LANG === "flow") {
+				} else if (NODE.nodeType === 1 && (LANG === "flow" || LANG === "flowchart")) {
 					BLOCKS.push({
 						component: "FlowchartRenderer",
 						props: {

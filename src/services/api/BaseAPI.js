@@ -98,24 +98,27 @@ export default class BaseAPI {
 			if (error.code === "ECONNABORTED") {
 				// 处理超时错误
 				return this.response(params, "NULL", "requestTimeout")
-			} else if (error.code === "ERR_BAD_REQUEST") {
+			}
+			if (error.code === "ERR_BAD_REQUEST") {
 				// 处理错误的请求
 				return this.response(params, "NULL", "badRequest")
-			} else if (error.code === "ERR_NETWORK") {
+			}
+			if (error.code === "ERR_NETWORK") {
 				// 处理网络错误
 				return this.response(params, "NULL", "networkError")
-			} else if (error.response) {
+			}
+			if (error.response) {
 				// 服务器返回了响应但状态码不在2xx范围
 				if (!this.isValidApiResponse(error.response)) {
 					return this.response(params, "NULL", "getError")
 				}
-			} else if (error.request) {
+			}
+			if (error.request) {
 				// 请求已发出但没有收到响应
 				return this.response(params, "NULL", "noResponse")
-			} else {
-				// 请求配置出错
-				return this.response(params, "NULL", "unknownError")
 			}
+			// 请求配置出错
+			return this.response(params, "NULL", "unknownError")
 		}
 	}
 

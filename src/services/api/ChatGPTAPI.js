@@ -34,9 +34,6 @@ export default class DeepSeekAPI extends BaseAPI {
 	modelsStrategy = async (params, paramsData) => {
 		const CLIENT = this.createClient(paramsData.apiKeyData)
 		const RESPONSE = await CLIENT.get("v1/models")
-		if (!this.isValidApiResponse(RESPONSE)) {
-			return this.response(params, null, "getError")
-		}
 		const MODELS = RESPONSE.data.data.map(model => model.id)
 		return this.response(params, MODELS)
 	}

@@ -309,11 +309,9 @@ export default {
 						if (EXISTING) {
 							// 更新现有配置
 							await this.$DB.configs.update(EXISTING.item, config)
-							this.$log.info(`[${this.name}] 更新config`, config.item)
 						} else {
 							// 添加新配置
 							await this.$DB.configs.add(config)
-							this.$log.info(`[${this.name}] 添加新config`, config.item)
 						}
 					}
 				})
@@ -336,7 +334,6 @@ export default {
 						const NEW_API_KEY = {...apiKey, key: NEW_KEY}
 						// 添加新apiKey
 						await this.$DB.apiKeys.add(NEW_API_KEY)
-						this.$log.info(`[${this.name}] 添加新apiKey`, apiKey.remark)
 					}
 				})
 				this.$log.info(`[${this.name}] 成功导入 ${apiKeys.length} 个apiKey`)
@@ -355,10 +352,11 @@ export default {
 					for (const chat of chats) {
 						// 生成新的key避免冲突
 						const NEW_KEY = crypto.randomUUID()
-						const NEW_CHAT = {...chat, key: NEW_KEY}
+						const CHAT = JSON.parse(JSON.stringify(chat))
+						const NEW_CHAT = {...CHAT, key: NEW_KEY}
 						// 添加新聊天记录
 						await this.$DB.chats.add(NEW_CHAT)
-						this.$log.info(`[${this.name}] 添加新chat`, chat.title)
+						EventBus.emit("[function] chatListGet")
 					}
 				})
 				this.$log.info(`[${this.name}] 成功导入 ${chats.length} 个chat`)

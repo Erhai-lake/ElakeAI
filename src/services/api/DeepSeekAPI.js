@@ -25,9 +25,6 @@ export default class DeepSeekAPI extends BaseAPI {
 	balanceStrategy = async (params, paramsData) => {
 		const CLIENT = this.createClient(paramsData.apiKeyData)
 		const RESPONSE = await CLIENT.get("/user/balance")
-		if (!this.isValidApiResponse(RESPONSE)) {
-			return this.response(params, null, "getError")
-		}
 		return this.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
 	}
 
@@ -40,9 +37,6 @@ export default class DeepSeekAPI extends BaseAPI {
 	modelsStrategy = async (params, paramsData) => {
 		const CLIENT = this.createClient(paramsData.apiKeyData)
 		const RESPONSE = await CLIENT.get("/models")
-		if (!this.isValidApiResponse(RESPONSE)) {
-			return this.response(params, null, "getError")
-		}
 		const MODELS = RESPONSE.data.data.map(model => model.id)
 		return this.response(params, MODELS)
 	}
