@@ -1,12 +1,14 @@
 <script>
-import {initZoom} from "@/services/ZoomManager"
+import {initZoom} from "@/components/chat/renderer/ZoomManager"
+import {fetchSvgElementFromUrl, initSaveButtons} from "@/components/chat/renderer/ExportHelper"
 import Tabs from "@/components/Tabs.vue"
 import TabsTab from "@/components/TabsTab.vue"
-import CodeBlockRenderer from "@/components/chat/CodeBlockRenderer.vue"
+import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
+import Button from "@/components/Button.vue"
 
 export default {
 	name: "PlantUMLRenderer",
-	components: {CodeBlockRenderer, TabsTab, Tabs},
+	components: {Button, CodeBlockRenderer, TabsTab, Tabs},
 	props: {
 		code: {
 			type: String,
@@ -41,13 +43,15 @@ export default {
 				WRAPPER.innerHTML = `<img src="${URL}" alt="${URL}" class="uml-image" draggable="false"/>`
 				CONTAINER.appendChild(WRAPPER)
 				const IMG = WRAPPER.querySelector("img")
-				IMG.onload = () => {
+				IMG.onload = async () => {
 					const minHeight = 138
 					IMG.style.maxHeight = "400px"
 					if (IMG.clientHeight < minHeight) {
 						IMG.style.height = `${minHeight}px`
 					}
 					initZoom(this.$refs.containerRef)
+					const SVG_ELEMENT = await fetchSvgElementFromUrl(URL)
+					if (SVG_ELEMENT) initSaveButtons(CONTAINER, SVG_ELEMENT)
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] PlantUML渲染失败`, error)
@@ -72,44 +76,48 @@ export default {
 					<div class="toolbar">
 						<!--第一排-->
 						<div></div>
-						<button class="toolbar-btn move-up">
+						<Button class="toolbar-btn move-up">
 							<svg class="icon" aria-hidden="true">
 								<use xlink:href="#icon-upArrow"></use>
 							</svg>
-						</button>
-						<button class="toolbar-btn zoom-in">
+						</Button>
+						<Button class="toolbar-btn zoom-in">
 							<svg class="icon" aria-hidden="true">
 								<use xlink:href="#icon-zoomIn"></use>
 							</svg>
-						</button>
+						</Button>
 						<!--第二排-->
-						<button class="toolbar-btn move-left">
+						<Button class="toolbar-btn move-left">
 							<svg class="icon" aria-hidden="true">
 								<use xlink:href="#icon-leftArrow"></use>
 							</svg>
-						</button>
-						<button class="toolbar-btn zoom-reset">
+						</Button>
+						<Button class="toolbar-btn zoom-reset">
 							<svg class="icon" aria-hidden="true">
 								<use xlink:href="#icon-reset"></use>
 							</svg>
-						</button>
-						<button class="toolbar-btn move-right">
+						</Button>
+						<Button class="toolbar-btn move-right">
 							<svg class="icon" aria-hidden="true">
 								<use xlink:href="#icon-rightArrow"></use>
 							</svg>
-						</button>
+						</Button>
 						<!--第三排-->
 						<div></div>
-						<button class="toolbar-btn move-down">
+						<Button class="toolbar-btn move-down">
 							<svg class="icon" aria-hidden="true">
 								<use xlink:href="#icon-downArrow"></use>
 							</svg>
-						</button>
-						<button class="toolbar-btn zoom-out">
+						</Button>
+						<Button class="toolbar-btn zoom-out">
 							<svg class="icon" aria-hidden="true">
 								<use xlink:href="#icon-zoomOut"></use>
 							</svg>
-						</button>
+						</Button>
+					</div>
+					<div class="toolbar-export">
+						<Button class="save-png">导出PNG</Button>
+						<Button class="save-svg">导出SVG</Button>
 					</div>
 				</div>
 			</TabsTab>
@@ -149,6 +157,12 @@ export default {
 		fill: currentColor;
 	}
 
+	&:hover {
+		.toolbar, .toolbar-export {
+			opacity: 1;
+		}
+	}
+
 	.toolbar {
 		position: absolute;
 		bottom: 10px;
@@ -157,30 +171,27 @@ export default {
 		grid-template-columns: repeat(3, 1fr);
 		grid-template-rows: repeat(3, 1fr);
 		grid-gap: 5px;
-		z-index: 2;
+		opacity: 0;
+
+		.toolbar-btn {
+			padding: 0;
+			width: 36px;
+			height: 36px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 1;
+		}
 	}
 
-	.toolbar-btn {
-		width: 36px;
-		height: 36px;
-		background-color: var(--background-color);
-		color: var(--text-color);
-		border: 1px solid #909399FF;
-		border-radius: 8px;
-		font-size: 14px;
-		cursor: pointer;
-		user-select: none;
+	.toolbar-export{
+		position: absolute;
+		top: 47px;
+		right: 10px;
 		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		&:hover {
-			background-color: var(--button-hover-background-color);
-		}
-
-		&:active {
-			background-color: var(--button-active-background-color);
-		}
+		gap: 5px;
+		z-index: 1;
+		opacity: 0;
 	}
 
 	.plantuml-error {
