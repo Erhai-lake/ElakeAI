@@ -2,14 +2,41 @@
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {nextTick} from "vue"
+import Selector from "@/components/Selector.vue"
 
 export default {
 	name: "Log",
 	inject: ["$DB"],
-	components: {Button},
+	components: {Selector, Button},
 	data() {
 		return {
 			name: "Log",
+			levelList: [
+				{
+					label: "all",
+					title: "all"
+				},
+				{
+					label: "debug",
+					title: "debug"
+				},
+				{
+					label: "info",
+					title: "info"
+				},
+				{
+					label: "warn",
+					title: "warn"
+				},
+				{
+					label: "error",
+					title: "error"
+				},
+			],
+			levelSelector: {
+				label: "all",
+				title: "all"
+			},
 			logs: [],
 			isKeepScrollToBottom: true,
 			isLogSuspensionWindow: false,
@@ -41,7 +68,11 @@ export default {
 		 */
 		async loadLogs() {
 			try {
-				this.logs = await this.$DB.logs.toArray()
+				const LOGS_DATA = await this.$DB.logs.toArray()
+				this.logs = LOGS_DATA.filter(log => {
+					if (this.levelSelector.label === "all") return true
+					return log.level === this.levelSelector.label
+				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载日志失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.loadError")}`)
@@ -49,10 +80,19 @@ export default {
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
 		/**
+		 * 更新选择器
+		 * @param {Object} value - 选择器值
+		 */
+		updateSelectedLevel(value) {
+			this.levelSelector = value
+			this.loadLogs()
+		},
+		/**
 		 * 添加日志
 		 * @param log - 日志对象
 		 */
 		addLog(log) {
+			if (this.levelSelector.label !== "all" && log.level !== this.levelSelector.label) return
 			this.logs.push(log)
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
@@ -167,7 +207,13 @@ export default {
 <template>
 	<div class="log">
 		<div class="header">
-			<span class="log-count">{{ $t("components.Log.count", {count: logs.length}) }}</span>
+			<Selector
+				class="level-selector"
+				uniqueKey="label"
+				:num="5"
+				:selectorList="levelList"
+				:selectorSelected="levelSelector || {}"
+				@update:selectorSelected="updateSelectedLevel"/>
 			<Button @click="loadLogs">🔄 {{ $t("components.Log.function.load") }}</Button>
 			<Button @click="clearLogs">🗑️ {{ $t("components.Log.function.clear") }}</Button>
 			<Button @click="exportLogs">📤 {{ $t("components.Log.function.export") }}</Button>
@@ -177,6 +223,7 @@ export default {
 			<Button @click="suspensionWindow">
 				{{ $t("components.Log.function.suspensionWindow", {is: isLogSuspensionWindow}) }}
 			</Button>
+			<span class="log-count">{{ $t("components.Log.count", {count: logs.length, level: levelSelector.label}) }}</span>
 		</div>
 		<div ref="logList" class="log-list">
 			<div v-for="(log, index) in logs" :key="index" :class="['log-item', log.level]">
@@ -205,9 +252,14 @@ export default {
 .header {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	margin-bottom: 10px;
 	gap: 10px;
-	overflow-x: auto;
+
+	.level-selector{
+		width: 200px;
+		min-width: 200px;
+	}
 }
 
 .log-list {

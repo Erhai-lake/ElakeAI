@@ -181,7 +181,7 @@
 				"keepScrollToBottom": "Keep scrolled to bottom {is}",
 				"suspensionWindow": "Floating Window {is}"
 			},
-			"count": "Total {count} logs",
+			"count": "Total {count} {level} logs",
 			"empty": "No logs available"
 		},
 		"ImportExport": {

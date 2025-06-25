@@ -181,7 +181,7 @@
 				"keepScrollToBottom": "保持滚动到底部 {is}",
 				"suspensionWindow": "悬浮窗 {is}"
 			},
-			"count": "共 {count} 条日志",
+			"count": "共 {count} 条 {level} 日志",
 			"empty": "暂无日志"
 		},
 		"ImportExport": {
