@@ -155,11 +155,7 @@ export default defineComponent({
 
 				this.selector.keyPools = keys
 				this.selector.selectedKey = keys[0] || null
-
-				if (this.selector.selectedKey) {
-					this.selector.loading.keys = false
-					await this.selectKey(this.selector.selectedKey)
-				}
+				this.selector.loading.keys = false
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载Key池错误`, error)
@@ -223,7 +219,8 @@ export default defineComponent({
 			const KEY_DATA = await this.$DB.apiKeys.get(key)
 			const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
 			if (RESPONSE.error) {
-				this.$toast.error(this.$t(`api.${RESPONSE.error}`))
+				this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE)
+				this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
 			}
 			const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
 			return UNIQUE_MODELS.map(model => ({title: model}))

@@ -12,6 +12,7 @@ export default {
 	components: {TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
 	data() {
 		return {
+			name: "ChatView",
 			route: useRoute(),
 			scroll: {
 				isAtTop: false,
@@ -185,8 +186,8 @@ export default {
 				}
 				this.scrollToUpAndDownMessages("bottom")
 			} catch (error) {
-				console.error("[Chat View] 聊天记录获取错误", error)
-				this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.getChatLogError")}`)
+				this.$log.error(`[${this.name}] 聊天记录获取错误`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.getChatLogError")}`)
 			}
 		},
 		/**
@@ -269,8 +270,8 @@ export default {
 					}
 				}
 			} catch (error) {
-				console.error("[Chat View] 标题更新错误", error)
-				this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
+				this.$log.error(`[${this.name}] 标题更新错误`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
 			}
 			// 如果用户在底部附近会滚动到底部
 			if (this.scroll.isAtBottom) {
@@ -294,8 +295,8 @@ export default {
 				// 更新侧边栏
 				EventBus.emit("[function] chatListGet")
 			} catch (error) {
-				console.error("[Chat View] 消息移除错误", error)
-				this.$toast.error(`[Chat View] ${this.$t("views.ChatView.toast.removeMessageError")}`)
+				this.$log.error(`[${this.name}] 消息移除错误`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.removeMessageError")}`)
 			}
 		}
 	}
