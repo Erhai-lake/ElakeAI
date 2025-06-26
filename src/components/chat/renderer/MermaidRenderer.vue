@@ -153,7 +153,7 @@ export default {
 			</TabsTab>
 			<TabsTab name="code">
 				<template #label>{{ $t("components.MermaidRenderer.code") }}</template>
-				<CodeBlockRenderer :code="code"/>
+				<CodeBlockRenderer :code="code" language="mermaid"/>
 			</TabsTab>
 		</Tabs>
 	</div>

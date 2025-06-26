@@ -133,7 +133,7 @@ export default {
 			</TabsTab>
 			<TabsTab name="code">
 				<template #label>{{ $t("components.FlowchartRenderer.preview") }}</template>
-				<CodeBlockRenderer :code="code"/>
+				<CodeBlockRenderer :code="code" language="flowchart"/>
 			</TabsTab>
 		</Tabs>
 	</div>
