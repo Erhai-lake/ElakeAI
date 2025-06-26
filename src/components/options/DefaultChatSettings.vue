@@ -3,7 +3,7 @@ import Selector from "@/components/Selector.vue"
 import ModelList from "@/assets/data/ModelList.json"
 import APIManager from "@/services/api/APIManager"
 import Button from "@/components/Button.vue"
-import EventBus from "@/services/EventBus";
+import EventBus from "@/services/EventBus"
 
 export default {
 	name: "DefaultChatSettings",
@@ -49,10 +49,10 @@ export default {
 		}
 	},
 	mounted() {
-		EventBus.on("[function] keyPoolUpdate", this.loadKeyPools)
+		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	beforeUnmount() {
-		EventBus.off("[function] keyPoolUpdate", this.loadKeyPools)
+		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	beforeDestroy() {
 		this.cancelAllRequests()

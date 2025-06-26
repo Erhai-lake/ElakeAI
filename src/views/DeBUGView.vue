@@ -162,7 +162,7 @@ export default {
                     ]
                 })
             }
-            EventBus.emit("[function] chatListGet")
+            EventBus.emit("[update] chatListUpdate")
             await this.chatsLoading()
             this.$toast.success("生成完毕")
         },
@@ -181,7 +181,7 @@ export default {
             try {
                 await this.$DB.chats.clear()
                 await this.chatsLoading()
-                EventBus.emit("[function] chatListGet")
+                EventBus.emit("[update] chatListUpdate")
                 this.$toast.success("Chats数据库已清空")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据清空错误", error)
@@ -194,7 +194,7 @@ export default {
             try {
                 await this.$DB.chats.delete(item)
                 this.chats = this.chats.filter(chat => chat.key !== item)
-                EventBus.emit("[function] chatListGet")
+                EventBus.emit("[update] chatListUpdate")
                 this.$toast.success("数据删除成功")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据删除错误", error)
@@ -208,7 +208,7 @@ export default {
             try {
                 await this.$DB.chats.update(item.key, {title: NEW_VALUE})
                 item.title = NEW_VALUE
-                EventBus.emit("[function] chatListGet")
+                EventBus.emit("[update] chatListUpdate")
                 this.$toast.success("标题更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 标题更新错误", error)
@@ -224,7 +224,7 @@ export default {
                 const parsedData = JSON.parse(RAW_VALUE)
                 await this.$DB.chats.update(item.key, parsedData)
                 item.data = JSON.parse(JSON.stringify(parsedData))
-                EventBus.emit("[function] chatListGet")
+                EventBus.emit("[update] chatListUpdate")
                 this.$toast.success("数据更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 数据更新错误", error)

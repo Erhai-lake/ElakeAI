@@ -79,12 +79,12 @@ export default defineComponent({
 			this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
 			this.focusInput()
 		}
-		// 监听消息流完成
 		EventBus.on("[stream] streamComplete", this.streamComplete)
+		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	beforeUnmount() {
-		// 移除消息流完成监听
 		EventBus.off("[stream] streamComplete", this.streamComplete)
+		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	unmounted() {
 		if (this.textareaRef) {
@@ -340,7 +340,7 @@ export default defineComponent({
 							}
 						]
 					})
-					EventBus.emit("[function] chatListGet")
+					EventBus.emit("[update] chatListUpdate")
 				} catch (error) {
 					this.ChatInput = CONTENT
 					await this.$nextTick(() => {

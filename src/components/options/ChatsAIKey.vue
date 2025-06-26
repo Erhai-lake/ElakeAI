@@ -49,6 +49,12 @@ export default {
 			this.selectModel(newVal)
 		}
 	},
+	mounted() {
+		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
+	},
+	beforeUnmount() {
+		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
+	},
 	created() {
 		// 初始化Key池
 		this.loadKeyPools()
@@ -171,18 +177,11 @@ export default {
 					url: this.newKey.url,
 					enabled: this.newKey.enabled
 				})
-				// 写入Key池
-				this.keyPools.push({
-					...this.newKey,
-					key: NEW_KEY_ID,
-					model: this.selectedModel.title,
-					balance: await this.getKeyBalance(NEW_KEY_ID)
-				})
 				// 重置表单
 				this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
 				this.status.addFormStatus = false
 				this.$toast.success(this.$t("components.ChatAIKey.toast.addKeySuccess"))
-				EventBus.emit("[function] keyPoolUpdate")
+				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 添加Key失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.addKeyError")}`)
@@ -211,13 +210,9 @@ export default {
 			}
 			try {
 				await this.$DB.apiKeys.bulkDelete(this.operationSelection)
-				// 删除Key池
-				this.keyPools = this.keyPools.filter(item =>
-					!this.operationSelection.includes(item.key)
-				)
 				this.operationSelection = []
 				this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.removeKeySuccess")}`)
-				EventBus.emit("[function] keyPoolUpdate")
+				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 移除Keys失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.removeKeysError")}`)
@@ -304,13 +299,6 @@ export default {
 					remark: this.editKey.remark,
 					url: this.editKey.url
 				})
-				// 更新Key池
-				this.keyPools = this.keyPools.map(item => {
-					if (item.key === this.editKey.key) {
-						return {...item, ...this.editKey}
-					}
-					return item
-				})
 				// 重置表单
 				this.editKey = {
 					key: "",
@@ -321,7 +309,7 @@ export default {
 				}
 				this.status.editFormStatus = false
 				this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.editKeySuccess")}`)
-				EventBus.emit("[function] keyPoolUpdate")
+				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 编辑Key失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.editKeyError")}`)
@@ -349,14 +337,13 @@ export default {
 			try {
 				const NEW_STATUS = !keyItem.enabled
 				await this.$DB.apiKeys.update(keyItem.key, {enabled: NEW_STATUS})
-				keyItem.enabled = NEW_STATUS
 				if (keyItem.enabled) {
 					keyItem.balance = await this.getKeyBalance(keyItem.key)
 				} else {
 					keyItem.balance = "NULL"
 				}
 				this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
-				EventBus.emit("[function] keyPoolUpdate")
+				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)
@@ -379,24 +366,8 @@ export default {
 					changes: {enabled: status}
 				}))
 				await this.$DB.apiKeys.bulkUpdate(UPDATES)
-				// 本地更新选中项状态
-				const UPDATED_POOLS = []
-				for (const item of this.keyPools) {
-					if (this.operationSelection.includes(item.key)) {
-						const updatedItem = {...item, enabled: status}
-						if (status) {
-							updatedItem.balance = await this.getKeyBalance(item.key)
-						} else {
-							updatedItem.balance = "NULL"
-						}
-						UPDATED_POOLS.push(updatedItem)
-					} else {
-						UPDATED_POOLS.push(item)
-					}
-				}
-				this.keyPools = UPDATED_POOLS
 				this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
-				EventBus.emit("[function] keyPoolUpdate")
+				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)

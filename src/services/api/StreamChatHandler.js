@@ -132,7 +132,7 @@ export default class StreamChatHandler {
 		})
 
 		// 更新聊天列表
-		this.eventBus.emit("[function] chatListGet")
+		this.eventBus.emit("[update] chatListUpdate")
 	}
 
 	/**

@@ -19,8 +19,8 @@ export default {
 			if (!confirm(this.$t("components.HazardousOperations.confirmOperationTip"))) return
 			try {
 				await this.$DB.chats.clear()
-				EventBus.emit("[function] chatListGet")
 				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)
@@ -34,6 +34,7 @@ export default {
 			try {
 				await this.$DB.apiKeys.clear()
 				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)
@@ -47,6 +48,7 @@ export default {
 			try {
 				await this.$DB.configs.clear()
 				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)
@@ -60,6 +62,7 @@ export default {
 			try {
 				await this.$DB.logs.clear()
 				this.$toast.success(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationSuccess")}`)
+				EventBus.emit("[update] logUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.HazardousOperations.toast.operationFailed")}`)

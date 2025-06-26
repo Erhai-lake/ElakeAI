@@ -18,13 +18,13 @@ export default {
     },
     mounted() {
         // 监听日志悬浮窗设置
-        EventBus.on("[function] logSuspensionWindow", this.logSuspensionWindow)
+        EventBus.on("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
 		// 监听初始化设置
 		EventBus.on("[function] configInitialization", this.configInitialization)
     },
     beforeUnmount() {
         // 移除日志悬浮窗设置监听
-        EventBus.off("[function] logSuspensionWindow", this.logSuspensionWindow)
+        EventBus.off("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
 		// 移除初始化设置监听
 		EventBus.off("[function] configInitialization", this.configInitialization)
     },

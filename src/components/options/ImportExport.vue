@@ -24,6 +24,14 @@ export default {
 			this.apiKeys.selectAll = this.apiKeys.options.length > 0 && newVal.length === this.apiKeys.options.length
 		}
 	},
+	mounted() {
+		EventBus.on("[update] keyPoolUpdate", this.loadExportData)
+		EventBus.on("[update] chatListUpdate", this.loadExportData)
+	},
+	beforeUnmount() {
+		EventBus.off("[update] keyPoolUpdate", this.loadExportData)
+		EventBus.off("[update] chatListUpdate", this.loadExportData)
+	},
 	async created() {
 		await this.loadExportData()
 	},
@@ -263,8 +271,6 @@ export default {
 				}
 				if (!confirm(this.$t("components.ImportExport.confirmImportTip"))) return
 				await Promise.all(IMPORT_TASKS)
-				await this.loadExportData()
-				EventBus.emit("[function] configInitialization")
 				this.$log.info(`[${this.name}] 导入完成`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入失败`, error)
@@ -316,6 +322,7 @@ export default {
 					}
 				})
 				this.$log.info(`[${this.name}] 成功导入 ${configs.length} 个config`)
+				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入configs数据失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailedSkipped")}`)
@@ -337,6 +344,7 @@ export default {
 					}
 				})
 				this.$log.info(`[${this.name}] 成功导入 ${apiKeys.length} 个apiKey`)
+				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入apiKey数据失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailedSkipped")}`)
@@ -356,10 +364,10 @@ export default {
 						const NEW_CHAT = {...CHAT, key: NEW_KEY}
 						// 添加新聊天记录
 						await this.$DB.chats.add(NEW_CHAT)
-						EventBus.emit("[function] chatListGet")
 					}
 				})
 				this.$log.info(`[${this.name}] 成功导入 ${chats.length} 个chat`)
+				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入chat数据失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailedSkipped")}`)

@@ -42,6 +42,12 @@ export default {
 			isLogSuspensionWindow: false,
 		}
 	},
+	mounted() {
+		EventBus.on("[update] logUpdate", this.loadLogs)
+	},
+	beforeUnmount() {
+		EventBus.off("[update] logUpdate", this.loadLogs)
+	},
 	async created() {
 		// 加载日志
 		await this.loadLogs()
@@ -53,12 +59,6 @@ export default {
 			this.$log.error(`[${this.name}] 日志悬浮窗设置获取失败`, error)
 			this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.getLogSuspensionWindowError")}`)
 		}
-	},
-	mounted() {
-		EventBus.on("[function] log", this.addLog)
-	},
-	beforeUnmount() {
-		EventBus.off("[function] log", this.addLog)
 	},
 	methods: {
 		/**
@@ -86,21 +86,12 @@ export default {
 			this.loadLogs()
 		},
 		/**
-		 * 添加日志
-		 * @param log - 日志对象
-		 */
-		addLog(log) {
-			if (this.levelSelector.label !== "all" && log.level !== this.levelSelector.label) return
-			this.logs.push(log)
-			if (this.keepScrollToBottom) this.scrollToBottom()
-		},
-		/**
 		 * 清空日志
 		 */
 		async clearLogs() {
 			try {
 				await this.$DB.logs.clear()
-				this.logs = []
+				EventBus.emit("[update] logUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 清空日志失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.clearError")}`)
@@ -159,7 +150,7 @@ export default {
 						value: !this.isLogSuspensionWindow
 					})
 				}
-				EventBus.emit("[function] logSuspensionWindow")
+				EventBus.emit("[update] logSuspensionWindowUpdate")
 				this.isLogSuspensionWindow = !this.isLogSuspensionWindow
 			} catch (error) {
 				this.$log.error(`[${this.name}] 悬浮窗设置保存失败`, error)

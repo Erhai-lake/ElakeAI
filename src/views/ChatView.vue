@@ -38,33 +38,15 @@ export default {
 		}
 	},
 	mounted() {
-		// 监听滚动事件
-		const container = this.$el.querySelector(".message-list")
-		if (container) {
-			container.addEventListener("scroll", this.checkScrollPosition)
-		}
-		// 监听用户消息
 		EventBus.on("[stream] userMessage", this.userMessage)
-		// 监听消息流
 		EventBus.on("[stream] streamStream", this.streamStream)
-		// 监听消息流完成
 		EventBus.on("[stream] streamComplete", this.streamComplete)
-		// 监听消息移除
 		EventBus.on("[function] removeMessage", this.removeMessage)
 	},
 	beforeUnmount() {
-		// 移除滚动事件
-		const container = this.$el.querySelector(".message-list")
-		if (container) {
-			container.removeEventListener("scroll", this.checkScrollPosition)
-		}
-		// 移除用户消息监听
 		EventBus.off("[stream] userMessage", this.userMessage)
-		// 移除消息流监听
 		EventBus.off("[stream] streamStream", this.streamStream)
-		// 移除消息流完成监听
 		EventBus.off("[stream] streamComplete", this.streamComplete)
-		// 移除消息移除监听
 		EventBus.off("[function] removeMessage", this.removeMessage)
 	},
 	methods: {
@@ -152,7 +134,7 @@ export default {
 				if (!CHAT_DATA) {
 					this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
 					this.$router.push("/")
-					EventBus.emit("[function] chatListGet")
+					EventBus.emit("[update] chatListUpdate")
 					return
 				}
 				// 写入聊天记录
@@ -236,7 +218,7 @@ export default {
 					if (TITLE !== this.data.title) {
 						this.data.title = TITLE
 						await this.$DB.chats.update(this.data.key, {title: TITLE})
-						EventBus.emit("[function] chatListGet")
+						EventBus.emit("[update] chatListUpdate")
 					}
 				}
 			} catch (error) {
@@ -259,7 +241,7 @@ export default {
 				const DATA = JSON.parse(JSON.stringify(this.data.data))
 				await this.$DB.chats.update(this.data.key, {data: DATA})
 				// 更新侧边栏
-				EventBus.emit("[function] chatListGet")
+				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 消息移除错误`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.removeMessageError")}`)
