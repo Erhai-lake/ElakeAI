@@ -7,12 +7,10 @@ export default {
     props: {
         chatTitle: {
             type: String,
-            required: true,
             default: ""
         },
         chatKey: {
             type: String,
-            required: true,
             default: ""
         }
     },

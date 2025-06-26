@@ -22,6 +22,7 @@ export default {
 	data() {
 		return {
 			name: "CodeBlockRenderer",
+			highlightedCode: "",
 			copyButtonText: this.$t("components.CodeBlockRenderer.copy")
 		}
 	},
@@ -30,9 +31,12 @@ export default {
 	},
 	methods: {
 		highlightCode() {
-			const CODE_ELEMENT = this.$refs.codeRef
-			if (CODE_ELEMENT) {
-				highlight.highlightElement(CODE_ELEMENT)
+			try {
+				const { value } = highlight.highlight(this.code, { language: this.language })
+				this.highlightedCode = value
+			} catch (error) {
+				this.highlightedCode = highlight.highlightAuto(this.code).value
+				this.$log.warn(`[${this.name}] 语言 ${this.language} 不受支持，已自动高亮`, error)
 			}
 		},
 		copyCode() {
@@ -136,7 +140,7 @@ export default {
 <template>
 	<div class="code-block-wrapper">
 		<span>{{ languageTitle(language) }}</span>
-		<pre ref="codeRef" class="hljs" :class="`language-${language}`"><code>{{ code }}</code></pre>
+		<pre class="hljs" :class="`language-${language}`"><code v-html="highlightedCode"/></pre>
 		<Button class="code-copy-btn" @click="copyCode">{{ copyButtonText }}</Button>
 	</div>
 </template>

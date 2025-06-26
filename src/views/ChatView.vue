@@ -14,12 +14,7 @@ export default {
 		return {
 			name: "ChatView",
 			route: useRoute(),
-			scroll: {
-				isAtTop: false,
-				isAtBottom: true,
-				scrollDebounce: null,
-				currentMessageId: null
-			},
+				currentMessageId: null,
 			typingEffect: {
 				active: false,
 				cursorVisible: true,
@@ -78,7 +73,7 @@ export default {
 		 * @param {string} id 消息ID
 		 */
 		setCurrentMessageId(id) {
-			this.scroll.currentMessageId = id
+			this.currentMessageId = id
 		},
 		/**
 		 * 滚动到指定消息
@@ -114,8 +109,8 @@ export default {
 			if (!this.data.data?.length) return
 			const LAST_INDEX = this.data.data.length - 1
 			// 获取当前消息的索引(无当前消息时, up从最后开始, down从第一条开始)
-			let CURRENT_INDEX = this.scroll.currentMessageId
-				? this.data.data.findIndex((msg) => msg.id === this.scroll.currentMessageId)
+			let CURRENT_INDEX = this.currentMessageId
+				? this.data.data.findIndex((msg) => msg.id === this.currentMessageId)
 				: type === "up" ? LAST_INDEX : 0
 			// 边界检查
 			if (type === "up") {
@@ -147,29 +142,12 @@ export default {
 			}
 		},
 		/**
-		 * 检查滚动位置
-		 */
-		checkScrollPosition() {
-			const container = this.$el.querySelector(".message-list")
-			if (!container) return
-			// 清除之前的防抖
-			clearTimeout(this.scroll.scrollDebounce)
-			// 设置新地防抖
-			this.scroll.scrollDebounce = setTimeout(() => {
-				const {scrollTop, scrollHeight, clientHeight} = container
-				// 判断是否在顶部(留出50px的缓冲区域)
-				this.scroll.isAtTop = scrollTop < 50
-				// 判断是否在底部(留出50px的缓冲区域)
-				this.scroll.isAtBottom = scrollHeight - (scrollTop + clientHeight) < 50
-			}, 100)
-		},
-		/**
 		 * 初始化聊天视图
 		 * @param chatKey {string} - 聊天Key
 		 */
-		async initChatView(chatKey) {
+		async initChatView(chatKey = this.route.params.key) {
 			try {
-				const CHAT_DATA = await this.$DB.chats.get(chatKey || this.route.params.key)
+				const CHAT_DATA = await this.$DB.chats.get(chatKey)
 				// 检查ChatKey是否存在
 				if (!CHAT_DATA) {
 					this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
@@ -203,10 +181,6 @@ export default {
 				},
 				timestamp: Date.now()
 			})
-			// 只有在底部附近时才自动滚动
-			if (this.scroll.isAtBottom) {
-				this.scrollToUpAndDownMessages("bottom")
-			}
 		},
 		/**
 		 * 消息流
@@ -238,10 +212,6 @@ export default {
 					LAST_MESSAGE.message.content += message.message
 				}
 			}
-			// 只有在底部附近时才自动滚动
-			if (this.scroll.isAtBottom) {
-				this.scrollToUpAndDownMessages("bottom")
-			}
 		},
 		/**
 		 * 消息流完成
@@ -272,10 +242,6 @@ export default {
 			} catch (error) {
 				this.$log.error(`[${this.name}] 标题更新错误`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
-			}
-			// 如果用户在底部附近会滚动到底部
-			if (this.scroll.isAtBottom) {
-				this.scrollToUpAndDownMessages("bottom")
 			}
 		},
 		/**
@@ -312,7 +278,7 @@ export default {
 			<div
 				v-for="message in data.data"
 				:key="message.id"
-				:class="['message', scroll.currentMessageId === message.id ? 'current' : '', message.message.role]"
+				:class="['message', currentMessageId === message.id ? 'current' : '', message.message.role]"
 				:data-message-id="message.id"
 				@click="setCurrentMessageId(message.id)">
 				<UserMessageCard v-if="message.message.role === 'user'" :message="message"/>
@@ -333,7 +299,7 @@ export default {
 				class="scroll-to-top-messages"
 				:title="$t('views.ChatView.FunctionalControls.scrollToTopMessages')"
 				@click="scrollToUpAndDownMessages('top')"
-				:disabled="scroll.isAtTop || data.data.length === 0">
+				:disabled="data.data.length === 0">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-topArrow"></use>
 				</svg>
@@ -360,7 +326,7 @@ export default {
 			<button
 				:title="$t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
 				@click="scrollToUpAndDownMessages('bottom')"
-				:disabled="scroll.isAtBottom || data.data.length === 0">
+				:disabled="data.data.length === 0">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-bottomArrow"></use>
 				</svg>
