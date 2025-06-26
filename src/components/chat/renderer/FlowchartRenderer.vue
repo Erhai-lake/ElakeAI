@@ -22,7 +22,7 @@ export default {
 			activeTab: "preview",
 			error: null,
 			exportList: ExportList(),
-			selector: {item: "export", title: "i18n:components.MermaidRenderer.export"}
+			selector: {item: "export", title: "i18n:components.FlowchartRenderer.export"}
 		}
 	},
 	watch: {
