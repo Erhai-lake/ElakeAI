@@ -15,6 +15,7 @@
     "dexie": "^4.0.11",
     "flowchart.js": "^1.18.0",
     "highlight.js": "^11.11.1",
+    "jspdf": "^3.0.1",
     "katex": "^0.16.22",
     "markdown-it": "^14.1.0",
     "markdown-it-emoji": "^3.0.0",

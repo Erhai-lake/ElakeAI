@@ -1,14 +1,15 @@
 <script>
 import {initZoom} from "@/components/chat/renderer/ZoomManager"
-import {fetchSvgElementFromUrl, initSaveButtons} from "@/components/chat/renderer/ExportHelper"
+import {ExportList, fetchSvgElementFromUrl} from "@/components/chat/renderer/ExportHelper"
 import Tabs from "@/components/Tabs.vue"
 import TabsTab from "@/components/TabsTab.vue"
 import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 import Button from "@/components/Button.vue"
+import Selector from "@/components/Selector.vue"
 
 export default {
 	name: "PlantUMLRenderer",
-	components: {Button, CodeBlockRenderer, TabsTab, Tabs},
+	components: {Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
 	props: {
 		code: {
 			type: String,
@@ -18,7 +19,10 @@ export default {
 	data() {
 		return {
 			activeTab: "preview",
-			error: null
+			url: "",
+			error: null,
+			exportList: ExportList(),
+			selector: {item: "export", title: "i18n:components.MermaidRenderer.export"}
 		}
 	},
 	watch: {
@@ -32,15 +36,18 @@ export default {
 		this.renderPlantUML()
 	},
 	methods: {
+		/**
+		 * 渲染PlantUML
+		 */
 		async renderPlantUML() {
 			try {
 				const PLANTUML_ENCODER = (await import("plantuml-encoder")).default
 				const ENCODED = PLANTUML_ENCODER.encode(this.code)
-				const URL = `https://www.plantuml.com/plantuml/svg/${ENCODED}`
+				this.url = `https://www.plantuml.com/plantuml/svg/${ENCODED}`
 				const CONTAINER = this.$refs.containerRef
 				const WRAPPER = document.createElement("div")
 				WRAPPER.className = "uml-wrapper"
-				WRAPPER.innerHTML = `<img src="${URL}" alt="${URL}" class="uml-image" draggable="false"/>`
+				WRAPPER.innerHTML = `<img src="${this.url}" alt="PlantUML" class="uml-image" draggable="false"/>`
 				CONTAINER.appendChild(WRAPPER)
 				const IMG = WRAPPER.querySelector("img")
 				IMG.onload = async () => {
@@ -51,13 +58,20 @@ export default {
 						IMG.style.height = `${MIN_HEIGHT}px`
 					}
 					initZoom(this.$refs.containerRef)
-					const SVG_ELEMENT = await fetchSvgElementFromUrl(URL)
-					if (SVG_ELEMENT) initSaveButtons(CONTAINER, SVG_ELEMENT)
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] PlantUML渲染失败`, error)
 				this.error = error.message
 			}
+		},
+		/**
+		 * 导出为指定类型
+		 * @param item 导出类型
+		 */
+		async updateSelected(item) {
+			const SVG_ELEMENT = await fetchSvgElementFromUrl(this.url)
+			if (!SVG_ELEMENT) return
+			item.action(SVG_ELEMENT)
 		}
 	}
 }
@@ -116,10 +130,12 @@ export default {
 							</svg>
 						</Button>
 					</div>
-					<div class="toolbar-export">
-						<Button class="save-png">{{ $t("components.MermaidRenderer.export") }}PNG</Button>
-						<Button class="save-svg">{{ $t("components.MermaidRenderer.export") }}SVG</Button>
-					</div>
+					<Selector
+						class="toolbar-export"
+						:selector-list="exportList"
+						:selector-selected="selector"
+						unique-key="item"
+						@update:selectorSelected="updateSelected"/>
 				</div>
 			</TabsTab>
 			<TabsTab name="code">
@@ -130,7 +146,20 @@ export default {
 	</div>
 </template>
 
-<style lang="less">
+<style>
+.uml-image {
+	display: block;
+	width: 100%;
+	object-fit: contain;
+	max-height: 600px;
+	min-height: 170px;
+	user-select: none;
+	pointer-events: auto;
+	-webkit-user-drag: none;
+}
+</style>
+
+<style scoped lang="less">
 .plantuml-renderer {
 	position: relative;
 	padding: 0;
@@ -140,17 +169,6 @@ export default {
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	overflow: auto;
 	min-height: 138px;
-
-	.uml-image {
-		display: block;
-		width: 100%;
-		object-fit: contain;
-		max-height: 600px;
-		min-height: 170px;
-		user-select: none;
-		pointer-events: auto;
-		-webkit-user-drag: none;
-	}
 
 	.icon {
 		width: 2em;
@@ -189,8 +207,7 @@ export default {
 		position: absolute;
 		top: 47px;
 		right: 10px;
-		display: flex;
-		gap: 5px;
+		width: 200px;
 		z-index: 1;
 		opacity: 0;
 	}

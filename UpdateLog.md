@@ -38,19 +38,19 @@
 		* 支持Mermaid流程图缩放移动
 		* Mermaid按需加载
 		* Mermaid代码支持查看复制
-		* 导出Mermaid为SVG或PNG
+		* 导出Mermaid为SVG/PNG/PDF
 	* Flowchart
 		* 支持Flowchart流程图
 		* 支持Flowchart流程图缩放移动
 		* Flowchart流程图按需加载
 		* Flowchart代码支持查看复制
-		* 导出Flowchart为SVG或PNG
+		* 导出Flowchart为SVG/PNG/PDF
 	* PlantUML
 		* 支持PlantUML流程图(https://www.plantuml.com/plantuml/svg/{encoded})
 		* 支持PlantUML流程图缩放移动
 		* PlantUML流程图按需加载
 		* PlantUML代码支持查看复制
-		* 导出PlantUML为SVG或PNG
+		* 导出PlantUML为SVG/PNG/PDF
 	* 支持lazyload图片懒加载
 	* 支持代码块复制
 * **数据管理**

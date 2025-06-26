@@ -1,14 +1,15 @@
 <script>
 import {initZoom} from "@/components/chat/renderer/ZoomManager"
-import {initSaveButtons} from "@/components/chat/renderer/ExportHelper"
+import {ExportList} from "@/components/chat/renderer/ExportHelper"
 import Tabs from "@/components/Tabs.vue"
 import TabsTab from "@/components/TabsTab.vue"
 import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 import Button from "@/components/Button.vue"
+import Selector from "@/components/Selector.vue"
 
 export default {
 	name: "FlowchartRenderer",
-	components: {Button, CodeBlockRenderer, TabsTab, Tabs},
+	components: {Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
 	props: {
 		code: {
 			type: String,
@@ -19,7 +20,9 @@ export default {
 		return {
 			name: "FlowchartRenderer",
 			activeTab: "preview",
-			error: null
+			error: null,
+			exportList: ExportList(),
+			selector: {item: "export", title: "i18n:components.MermaidRenderer.export"}
 		}
 	},
 	watch: {
@@ -33,6 +36,9 @@ export default {
 		this.renderFlowchartw()
 	},
 	methods: {
+		/**
+		 * 渲染Flowchart
+		 */
 		async renderFlowchartw() {
 			try {
 				const FLOWCHART = (await import("flowchart.js")).default
@@ -62,11 +68,19 @@ export default {
 					SVG_ELEMENT.style.height = `${FINAL_HEIGHT}px`
 				}
 				initZoom(this.$refs.containerRef)
-				initSaveButtons(CONTAINER, SVG_ELEMENT)
 			} catch (error) {
 				this.$log.error(`[${this.name}] Flowchart渲染失败`, error)
 				this.error = error.message
 			}
+		},
+		/**
+		 * 导出为指定类型
+		 * @param item 导出类型
+		 */
+		updateSelected(item) {
+			const SVG_ELEMENT = this.$refs.containerRef?.querySelector("svg:not(.icon)")
+			if (!SVG_ELEMENT) return
+			item.action(SVG_ELEMENT)
 		}
 	}
 }
@@ -125,10 +139,12 @@ export default {
 							</svg>
 						</Button>
 					</div>
-					<div class="toolbar-export">
-						<Button class="save-png">{{ $t("components.MermaidRenderer.export") }}PNG</Button>
-						<Button class="save-svg">{{ $t("components.MermaidRenderer.export") }}SVG</Button>
-					</div>
+					<Selector
+						class="toolbar-export"
+						:selector-list="exportList"
+						:selector-selected="selector"
+						unique-key="item"
+						@update:selectorSelected="updateSelected"/>
 				</div>
 			</TabsTab>
 			<TabsTab name="code">
@@ -139,7 +155,7 @@ export default {
 	</div>
 </template>
 
-<style lang="less">
+<style scoped lang="less">
 .flowchart-renderer {
 	position: relative;
 	margin: 10px 0;
@@ -147,11 +163,6 @@ export default {
 	border-radius: 6px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	overflow: auto;
-
-	svg {
-		padding: 0;
-		margin: 0;
-	}
 
 	.icon {
 		width: 2em;
@@ -191,8 +202,7 @@ export default {
 		position: absolute;
 		top: 47px;
 		right: 10px;
-		display: flex;
-		gap: 5px;
+		width: 200px;
 		z-index: 1;
 		opacity: 0;
 	}
