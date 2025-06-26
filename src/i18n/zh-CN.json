@@ -92,7 +92,8 @@
 				"disableSuccess": "禁用Key成功",
 				"batchEnableSuccess": "批量启用Key成功",
 				"batchDisableSuccess": "批量禁用Key成功",
-				"statusUpdateError": "状态更新失败"
+				"statusUpdateError": "状态更新失败",
+				"remarkDuplicate": "备注重复"
 			},
 			"form": {
 				"enable": "启用",

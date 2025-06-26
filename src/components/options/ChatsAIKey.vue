@@ -1,4 +1,5 @@
 <script>
+import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import ModelList from "@/assets/data/ModelList.json"
 import Button from "@/components/Button.vue"
@@ -149,6 +150,17 @@ export default {
 				this.newKey.url = this.newKey.url.slice(0, -1)
 			}
 			try {
+				// 检查remark是否重复
+				const IS_REMARK_EXIST = await this.$DB.apiKeys
+					.where("remark")
+					.equals(this.newKey.remark)
+					.and(item => item.key !== this.newKey.key)
+					.first()
+				if (IS_REMARK_EXIST) {
+					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
+					this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.remarkDuplicate")}`)
+					return
+				}
 				const NEW_KEY_ID = crypto.randomUUID()
 				// 写入数据库
 				await this.$DB.apiKeys.add({
@@ -161,14 +173,16 @@ export default {
 				})
 				// 写入Key池
 				this.keyPools.push({
+					...this.newKey,
 					key: NEW_KEY_ID,
 					model: this.selectedModel.title,
-					...this.newKey
+					balance: await this.getKeyBalance(NEW_KEY_ID)
 				})
 				// 重置表单
 				this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
 				this.status.addFormStatus = false
 				this.$toast.success(this.$t("components.ChatAIKey.toast.addKeySuccess"))
+				EventBus.emit("[function] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 添加Key失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.addKeyError")}`)
@@ -203,13 +217,14 @@ export default {
 				)
 				this.operationSelection = []
 				this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.removeKeySuccess")}`)
+				EventBus.emit("[function] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 移除Keys失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.removeKeysError")}`)
 			}
 		},
 		/**
-		 * 编辑Key
+		 * 加载Key数据到编辑表单
 		 * @returns {Promise<void>} - 编辑Key
 		 */
 		async toggleEditSelected() {
@@ -241,7 +256,7 @@ export default {
 			}
 		},
 		/**
-		 * 编辑Key(写数据库)
+		 * 编辑Key
 		 * @returns {Promise<void>} - 编辑Key
 		 */
 		async editSelectedKeys() {
@@ -272,6 +287,17 @@ export default {
 				this.editKey.url = this.editKey.url.slice(0, -1)
 			}
 			try {
+				// 检查remark是否重复
+				const IS_REMARK_EXIST = await this.$DB.apiKeys
+					.where("remark")
+					.equals(this.editKey.remark)
+					.and(item => item.key !== this.editKey.key)
+					.first()
+				if (IS_REMARK_EXIST) {
+					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
+					this.$toast.warning(`[${this.name}] ${this.$t("components.ChatAIKey.toast.remarkDuplicate")}`)
+					return
+				}
 				// 写入数据库
 				await this.$DB.apiKeys.update(this.editKey.key, {
 					value: this.editKey.value,
@@ -295,6 +321,7 @@ export default {
 				}
 				this.status.editFormStatus = false
 				this.$toast.success(`[${this.name}] ${this.$t("components.ChatAIKey.toast.editKeySuccess")}`)
+				EventBus.emit("[function] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 编辑Key失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.editKeyError")}`)
@@ -329,6 +356,7 @@ export default {
 					keyItem.balance = "NULL"
 				}
 				this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
+				EventBus.emit("[function] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)
@@ -368,6 +396,7 @@ export default {
 				}
 				this.keyPools = UPDATED_POOLS
 				this.$toast.success(`[${this.name}] ${this.$t(`components.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
+				EventBus.emit("[function] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败`, error)
 				this.$toast.error(`[${this.name}] ${this.$t("components.ChatAIKey.toast.statusUpdateError")}`)

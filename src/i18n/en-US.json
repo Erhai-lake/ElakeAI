@@ -92,7 +92,8 @@
 				"disableSuccess": "Key disabled successfully",
 				"batchEnableSuccess": "Keys enabled in batch successfully",
 				"batchDisableSuccess": "Keys disabled in batch successfully",
-				"statusUpdateError": "Failed to update status"
+				"statusUpdateError": "Failed to update status",
+				"remarkDuplicate": "Duplicate remark"
 			},
 			"form": {
 				"enable": "Enable",

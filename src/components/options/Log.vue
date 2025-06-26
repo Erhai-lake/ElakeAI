@@ -55,11 +55,9 @@ export default {
 		}
 	},
 	mounted() {
-		// 监听日志
 		EventBus.on("[function] log", this.addLog)
 	},
 	beforeUnmount() {
-		// 移除日志监听
 		EventBus.off("[function] log", this.addLog)
 	},
 	methods: {
