@@ -11,7 +11,7 @@
 	* 消息流式传输处理
 	* 侧边栏对话历史管理
 	* 多模型切换(DeepSeek/ChatGPT)
-    * 系统提示词
+	* 系统提示词
 * **API管理**
 	* key池管理
 	* API余额显示
@@ -27,37 +27,37 @@
 	* 简体中文
 	* 英文
 * **消息渲染**
-  * Markdown富文本渲染
-  * 支持markdownItTaskLists任务列表
-  * 支持markdownItEmoji表情
-  * 支持mathjax3数学公式
-  * 支持katex数学公式
-  * 支持highlight.js代码高亮
-  * Mermaid
-    * 支持Mermaid流程图
-    * 支持Mermaid流程图缩放移动
-    * Mermaid按需加载
-    * Mermaid代码支持查看复制
-	* 导出Mermaid为SVG或PNG
-  * Flowchart
-    * 支持Flowchart流程图
-    * 支持Flowchart流程图缩放移动
-    * Flowchart流程图按需加载
-    * Flowchart代码支持查看复制
-	* 导出Flowchart为SVG或PNG
-  * PlantUML
-    * 支持PlantUML流程图(https://www.plantuml.com/plantuml/svg/{encoded})
-    * 支持PlantUML流程图缩放移动
-    * PlantUML流程图按需加载
-    * PlantUML代码支持查看复制
-	* 导出PlantUML为SVG或PNG
-  * 支持lazyload图片懒加载
-  * 支持代码块复制
+	* Markdown富文本渲染
+	* 支持markdownItTaskLists任务列表
+	* 支持markdownItEmoji表情
+	* 支持mathjax3数学公式
+	* 支持katex数学公式
+	* 支持highlight.js代码高亮
+	* Mermaid
+		* 支持Mermaid流程图
+		* 支持Mermaid流程图缩放移动
+		* Mermaid按需加载
+		* Mermaid代码支持查看复制
+		* 导出Mermaid为SVG或PNG
+	* Flowchart
+		* 支持Flowchart流程图
+		* 支持Flowchart流程图缩放移动
+		* Flowchart流程图按需加载
+		* Flowchart代码支持查看复制
+		* 导出Flowchart为SVG或PNG
+	* PlantUML
+		* 支持PlantUML流程图(https://www.plantuml.com/plantuml/svg/{encoded})
+		* 支持PlantUML流程图缩放移动
+		* PlantUML流程图按需加载
+		* PlantUML代码支持查看复制
+		* 导出PlantUML为SVG或PNG
+	* 支持lazyload图片懒加载
+	* 支持代码块复制
 * **数据管理**
-  * 支持数据导入导出
-  * 默认对话设置
+	* 支持数据导入导出
+	* 默认对话设置
 * **日志管理**
-  * 日志操作
-  * 日志自动清理(7天)
-  * 日志导出
+	* 日志操作
+	* 日志自动清理(7天)
+	* 日志导出
 * 完善的错误处理

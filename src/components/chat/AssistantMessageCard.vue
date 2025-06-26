@@ -259,6 +259,8 @@ export default {
 		width: 42px;
 		height: 42px;
 		z-index: 1;
+		user-select: none;
+		pointer-events: none;
 	}
 
 	.reasoning-content, .message-content {
