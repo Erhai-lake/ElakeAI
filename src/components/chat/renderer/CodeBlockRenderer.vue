@@ -231,7 +231,6 @@ export default {
 			display: block;
 			overflow: auto;
 			max-height: 500px;
-			white-space: pre;
 		}
 	}
 }
