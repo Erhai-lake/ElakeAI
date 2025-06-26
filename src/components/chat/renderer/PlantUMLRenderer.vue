@@ -44,10 +44,11 @@ export default {
 				CONTAINER.appendChild(WRAPPER)
 				const IMG = WRAPPER.querySelector("img")
 				IMG.onload = async () => {
-					const minHeight = 138
-					IMG.style.maxHeight = "400px"
-					if (IMG.clientHeight < minHeight) {
-						IMG.style.height = `${minHeight}px`
+					const MAX_HEIGHT = 400
+					const MIN_HEIGHT = 170
+					IMG.style.maxHeight = `${MAX_HEIGHT}px`
+					if (IMG.clientHeight < MIN_HEIGHT) {
+						IMG.style.height = `${MIN_HEIGHT}px`
 					}
 					initZoom(this.$refs.containerRef)
 					const SVG_ELEMENT = await fetchSvgElementFromUrl(URL)
@@ -145,7 +146,7 @@ export default {
 		width: 100%;
 		object-fit: contain;
 		max-height: 600px;
-		min-height: 138px;
+		min-height: 170px;
 		user-select: none;
 		pointer-events: auto;
 		-webkit-user-drag: none;

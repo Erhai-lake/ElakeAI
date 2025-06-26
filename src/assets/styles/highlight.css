@@ -13,25 +13,6 @@
     white-space: inherit;
 }
 
-.hljs::before {
-    content: "";
-    position: absolute;
-    left: 15px;
-    top: 10px;
-    overflow: visible;
-    width: 12px;
-    height: 12px;
-    border-radius: 16px;
-    box-shadow: 20px 0 #fdbc40, 40px 0 #35cd4b;
-    -webkit-box-shadow: 20px 0 #fdbc40, 40px 0 #35cd4b;
-    background-color: #fc625d;
-    white-space: nowrap;
-    text-indent: 75px;
-    font-size: 16px;
-    line-height: 12px;
-    font-weight: 700
-}
-
 .hljs-ln {
     display: inline-block;
     overflow-x: auto;

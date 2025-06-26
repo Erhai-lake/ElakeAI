@@ -32,7 +32,7 @@ export default {
 	methods: {
 		highlightCode() {
 			try {
-				const { value } = highlight.highlight(this.code, { language: this.language })
+				const {value} = highlight.highlight(this.code, {language: this.language})
 				this.highlightedCode = value
 			} catch (error) {
 				this.highlightedCode = highlight.highlightAuto(this.code).value
@@ -139,45 +139,100 @@ export default {
 
 <template>
 	<div class="code-block-wrapper">
-		<span>{{ languageTitle(language) }}</span>
-		<pre class="hljs" :class="`language-${language}`"><code v-html="highlightedCode"/></pre>
-		<Button class="code-copy-btn" @click="copyCode">{{ copyButtonText }}</Button>
+		<div class="controls">
+			<div class="ball">
+				<div class="red"></div>
+				<div class="yellow"></div>
+				<div class="green"></div>
+			</div>
+			<span>{{ languageTitle(language) }}</span>
+			<div></div>
+			<Button class="code-copy-btn" @click="copyCode">{{ copyButtonText }}</Button>
+		</div>
+		<pre class="hljs"><code v-html="highlightedCode"/></pre>
 	</div>
 </template>
+
 
 <style scoped lang="less">
 .code-block-wrapper {
 	position: relative;
 	border-radius: 8px;
-	overflow: auto;
-	padding: 12px;
+	overflow: hidden;
 	z-index: 0;
 
-	span {
-		position: absolute;
-		top: 25px;
-		left: 100px;
-		color: #999;
-		white-space: nowrap;
-		font-size: 16px;
-		font-weight: 700;
-		z-index: 1;
-	}
-
 	&:hover {
-		.code-copy-btn {
+		.controls .code-copy-btn {
 			opacity: 1;
 		}
 	}
 
-	.code-copy-btn {
+	.controls {
 		position: absolute;
-		top: 30px;
-		right: 20px;
-		padding: 5px 10px;
-		width: 100px;
-		opacity: 0;
+		top: 10px;
+		padding: 0 16px;
+		box-sizing: border-box;
+		width: 100%;
+		display: grid;
+		grid-template-columns: auto auto 1fr auto;
+		gap: 5px;
+		align-items: center;
+		user-select: none;
 		z-index: 1;
+
+		.ball {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+
+			div {
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+			}
+
+			.red {
+				background-color: #ff605c;
+			}
+
+			.yellow {
+				background-color: #ffbd2e;
+			}
+
+			.green {
+				background-color: #27c93f;
+			}
+		}
+
+		span {
+			color: #999;
+			white-space: nowrap;
+			font-size: 16px;
+			font-weight: 700;
+		}
+
+		.code-copy-btn {
+			padding: 5px 10px;
+			width: 100px;
+			opacity: 0;
+		}
+	}
+
+	pre {
+		position: relative;
+		max-height: 500px;
+		padding: 50px 16px 16px 16px;
+		margin: 0;
+		border-radius: 6px;
+		overflow: hidden;
+
+		code {
+			display: block;
+			overflow: auto;
+			max-height: 500px;
+			white-space: pre;
+		}
 	}
 }
 </style>

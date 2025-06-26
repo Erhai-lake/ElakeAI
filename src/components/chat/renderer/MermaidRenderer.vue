@@ -71,7 +71,7 @@ export default {
 					if (G_ELEMENT) {
 						const BBOX = G_ELEMENT.getBBox()
 						const MAX_HEIGHT = 400
-						const MIN_HEIGHT = 138
+						const MIN_HEIGHT = 170
 						const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
 						const PADDING = 50
 						const WIDTH_WITH_PADDING = BBOX.width + PADDING * 2
