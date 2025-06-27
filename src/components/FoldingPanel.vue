@@ -52,9 +52,11 @@ export default {
 			</div>
 		</div>
 		<div class="folding-panel-content" :style="{ height: isExpand ? contentHeight + 'px' : '0px' }">
-			<slot name="Content">
-				使用 &lt;template #Content&gt;&lt;/template&gt;插入内容
-			</slot>
+			<template v-if="isExpand">
+				<slot name="Content">
+					使用 &lt;template #Content&gt;&lt;/template&gt;插入内容
+				</slot>
+			</template>
 		</div>
 	</div>
 </template>

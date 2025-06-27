@@ -285,7 +285,7 @@ export default defineComponent({
 			background-color: var(--sidebar-item-hover-background-color);
 
 			.bottom {
-				color: var(--sidebar-expand-container-info-text-color-Anti);
+				color: var(--sidebar-expand-container-info-text-color-anti);
 			}
 
 			.conversation-delete {

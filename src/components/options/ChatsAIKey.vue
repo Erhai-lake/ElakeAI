@@ -614,8 +614,8 @@ export default {
 				cursor: pointer;
 
 				&:hover {
-					color: var(--text-color-Anti);
-					background-color: var(--background-color-Anti);
+					color: var(--text-color-anti);
+					background-color: var(--background-color-anti);
 
 					.custom-checkbox {
 						&::after {
@@ -661,7 +661,7 @@ export default {
 
 					.custom-checkbox {
 						&::after {
-							background-color: var(--background-color-Anti);
+							background-color: var(--background-color-anti);
 						}
 					}
 				}
@@ -698,7 +698,7 @@ input[type="checkbox"] {
 		transform: translate(-50%, -50%);
 		width: 10px;
 		height: 10px;
-		background-color: var(--background-color-Anti);
+		background-color: var(--background-color-anti);
 		border-radius: 2px;
 		opacity: 0;
 	}

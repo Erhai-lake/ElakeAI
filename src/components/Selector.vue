@@ -233,7 +233,7 @@ export default {
 		transition: background 0.2s;
 
 		&:hover {
-			background-color: var(--background-color-Anti);
+			background-color: var(--background-color-anti);
 			color: var(--background-color);
 		}
 	}

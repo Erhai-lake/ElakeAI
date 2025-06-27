@@ -510,7 +510,7 @@ export default {
 				transform: translate(-50%, -50%);
 				width: 10px;
 				height: 10px;
-				background-color: var(--background-color-Anti);
+				background-color: var(--background-color-anti);
 				border-radius: 2px;
 				opacity: 0;
 			}

@@ -557,7 +557,7 @@ export default defineComponent({
 	max-width: 773px;
 	min-height: 200px;
 	border: 2px solid var(--border-color);
-	background-color: var(--box-shadow-color-Anti);
+	background-color: var(--box-shadow-color-anti);
 	backdrop-filter: blur(10px);
 	border-radius: 15px;
 	display: flex;
@@ -609,7 +609,7 @@ export default defineComponent({
 		width: 100%;
 		min-height: 100px;
 		max-height: 600px;
-		background-color: var(--box-shadow-color-Anti);
+		background-color: var(--box-shadow-color-anti);
 		color: var(--text-color);
 		font-size: 16px;
 		letter-spacing: 3px;
