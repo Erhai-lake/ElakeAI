@@ -297,7 +297,7 @@ export default defineComponent({
 		/**
 		 * 发送消息
 		 */
-		async Send() {
+		async send() {
 			// 检查输入框是否为空
 			if (this.ChatInput.trim() === "") return
 			const CONTENT = this.ChatInput
@@ -307,56 +307,16 @@ export default defineComponent({
 			})
 			// 创建新的聊天
 			this.stopStatus = true
-			if (this.route.name !== "ChatKey") {
-				try {
-					const NEW_CHAT_KEY = crypto.randomUUID()
-					this.$router.push(`/chat/${NEW_CHAT_KEY}`)
-					await this.$DB.chats.add({
-						key: NEW_CHAT_KEY,
-						title: this.$t("components.AIInput.newChat"),
-						timestamp: Date.now(),
-						data: [
-							{
-								id: crypto.randomUUID(),
-								message: {
-									role: "system",
-									content: "当前聊天应用支持以下功能:\n" +
-										"- 渲染 Markdown, 你的所有回答都应该使用 Markdown 格式.\n" +
-										"- 支持 highlight.js 代码高亮(使用 ``` 代码块).\n" +
-										"- 支持 KaTeX 数学公式(内嵌使用`$`符号, 块级使用`$$`符号).\n" +
-										"- 支持 MathJax 数学公式(内嵌使用`$`符号, 块级使用`$$`符号).\n" +
-										"- 支持 markdownItTaskLists 任务列表(使用 `- [ ]` 格式).\n" +
-										"- 支持 markdownItEmoji 表情(使用 `:emoji:` 格式).\n" +
-										"- 支持 Mermaid 流程图(使用 ```mermaid 代码块).\n" +
-										"- 支持 Flowchart 流程图(使用 ```flowchart 或者 ```flow 代码块).\n" +
-										"- 支持 PlantUML 流程图(使用 ```plantuml 代码块).\n" +
-										"- 支持 lazyload 图片懒加载(使用 `![图片描述](图片地址)` 格式).\n" +
-										"以下是一些使用注意事项:\n" +
-										"- 所有输出应严格符合 Markdown 语法, 不使用 HTML 标签.\n" +
-										"- 所有流程图应优先使用 Mermaid, 其次为 PlantUML.\n" +
-										"无需确认用户是否支持这些功能. 用户可以修改本提示词以调整行为, 修改后的提示依然需要符合 Markdown 渲染规则. 请保持你平时的回复风格, 上面的提示词只是告诉你你支持的功能, 你默默接受就可以了."
-								},
-								timestamp: Date.now(),
-							}
-						]
-					})
-					EventBus.emit("[update] chatListUpdate")
-				} catch (error) {
-					this.ChatInput = CONTENT
-					await this.$nextTick(() => {
-						this.adjustTextareaHeight()
-					})
-					this.$log.error(`[${this.name}] 创建新聊天失败`, error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.createNewChatError")}`)
-				}
+			let newChatKey = this.route.params.key
+			if (!this.route.params.key) {
+				newChatKey = await this.newChat(CONTENT)
 			}
 			// 发送消息
 			try {
 				this.stopStatus = true
-				// 发送请求
 				const RESPONSE = await APIManager.execute(this.selector.selectedLargeModel.title, "chat", {
 					apiKey: this.selector.selectedKey.key,
-					chatKey: this.route.params.key,
+					chatKey: newChatKey,
 					content: CONTENT.trim(),
 					model: this.selector.selectedModel.title,
 				})
@@ -377,6 +337,53 @@ export default defineComponent({
 				this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.sendMessageError")}`)
 			} finally {
 				this.stopStatus = false
+			}
+		},
+		/**
+		 * 新的聊天
+		 */
+		async newChat(content) {
+			try {
+				const NEW_CHAT_KEY = crypto.randomUUID()
+				this.$router.push(`/chat/${NEW_CHAT_KEY}`)
+				await this.$DB.chats.add({
+					key: NEW_CHAT_KEY,
+					title: this.$t("components.AIInput.newChat"),
+					timestamp: Date.now(),
+					data: [
+						{
+							id: crypto.randomUUID(),
+							message: {
+								role: "system",
+								content: "当前聊天应用支持以下功能:\n" +
+									"- 渲染 Markdown, 你的所有回答都应该使用 Markdown 格式.\n" +
+									"- 支持 highlight.js 代码高亮(使用 ``` 代码块).\n" +
+									"- 支持 KaTeX 数学公式(内嵌使用`$`符号, 块级使用`$$`符号).\n" +
+									"- 支持 MathJax 数学公式(内嵌使用`$`符号, 块级使用`$$`符号).\n" +
+									"- 支持 markdownItTaskLists 任务列表(使用 `- [ ]` 格式).\n" +
+									"- 支持 markdownItEmoji 表情(使用 `:emoji:` 格式).\n" +
+									"- 支持 Mermaid 流程图(使用 ```mermaid 代码块).\n" +
+									"- 支持 Flowchart 流程图(使用 ```flowchart 或者 ```flow 代码块).\n" +
+									"- 支持 PlantUML 流程图(使用 ```plantuml 代码块).\n" +
+									"- 支持 lazyload 图片懒加载(使用 `![图片描述](图片地址)` 格式).\n" +
+									"以下是一些使用注意事项:\n" +
+									"- 所有输出应严格符合 Markdown 语法, 不使用 HTML 标签.\n" +
+									"- 所有流程图应优先使用 Mermaid, 其次为 PlantUML.\n" +
+									"无需确认用户是否支持这些功能. 用户可以修改本提示词以调整行为, 修改后的提示依然需要符合 Markdown 渲染规则. 请保持你平时的回复风格, 上面的提示词只是告诉你你支持的功能, 你默默接受就可以了."
+							},
+							timestamp: Date.now(),
+						}
+					]
+				})
+				EventBus.emit("[update] chatListUpdate")
+				return NEW_CHAT_KEY
+			} catch (error) {
+				this.ChatInput = content
+				await this.$nextTick(() => {
+					this.adjustTextareaHeight()
+				})
+				this.$log.error(`[${this.name}] 创建新聊天失败`, error)
+				this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.createNewChatError")}`)
 			}
 		},
 		/**
@@ -505,16 +512,16 @@ export default defineComponent({
 				ref="textareaRef"
 				spellcheck="false"
 				v-model="ChatInput"
-				@keydown.enter.exact.prevent="Send"
+				@keydown.enter.exact.prevent="send"
 				@keydown.ctrl.enter.exact="handleNewLine"
 				@keydown.shift.enter.exact="handleNewLine"></textarea>
 			<!--发送-->
 			<label
 				for="Send"
 				:title="$t('components.AIInput.function.send')"
-				class="Send"
+				class="send"
 				v-if="!stopStatus"
-				@click="Send">
+				@click="send">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-send"></use>
 				</svg>
@@ -622,7 +629,7 @@ export default defineComponent({
 		}
 	}
 
-	.Send, .Stop {
+	.send, .Stop {
 		position: absolute;
 		bottom: 20px;
 		right: 20px;
