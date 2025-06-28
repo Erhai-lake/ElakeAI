@@ -270,7 +270,8 @@
 			"chats": "Chats",
 			"defaultChatSettings": "Default Chat Settings",
 			"importExport": "Import/Export",
-			"hazardousOperations": "Hazardous Operations"
+			"hazardousOperations": "Hazardous Operations",
+			"plugins": "插件"
 		}
 	}
 }

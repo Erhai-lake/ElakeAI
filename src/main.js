@@ -40,8 +40,12 @@ void setupLogCleanup()
 setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
 
 // 初始化插件
-await unloadPlugins()
-await initEnabledPlugins()
+unloadPlugins().catch(error => {
+	Logger.error("[main] 插件卸载失败", error)
+})
+initEnabledPlugins().catch(error => {
+	Logger.error("[main] 插件初始化失败", error)
+})
 
 // 挂载应用
 APP.mount("#app")

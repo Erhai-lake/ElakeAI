@@ -270,7 +270,25 @@
 			"chats": "对话",
 			"defaultChatSettings": "默认对话设置",
 			"importExport": "导入/导出",
-			"hazardousOperations": "危险操作"
+			"hazardousOperations": "危险操作",
+			"plugins": "插件"
+		},
+		"PluginsView": {
+			"toast": {
+				"enableSuccess": "启用插件成功",
+				"disableSuccess": "禁用插件成功",
+				"statusUpdateError": "状态更新失败"
+			},
+			"systemPlugins": "系统插件",
+			"thirdPartyPlugins": "第三方插件",
+			"pluginEnable": "启用",
+			"pluginName": "插件名称",
+			"pluginAuthor": "插件作者",
+			"pluginDescription": "插件描述",
+			"pluginVersion": "插件版本",
+			"noPlugins": "暂无插件",
+			"thirdPartyPluginsTip": "第三方插件可能存在安全风险, 请谨慎使用!",
+			"envProhibition": "第三方插件禁止在浏览器环境使用"
 		}
 	}
 }

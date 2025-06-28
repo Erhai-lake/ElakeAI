@@ -40,7 +40,7 @@ const loadPluginsInElectron = async () => {
  * 获取所有插件
  * @returns {Promise<Array>} - 返回插件信息数组
  */
-const getAllPlugins = async () => {
+const scanAllPlugins = async () => {
 	if (_cachedPlugins) return _cachedPlugins
 	if (isElectron()) {
 		_cachedPlugins = await loadPluginsInElectron()
@@ -55,14 +55,41 @@ const getAllPlugins = async () => {
  * @returns {Promise<Array|*[]>}
  */
 export async function getEnabledPlugins() {
-	const ALL_PLUGINS = await getAllPlugins()
+	_cachedPlugins = null
+	const ALL_PLUGINS = await scanAllPlugins()
 	const CONFIG_DATA = await DB.configs.get("plugins")
+	// 不存在配置数据, 初始化配置数据
 	if (!CONFIG_DATA) {
 		await DB.configs.add({item: "plugins", value: []})
-	}
-	const ENABLED_UUIDS = CONFIG_DATA?.value || []
-	if (!Array.isArray(ENABLED_UUIDS) || ENABLED_UUIDS.length === 0) {
 		return ALL_PLUGINS
 	}
+	const ENABLED_UUIDS = CONFIG_DATA?.value
+	// 配置数据为空, 返回空数组
+	if (Array.isArray(ENABLED_UUIDS) && ENABLED_UUIDS.length === 0) {
+		return []
+	}
+	// 正常情况, 返回已启用的插件
 	return ALL_PLUGINS.filter(p => ENABLED_UUIDS.includes(p.uuid))
+}
+
+/**
+ * 获取所有插件
+ * @returns {Promise<Array>}
+ */
+export async function getAllPlugins() {
+	const ALL_PLUGINS = await scanAllPlugins()
+	const ENABLED_UUIDS = new Set((await DB.configs.get("plugins"))?.value || [])
+	return ALL_PLUGINS.map(p => ({...p, enabled: ENABLED_UUIDS.has(p.uuid)}))
+}
+
+/**
+ * 更新插件启用状态
+ * @param {string} uuid - 插件的UUID
+ * @param {boolean} enabled - 是否启用
+ */
+export async function updatePluginEnabled(uuid, enabled) {
+	const CONFIG_DATA = (await DB.configs.get("plugins"))?.value || []
+	const SET = new Set(CONFIG_DATA)
+	enabled ? SET.add(uuid) : SET.delete(uuid)
+	await DB.configs.put({item: "plugins", value: Array.from(SET)})
 }

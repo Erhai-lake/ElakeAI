@@ -1,27 +1,7 @@
 import {getEnabledPlugins} from "@/services/plugin/pluginManager"
 import {isElectron} from "@/services/env"
 import Logger from "@/services/Logger"
-import DB from "@/services/Dexie"
-import {registerPluginInstance} from "@/services/plugin/unloadPlugins"
-
-/**
- * 插件首次安装
- * @param plugin - 插件信息
- * @param mod - 插件模块
- * @param ctx - 插件上下文
- */
-const onFirstTimeInstall = async (plugin, mod, ctx) => {
-	const INSTALLED_UUIDS = new Set((await DB.configs.get("plugins"))?.value || [])
-	if (typeof mod.onFirstTimeInstall === "function") {
-		if (!INSTALLED_UUIDS.has(plugin.uuid)){
-			await mod.onFirstTimeInstall(ctx)
-			INSTALLED_UUIDS.add(plugin.uuid)
-			await DB.configs.put({item: "plugins", value: Array.from(INSTALLED_UUIDS)})
-			Logger.info(`[registerPlugins] 插件首次安装: ${plugin.name}`)
-		}
-		await onInstall(plugin, mod, ctx)
-	}
-}
+import {registerPluginInstance, unloadPlugins} from "@/services/plugin/unloadPlugins"
 
 /**
  * 插件安装成功
@@ -69,6 +49,7 @@ const onLoad = async (plugin, mod, ctx) => {
  * @param appContext - 应用上下文
  */
 export async function initEnabledPlugins(appContext) {
+	await unloadPlugins()
 	const PLUGINS = await getEnabledPlugins()
 
 	for (const PLUGIN of PLUGINS) {
@@ -92,7 +73,7 @@ export async function initEnabledPlugins(appContext) {
 			const CTX = {plugin: PLUGIN, app: appContext}
 
 			// 安装检测
-			await onFirstTimeInstall(PLUGIN, mod, CTX)
+			await onInstall(PLUGIN, mod, CTX)
 
 			// 存储插件实例, 供卸载用
 			registerPluginInstance(PLUGIN.uuid, mod)

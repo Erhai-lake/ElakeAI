@@ -63,6 +63,9 @@ export default {
 			</template>
 		</FoldingPanel>
 		<div class="container">
+			<router-link :to="{ path: '/options/plugins' }">
+				<Button>{{ $t("views.OptionsView.plugins") }}</Button>
+			</router-link>
 			<router-link :to="{ path: '/options/debug' }">
 				<Button>BeBUG</Button>
 			</router-link>

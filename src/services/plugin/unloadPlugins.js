@@ -9,7 +9,6 @@ async function unloadPlugins() {
 		try {
 			if (typeof mod.onUnload === "function") {
 				await mod.onUnload()
-				console.log(`[unloadPlugins] 插件卸载成功: ${uuid}`)
 			}
 		} catch (error) {
 			console.warn(`[unloadPlugins] 插件卸载失败: ${uuid}`, error)
