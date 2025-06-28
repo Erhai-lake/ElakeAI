@@ -2,6 +2,13 @@ import {getEnabledPlugins} from "@/services/plugin/pluginManager"
 import {isElectron} from "@/services/env"
 import Logger from "@/services/Logger"
 import {registerPluginInstance, unloadPlugins} from "@/services/plugin/unloadPlugins"
+// 平台注册器
+import {
+	getAllPlatforms,
+	getPlatform,
+	registerPlatform, response,
+	unregisterPlatform
+} from "@/services/plugin/model/PlatformRegistry"
 
 /**
  * 插件安装成功
@@ -70,7 +77,17 @@ export async function initEnabledPlugins(appContext) {
 				Logger.warn(`[registerPlugins] 插件模块为空: ${PLUGIN.name}`)
 				continue
 			}
-			const CTX = {plugin: PLUGIN, app: appContext}
+			const CTX = {
+				plugin: PLUGIN,
+				app: appContext,
+				platform: {
+					registerPlatform,
+					getPlatform,
+					getAllPlatforms,
+					unregisterPlatform,
+					response
+				}
+			}
 
 			// 安装检测
 			await onInstall(PLUGIN, mod, CTX)

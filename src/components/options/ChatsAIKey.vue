@@ -1,10 +1,11 @@
 <script>
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
-import ModelList from "@/assets/data/ModelList.json"
+// import ModelList from "@/assets/data/ModelList.json"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
 import APIManager from "@/services/api/APIManager"
+import {getAllPlatforms} from "@/services/plugin/model/PlatformRegistry"
 
 export default {
 	name: "ChatAIKey",
@@ -20,9 +21,9 @@ export default {
 				editFormStatus: false
 			},
 			// 模型列表
-			modelList: ModelList,
+			modelList: [],
 			// 选中的模型
-			selectedModel: ModelList[0],
+			selectedModel: {},
 			// Key池
 			keyPools: [],
 			// 操作选择
@@ -56,6 +57,7 @@ export default {
 		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	created() {
+		this.loadPlatform()
 		// 初始化Key池
 		this.loadKeyPools()
 	},
@@ -86,6 +88,24 @@ export default {
 			this.selectedModel = selectModel
 			this.operationSelection = []
 			this.loadKeyPools()
+		},
+		/**
+		 * 加载平台
+		 */
+		async loadPlatform() {
+			try {
+				this.modelList = getAllPlatforms().map(item => ({
+					title: item.name,
+					images: item.api.logo,
+					url: item.api.url
+				}))
+				// 初始化选中模型
+				if (this.modelList.length > 0) {
+					this.selectedModel = this.modelList[0]
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 加载平台失败`, error)
+			}
 		},
 		/**
 		 * 加载Key池
