@@ -76,5 +76,5 @@ export const setupLogCleanup = async () => {
 // this.$log.error("[App] 初始化失败", err)
 
 // js中使用
-//import Logger from "@/services/Logger"
+// import Logger from "@/services/Logger"
 // Logger.info("[Service] 获取数据成功", result)

@@ -1,4 +1,4 @@
-import {createApp} from 'vue'
+import {createApp} from "vue"
 
 const eventBus = createApp({}).config.globalProperties
 
