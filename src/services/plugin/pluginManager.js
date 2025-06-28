@@ -10,8 +10,8 @@ let _cachedPlugins = null
 const loadPluginsInBrowser = () => {
 	const PLUGINS = []
 	// require.context(路径, 是否递归, 正则)
-	const PLUGIN_JSONS = require.context("../plugins", true, /plugin\.json$/)
-	const PLUGIN_ENTRIES = require.context("../plugins", true, /index\.js$/)
+	const PLUGIN_JSONS = require.context("../../plugins", true, /plugin\.json$/)
+	const PLUGIN_ENTRIES = require.context("../../plugins", true, /index\.js$/)
 	PLUGIN_JSONS.keys().forEach((jsonPath) => {
 		const META = PLUGIN_JSONS(jsonPath)
 		const FOLDER_PATH = jsonPath.replace("/plugin.json", "")
@@ -57,6 +57,9 @@ const getAllPlugins = async () => {
 export async function getEnabledPlugins() {
 	const ALL_PLUGINS = await getAllPlugins()
 	const CONFIG_DATA = await DB.configs.get("plugins")
+	if (!CONFIG_DATA) {
+		await DB.configs.add({item: "plugins", value: []})
+	}
 	const ENABLED_UUIDS = CONFIG_DATA?.value || []
 	if (!Array.isArray(ENABLED_UUIDS) || ENABLED_UUIDS.length === 0) {
 		return ALL_PLUGINS

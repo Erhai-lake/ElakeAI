@@ -2,6 +2,7 @@ const {app, BrowserWindow, ipcMain} = require("electron")
 const Logger = require("./Logger")
 const PATH = require("path")
 const {scanAllPlugins} = require("./plugin-loader.js")
+const {unloadPlugins} = require("../services/plugin/unloadPlugins")
 
 let mainWindow
 
@@ -43,6 +44,10 @@ app.whenReady().then(() => {
 	createWindow()
 })
 
+// 主动退出
+app.on("before-quit", async () => {
+	await unloadPlugins()
+})
 
 // 当所有窗口关闭时退出应用程序
 app.on("window-all-closed", () => {

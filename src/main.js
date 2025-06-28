@@ -14,7 +14,8 @@ import "vue-toast-notification/dist/theme-bootstrap.css"
 // 日志
 import Logger, {setupLogCleanup} from "@/services/Logger"
 // 插件管理
-import {initEnabledPlugins} from "@/services/registerPlugins"
+import {initEnabledPlugins} from "@/services/plugin/registerPlugins"
+import {unloadPlugins} from "@/services/plugin/unloadPlugins"
 
 const APP = createApp(app)
 
@@ -38,7 +39,9 @@ APP.provide("$DB", DB)
 void setupLogCleanup()
 setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
 
-initEnabledPlugins().catch(error => Logger.error("[main] 插件初始化失败:", error))
+// 初始化插件
+await unloadPlugins()
+await initEnabledPlugins()
 
 // 挂载应用
 APP.mount("#app")
