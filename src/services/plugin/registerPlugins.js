@@ -19,7 +19,6 @@ import {
 const onInstall = async (plugin, mod, ctx) => {
 	if (typeof mod.onInstall === "function") {
 		await mod.onInstall(ctx)
-		await onRegister(plugin, mod, ctx)
 		Logger.info(`[registerPlugins] 插件安装成功: ${plugin.name}`)
 	}
 }
@@ -33,7 +32,6 @@ const onInstall = async (plugin, mod, ctx) => {
 const onRegister = async (plugin, mod, ctx) => {
 	if (typeof mod.onRegister === "function") {
 		await mod.onRegister(ctx)
-		await onLoad(plugin, mod, ctx)
 		Logger.info(`[registerPlugins] 插件已注册: ${plugin.name}`)
 	}
 }
@@ -46,7 +44,7 @@ const onRegister = async (plugin, mod, ctx) => {
  */
 const onLoad = async (plugin, mod, ctx) => {
 	if (typeof mod.onLoad === "function") {
-		mod.onLoad(ctx)
+		await mod.onLoad(ctx)
 		Logger.info(`[registerPlugins] 插件已加载: ${plugin.name}`)
 	}
 }
@@ -92,8 +90,10 @@ export async function initEnabledPlugins(appContext) {
 				}
 			}
 
-			// 安装检测
+			// 生命周期
 			await onInstall(PLUGIN, mod, CTX)
+			await onRegister(PLUGIN, mod, CTX)
+			await onLoad(PLUGIN, mod, CTX)
 
 			// 存储插件实例, 供卸载用
 			registerPluginInstance(PLUGIN.uuid, mod)
