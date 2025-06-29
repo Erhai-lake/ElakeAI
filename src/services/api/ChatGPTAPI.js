@@ -10,19 +10,9 @@ export default class DeepSeekAPI extends BaseAPI {
 	constructor() {
 		super("ChatGPT")
 		this.chatHandler = new StreamChatHandler("ChatGPT", EventBus, DB)
-		this.registerStrategy("balance", this.balanceStrategy)
 		this.registerStrategy("models", this.modelsStrategy)
 		this.registerStrategy("chat", this.chatStrategy)
 		this.registerStrategy("stop", this.chatStopStrategy)
-	}
-
-	/**
-	 * 获取余额信息
-	 * @param {Object} params - 请求参数
-	 * @returns {Promise<Object>} 余额信息
-	 */
-	balanceStrategy = async (params) => {
-		return this.response(params, null)
 	}
 
 	/**

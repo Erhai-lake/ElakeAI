@@ -10,26 +10,9 @@ export default class DeepSeekAPI extends BaseAPI {
 	constructor() {
 		super("DeepSeek")
 		this.chatHandler = new StreamChatHandler("DeepSeek", EventBus, DB)
-		this.registerStrategy("balance", this.balanceStrategy)
 		this.registerStrategy("models", this.modelsStrategy)
 		this.registerStrategy("chat", this.chatStrategy)
 		this.registerStrategy("stop", this.chatStopStrategy)
-	}
-
-	/**
-	 * 获取余额信息
-	 * @param {Object} params - 请求参数
-	 * @param {Object} paramsData - 参数数据
-	 * @returns {Promise<Object>} 余额信息
-	 */
-	balanceStrategy = async (params, paramsData) => {
-		try {
-			const CLIENT = this.createClient(paramsData.apiKeyData)
-			const RESPONSE = await CLIENT.get("/user/balance")
-			return this.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
-		} catch (error) {
-			return this.errorHandler(error, params)
-		}
 	}
 
 	/**

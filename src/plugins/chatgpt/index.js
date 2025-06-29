@@ -1,8 +1,8 @@
+let PublicClass = null
 let platformRegistrarClass = null
 
 class OpenAI {
 	constructor(ctx) {
-		this.balance.bind(this)
 	}
 
 	/**
@@ -10,19 +10,20 @@ class OpenAI {
 	 * @param {Object} params - 请求参数
 	 * @returns {Promise<Object>}
 	 */
-	async balance(params) {
-		return platformRegistrarClass.response(params, "NULL")
+	balance = async (params) => {
+		return PublicClass.response(params, "NULL")
 	}
 }
 
 module.exports = {
 	onRegister(ctx) {
-		platformRegistrarClass = new ctx.api.platformRegistrarClass({
+		PublicClass = new ctx.api.PublicClass()
+		platformRegistrarClass = new ctx.api.PlatformRegistrarClass({
 			name: "OpenAI",
 			logo: "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico",
 			url: "https://api.openai.com"
 		})
-		platformRegistrarClass.api.registerPlatform(new OpenAI(ctx))
+		platformRegistrarClass.registerPlatform(new OpenAI(ctx))
 	},
 	onUnload() {
 		platformRegistrarClass.unregisterPlatform()

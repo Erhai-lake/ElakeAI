@@ -41,7 +41,7 @@ elake_ai 是一个基于 Vue 3 的 AI 对话应用, 支持多种大语言模型 
 ## 技术栈
 
 * **前端框架**: Vue 3 + Vue Router
-* **状态管理**: Dexie (IndexedDB)
+* **状态管理**: DexieClass (IndexedDB)
 * **国际化**: vue-i18n
 * **Markdown 渲染**: markdown-it + 插件
 * **API 请求**: axios
@@ -49,7 +49,7 @@ elake_ai 是一个基于 Vue 3 的 AI 对话应用, 支持多种大语言模型 
 
 ## 数据库设计
 
-使用 Dexie (IndexedDB) 存储以下数据:
+使用 DexieClass (IndexedDB) 存储以下数据:
 
 * chats: 聊天记录
 * configs: 应用配置

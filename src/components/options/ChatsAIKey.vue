@@ -3,8 +3,7 @@ import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
-import APIManager from "@/services/api/APIManager"
-import {getAllPlatforms, getPlatform} from "@/services/plugin/api/Platform"
+import {PlatformClass} from "@/services/plugin/api/PlatformClass"
 
 export default {
 	name: "ChatAIKey",
@@ -92,7 +91,8 @@ export default {
 		 * 加载平台
 		 */
 		async loadPlatform() {
-			const PLATFORMS = getAllPlatforms()
+			const PLATFORM_CLASS  = new PlatformClass()
+			const PLATFORMS = PLATFORM_CLASS.getAllPlatforms()
 			this.modelList = PLATFORMS.reduce((acc, item) => {
 				try {
 					acc.push({
@@ -139,7 +139,8 @@ export default {
 		 */
 		async getKeyBalance(key) {
 			try {
-				const INSTANCE = getPlatform(this.selectedModel.title)
+				const PLATFORM_CLASS  = new PlatformClass({name: this.selectedModel.title})
+				const INSTANCE = PLATFORM_CLASS.getPlatform()
 				const RESPONSE = await INSTANCE.api.balance({apiKey: key})
 				if (RESPONSE.error) {
 					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE)

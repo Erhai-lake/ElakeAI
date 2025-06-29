@@ -2,10 +2,10 @@ import {getEnabledPlugins} from "@/services/plugin/pluginManager"
 import {isElectron} from "@/services/env"
 import Logger from "@/services/Logger"
 import {registerPluginInstance, unloadPlugins} from "@/services/plugin/unloadPlugins"
-// 平台注册器
-import {platform} from "@/services/plugin/api/Platform"
-import {dexie} from "@/services/plugin/api/Dexie"
+import {PlatformClass} from "@/services/plugin/api/PlatformClass"
+import {PublicClass} from "@/services/plugin/api/PublicClass"
 import axios from "axios"
+import dexie from "@/services/Dexie"
 
 /**
  * 插件安装成功
@@ -78,11 +78,14 @@ export async function initEnabledPlugins(appContext) {
 				// 应用上下文
 				app: appContext,
 				api: {
-					// 数据库操作类
-					dbClass: dexie,
+					// 公共类
+					PublicClass: PublicClass,
+					// 数据库实例
+					dexie: dexie,
+					// axios实例
 					axios: axios,
 					// 平台注册类
-					platformRegistrarClass: platform
+					PlatformRegistrarClass: PlatformClass
 				}
 			}
 
