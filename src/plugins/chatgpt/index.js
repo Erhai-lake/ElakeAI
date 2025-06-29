@@ -1,9 +1,11 @@
 class OpenAI {
 	constructor(ctx) {
-		this.name = "OpenAI"
-		this.logo = "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico"
-		this.url = "https://api.openai.com"
 		this.ctx = ctx
+		this.info = {
+			name: "OpenAI",
+			logo: "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico",
+			url: "https://api.openai.com"
+		}
 		this.strategies = {
 			balance: this.balanceStrategy.bind(this)
 		}
@@ -15,23 +17,19 @@ class OpenAI {
 	 * @returns {Promise<Object>}
 	 */
 	async balanceStrategy(params) {
-		return this.ctx.response(params, null)
+		return this.ctx.platform.response(params, "NULL")
 	}
 }
 
 module.exports = {
 	onInstall(ctx) {
-		console.log("插件安装成功", ctx)
 	},
 	onRegister(ctx) {
-		console.log("插件注册成功", ctx)
 		const {registerPlatform} = ctx.platform
 		registerPlatform("OpenAI", new OpenAI(ctx))
 	},
 	onLoad(ctx) {
-		console.log("插件加载完成", ctx)
 	},
 	onUnload() {
-		console.log("插件已卸载")
 	}
 }

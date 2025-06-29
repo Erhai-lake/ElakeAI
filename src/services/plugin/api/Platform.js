@@ -1,6 +1,8 @@
 import Logger from "@/services/Logger"
 const PLATFORM_MAP = new Map()
 
+
+
 /**
  * 注册平台
  * @param {string} name - 平台名称

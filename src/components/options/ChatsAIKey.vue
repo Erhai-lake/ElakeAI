@@ -1,11 +1,10 @@
 <script>
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
-// import ModelList from "@/assets/data/ModelList.json"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
 import APIManager from "@/services/api/APIManager"
-import {getAllPlatforms} from "@/services/plugin/model/PlatformRegistry"
+import {getAllPlatforms, getPlatform} from "@/services/plugin/api/Platform"
 
 export default {
 	name: "ChatAIKey",
@@ -93,24 +92,32 @@ export default {
 		 * 加载平台
 		 */
 		async loadPlatform() {
-			try {
-				this.modelList = getAllPlatforms().map(item => ({
-					title: item.name,
-					images: item.api.logo,
-					url: item.api.url
-				}))
-				// 初始化选中模型
-				if (this.modelList.length > 0) {
-					this.selectedModel = this.modelList[0]
+			const PLATFORMS = getAllPlatforms()
+			this.modelList = PLATFORMS.reduce((acc, item) => {
+				try {
+					acc.push({
+						title: item.name,
+						images: item.api.info.logo,
+						url: item.api.info.url
+					})
+				} catch (error) {
+					this.$log.error(`[${this.name}] 加载平台 ${item.name} 失败`, error)
 				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 加载平台失败`, error)
+				return acc
+			}, [])
+			// 初始化选中模型
+			if (this.modelList.length > 0) {
+				this.selectedModel = this.modelList[0]
 			}
 		},
 		/**
 		 * 加载Key池
 		 */
 		async loadKeyPools() {
+			if (!this.selectedModel.title) {
+				this.$log.warn(`[${this.name}] 加载Key池时模型为空`)
+				return
+			}
 			try {
 				this.keyPools = await this.$DB.apiKeys.where("model").equals(this.selectedModel.title).toArray()
 				for (const item of this.keyPools) {
@@ -132,8 +139,8 @@ export default {
 		 */
 		async getKeyBalance(key) {
 			try {
-				const KEY_DATA = await this.$DB.apiKeys.get(key)
-				const RESPONSE = await APIManager.execute(KEY_DATA.model, "balance", {apiKey: key})
+				const INSTANCE = getPlatform(this.selectedModel.title)
+				const RESPONSE = await INSTANCE.strategies.balance({apiKey: key})
 				if (RESPONSE.error) {
 					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE)
 					this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)

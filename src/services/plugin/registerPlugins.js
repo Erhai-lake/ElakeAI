@@ -8,7 +8,7 @@ import {
 	getPlatform,
 	registerPlatform, response,
 	unregisterPlatform
-} from "@/services/plugin/model/PlatformRegistry"
+} from "@/services/plugin/api/Platform"
 
 /**
  * 插件安装成功
@@ -78,8 +78,11 @@ export async function initEnabledPlugins(appContext) {
 				continue
 			}
 			const CTX = {
+				// 插件信息
 				plugin: PLUGIN,
+				// 应用上下文
 				app: appContext,
+				// 平台注册器
 				platform: {
 					registerPlatform,
 					getPlatform,
