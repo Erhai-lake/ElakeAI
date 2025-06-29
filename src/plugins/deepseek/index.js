@@ -1,14 +1,10 @@
+let dbClass = null
+let platformRegistrarClass = null
+
 class DeepSeek {
 	constructor(ctx) {
 		this.ctx = ctx
-		this.info = {
-			name: "DeepSeek",
-			logo: "https://chat.deepseek.com/favicon.svg",
-			url: "https://api.deepseek.com"
-		}
-		this.strategies = {
-			balance: this.balanceStrategy.bind(this)
-		}
+		this.balance.bind(this)
 	}
 
 	/**
@@ -16,12 +12,18 @@ class DeepSeek {
 	 * @param {Object} params - 请求参数
 	 * @returns {Promise<Object>}
 	 */
-	async balanceStrategy(params) {
+	async balance(params) {
 		try {
-			console.log(params)
-			// const CLIENT = this.createClient(paramsData.apiKeyData)
-			// const RESPONSE = await CLIENT.get("/user/balance")
-			// return this.ctx.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
+			const KEY_DATA = await dbClass.api.getApiKeyData(params)
+			const RESPONSE = await this.ctx.api.axios.create({
+				baseURL: KEY_DATA.url,
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${KEY_DATA.value}`
+				},
+				timeout: 10000
+			}).get("/user/balance")
+			return platformRegistrarClass.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
 		} catch (error) {
 			// return this.errorHandler(error, params)
 		}
@@ -29,14 +31,16 @@ class DeepSeek {
 }
 
 module.exports = {
-	onInstall(ctx) {
-	},
 	onRegister(ctx) {
-		const {registerPlatform} = ctx.platform
-		registerPlatform("DeepSeek", new DeepSeek(ctx))
-	},
-	onLoad(ctx) {
+		dbClass = new ctx.api.dbClass()
+		platformRegistrarClass = new ctx.api.platformRegistrarClass({
+			name: "DeepSeek",
+			logo: "https://chat.deepseek.com/favicon.svg",
+			url: "https://api.deepseek.com"
+		})
+		platformRegistrarClass.api.registerPlatform(new DeepSeek(ctx))
 	},
 	onUnload() {
+		platformRegistrarClass.unregisterPlatform()
 	}
 }

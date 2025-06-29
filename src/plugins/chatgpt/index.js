@@ -1,14 +1,8 @@
+let platformRegistrarClass = null
+
 class OpenAI {
 	constructor(ctx) {
-		this.ctx = ctx
-		this.info = {
-			name: "OpenAI",
-			logo: "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico",
-			url: "https://api.openai.com"
-		}
-		this.strategies = {
-			balance: this.balanceStrategy.bind(this)
-		}
+		this.balance.bind(this)
 	}
 
 	/**
@@ -16,20 +10,21 @@ class OpenAI {
 	 * @param {Object} params - 请求参数
 	 * @returns {Promise<Object>}
 	 */
-	async balanceStrategy(params) {
-		return this.ctx.platform.response(params, "NULL")
+	async balance(params) {
+		return platformRegistrarClass.response(params, "NULL")
 	}
 }
 
 module.exports = {
-	onInstall(ctx) {
-	},
 	onRegister(ctx) {
-		const {registerPlatform} = ctx.platform
-		registerPlatform("OpenAI", new OpenAI(ctx))
-	},
-	onLoad(ctx) {
+		platformRegistrarClass = new ctx.api.platformRegistrarClass({
+			name: "OpenAI",
+			logo: "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico",
+			url: "https://api.openai.com"
+		})
+		platformRegistrarClass.api.registerPlatform(new OpenAI(ctx))
 	},
 	onUnload() {
+		platformRegistrarClass.unregisterPlatform()
 	}
 }

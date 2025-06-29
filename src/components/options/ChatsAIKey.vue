@@ -96,12 +96,12 @@ export default {
 			this.modelList = PLATFORMS.reduce((acc, item) => {
 				try {
 					acc.push({
-						title: item.name,
+						title: item.api.info.name,
 						images: item.api.info.logo,
 						url: item.api.info.url
 					})
 				} catch (error) {
-					this.$log.error(`[${this.name}] 加载平台 ${item.name} 失败`, error)
+					this.$log.error(`[${this.name}] 加载平台 ${item.api.info.name} 失败`, error)
 				}
 				return acc
 			}, [])
@@ -140,10 +140,10 @@ export default {
 		async getKeyBalance(key) {
 			try {
 				const INSTANCE = getPlatform(this.selectedModel.title)
-				const RESPONSE = await INSTANCE.strategies.balance({apiKey: key})
+				const RESPONSE = await INSTANCE.api.balance({apiKey: key})
 				if (RESPONSE.error) {
 					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE)
-					this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
+					this.$toast.error(`[${this.name}] ${RESPONSE}`)
 					return RESPONSE.data
 				}
 				return RESPONSE.data
