@@ -1,6 +1,5 @@
 <script>
 import Selector from "@/components/Selector.vue"
-import APIManager from "@/services/api/APIManager"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {PlatformClass} from "@/services/plugin/api/PlatformClass"
@@ -105,7 +104,7 @@ export default {
 				// const DEFAULT = {key: "auto", title: "自动"}
 				const KEYS_DATA = await this.$DB.apiKeys
 					.where("model")
-					.equals(this.selectedLargeModel.title)
+					.equals(this.platform.selected.title)
 					.and(key => key.enabled)
 					.toArray()
 				// 检查是否还是当前有效的请求
@@ -238,8 +237,11 @@ export default {
 		 */
 		async fetchModelsForKey(key) {
 			const KEY_DATA = await this.$DB.apiKeys.get(key)
-			const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
+			const PLATFORM_CLASS  = new PlatformClass({name: KEY_DATA.model})
+			const INSTANCE = PLATFORM_CLASS.getPlatform()
+			const RESPONSE = await INSTANCE.api.models({apiKey: key})
 			if (RESPONSE.error) {
+				// TODO: 处理错误
 				this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE)
 				this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
 			}
@@ -253,7 +255,7 @@ export default {
 			try {
 				const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.configs.get("DefaultChatSettings")
 				if (DEFAULT_CHAT_SETTINGS_DATA) {
-					this.selectedLargeModel = this.platform.list.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
+					this.platform.selected = this.platform.list.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.platform)
 					const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
 					if (!KEY_DATA) {
 						this.keyPools.selected = null
@@ -286,7 +288,7 @@ export default {
 					await this.$DB.configs.put({
 						item: "DefaultChatSettings",
 						value: {
-							largeModel: this.platform.selected.title,
+							platform: this.platform.selected.title,
 							key: this.keyPools.selected.key,
 							model: this.model.selected.title
 						}
@@ -295,7 +297,7 @@ export default {
 					await this.$DB.configs.add({
 						item: "DefaultChatSettings",
 						value: {
-							largeModel: this.platform.selected.title,
+							platform: this.platform.selected.title,
 							key: this.keyPools.selected.key,
 							model: this.model.selected.title
 						}
@@ -313,7 +315,7 @@ export default {
 
 <template>
 	<div class="default-chat-settings">
-		<!-- 大模型选择 -->
+		<!-- 平台选择 -->
 		<Selector
 			:selectorList="platform.list"
 			:selectorSelected="platform.selected || {}"

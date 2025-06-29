@@ -30,22 +30,6 @@ export default class BaseAPI {
 	}
 
 	/**
-	 * 创建API客户端
-	 * @param {Object} keyData - Key数据
-	 * @returns {Object} API客户端
-	 */
-	createClient(keyData) {
-		return axios.create({
-			baseURL: keyData.url,
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": `Bearer ${keyData.value}`
-			},
-			timeout: REQUEST_TIMEOUT
-		})
-	}
-
-	/**
 	 * 注册API调用策略
 	 * @param {string} modelName - 模型名称
 	 * @param {Function} strategy - 调用策略

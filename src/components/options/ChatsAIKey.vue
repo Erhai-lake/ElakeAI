@@ -143,6 +143,7 @@ export default {
 				const INSTANCE = PLATFORM_CLASS.getPlatform()
 				const RESPONSE = await INSTANCE.api.balance({apiKey: key})
 				if (RESPONSE.error) {
+					// TODO: 处理错误
 					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE)
 					this.$toast.error(`[${this.name}] ${RESPONSE}`)
 					return RESPONSE.data
