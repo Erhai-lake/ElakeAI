@@ -1,7 +1,7 @@
 <script>
-import {isElectron} from "@/services/env"
-import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/pluginManager"
-import {initEnabledPlugins} from "@/services/plugin/registerPlugins"
+import {isElectron} from "@/services/Env"
+import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/PluginManager"
+import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 
 export default {

@@ -2,7 +2,7 @@ const {app, BrowserWindow, ipcMain} = require("electron")
 const Logger = require("./Logger")
 const PATH = require("path")
 const {scanAllPlugins} = require("./plugin-loader.js")
-const {unloadPlugins} = require("../services/plugin/unloadPlugins")
+const {unloadPlugins} = require("../services/plugin/UnloadPlugins")
 
 let mainWindow
 

@@ -1,11 +1,12 @@
-import {getEnabledPlugins} from "@/services/plugin/pluginManager"
-import {isElectron} from "@/services/env"
+import {getEnabledPlugins} from "@/services/plugin/PluginManager"
+import {isElectron} from "@/services/Env"
 import Logger from "@/services/Logger"
-import {registerPluginInstance, unloadPlugins} from "@/services/plugin/unloadPlugins"
+import {registerPluginInstance, unloadPlugins} from "@/services/plugin/UnloadPlugins"
 import {PlatformClass} from "@/services/plugin/api/PlatformClass"
 import {PublicClass} from "@/services/plugin/api/PublicClass"
 import axios from "axios"
 import dexie from "@/services/Dexie"
+import {I18nClass} from "@/services/plugin/api/I18nClass"
 
 /**
  * 插件安装成功
@@ -80,6 +81,8 @@ export async function initEnabledPlugins(appContext) {
 				api: {
 					// 公共类
 					PublicClass: PublicClass,
+					// i18n类
+					I18nClass: I18nClass,
 					// 数据库实例
 					dexie: dexie,
 					// axios实例

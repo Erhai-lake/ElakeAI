@@ -33,29 +33,10 @@ const scanAllPlugins = () => {
 				continue
 			}
 
-			// const ENTRY_PATH = PATH.join(PLUGIN_PATH, META.entry || "index.js")
-			//
-			// if (!FS.existsSync(ENTRY_PATH)) {
-			// 	Logger.warn(`[${NAME}] 插件 ${DIR} 的入口文件不存在: ${ENTRY_PATH}`)
-			// 	continue
-			// }
-
-			// let mod = require(ENTRY_PATH)
-			// console.log(`[${NAME}] 插件 ${DIR} 已加载`)
-			// mod = mod?.default || mod
-			// console.log(mod)
-
-			// if (typeof mod.register === "function") {
-			// 	mod.register()
-			// 	Logger.info(`[${NAME}] 插件已注册: ${META.name || DIR}`)
-			// } else {
-			// 	Logger.warn(`[${NAME}] 插件 ${META.name || DIR} 没有导出 register() 方法`)
-			// }
-
 			PLUGINS.push({
 				...META,
 				path: PLUGIN_PATH,
-				entryPath: PATH.join(PLUGIN_PATH, META.entry || "index.js")
+				entryPath: PATH.join(PLUGIN_PATH, META.entry || "I18n.js")
 			})
 		} catch (error) {
 			Logger.error(`[${NAME}] 插件 ${DIR} 的 plugin.json 格式错误`, error)

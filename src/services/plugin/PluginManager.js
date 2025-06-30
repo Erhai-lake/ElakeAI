@@ -1,5 +1,5 @@
 import DB from "@/services/Dexie"
-import {isElectron} from "@/services/env"
+import {isElectron} from "@/services/Env"
 
 let _cachedPlugins = null
 
