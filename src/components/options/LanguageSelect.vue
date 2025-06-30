@@ -48,19 +48,27 @@ export default {
 		 * 加载语言列表
 		 */
 		loadLanguages() {
+			this.languages = [
+				{
+					code: "System",
+					title: "i18n:components.LanguageSelect.system",
+					images: ""
+				}
+			]
 			const I18N = i18nRegistry.getAll()
-			this.languages = I18N.reduce((acc, item) => {
+			const PLUGIN_LANGUAGES = I18N.reduce((acc, item) => {
 				try {
 					acc.push({
-						code: item.info.name,
-						title: item.info.name,
-						images: item.info.logo
+						code: item.info.code,
+						title: item.info.title,
+						images: item.info.image
 					})
 				} catch (error) {
-					this.$log.error(`[${this.name}] 加载语言 ${item.info.name} 失败`, error)
+					this.$log.error(`[${this.name}] 加载语言 ${item.info.code} 失败`, error)
 				}
 				return acc
 			}, [])
+			this.languages = [...this.languages, ...PLUGIN_LANGUAGES]
 			// 初始化选中模型
 			if (this.languages.length > 0) {
 				this.selectedLang = this.languages[0]
@@ -74,7 +82,7 @@ export default {
 			try {
 				if (!selectLang) return
 				if (selectLang.code === "System") {
-					this.$i18n.locale = navigator.language || "zh-CN"
+					this.$i18n.locale = navigator.language || this.languages[0].code
 				} else {
 					this.$i18n.locale = selectLang.code
 				}

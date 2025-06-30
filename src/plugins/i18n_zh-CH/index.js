@@ -2,8 +2,9 @@ const ZH_CN = require("./zh-CN")
 
 let I18nClass = null
 const LANG_INFO = {
-	name: "zh-CN",
-	logo: "https://flagcdn.com/cn.svg",
+	code: "zh-CN",
+	title: "简体中文",
+	image: "https://flagcdn.com/cn.svg",
 }
 
 module.exports = {
@@ -12,6 +13,6 @@ module.exports = {
 		I18nClass.registerLang(LANG_INFO, ZH_CN)
 	},
 	onUnload() {
-		I18nClass.unregisterLang(LANG_INFO.name)
+		I18nClass.unregisterLang(LANG_INFO.code)
 	}
 }
