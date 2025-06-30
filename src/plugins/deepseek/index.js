@@ -3,7 +3,7 @@ let dexie = null
 let PlatformRegistrarClass = null
 const PLATFORM_INFO = {
 	name: "DeepSeek",
-	logo: "https://chat.deepseek.com/favicon.svg",
+	image: "https://chat.deepseek.com/favicon.svg",
 	url: "https://api.deepseek.com"
 }
 

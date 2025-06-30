@@ -30,7 +30,7 @@ export class I18nClass {
 	 * @param {string} code - 语言
 	 */
 	unregisterLang(code) {
-		i18n.global.setLocaleMessage(code, {})
+		i18n.global.setLocaleMessage(code, null)
 		LANG_MAP.delete(code)
 		Logger.info(`[${NAME}] 卸载语言包: ${code}`)
 	}

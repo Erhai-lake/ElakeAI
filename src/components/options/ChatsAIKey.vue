@@ -96,7 +96,7 @@ export default {
 				try {
 					acc.push({
 						title: item.api.info.name,
-						images: item.api.info.logo,
+						images: item.api.info.image,
 						url: item.api.info.url
 					})
 				} catch (error) {

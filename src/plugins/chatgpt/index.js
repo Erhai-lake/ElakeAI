@@ -3,7 +3,7 @@ let dexie = null
 let PlatformRegistrarClass = null
 const PLATFORM_INFO = {
 	name: "OpenAI",
-	logo: "https://cdn.oaistatic.com/assets/favicon-miwirzcw.ico",
+	image: "https://openai.com/favicon.ico",
 	url: "https://api.openai.com"
 }
 
