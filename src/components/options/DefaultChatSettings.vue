@@ -3,6 +3,7 @@ import Selector from "@/components/Selector.vue"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "DefaultChatSettings",
@@ -68,6 +69,14 @@ export default {
 	},
 	methods: {
 		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key) {
+			return i18nRegistry.translate(key)
+		},
+		/**
 		 * 加载平台
 		 */
 		async loadPlatform() {
@@ -118,7 +127,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载Key池失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
 			}
 		},
 		/**
@@ -176,7 +185,7 @@ export default {
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载Key池失败`, error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
+					this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
 				}
 			} finally {
 				this.loading.keys = false
@@ -206,7 +215,7 @@ export default {
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载模型失败`, error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.loadModelError")}`)
+					this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadModelError")}`)
 				}
 			} finally {
 				this.loading.models = false
@@ -241,7 +250,7 @@ export default {
 			if (RESPONSE.error) {
 				// TODO: 处理错误
 				this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE)
-				this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
+				this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
 			}
 			const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
 			return UNIQUE_MODELS.map(model => ({title: model}))
@@ -271,7 +280,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.getDefaultSettingsError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.getDefaultSettingsError")}`)
 			}
 		},
 		/**
@@ -301,10 +310,10 @@ export default {
 						}
 					})
 				}
-				this.$toast.success(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.saveSettingsSuccess")}`)
+				this.$toast.success(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存设置失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.DefaultChatSettings.toast.saveSettingsError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsError")}`)
 			}
 		}
 	}
@@ -335,7 +344,7 @@ export default {
 			@update:selectorSelected="updateSelectedModel"/>
 		<!-- 保存按钮 -->
 		<Button @click="saveDefaultChatSettings">
-			{{ $t("components.DefaultChatSettings.saveSettings") }}
+			{{ t("components.DefaultChatSettings.saveSettings") }}
 		</Button>
 	</div>
 </template>

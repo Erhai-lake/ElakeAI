@@ -33,10 +33,18 @@ export default {
 			}
 		} catch (error) {
 			this.$log.error(`[${this.name}] 语言获取失败`, error)
-			this.$toast.error(`[${this.name}] ${this.$t("components.LanguageSelect.toast.getLanguageError")}`)
+			this.$toast.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.getLanguageError")}`)
 		}
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key) {
+			return i18nRegistry.translate(key)
+		},
 		/**
 		 * 更新选中的语言
 		 * @param newVal {Object} - 新的选中语言
@@ -99,7 +107,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 语言应用失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.LanguageSelect.toast.applicationLanguageError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.applicationLanguageError")}`)
 			}
 		}
 	}
