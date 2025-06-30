@@ -72,3 +72,5 @@ export class PublicClass {
 		}
 	}
 }
+
+export const publicRegistry = new PublicClass()

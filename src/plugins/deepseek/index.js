@@ -1,11 +1,17 @@
 let PublicClass = null
 let dexie = null
 let PlatformRegistrarClass = null
+const PLATFORM_INFO = {
+	name: "DeepSeek",
+	logo: "https://chat.deepseek.com/favicon.svg",
+	url: "https://api.deepseek.com"
+}
 
 class DeepSeek {
 	constructor(ctx) {
 		this.ctx = ctx
 	}
+
 	/**
 	 * 查询余额
 	 * @param {Object} params - 请求参数
@@ -43,16 +49,12 @@ module.exports = {
 	onRegister(ctx) {
 		PublicClass = new ctx.api.PublicClass()
 		dexie = ctx.api.dexie
-		PlatformRegistrarClass = new ctx.api.PlatformRegistrarClass({
-			name: "DeepSeek",
-			logo: "https://chat.deepseek.com/favicon.svg",
-			url: "https://api.deepseek.com"
-		})
-		PlatformRegistrarClass.registerPlatform(new DeepSeek(ctx))
+		PlatformRegistrarClass = new ctx.api.PlatformRegistrarClass()
+		PlatformRegistrarClass.registerPlatform(PLATFORM_INFO, new DeepSeek(ctx))
 	},
 	onUnload() {
 		if (PlatformRegistrarClass) {
-			PlatformRegistrarClass.unregisterPlatform()
+			PlatformRegistrarClass.unregisterPlatform(PLATFORM_INFO.name)
 		}
 	}
 }

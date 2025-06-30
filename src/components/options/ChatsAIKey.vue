@@ -3,7 +3,7 @@ import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
-import {PlatformClass} from "@/services/plugin/api/PlatformClass"
+import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 
 export default {
 	name: "ChatAIKey",
@@ -18,10 +18,10 @@ export default {
 				// 编辑表单状态
 				editFormStatus: false
 			},
-			// 模型列表
-			modelList: [],
+			// 平台列表
+			platformList: [],
 			// 选中的模型
-			selectedModel: {},
+			selectedPlatform: {},
 			// Key池
 			keyPools: [],
 			// 操作选择
@@ -44,7 +44,7 @@ export default {
 	},
 	watch: {
 		// 监听模型变化
-		selectedModel(newVal) {
+		selectedPlatform(newVal) {
 			this.selectModel(newVal)
 		}
 	},
@@ -74,7 +74,7 @@ export default {
 		 * @param newVal {Object} - 选中的模型
 		 */
 		updateSelectedModel(newVal) {
-			this.selectedModel = newVal
+			this.selectedPlatform = newVal
 		},
 		/**
 		 * 选择模型
@@ -82,8 +82,8 @@ export default {
 		 */
 		selectModel(selectModel) {
 			if (!selectModel) return
-			if (selectModel === this.selectedModel.title) return
-			this.selectedModel = selectModel
+			if (selectModel === this.selectedPlatform.title) return
+			this.selectedPlatform = selectModel
 			this.operationSelection = []
 			this.loadKeyPools()
 		},
@@ -91,9 +91,8 @@ export default {
 		 * 加载平台
 		 */
 		async loadPlatform() {
-			const PLATFORM_CLASS  = new PlatformClass()
-			const PLATFORMS = PLATFORM_CLASS.getAllPlatforms()
-			this.modelList = PLATFORMS.reduce((acc, item) => {
+			const PLATFORMS = platformRegistry.getAllPlatforms()
+			this.platformList = PLATFORMS.reduce((acc, item) => {
 				try {
 					acc.push({
 						title: item.api.info.name,
@@ -106,20 +105,20 @@ export default {
 				return acc
 			}, [])
 			// 初始化选中模型
-			if (this.modelList.length > 0) {
-				this.selectedModel = this.modelList[0]
+			if (this.platformList.length > 0) {
+				this.selectedPlatform = this.platformList[0]
 			}
 		},
 		/**
 		 * 加载Key池
 		 */
 		async loadKeyPools() {
-			if (!this.selectedModel.title) {
+			if (!this.selectedPlatform.title) {
 				this.$log.warn(`[${this.name}] 加载Key池时模型为空`)
 				return
 			}
 			try {
-				this.keyPools = await this.$DB.apiKeys.where("model").equals(this.selectedModel.title).toArray()
+				this.keyPools = await this.$DB.apiKeys.where("model").equals(this.selectedPlatform.title).toArray()
 				for (const item of this.keyPools) {
 					if (!item.enabled) {
 						item.balance = "NULL"
@@ -139,8 +138,7 @@ export default {
 		 */
 		async getKeyBalance(key) {
 			try {
-				const PLATFORM_CLASS  = new PlatformClass({name: this.selectedModel.title})
-				const INSTANCE = PLATFORM_CLASS.getPlatform()
+				const INSTANCE = platformRegistry.getPlatform(this.selectedPlatform.title)
 				const RESPONSE = await INSTANCE.api.balance({apiKey: key})
 				if (RESPONSE.error) {
 					// TODO: 处理错误
@@ -172,7 +170,7 @@ export default {
 			}
 			// url空则使用默认url
 			if (!this.newKey.url) {
-				this.newKey.url = this.selectedModel.url
+				this.newKey.url = this.selectedPlatform.url
 			}
 			// 校验url
 			if (!this.isValidUrl(this.newKey.url)) {
@@ -200,7 +198,7 @@ export default {
 				// 写入数据库
 				await this.$DB.apiKeys.add({
 					key: NEW_KEY_ID,
-					model: this.selectedModel.title,
+					model: this.selectedPlatform.title,
 					value: this.newKey.value,
 					remark: this.newKey.remark,
 					url: this.newKey.url,
@@ -298,7 +296,7 @@ export default {
 			}
 			// url空则使用默认url
 			if (!this.editKey.url) {
-				this.editKey.url = this.selectedModel.url
+				this.editKey.url = this.selectedPlatform.url
 			}
 			// 校验url
 			if (!this.isValidUrl(this.editKey.url)) {
@@ -438,8 +436,8 @@ export default {
 				<div class="top">
 					<!-- 模型选择 -->
 					<Selector
-						:selectorSelected="selectedModel"
-						:selectorList="modelList"
+						:selectorSelected="selectedPlatform"
+						:selectorList="platformList"
 						uniqueKey="title"
 						@update:selectorSelected="updateSelectedModel"/>
 					<!-- 新增按钮 -->

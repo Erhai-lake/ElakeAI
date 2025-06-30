@@ -2,7 +2,7 @@
 import Selector from "@/components/Selector.vue"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
-import {PlatformClass} from "@/services/plugin/api/PlatformClass"
+import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 
 export default {
 	name: "DefaultChatSettings",
@@ -71,8 +71,7 @@ export default {
 		 * 加载平台
 		 */
 		async loadPlatform() {
-			const PLATFORM_CLASS = new PlatformClass()
-			const PLATFORMS = PLATFORM_CLASS.getAllPlatforms()
+			const PLATFORMS = platformRegistry.getAllPlatforms()
 			this.platform.list = PLATFORMS.reduce((acc, item) => {
 				try {
 					acc.push({
@@ -237,8 +236,7 @@ export default {
 		 */
 		async fetchModelsForKey(key) {
 			const KEY_DATA = await this.$DB.apiKeys.get(key)
-			const PLATFORM_CLASS  = new PlatformClass({name: KEY_DATA.model})
-			const INSTANCE = PLATFORM_CLASS.getPlatform()
+			const INSTANCE = platformRegistry.getPlatform(KEY_DATA.model)
 			const RESPONSE = await INSTANCE.api.models({apiKey: key})
 			if (RESPONSE.error) {
 				// TODO: 处理错误
