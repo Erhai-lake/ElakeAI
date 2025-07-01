@@ -7,12 +7,24 @@ import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import ImportExport from "@/components/options/ImportExport.vue"
 import HazardousOperations from "@/components/options/HazardousOperations.vue"
 import Button from "@/components/Button.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "OptionsView",
 	components: {
 		HazardousOperations,
 		ImportExport, DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel
+	},
+	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		}
 	}
 }
 </script>
@@ -21,34 +33,34 @@ export default {
 	<div class="options-container">
 		<FoldingPanel>
 			<template #Title>
-				{{ $t("views.OptionsView.personalization") }}
+				{{ t("views.OptionsView.personalization") }}
 			</template>
 			<template #Content>
 				<div class="item">
-					{{ $t("views.OptionsView.theme") }}
+					{{ t("views.OptionsView.theme") }}
 					<ThemeSelect/>
 				</div>
 				<div class="item">
-					{{ $t("views.OptionsView.language") }}
+					{{ t("views.OptionsView.language") }}
 					<LanguageSelect/>
 				</div>
 			</template>
 		</FoldingPanel>
 		<FoldingPanel :Height="600">
 			<template #Title>
-				{{ $t("views.OptionsView.chats") }}
+				{{ t("views.OptionsView.chats") }}
 			</template>
 			<template #Content>
 				<ChatAIKey/>
 				<div class="item">
-					{{ $t("views.OptionsView.defaultChatSettings") }}
+					{{ t("views.OptionsView.defaultChatSettings") }}
 					<DefaultChatSettings/>
 				</div>
 			</template>
 		</FoldingPanel>
 		<FoldingPanel :Height="500">
 			<template #Title>
-				{{ $t("views.OptionsView.importExport") }}
+				{{ t("views.OptionsView.importExport") }}
 			</template>
 			<template #Content>
 				<ImportExport/>
@@ -56,7 +68,7 @@ export default {
 		</FoldingPanel>
 		<FoldingPanel style="--bg-color: #F44336" :Height="50">
 			<template #Title>
-				{{ $t("views.OptionsView.hazardousOperations") }}
+				{{ t("views.OptionsView.hazardousOperations") }}
 			</template>
 			<template #Content>
 				<HazardousOperations/>
@@ -64,7 +76,7 @@ export default {
 		</FoldingPanel>
 		<div class="container">
 			<router-link :to="{ path: '/options/plugins' }">
-				<Button>{{ $t("views.OptionsView.plugins") }}</Button>
+				<Button>{{ t("views.OptionsView.plugins") }}</Button>
 			</router-link>
 			<router-link :to="{ path: '/options/debug' }">
 				<Button>BeBUG</Button>

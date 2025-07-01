@@ -3,6 +3,7 @@ import {isElectron} from "@/services/Env"
 import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/PluginManager"
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "PluginsView",
@@ -40,6 +41,15 @@ export default {
 		}
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 加载插件列表
 		 */
@@ -98,12 +108,12 @@ export default {
 			try {
 				const NEW_STATUS = !plugin.enabled
 				await updatePluginEnabled(plugin.uuid, NEW_STATUS)
-				this.$toast.success(`[${this.name}] ${this.$t(`views.PluginsView.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
+				this.$toast.success(`[${this.name}] ${this.t(`views.PluginsView.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
 				await initEnabledPlugins()
 				await this.loadPlugInList()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("views.PluginsView.toast.statusUpdateError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("views.PluginsView.toast.statusUpdateError")}`)
 			}
 		}
 	}
@@ -114,7 +124,7 @@ export default {
 	<div class="plugins-view">
 		<FoldingPanel :Height="600">
 			<template #Title>
-				{{ $t("views.PluginsView.systemPlugins") }}
+				{{ t("views.PluginsView.systemPlugins") }}
 			</template>
 			<template #Content>
 				<div class="header"></div>
@@ -129,11 +139,11 @@ export default {
 								<span class="custom-checkbox"></span>
 							</label>
 						</th>
-						<th>{{ $t("views.PluginsView.pluginEnable") }}</th>
-						<th>{{ $t("views.PluginsView.pluginName") }}</th>
-						<th>{{ $t("views.PluginsView.pluginAuthor") }}</th>
-						<th>{{ $t("views.PluginsView.pluginDescription") }}</th>
-						<th>{{ $t("views.PluginsView.pluginVersion") }}</th>
+						<th>{{ t("views.PluginsView.pluginEnable") }}</th>
+						<th>{{ t("views.PluginsView.pluginName") }}</th>
+						<th>{{ t("views.PluginsView.pluginAuthor") }}</th>
+						<th>{{ t("views.PluginsView.pluginDescription") }}</th>
+						<th>{{ t("views.PluginsView.pluginVersion") }}</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -166,7 +176,7 @@ export default {
 						<td :title="plugin.version">{{ plugin.version }}</td>
 					</tr>
 					<tr v-if="(system.plugins || []).length === 0">
-						<td colspan="6" class="empty-tip">{{ $t("views.PluginsView.noPlugins") }}</td>
+						<td colspan="6" class="empty-tip">{{ t("views.PluginsView.noPlugins") }}</td>
 					</tr>
 					</tbody>
 				</table>
@@ -174,9 +184,9 @@ export default {
 		</FoldingPanel>
 		<FoldingPanel :Height="600">
 			<template #Title>
-				{{ $t("views.PluginsView.thirdPartyPlugins") }}
+				{{ t("views.PluginsView.thirdPartyPlugins") }}
 				<span style="margin-left: 20px;color: #F44336;">
-					({{ $t("views.PluginsView.thirdPartyPluginsTip") }})
+					({{ t("views.PluginsView.thirdPartyPluginsTip") }})
 				</span>
 			</template>
 			<template #Content>
@@ -191,11 +201,11 @@ export default {
 								<span class="custom-checkbox"></span>
 							</label>
 						</th>
-						<th>{{ $t("views.PluginsView.pluginEnable") }}</th>
-						<th>{{ $t("views.PluginsView.pluginName") }}</th>
-						<th>{{ $t("views.PluginsView.pluginAuthor") }}</th>
-						<th>{{ $t("views.PluginsView.pluginDescription") }}</th>
-						<th>{{ $t("views.PluginsView.pluginVersion") }}</th>
+						<th>{{ t("views.PluginsView.pluginEnable") }}</th>
+						<th>{{ t("views.PluginsView.pluginName") }}</th>
+						<th>{{ t("views.PluginsView.pluginAuthor") }}</th>
+						<th>{{ t("views.PluginsView.pluginDescription") }}</th>
+						<th>{{ t("views.PluginsView.pluginVersion") }}</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -228,10 +238,10 @@ export default {
 						<td :title="plugin.version">{{ plugin.version }}</td>
 					</tr>
 					<tr v-if="!isElectron">
-						<td colspan="6">{{ $t("views.PluginsView.envProhibition") }}</td>
+						<td colspan="6">{{ t("views.PluginsView.envProhibition") }}</td>
 					</tr>
 					<tr v-if="(thirdParty.plugins || []).length === 0 && isElectron">
-						<td colspan="6">{{ $t("views.PluginsView.noPlugins") }}</td>
+						<td colspan="6">{{ t("views.PluginsView.noPlugins") }}</td>
 					</tr>
 					</tbody>
 				</table>

@@ -1,6 +1,7 @@
 <script>
 import {defineComponent} from "vue"
 import Selector from "@/components/Selector.vue";
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default defineComponent({
 	name: "ThemeSelect",
@@ -46,10 +47,19 @@ export default defineComponent({
 			}
 		} catch (error) {
 			this.$log.error(`[${this.name}] 主题获取失败`, error)
-			this.$toast.error(`[${this.name}] ${this.$t("components.ThemeSwitch.toast.getThemeError")}`)
+			this.$toast.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.getThemeError")}`)
 		}
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 更新选中的主题
 		 * @param newVal {Object} - 选中主题
@@ -83,7 +93,7 @@ export default defineComponent({
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 主题应用失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ThemeSwitch.toast.applicationThemeError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.applicationThemeError")}`)
 			}
 		}
 	}

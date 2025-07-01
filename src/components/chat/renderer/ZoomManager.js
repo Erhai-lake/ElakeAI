@@ -26,7 +26,7 @@ export function initZoom(container) {
 		let timer = null
 		let isRepeating = false
 		const start = (event) => {
-			// 如果是 touch 事件，阻止默认滚动等行为
+			// 如果是 touch 事件, 阻止默认滚动等行为
 			if (event.type === "touchstart") {
 				event.preventDefault()
 			}
@@ -50,7 +50,7 @@ export function initZoom(container) {
 				isRepeating = false
 			}
 		}
-		// 监听器绑定，touch 事件加上 passive: false 以支持 preventDefault
+		// 监听器绑定, touch 事件加上 passive: false 以支持 preventDefault
 		button.addEventListener("mousedown", start, {passive: true})
 		button.addEventListener("touchstart", start, {passive: false})
 		button.addEventListener("mouseup", stop, {passive: true})

@@ -27,7 +27,7 @@ const storeLog = async (level, ...args) => {
 			timestamp: Date.now()
 		}
 
-		EventBus.emit("[function] log", LOG_ENTRY)
+		EventBus.emit("[update] logUpdate", LOG_ENTRY)
 
 		if (DB?.logs) {
 			try {

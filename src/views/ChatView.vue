@@ -5,6 +5,7 @@ import EventBus from "@/services/EventBus"
 import UserMessageCard from "@/components/chat/UserMessageCard.vue"
 import AssistantMessageCard from "@/components/chat/AssistantMessageCard.vue"
 import TopTitle from "@/components/chat/TopTitle.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "ChatView",
@@ -50,6 +51,15 @@ export default {
 		EventBus.off("[function] removeMessage", this.removeMessage)
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 设置当前聚焦的消息ID
 		 * @param {string} id 消息ID
@@ -132,7 +142,7 @@ export default {
 				const CHAT_DATA = await this.$DB.chats.get(chatKey)
 				// 检查ChatKey是否存在
 				if (!CHAT_DATA) {
-					this.$toast.warning(this.$t("views.ChatView.toast.noChatKey"))
+					this.$toast.warning(this.t("views.ChatView.toast.noChatKey"))
 					this.$router.push("/")
 					EventBus.emit("[update] chatListUpdate")
 					return
@@ -147,7 +157,7 @@ export default {
 				this.scrollToUpAndDownMessages("bottom")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天记录获取错误`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.getChatLogError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.getChatLogError")}`)
 			}
 		},
 		/**
@@ -201,7 +211,7 @@ export default {
 		async streamComplete() {
 			try {
 				// 如果是第一条AI回复且是默认标题
-				if (this.data.title === this.$t("components.AIInput.newChat")) {
+				if (this.data.title === this.t("components.AIInput.newChat")) {
 					// 如果没有AI回复, 则不更新标题
 					if (!this.data.data?.length) return
 					const AI_CONTENT = this.data.data[this.data.data.length - 1].message.content
@@ -223,7 +233,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 标题更新错误`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
 			}
 		},
 		/**
@@ -244,7 +254,7 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 消息移除错误`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.removeMessageError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.removeMessageError")}`)
 			}
 		}
 	}
@@ -273,13 +283,13 @@ export default {
 			<AIInput/>
 		</div>
 		<!-- AI提示信息 -->
-		<div class="ai-disclaimer">{{ $t("views.ChatView.aiDisclaimer") }}</div>
+		<div class="ai-disclaimer">{{ t("views.ChatView.aiDisclaimer") }}</div>
 		<!-- 功能控件 -->
 		<div class="functional-controls">
 			<!-- 回到顶部按钮 -->
 			<button
 				class="scroll-to-top-messages"
-				:title="$t('views.ChatView.FunctionalControls.scrollToTopMessages')"
+				:title="t('views.ChatView.FunctionalControls.scrollToTopMessages')"
 				@click="scrollToUpAndDownMessages('top')"
 				:disabled="data.data.length === 0">
 				<svg class="icon" aria-hidden="true">
@@ -288,7 +298,7 @@ export default {
 			</button>
 			<!-- 上一条按钮 -->
 			<button
-				:title="$t('views.ChatView.FunctionalControls.scrollToUpMessages')"
+				:title="t('views.ChatView.FunctionalControls.scrollToUpMessages')"
 				@click="scrollToUpAndDownMessages('up')"
 				:disabled="data.data.length === 0">
 				<svg class="icon" aria-hidden="true">
@@ -297,7 +307,7 @@ export default {
 			</button>
 			<!-- 下一条按钮 -->
 			<button
-				:title="$t('views.ChatView.FunctionalControls.scrollToDownMessages')"
+				:title="t('views.ChatView.FunctionalControls.scrollToDownMessages')"
 				@click="scrollToUpAndDownMessages('Down')"
 				:disabled="data.data.length === 0">
 				<svg class="icon" aria-hidden="true">
@@ -306,7 +316,7 @@ export default {
 			</button>
 			<!-- 回到底部按钮 -->
 			<button
-				:title="$t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
+				:title="t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
 				@click="scrollToUpAndDownMessages('bottom')"
 				:disabled="data.data.length === 0">
 				<svg class="icon" aria-hidden="true">
@@ -315,7 +325,7 @@ export default {
 			</button>
 			<!-- 显示输入框按钮 -->
 			<button
-				:title="$t('views.ChatView.FunctionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
+				:title="t('views.ChatView.FunctionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
 				@click="showInputBox = !showInputBox">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-inputBox"></use>

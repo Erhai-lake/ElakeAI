@@ -2,7 +2,8 @@
 import HomeSidebar from "@/components/HomeSidebar.vue"
 import Log from "@/components/options/Log.vue"
 import Button from "@/components/Button.vue"
-import EventBus from "@/services/EventBus";
+import EventBus from "@/services/EventBus"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 // import eruda from "eruda"
 
 export default {
@@ -37,21 +38,30 @@ export default {
         const VERSION = this.getIEVersion()
         if (VERSION) {
             this.$log.error(`[${this.name}] 检测到IE浏览器`, VERSION)
-            this.$toast.error(`[${this.name}] ${this.$t("app.IEDetected", {version: VERSION})}`)
+            this.$toast.error(`[${this.name}] ${this.t("app.IEDetected", {version: VERSION})}`)
         }
         // 检查浏览器是否支持 IndexedDB
         if (!"indexedDB" in window) {
             this.$log.error(`[${this.name}] 浏览器不支持'IndexedDB'`)
-            this.$toast.error(`[${this.name}] ${this.$t("app.indexedDBNotSupported")}`)
+            this.$toast.error(`[${this.name}] ${this.t("app.indexedDBNotSupported")}`)
         }
         // 检查浏览器是否支持 IDBTransaction
         if (!"IDBTransaction" in window) {
             this.$log.error(`[${this.name}] 浏览器不支持'IDBTransaction'`)
-            this.$toast.error(`[${this.name}] ${this.$t("app.iDBTransactionNotSupported")}`)
+            this.$toast.error(`[${this.name}] ${this.t("app.iDBTransactionNotSupported")}`)
         }
         await this.configInitialization()
     },
     methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
         /**
          * 获取运行环境信息
          */
@@ -150,7 +160,7 @@ export default {
                 this.$log.info(`[${this.name}] 初始化配置`, info)
             } catch (error) {
                 this.$log.error(`[${this.name}] 配置初始化失败`, error)
-                this.$toast.error(`[${this.name}] ${this.$t("app.configInitializationError")}`)
+                this.$toast.error(`[${this.name}] ${this.t("app.configInitializationError")}`)
             }
         },
         /**

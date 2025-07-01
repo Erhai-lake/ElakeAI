@@ -71,10 +71,11 @@ export default {
 		/**
 		 * 翻译
 		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
 		 * @returns {String} - 翻译后的文本
 		 */
-		t(key) {
-			return i18nRegistry.translate(key)
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
 		},
 		/**
 		 * 加载平台

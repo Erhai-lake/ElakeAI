@@ -16,12 +16,12 @@ export class I18nClass {
 	registerLang(info, messages) {
 		if (!info?.code || typeof messages !== "object") return
 		const EXISTING_MESSAGES = i18n.global.getLocaleMessage(info.code) || {}
-		const MERGED_MESSAGES = { ...EXISTING_MESSAGES, ...messages }
+		const MERGED_MESSAGES = {...EXISTING_MESSAGES, ...messages}
 		i18n.global.setLocaleMessage(info.code, MERGED_MESSAGES)
 		if (LANG_MAP.has(info.code)) {
-			// 已注册过，只合并 info，但不打印重复警告
+			// 已注册过, 只合并 info, 但不打印重复警告
 			const EXISTING_INFO = LANG_MAP.get(info.code)
-			LANG_MAP.set(info.code, { ...EXISTING_INFO, ...info })
+			LANG_MAP.set(info.code, {...EXISTING_INFO, ...info})
 			Logger.info(`[${NAME}] 合并语言包: ${info.code}`)
 		} else {
 			// 首次注册
@@ -59,16 +59,13 @@ export class I18nClass {
 
 	/**
 	 * 获取当前语言的翻译文本
-	 * @param {string} keyPath - 点分路径，例如 "plugin.welcome"
+	 * @param {string} keyPath - 点分路径, 例如 "plugin.welcome"
+	 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
 	 * @returns {string} 翻译文本
 	 */
-	translate(keyPath) {
+	translate(keyPath, params = {}) {
 		try {
-			const value = i18n.global.t(keyPath)
-			if (value === keyPath) {
-				Logger.warn(`[${NAME}] 未找到翻译: ${keyPath}`)
-			}
-			return value
+				return i18n.global.t(keyPath, params)
 		} catch (error) {
 			Logger.error(`[${NAME}] 翻译调用出错`, error)
 			return keyPath

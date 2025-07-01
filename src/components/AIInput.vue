@@ -5,6 +5,7 @@ import EventBus from "@/services/EventBus"
 import Selector from "@/components/Selector.vue"
 import {useRoute} from "vue-router"
 import APIManager from "@/services/api/APIManager"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default defineComponent({
 	name: "AIInput",
@@ -93,6 +94,15 @@ export default defineComponent({
 	},
 	methods: {
 		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
+		/**
 		 * 输入框获取焦点
 		 */
 		focusInput() {
@@ -159,7 +169,7 @@ export default defineComponent({
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载Key池错误`, error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
+					this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.loadKeyPoolError")}`)
 				}
 			} finally {
 				this.selector.loading.keys = false
@@ -189,7 +199,7 @@ export default defineComponent({
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载模型失败`, error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.loadModelError")}`)
+					this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.loadModelError")}`)
 				}
 			} finally {
 				this.selector.loading.models = false
@@ -220,7 +230,7 @@ export default defineComponent({
 			const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
 			if (RESPONSE.error) {
 				this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE)
-				this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
+				this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
 			}
 			const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
 			return UNIQUE_MODELS.map(model => ({title: model}))
@@ -254,7 +264,7 @@ export default defineComponent({
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载Key池失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.loadKeyPoolError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.loadKeyPoolError")}`)
 			}
 		},
 		/**
@@ -282,7 +292,7 @@ export default defineComponent({
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.getDefaultSettingsError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.getDefaultSettingsError")}`)
 			}
 		},
 		/**
@@ -326,7 +336,7 @@ export default defineComponent({
 						this.adjustTextareaHeight()
 					})
 					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
-					this.$toast.error(`[${this.name}] ${this.$t(`api.${RESPONSE.error}`)}`)
+					this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
 				}
 			} catch (error) {
 				this.ChatInput = CONTENT
@@ -334,7 +344,7 @@ export default defineComponent({
 					this.adjustTextareaHeight()
 				})
 				this.$log.error(`[${this.name}] 发送消息失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.sendMessageError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
 			} finally {
 				this.stopStatus = false
 			}
@@ -348,7 +358,7 @@ export default defineComponent({
 				this.$router.push(`/chat/${NEW_CHAT_KEY}`)
 				await this.$DB.chats.add({
 					key: NEW_CHAT_KEY,
-					title: this.$t("components.AIInput.newChat"),
+					title: this.t("components.AIInput.newChat"),
 					timestamp: Date.now(),
 					data: [
 						{
@@ -383,7 +393,7 @@ export default defineComponent({
 					this.adjustTextareaHeight()
 				})
 				this.$log.error(`[${this.name}] 创建新聊天失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.createNewChatError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.createNewChatError")}`)
 			}
 		},
 		/**
@@ -402,7 +412,7 @@ export default defineComponent({
 			} catch (error) {
 				this.stopStatus = true
 				this.$log.error(`[${this.name}] 停止失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.AIInput.toast.stopError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
 			}
 		},
 		/**
@@ -441,27 +451,27 @@ export default defineComponent({
 		<input id="Appendix" type="checkbox"/>
 		<div class="AppendixBar">
 			<!--关闭-->
-			<label for="Appendix" :title="$t('components.AIInput.appendix.close')">
+			<label for="Appendix" :title="t('components.AIInput.appendix.close')">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-close"></use>
 				</svg>
 			</label>
 			<!--拍照-->
-			<label for="Camera" :title="$t('components.AIInput.appendix.camera')">
+			<label for="Camera" :title="t('components.AIInput.appendix.camera')">
 				<input type="file" id="Camera" accept="image/*" capture="environment"/>
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-photograph"></use>
 				</svg>
 			</label>
 			<!--相册-->
-			<label for="Photos" :title="$t('components.AIInput.appendix.picture')">
+			<label for="Photos" :title="t('components.AIInput.appendix.picture')">
 				<input type="file" id="Photos" accept="image/*"/>
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-photoAlbum"></use>
 				</svg>
 			</label>
 			<!--文件-->
-			<label for="Files" :title="$t('components.AIInput.appendix.file')">
+			<label for="Files" :title="t('components.AIInput.appendix.file')">
 				<input type="file" id="Files"/>
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-file"></use>
@@ -471,14 +481,14 @@ export default defineComponent({
 		<!--顶部按钮栏-->
 		<div class="TopButtonBar">
 			<!--附件-->
-			<label for="Appendix" :title="$t('components.AIInput.function.appendix')">
+			<label for="Appendix" :title="t('components.AIInput.function.appendix')">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-link"></use>
 				</svg>
 			</label>
 			<!--联网搜索-->
 			<input id="Search" type="checkbox" v-model="enableWebSearch"/>
-			<label for="Search" :title="$t('components.AIInput.function.webSearch')">
+			<label for="Search" :title="t('components.AIInput.function.webSearch')">
 				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-webSearch"></use>
 				</svg>
@@ -508,7 +518,7 @@ export default defineComponent({
 		<div class="Input">
             <textarea
 				id="ChatInput"
-				:placeholder="$t('components.AIInput.inputTip')"
+				:placeholder="t('components.AIInput.inputTip')"
 				ref="textareaRef"
 				spellcheck="false"
 				v-model="ChatInput"
@@ -518,7 +528,7 @@ export default defineComponent({
 			<!--发送-->
 			<label
 				for="Send"
-				:title="$t('components.AIInput.function.send')"
+				:title="t('components.AIInput.function.send')"
 				class="send"
 				v-if="!stopStatus"
 				@click="send">
@@ -529,7 +539,7 @@ export default defineComponent({
 			<!--停止-->
 			<label
 				for="Stop"
-				:title="$t('components.AIInput.function.stop')"
+				:title="t('components.AIInput.function.stop')"
 				class="Stop"
 				v-if="stopStatus"
 				@click="stop">

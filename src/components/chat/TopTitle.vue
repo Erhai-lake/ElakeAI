@@ -1,5 +1,6 @@
 <script>
 import EventBus from "@/services/EventBus"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
     name: "TopTitle",
@@ -17,7 +18,7 @@ export default {
     data() {
         return {
             name: "TopTitle",
-            title: this.chatTitle || this.$t("components.AIInput.newChat"),
+            title: this.chatTitle || this.t("components.AIInput.newChat"),
             editingTitle: {
                 show: false,
                 value: ""
@@ -26,10 +27,19 @@ export default {
     },
 	watch: {
 		chatTitle(newTitle) {
-			this.title = newTitle || this.$t("components.AIInput.newChat")
+			this.title = newTitle || this.t("components.AIInput.newChat")
 		}
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
         /**
          * 显示标题输入框
          */
@@ -56,17 +66,17 @@ export default {
             }
             // 检查标题是否为空
             if (!this.editingTitle.value.trim()) {
-                this.editingTitle.value = this.$t("components.AIInput.newChat")
+                this.editingTitle.value = this.t("components.AIInput.newChat")
             }
             try {
                 const NEW_TITLE = this.editingTitle.value.trim()
                 this.title = NEW_TITLE
                 await this.$DB.chats.update(this.chatKey, {title: NEW_TITLE})
-                this.$toast.success(this.$t("views.ChatView.toast.titleUpdated"))
+                this.$toast.success(this.t("views.ChatView.toast.titleUpdated"))
                 EventBus.emit("[update] chatListUpdate")
             } catch (error) {
                 this.$log.error(`[${this.name}] 标题更新失败`, error)
-                this.$toast.error(`[${this.name}] ${this.$t("views.ChatView.toast.titleUpdateError")}`)
+                this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
                 this.editingTitle.value = this.title
             } finally {
                 this.editingTitle.show = false

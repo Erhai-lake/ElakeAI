@@ -15,6 +15,7 @@ import PlantUMLRenderer from "@/components/chat/renderer/PlantUMLRenderer.vue"
 import ModelList from "@/assets/data/ModelList.json"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "AssistantMessageCard",
@@ -62,6 +63,15 @@ export default {
 		this.parseReasoning()
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 移除消息
 		 * @param {string} id 消息ID
@@ -202,7 +212,7 @@ export default {
 	<div class="assistant-message-card">
 		<FoldingPanel class="reasoning-content" v-if="message.message.reasoning" :is="isReasoningExpanded">
 			<template #Title>
-				<span>{{ $t("components.AssistantMessageCard.reasoning") }}</span>
+				<span>{{ t("components.AssistantMessageCard.reasoning") }}</span>
 			</template>
 			<template #Content>
 				<MarkdownBlockRenderer :html="reasoningHtml"/>

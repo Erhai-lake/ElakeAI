@@ -6,6 +6,7 @@ import TabsTab from "@/components/TabsTab.vue"
 import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "MermaidRenderer",
@@ -37,6 +38,15 @@ export default {
 		this.renderMermaid()
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 渲染Mermaid
 		 */
@@ -107,10 +117,10 @@ export default {
 	<div class="mermaid-renderer">
 		<Tabs v-model="activeTab">
 			<TabsTab name="preview">
-				<template #label>{{ $t("components.MermaidRenderer.preview") }}</template>
+				<template #label>{{ t("components.MermaidRenderer.preview") }}</template>
 				<div ref="containerRef">
 					<div v-if="error" class="mermaid-error">
-						{{ $t("components.MermaidRenderer.renderError") }}
+						{{ t("components.MermaidRenderer.renderError") }}
 						<br>
 						{{ error }}
 					</div>
@@ -165,7 +175,7 @@ export default {
 				</div>
 			</TabsTab>
 			<TabsTab name="code">
-				<template #label>{{ $t("components.MermaidRenderer.code") }}</template>
+				<template #label>{{ t("components.MermaidRenderer.code") }}</template>
 				<CodeBlockRenderer :code="code" language="mermaid"/>
 			</TabsTab>
 		</Tabs>

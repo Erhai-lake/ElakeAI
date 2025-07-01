@@ -5,6 +5,7 @@ import "@/services/highlight/highlight-mermaid"
 import "@/services/highlight/highlight-flowchart"
 import "@/services/highlight/highlight-plantuml"
 import Button from "@/components/Button.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "CodeBlockRenderer",
@@ -23,33 +24,42 @@ export default {
 		return {
 			name: "CodeBlockRenderer",
 			highlightedCode: "",
-			copyButtonText: this.$t("components.CodeBlockRenderer.copy")
+			copyButtonText: this.t("components.CodeBlockRenderer.copy")
 		}
 	},
 	mounted() {
 		this.highlightCode()
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		highlightCode() {
 			try {
 				const {value} = highlight.highlight(this.code, {language: this.language})
 				this.highlightedCode = value
 			} catch (error) {
 				this.highlightedCode = highlight.highlightAuto(this.code).value
-				this.$log.warn(`[${this.name}] 语言 ${this.language} 不受支持，已自动高亮`, error)
+				this.$log.warn(`[${this.name}] 语言 ${this.language} 不受支持, 已自动高亮`, error)
 			}
 		},
 		copyCode() {
 			navigator.clipboard.writeText(this.code).then(() => {
-				this.copyButtonText = this.$t("components.CodeBlockRenderer.copied")
+				this.copyButtonText = this.t("components.CodeBlockRenderer.copied")
 				setTimeout(() => {
-					this.copyButtonText = this.$t("components.CodeBlockRenderer.copy")
+					this.copyButtonText = this.t("components.CodeBlockRenderer.copy")
 				}, 1500)
 			}).catch((error) => {
-				this.copyButtonText = this.$t("components.CodeBlockRenderer.failed")
+				this.copyButtonText = this.t("components.CodeBlockRenderer.failed")
 				this.$log.error(`[${this.name}] 复制失败`, error)
 				setTimeout(() => {
-					this.copyButtonText = this.$t("components.CodeBlockRenderer.copy")
+					this.copyButtonText = this.t("components.CodeBlockRenderer.copy")
 				}, 1500)
 			})
 		},
@@ -131,7 +141,7 @@ export default {
 			const LOWER_LANG = language.toLowerCase()
 			const FRIENDLY_NAME = LANGUAGE_MAP[LOWER_LANG] || language
 			const IS_SUPPORTED = highlight.listLanguages().includes(FRIENDLY_NAME.toLowerCase())
-			return `${FRIENDLY_NAME} ${IS_SUPPORTED ? "" : `[${this.$t("components.CodeBlockRenderer.notSupported")}]`}`
+			return `${FRIENDLY_NAME} ${IS_SUPPORTED ? "" : `[${this.t("components.CodeBlockRenderer.notSupported")}]`}`
 		}
 	}
 }

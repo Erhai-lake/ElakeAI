@@ -3,6 +3,7 @@ import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {nextTick} from "vue"
 import Selector from "@/components/Selector.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "Log",
@@ -57,10 +58,19 @@ export default {
 			this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
 		} catch (error) {
 			this.$log.error(`[${this.name}] 日志悬浮窗设置获取失败`, error)
-			this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.getLogSuspensionWindowError")}`)
+			this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.getLogSuspensionWindowError")}`)
 		}
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 加载日志
 		 */
@@ -73,7 +83,7 @@ export default {
 				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载日志失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.loadError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.loadError")}`)
 			}
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
@@ -94,7 +104,7 @@ export default {
 				EventBus.emit("[update] logUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 清空日志失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.clearError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.clearError")}`)
 			}
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
@@ -154,7 +164,7 @@ export default {
 				this.isLogSuspensionWindow = !this.isLogSuspensionWindow
 			} catch (error) {
 				this.$log.error(`[${this.name}] 悬浮窗设置保存失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.saveLogSuspensionWindowError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.saveLogSuspensionWindowError")}`)
 			}
 		},
 		/**
@@ -183,10 +193,10 @@ export default {
 					document.body.removeChild(DOWNLOAD_LINK)
 					URL.revokeObjectURL(DOWNLOAD_URL)
 				}, 100)
-				this.$toast.success(`[${this.name}] ${this.$t("components.Log.toast.exportSuccess")}`)
+				this.$toast.success(`[${this.name}] ${this.t("components.Log.toast.exportSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导出日志失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.Log.toast.exportError")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.exportError")}`)
 			}
 		}
 	}
@@ -203,16 +213,18 @@ export default {
 				:selectorList="levelList"
 				:selectorSelected="levelSelector || {}"
 				@update:selectorSelected="updateSelectedLevel"/>
-			<Button @click="loadLogs">🔄 {{ $t("components.Log.function.load") }}</Button>
-			<Button @click="clearLogs">🗑️ {{ $t("components.Log.function.clear") }}</Button>
-			<Button @click="exportLogs">📤 {{ $t("components.Log.function.export") }}</Button>
+			<Button @click="loadLogs">🔄 {{ t("components.Log.function.load") }}</Button>
+			<Button @click="clearLogs">🗑️ {{ t("components.Log.function.clear") }}</Button>
+			<Button @click="exportLogs">📤 {{ t("components.Log.function.export") }}</Button>
 			<Button @click="keepScrollToBottom">
-				{{ $t("components.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
+				{{ t("components.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
 			</Button>
 			<Button @click="suspensionWindow">
-				{{ $t("components.Log.function.suspensionWindow", {is: isLogSuspensionWindow}) }}
+				{{ t("components.Log.function.suspensionWindow", {is: isLogSuspensionWindow}) }}
 			</Button>
-			<span class="log-count">{{ $t("components.Log.count", {count: logs.length, level: levelSelector.label}) }}</span>
+			<span class="log-count">{{
+					t("components.Log.count", {count: logs.length, level: levelSelector.label})
+				}}</span>
 		</div>
 		<div ref="logList" class="log-list">
 			<div v-for="(log, index) in logs" :key="index" :class="['log-item', log.level]">
@@ -221,7 +233,7 @@ export default {
 				<span class="log-component">[{{ log.component || "Global" }}]</span>
 				<span class="log-message">{{ log.message || "NULL" }}</span>
 			</div>
-			<div v-if="logs.length === 0" class="empty-tip">{{ $t("components.Log.empty") }}</div>
+			<div v-if="logs.length === 0" class="empty-tip">{{ t("components.Log.empty") }}</div>
 		</div>
 	</div>
 </template>
@@ -245,7 +257,7 @@ export default {
 	margin-bottom: 10px;
 	gap: 10px;
 
-	.level-selector{
+	.level-selector {
 		width: 200px;
 		min-width: 200px;
 	}

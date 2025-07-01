@@ -1,6 +1,7 @@
 <script>
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "ImportExport",
@@ -36,6 +37,15 @@ export default {
 		await this.loadExportData()
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 全选/取消全选configs
 		 */
@@ -88,7 +98,7 @@ export default {
 				this.apiKeys.options = await this.$DB.apiKeys.toArray()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载子选项失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToLoadSubOptions")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToLoadSubOptions")}`)
 			}
 			// 加载单选项数据
 			try {
@@ -113,7 +123,7 @@ export default {
 			if (CHATS) EXPORT_DATA.chats = CHATS
 			if (Object.keys(EXPORT_DATA).length === 0) {
 				this.$log.warn(`[${this.name}] 没有数据可导出`, EXPORT_DATA)
-				this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noDataToExport")}`)
+				this.$toast.warning(`[${this.name}] ${this.t("components.ImportExport.toast.noDataToExport")}`)
 				return
 			}
 			// 开始导出
@@ -136,10 +146,10 @@ export default {
 					URL.revokeObjectURL(DOWNLOAD_URL)
 				}, 100)
 				this.$log.info(`[${this.name}] 导出成功`, EXPORT_DATA)
-				this.$toast.success(`[${this.name}] ${this.$t("components.ImportExport.toast.exportSuccess")}`)
+				this.$toast.success(`[${this.name}] ${this.t("components.ImportExport.toast.exportSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导出失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.exportFailed")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.exportFailed")}`)
 			}
 		},
 		/**
@@ -159,7 +169,7 @@ export default {
 				return CONFIGS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取configs数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToGetData")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -180,7 +190,7 @@ export default {
 				return API_KEYS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取apiKeys数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.failedToGetData")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -234,7 +244,7 @@ export default {
 				this.$log.info(`[${this.name}] 解析完成`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 解析失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.parsingFailed")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.parsingFailed")}`)
 			} finally {
 				event.target.value = ""
 			}
@@ -266,15 +276,15 @@ export default {
 				}
 				if (IMPORT_TASKS.length === 0) {
 					this.$log.warn(`[${this.name}] 没有数据可导入`, IMPORT_TASKS)
-					this.$toast.warning(`[${this.name}] ${this.$t("components.ImportExport.toast.noDataToImport")}`)
+					this.$toast.warning(`[${this.name}] ${this.t("components.ImportExport.toast.noDataToImport")}`)
 					return
 				}
-				if (!confirm(this.$t("components.ImportExport.confirmImportTip"))) return
+				if (!confirm(this.t("components.ImportExport.confirmImportTip"))) return
 				await Promise.all(IMPORT_TASKS)
 				this.$log.info(`[${this.name}] 导入完成`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailed")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailed")}`)
 			}
 		},
 		/**
@@ -290,14 +300,14 @@ export default {
 						resolve(JSON.parse(returnData.target.result))
 					} catch (error) {
 						this.$log.error(`[${this.name}] 无效的JSON格式`, error)
-						this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.invalidJsonFormat")}`)
-						reject(new Error(this.$t("components.ImportExport.toast.invalidJsonFormat")))
+						this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.invalidJsonFormat")}`)
+						reject(new Error(this.t("components.ImportExport.toast.invalidJsonFormat")))
 					}
 				}
 				reader.onerror = () => {
 					this.$log.error(`[${this.name}] 读取文件失败`, reader.error)
-					this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.fileReadError")}`)
-					reject(new Error(this.$t("components.ImportExport.toast.fileReadError")))
+					this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.fileReadError")}`)
+					reject(new Error(this.t("components.ImportExport.toast.fileReadError")))
 				}
 				reader.readAsText(file)
 			})
@@ -325,7 +335,7 @@ export default {
 				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入configs数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailedSkipped")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
 			}
 		},
 		/**
@@ -347,7 +357,7 @@ export default {
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入apiKey数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailedSkipped")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
 			}
 		},
 		/**
@@ -370,7 +380,7 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入chat数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.ImportExport.toast.importFailedSkipped")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
 			}
 		}
 	}
@@ -379,13 +389,13 @@ export default {
 
 <template>
 	<div class="import-export">
-		<h3>{{ $t(`components.ImportExport.${title}`) }}</h3>
+		<h3>{{ t(`components.ImportExport.${title}`) }}</h3>
 		<div class="config-selection">
 			<div class="option-group" v-if="singleSelection.optional.length > 0">
 				<label class="option-item" v-if="singleSelection.optional.includes('chats')">
 					<input type="checkbox" v-model="singleSelection.selectedOptions" value="chats"/>
 					<span class="custom-checkbox"></span>
-					<span>{{ $t("components.ImportExport.chats") }}</span>
+					<span>{{ t("components.ImportExport.chats") }}</span>
 				</label>
 			</div>
 			<div class="option-group" v-if="configs.options.length > 0">
@@ -393,7 +403,7 @@ export default {
 					<input type="checkbox" v-model="configs.selectAll" @change="toggleAllConfigs"/>
 					<span class="custom-checkbox"></span>
 					<span>
-						{{ $t("components.ImportExport.selectAll", {item: $t("components.ImportExport.configs")}) }}
+						{{ t("components.ImportExport.selectAll", {item: t("components.ImportExport.configs")}) }}
 					</span>
 				</label>
 				<div class="sub-options" v-if="configs.options.length">
@@ -412,7 +422,7 @@ export default {
 					<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAllApiKeys"/>
 					<span class="custom-checkbox"></span>
 					<span>
-						{{ $t("components.ImportExport.selectAll", {item: $t("components.ImportExport.apiKeys")}) }}
+						{{ t("components.ImportExport.selectAll", {item: t("components.ImportExport.apiKeys")}) }}
 					</span>
 				</label>
 				<div class="sub-options" v-if="apiKeys.options.length">
@@ -429,13 +439,13 @@ export default {
 		</div>
 		<div class="action-buttons">
 			<div>
-				<Button @click="loadExportData">{{ $t("components.ImportExport.loadExportData") }}</Button>
-				<Button @click="handleExport">{{ $t("components.ImportExport.export") }}</Button>
+				<Button @click="loadExportData">{{ t("components.ImportExport.loadExportData") }}</Button>
+				<Button @click="handleExport">{{ t("components.ImportExport.export") }}</Button>
 			</div>
 			<div>
-				<Button @click="handleImport">{{ $t("components.ImportExport.import") }}</Button>
+				<Button @click="handleImport">{{ t("components.ImportExport.import") }}</Button>
 				<Button @click="confirmImport" v-if="importFileData">
-					{{ $t("components.ImportExport.confirmImport") }}
+					{{ t("components.ImportExport.confirmImport") }}
 				</Button>
 			</div>
 		</div>

@@ -1,6 +1,7 @@
 <script>
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
     name: "UserMessageCard",
@@ -12,6 +13,15 @@ export default {
         }
     },
     methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
         /**
          * 格式化信息
          * @param message {String} - 信息
@@ -55,9 +65,9 @@ export default {
             </div>
             <div class="message-info">
                 <div>
-                    [{{ $t("components.UserMessageCard.earthOnline") }}]
+                    [{{ t("components.UserMessageCard.earthOnline") }}]
                     -
-                    [{{ $t("components.UserMessageCard.players") }}]
+                    [{{ t("components.UserMessageCard.players") }}]
                     -
                     {{ formatTimestamp(message.timestamp) }}
                 </div>

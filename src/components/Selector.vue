@@ -1,4 +1,6 @@
 <script>
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+
 export default {
 	name: "Selector",
 	props: {
@@ -37,6 +39,15 @@ export default {
 		}
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 切换列表
 		 */
@@ -84,7 +95,7 @@ export default {
 			if (!title) return ''
 			if (title.startsWith("i18n:")) {
 				const I18N_KEY = title.slice(5)
-				return this.$t(I18N_KEY)
+				return this.t(I18N_KEY)
 			}
 			return title
 		},
@@ -124,7 +135,7 @@ export default {
 			</template>
 			<div v-else class="loading-indicator">
 				<div class="loading-spinner"></div>
-				<span>{{ $t("components.Selector.loading") }}</span>
+				<span>{{ t("components.Selector.loading") }}</span>
 			</div>
 		</div>
 		<transition :name="dropdownDirection === 'bottom' ? 'slide-down' : 'slide-up'">

@@ -2,6 +2,7 @@
 import {defineComponent} from "vue"
 import EventBus from "@/services/EventBus"
 import {useRoute} from "vue-router"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default defineComponent({
 	name: "HomeSidebar",
@@ -29,6 +30,15 @@ export default defineComponent({
 		EventBus.off("[update] chatListUpdate", this.chatListGet)
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 侧边栏展开收起
 		 */
@@ -75,7 +85,7 @@ export default defineComponent({
 				this.chatList = GROUPED_CHATS.sort((a, b) => b.timestamp - a.timestamp)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表获取失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.HomeSidebar.toast.errorGettingChatList")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.HomeSidebar.toast.errorGettingChatList")}`)
 			}
 		},
 		/**
@@ -107,14 +117,14 @@ export default defineComponent({
 		async deleteChat(key) {
 			try {
 				await this.$DB.chats.delete(key)
-				this.$toast.success(`[${this.name}] ${this.$t("components.HomeSidebar.toast.successDeletingChatList")}`)
+				this.$toast.success(`[${this.name}] ${this.t("components.HomeSidebar.toast.successDeletingChatList")}`)
 				await this.chatListGet()
 				if (this.route.params.key === key) {
 					this.$router.push("/")
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表删除失败`, error)
-				this.$toast.error(`[${this.name}] ${this.$t("components.HomeSidebar.toast.errorDeletingChatList")}`)
+				this.$toast.error(`[${this.name}] ${this.t("components.HomeSidebar.toast.errorDeletingChatList")}`)
 			}
 		}
 	}
@@ -126,12 +136,12 @@ export default defineComponent({
 		<div class="sidebar-top">
 			<div class="sidebar-top-logo"></div>
 			<p>ElakeAI</p>
-			<router-link to="/" class="sidebar-new" :title="$t('components.HomeSidebar.function.new')">
+			<router-link to="/" class="sidebar-new" :title="t('components.HomeSidebar.function.new')">
 				<svg class="icon">
 					<use xlink:href="#icon-new"></use>
 				</svg>
 			</router-link>
-			<div class="sidebar-stow" :title="$t('components.HomeSidebar.function.stow')" @click="sidebarSwitch">
+			<div class="sidebar-stow" :title="t('components.HomeSidebar.function.stow')" @click="sidebarSwitch">
 				<svg class="icon">
 					<use xlink:href="#icon-stow"></use>
 				</svg>
@@ -146,12 +156,12 @@ export default defineComponent({
 				@click="openChat(chatItem.key)">
 				<p class="title" :title="chatItem.title">{{ chatItem.title }}</p>
 				<div class="bottom">
-					<p>{{ $t("components.HomeSidebar.numberOfConversations", {num: chatItem.length}) }}</p>
+					<p>{{ t("components.HomeSidebar.numberOfConversations", {num: chatItem.length}) }}</p>
 					<p>{{ formatTimestamp(chatItem.timestamp) }}</p>
 				</div>
 				<div
 					class="conversation-delete"
-					:title="$t('components.HomeSidebar.function.delete')"
+					:title="t('components.HomeSidebar.function.delete')"
 					@click.stop="deleteChat(chatItem.key)">
 					<svg class="icon">
 						<use xlink:href="#icon-delete"></use>
@@ -159,38 +169,38 @@ export default defineComponent({
 				</div>
 			</div>
 		</div>
-		<div class="sidebar-preset" :title="$t('components.HomeSidebar.function.preset')">
+		<div class="sidebar-preset" :title="t('components.HomeSidebar.function.preset')">
 			<svg class="icon">
 				<use xlink:href="#icon-preset"></use>
 			</svg>
-			<p>{{ $t("components.HomeSidebar.function.preset") }}</p>
+			<p>{{ t("components.HomeSidebar.function.preset") }}</p>
 		</div>
-		<router-link to="/options" class="sidebar-setup" :title="$t('components.HomeSidebar.function.options')">
+		<router-link to="/options" class="sidebar-setup" :title="t('components.HomeSidebar.function.options')">
 			<svg class="icon">
 				<use xlink:href="#icon-setup"></use>
 			</svg>
-			<p>{{ $t("components.HomeSidebar.function.options") }}</p>
+			<p>{{ t("components.HomeSidebar.function.options") }}</p>
 		</router-link>
 	</div>
 	<div class="sidebar-container sidebar-stow-container" v-else>
 		<div class="sidebar-top-logo"></div>
-		<router-link to="/" class="sidebar-new" :title="$t('components.HomeSidebar.function.new')">
+		<router-link to="/" class="sidebar-new" :title="t('components.HomeSidebar.function.new')">
 			<svg class="icon">
 				<use xlink:href="#icon-new"></use>
 			</svg>
 		</router-link>
-		<div class="sidebar-expand" :title="$t('components.HomeSidebar.function.expand')" @click="sidebarSwitch">
+		<div class="sidebar-expand" :title="t('components.HomeSidebar.function.expand')" @click="sidebarSwitch">
 			<svg class="icon">
 				<use xlink:href="#icon-expand"></use>
 			</svg>
 		</div>
-		<div class="sidebar-preset" :title="$t('components.HomeSidebar.function.preset')">
+		<div class="sidebar-preset" :title="t('components.HomeSidebar.function.preset')">
 			<svg class="icon">
 				<use xlink:href="#icon-preset"></use>
 			</svg>
 		</div>
 		<div></div>
-		<router-link to="/options" class="sidebar-setup" :title="$t('components.HomeSidebar.function.options')">
+		<router-link to="/options" class="sidebar-setup" :title="t('components.HomeSidebar.function.options')">
 			<svg class="icon">
 				<use xlink:href="#icon-setup"></use>
 			</svg>

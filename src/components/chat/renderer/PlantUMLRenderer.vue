@@ -6,6 +6,7 @@ import TabsTab from "@/components/TabsTab.vue"
 import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "PlantUMLRenderer",
@@ -36,6 +37,15 @@ export default {
 		this.renderPlantUML()
 	},
 	methods: {
+		/**
+		 * 翻译
+		 * @param key {String} - 键
+		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+		 * @returns {String} - 翻译后的文本
+		 */
+		t(key, params = {}) {
+			return i18nRegistry.translate(key, params)
+		},
 		/**
 		 * 渲染PlantUML
 		 */
@@ -81,10 +91,10 @@ export default {
 	<div class="plantuml-renderer">
 		<Tabs v-model="activeTab">
 			<TabsTab name="preview">
-				<template #label>{{ $t("components.PlantUMLRenderer.preview") }}</template>
+				<template #label>{{ t("components.PlantUMLRenderer.preview") }}</template>
 				<div ref="containerRef">
 					<div v-if="error" class="plantuml-error">
-						{{ $t("components.PlantUMLRenderer.renderError") }}
+						{{ t("components.PlantUMLRenderer.renderError") }}
 						<br>
 						{{ error }}
 					</div>
@@ -139,7 +149,7 @@ export default {
 				</div>
 			</TabsTab>
 			<TabsTab name="code">
-				<template #label>{{ $t("components.PlantUMLRenderer.code") }}</template>
+				<template #label>{{ t("components.PlantUMLRenderer.code") }}</template>
 				<CodeBlockRenderer :code="code" language="plantuml"/>
 			</TabsTab>
 		</Tabs>
