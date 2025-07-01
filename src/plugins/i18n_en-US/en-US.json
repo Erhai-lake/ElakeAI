@@ -271,7 +271,24 @@
 			"defaultChatSettings": "Default Chat Settings",
 			"importExport": "Import/Export",
 			"hazardousOperations": "Hazardous Operations",
-			"plugins": "插件"
+			"plugins": "Plugins"
+		},
+		"PluginsView": {
+			"toast": {
+				"enableSuccess": "Plugin enabled successfully",
+				"disableSuccess": "Plugin disabled successfully",
+				"statusUpdateError": "Failed to update plugin status"
+			},
+			"systemPlugins": "System Plugins",
+			"thirdPartyPlugins": "Third-Party Plugins",
+			"pluginEnable": "Enable",
+			"pluginName": "Plugin Name",
+			"pluginAuthor": "Plugin Author",
+			"pluginDescription": "Plugin Description",
+			"pluginVersion": "Plugin Version",
+			"noPlugins": "No plugins available",
+			"thirdPartyPluginsTip": "Third-party plugins may pose security risks. Please use with caution!",
+			"envProhibition": "Third-party plugins are not allowed in browser environments"
 		}
 	}
 }
