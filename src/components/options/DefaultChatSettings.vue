@@ -8,6 +8,12 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 export default {
 	name: "DefaultChatSettings",
 	inject: ["$DB"],
+	props: {
+		save: {
+			type: Boolean,
+			default: true
+		}
+	},
 	components: {Selector, Button},
 	data() {
 		return {
@@ -15,17 +21,17 @@ export default {
 			saved: false,
 			// 平台
 			platform: {
-				list: null,
+				list: [],
 				selected: null,
 			},
 			// Key
 			keyPools: {
-				list: null,
+				list: [],
 				selected: null,
 			},
 			// 模型
 			model: {
-				list: null,
+				list: [],
 				selected: null,
 			},
 			// 当前模型请求
@@ -44,7 +50,6 @@ export default {
 			if (!newVal) return
 			this.selectPlatform(newVal)
 		},
-		// 监听Key变化
 		"keyPools.selected"(newVal) {
 			if (!newVal) return
 			this.selectKey(newVal)
@@ -62,10 +67,10 @@ export default {
 	async created() {
 		// 初始化平台列表
 		await this.loadPlatform()
-		// 初始化Key池
-		await this.loadKeyPools()
 		// 获取设置
 		await this.restoreSettings()
+		// 初始化Key池
+		await this.loadKeyPools()
 	},
 	methods: {
 		/**
@@ -108,7 +113,6 @@ export default {
 			if (!this.saved) {
 				this.keyPools.selected = []
 			}
-			this.keyPools.list = []
 			try {
 				// const DEFAULT = {key: "auto", title: "自动"}
 				const KEYS_DATA = await this.$DB.apiKeys
@@ -120,13 +124,14 @@ export default {
 				if (this.currentKeyPoolRequest !== currentRequestId) return
 				this.keyPools.list = [
 					// DEFAULT,
-					...KEYS_DATA.map(key => ({key: key.key, title: key.remark}))
+					...KEYS_DATA.map(key => ({key: key.key, title: key.remark})) || []
 				]
 				if (this.keyPools.list.length === 0) return
 				if (!this.saved) {
 					this.platform.selected = this.keyPools.list[0]
 				}
 			} catch (error) {
+				this.keyPools.list = []
 				this.$log.error(`[${this.name}] 加载Key池失败`, error)
 				this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
 			}
@@ -149,6 +154,7 @@ export default {
 		updateSelectedPlatformList(newVal) {
 			this.platform.selected = newVal
 			this.saved = false
+			this.$emit("update:selectedPlatformList", newVal)
 		},
 		/**
 		 * 更新Key所选项
@@ -156,6 +162,7 @@ export default {
 		 */
 		updateSelectedKey(newVal) {
 			this.keyPools.selected = newVal
+			this.$emit("update:selectedKey", newVal)
 		},
 		/**
 		 * 更新模型所选项
@@ -163,6 +170,7 @@ export default {
 		 */
 		updateSelectedModel(newVal) {
 			this.model.selected = newVal
+			this.$emit("update:selectedModel", newVal)
 		},
 		/**
 		 * 选择平台
@@ -344,7 +352,7 @@ export default {
 			uniqueKey="title"
 			@update:selectorSelected="updateSelectedModel"/>
 		<!-- 保存按钮 -->
-		<Button @click="saveDefaultChatSettings">
+		<Button v-if="save" @click="saveDefaultChatSettings">
 			{{ t("components.DefaultChatSettings.saveSettings") }}
 		</Button>
 	</div>

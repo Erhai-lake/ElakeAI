@@ -1,44 +1,27 @@
 <script>
 import {defineComponent, ref} from "vue"
-import ModelList from "@/assets/data/ModelList.json"
 import EventBus from "@/services/EventBus"
 import Selector from "@/components/Selector.vue"
 import {useRoute} from "vue-router"
-import APIManager from "@/services/api/APIManager"
+import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 
 export default defineComponent({
 	name: "AIInput",
-	components: {Selector},
+	components: {DefaultChatSettings, Selector},
 	inject: ["$DB"],
 	data() {
 		return {
 			name: "AIInput",
 			route: useRoute(),
-			selector: {
-				saved: false,
-				// 模型列表
-				largeModelList: ModelList,
-				// Key列表
-				keyPools: [],
-				// 模型列表
-				modelList: [],
-				// 选中的模型
-				selectedLargeModel: null,
-				// 选中的Key
-				selectedKey: null,
-				// 选中的模型
-				selectedModel: null,
-				// 当前模型请求
-				currentModelRequest: null,
-				// 当前Key请求
-				currentKeyRequest: null,
-				// 加载状态
-				loading: {
-					keys: false,
-					models: false
-				}
-			},
+			saved: false,
+			// 平台
+			platformSelected: null,
+			// Key
+			keyPoolsSelected: null,
+			// 模型
+			modelSelected: null,
 			// 输入框
 			ChatInput: "",
 			// 联网搜索状态
@@ -52,23 +35,9 @@ export default defineComponent({
 		"route.path"() {
 			this.focusInput()
 		},
-		// 监听大模型变化
-		"selector.selectedLargeModel"(newVal) {
-			this.selectLargeModel(newVal)
-		},
-		// 监听Key变化
-		"selector.selectedKey"(newVal) {
-			this.selectKey(newVal)
-		}
 	},
 	beforeDestroy() {
 		this.cancelAllRequests()
-	},
-	async created() {
-		// 获取设置
-		await this.restoreSettings()
-		// 初始化Key池
-		await this.loadKeyPools()
 	},
 	setup() {
 		const textareaRef = ref(null)
@@ -103,6 +72,27 @@ export default defineComponent({
 			return i18nRegistry.translate(key, params)
 		},
 		/**
+		 * 更新平台所选项
+		 * @param newVal {Object} - 新的平台选项
+		 */
+		updateSelectedPlatformList(newVal) {
+			this.platformSelected = newVal
+		},
+		/**
+		 * 更新Key所选项
+		 * @param newVal {Object} - 新的Key选项
+		 */
+		updateSelectedKey(newVal) {
+			this.keyPoolsSelected = newVal
+		},
+		/**
+		 * 更新模型所选项
+		 * @param newVal {Object} - 新的模型选项
+		 */
+		updateSelectedModel(newVal) {
+			this.modelSelected = newVal
+		},
+		/**
 		 * 输入框获取焦点
 		 */
 		focusInput() {
@@ -111,189 +101,6 @@ export default defineComponent({
 					this.textareaRef.focus()
 				}
 			})
-		},
-		/**
-		 * 取消所有请求
-		 */
-		cancelAllRequests() {
-			if (this.currentModelRequest?.cancel) {
-				this.currentModelRequest.cancel()
-			}
-			if (this.currentKeyRequest?.cancel) {
-				this.currentKeyRequest.cancel()
-			}
-		},
-		/**
-		 * 更新大模型所选项
-		 * @param newVal {Object} - 新的大模型
-		 */
-		updateSelectedLargeModel(newVal) {
-			this.selector.selectedLargeModel = newVal
-			this.selector.saved = false
-		},
-		/**
-		 * 更新Key所选项
-		 * @param newVal {Object} - 新的Key
-		 */
-		updateSelectedKey(newVal) {
-			this.selector.selectedKey = newVal
-		},
-		/**
-		 * 更新模型所选项
-		 * @param newVal {Object} - 新的模型
-		 */
-		updateSelectedModel(newVal) {
-			this.selector.selectedModel = newVal
-		},
-		/**
-		 * 选择大模型
-		 * @param newModel {Object} - 新的大模型
-		 */
-		async selectLargeModel(newModel) {
-			this.cancelAllRequests()
-			const requestContext = {cancelled: false}
-			this.currentKeyRequest = {
-				cancel: () => {
-					requestContext.cancelled = true
-				}
-			}
-			try {
-				this.selector.loading.keys = true
-				const keys = await this.fetchKeysForModel(newModel.title)
-
-				if (requestContext.cancelled) return
-
-				this.selector.keyPools = keys
-				this.selector.selectedKey = keys[0] || null
-				this.selector.loading.keys = false
-			} catch (error) {
-				if (!requestContext.cancelled) {
-					this.$log.error(`[${this.name}] 加载Key池错误`, error)
-					this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.loadKeyPoolError")}`)
-				}
-			} finally {
-				this.selector.loading.keys = false
-			}
-		},
-		/**
-		 * 选择Key
-		 * @param newKey {Object} - 新的Key
-		 */
-		async selectKey(newKey) {
-			if (!newKey?.key) return
-			this.cancelAllRequests()
-			const requestContext = {cancelled: false}
-			this.currentModelRequest = {
-				cancel: () => {
-					requestContext.cancelled = true
-				}
-			}
-			try {
-				this.selector.loading.models = true
-				const models = await this.fetchModelsForKey(newKey.key)
-				if (requestContext.cancelled) return
-				this.selector.modelList = models
-				if (!this.selector.saved) {
-					this.selector.selectedModel = models[0] || null
-				}
-			} catch (error) {
-				if (!requestContext.cancelled) {
-					this.$log.error(`[${this.name}] 加载模型失败`, error)
-					this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.loadModelError")}`)
-				}
-			} finally {
-				this.selector.loading.models = false
-			}
-		},
-		/**
-		 * 获取模型的Key
-		 * @param modelName {string} - 模型名称
-		 */
-		async fetchKeysForModel(modelName) {
-			const keys = await this.$DB.apiKeys
-				.where("model")
-				.equals(modelName)
-				.and(key => key.enabled)
-				.toArray()
-
-			return keys.map(key => ({
-				key: key.key,
-				title: key.remark || key.key
-			}))
-		},
-		/**
-		 * 获取Key的模型
-		 * @param key {string} - Key
-		 */
-		async fetchModelsForKey(key) {
-			const KEY_DATA = await this.$DB.apiKeys.get(key)
-			const RESPONSE = await APIManager.execute(KEY_DATA.model, "models", {apiKey: key})
-			if (RESPONSE.error) {
-				this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE)
-				this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
-			}
-			const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
-			return UNIQUE_MODELS.map(model => ({title: model}))
-		},
-		/**
-		 * 加载Key池
-		 */
-		async loadKeyPools() {
-			const currentRequestId = Symbol()
-			this.currentKeyPoolRequest = currentRequestId
-			if (!this.selector.saved) {
-				this.selector.selectedKey = null
-			}
-			this.selector.keyPools = []
-			try {
-				// const DEFAULT = {key: "auto", title: "自动"}
-				const KEYS_DATA = await this.$DB.apiKeys
-					.where("model")
-					.equals(this.selector.selectedLargeModel.title)
-					.and(key => key.enabled)
-					.toArray()
-				// 检查是否还是当前有效的请求
-				if (this.currentKeyPoolRequest !== currentRequestId) return
-				this.selector.keyPools = [
-					// DEFAULT,
-					...KEYS_DATA.map(key => ({key: key.key, title: key.remark}))
-				]
-				if (this.selector.keyPools.length === 0) return
-				if (!this.selector.saved) {
-					this.selector.selectedKey = this.selector.keyPools[0]
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 加载Key池失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.loadKeyPoolError")}`)
-			}
-		},
-		/**
-		 * 获取设置
-		 */
-		async restoreSettings() {
-			try {
-				const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.configs.get("DefaultChatSettings")
-				if (DEFAULT_CHAT_SETTINGS_DATA) {
-					this.selector.selectedLargeModel = this.selector.largeModelList.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.largeModel)
-					const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
-					if (!KEY_DATA) {
-						this.selector.selectedKey = null
-						this.selector.selectedModel = null
-						return
-					}
-					this.selector.selectedKey = {key: KEY_DATA.key, title: KEY_DATA.remark}
-					this.selector.selectedModel = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
-					this.selector.saved = true
-				} else {
-					this.selector.selectedLargeModel = this.selector.largeModelList[0]
-					this.selector.selectedKey = null
-					this.selector.selectedModel = null
-					this.selector.saved = false
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.getDefaultSettingsError")}`)
-			}
 		},
 		/**
 		 * 调整输入框高度
@@ -322,32 +129,33 @@ export default defineComponent({
 				newChatKey = await this.newChat(CONTENT)
 			}
 			// 发送消息
-			try {
-				this.stopStatus = true
-				const RESPONSE = await APIManager.execute(this.selector.selectedLargeModel.title, "chat", {
-					apiKey: this.selector.selectedKey.key,
-					chatKey: newChatKey,
-					content: CONTENT.trim(),
-					model: this.selector.selectedModel.title,
-				})
-				if (RESPONSE.error) {
-					this.ChatInput = CONTENT
-					await this.$nextTick(() => {
-						this.adjustTextareaHeight()
-					})
-					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
-					this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
-				}
-			} catch (error) {
-				this.ChatInput = CONTENT
-				await this.$nextTick(() => {
-					this.adjustTextareaHeight()
-				})
-				this.$log.error(`[${this.name}] 发送消息失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
-			} finally {
-				this.stopStatus = false
-			}
+			// TODO: 发生消息API
+			// try {
+			// 	this.stopStatus = true
+			// 	const RESPONSE = await APIManager.execute(this.selector.selectedLargeModel.title, "chat", {
+			// 		apiKey: this.selector.selectedKey.key,
+			// 		chatKey: newChatKey,
+			// 		content: CONTENT.trim(),
+			// 		model: this.selector.selectedModel.title,
+			// 	})
+			// 	if (RESPONSE.error) {
+			// 		this.ChatInput = CONTENT
+			// 		await this.$nextTick(() => {
+			// 			this.adjustTextareaHeight()
+			// 		})
+			// 		this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
+			// 		this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
+			// 	}
+			// } catch (error) {
+			// 	this.ChatInput = CONTENT
+			// 	await this.$nextTick(() => {
+			// 		this.adjustTextareaHeight()
+			// 	})
+			// 	this.$log.error(`[${this.name}] 发送消息失败`, error)
+			// 	this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
+			// } finally {
+			// 	this.stopStatus = false
+			// }
 		},
 		/**
 		 * 新的聊天
@@ -406,14 +214,15 @@ export default defineComponent({
 		 * 停止
 		 */
 		async stop() {
-			try {
-				await APIManager.execute(this.selector.selectedLargeModel.title, "stop")
-				this.stopStatus = false
-			} catch (error) {
-				this.stopStatus = true
-				this.$log.error(`[${this.name}] 停止失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
-			}
+			// TODO: 停止消息API
+			// try {
+			// 	await APIManager.execute(this.selector.selectedLargeModel.title, "stop")
+			// 	this.stopStatus = false
+			// } catch (error) {
+			// 	this.stopStatus = true
+			// 	this.$log.error(`[${this.name}] 停止失败`, error)
+			// 	this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
+			// }
 		},
 		/**
 		 * 处理换行
@@ -493,26 +302,11 @@ export default defineComponent({
 					<use xlink:href="#icon-webSearch"></use>
 				</svg>
 			</label>
-			<!-- 大模型选择 -->
-			<Selector
-				:selectorSelected="selector.selectedLargeModel || {}"
-				:selectorList="selector.largeModelList"
-				uniqueKey="title"
-				@update:selectorSelected="updateSelectedLargeModel"/>
-			<!-- Key选择 -->
-			<Selector
-				:selectorSelected="selector.selectedKey || {}"
-				:selectorList="selector.keyPools"
-				:loading="selector.loading.keys"
-				uniqueKey="key"
-				@update:selectorSelected="updateSelectedKey"/>
-			<!-- 模型选择 -->
-			<Selector
-				:selectorSelected="selector.selectedModel || {}"
-				:selectorList="selector.modelList"
-				:loading="selector.loading.models"
-				uniqueKey="title"
-				@update:selectorSelected="updateSelectedModel"/>
+			<DefaultChatSettings
+				:save="false"
+				@update:selectedPlatformList="updateSelectedPlatformList"
+				@update:selectedKey="updateSelectedKey"
+				@update:selectedModel="updateSelectedModel"/>
 		</div>
 		<!--聊天输入框-->
 		<div class="Input">

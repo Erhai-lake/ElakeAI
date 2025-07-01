@@ -92,7 +92,7 @@ export default {
 		 * @returns {String} - 标题
 		 */
 		getTitle(title) {
-			if (!title) return ''
+			if (!title) return ""
 			if (title.startsWith("i18n:")) {
 				const I18N_KEY = title.slice(5)
 				return this.t(I18N_KEY)
@@ -123,7 +123,7 @@ export default {
 </script>
 
 <template>
-	<div class="selector" ref="selector">
+	<div class="selector">
 		<div
 			class="selector-selected"
 			:class="{'open-bottom': isOpen && dropdownDirection === 'bottom', 'open-top': isOpen && dropdownDirection === 'top', 'loading': showLoading}"
