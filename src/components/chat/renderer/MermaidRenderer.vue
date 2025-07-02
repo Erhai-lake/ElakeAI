@@ -67,6 +67,14 @@ export default {
 						theme: "default"
 					})
 				}
+				// 阻止这个玩意画炸弹, nnd
+				try {
+					await MERMAID.parse(this.code)
+				} catch (parseError) {
+					this.error = parseError.message
+					this.$log.error(`[${this.name}] Mermaid语法错误`, parseError)
+					return
+				}
 				const ID = "mermaid-" + Math.random().toString(36).slice(2, 11)
 				const {svg} = await MERMAID.render(ID, this.code)
 				const CONTAINER = this.$refs.containerRef
