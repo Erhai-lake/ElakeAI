@@ -275,6 +275,7 @@
 		},
 		"PluginsView": {
 			"toast": {
+				"disabledTip": "Plugins marked as disabled are not allowed to be enabled!",
 				"enableSuccess": "Plugin enabled successfully",
 				"disableSuccess": "Plugin disabled successfully",
 				"statusUpdateError": "Failed to update plugin status"

@@ -132,6 +132,11 @@ export default {
 		 * @param plugin
 		 */
 		async togglePluginEnable(plugin) {
+			if (plugin.disabled) {
+				this.$log.warn(`[${this.name}] 标记为 disabled 的插件被禁止启用! ${plugin.name}`)
+				this.$toast.warning(`[${this.name}] ${this.t("views.PluginsView.toast.disabledTip")}`)
+				return
+			}
 			try {
 				const NEW_STATUS = !plugin.enabled
 				await updatePluginEnabled(plugin.uuid, NEW_STATUS)
@@ -139,7 +144,7 @@ export default {
 				await initEnabledPlugins()
 				await this.loadPlugInList()
 			} catch (error) {
-				this.$log.error(`[${this.name}] 状态更新失败`, error)
+				this.$log.error(`[${this.name}] 状态更新失败 ${plugin.name}`, error)
 				this.$toast.error(`[${this.name}] ${this.t("views.PluginsView.toast.statusUpdateError")}`)
 			}
 		}
@@ -191,13 +196,18 @@ export default {
 					<tr
 						v-for="plugin in system.plugins"
 						:key="plugin.uuid"
-						@click="toggleRowSelectionSystem(plugin.uuid)"
-						:class="{ 'selected-row': system.operationSelection.includes(plugin.uuid) }">
+						:title="plugin.disabled ? t('views.PluginsView.toast.disabledTip') : ''"
+						@click="!plugin.disabled && toggleRowSelectionSystem(plugin.uuid)"
+						:class="{
+							'selected-row': system.operationSelection.includes(plugin.uuid),
+							'disabled-row': plugin.disabled
+						}">
 						<td>
 							<label>
 								<input type="checkbox"
 									   :value="plugin.uuid"
 									   v-model="system.operationSelection"
+									   :disabled="plugin.disabled"
 									   @click.stop>
 								<span class="custom-checkbox"></span>
 							</label>
@@ -207,6 +217,7 @@ export default {
 								<input
 									type="checkbox"
 									:checked="plugin.enabled"
+									:disabled="plugin.disabled"
 									@change="togglePluginEnable(plugin)">
 								<span class="custom-checkbox"></span>
 							</label>
@@ -355,7 +366,6 @@ export default {
 	}
 
 	.selected-row {
-		--Active-Background-Color: rgba(107, 130, 145, 0.5);
 		color: var(--text-color);
 		background-color: var(--Active-Background-Color);
 
@@ -368,6 +378,17 @@ export default {
 					background-color: var(--background-color-anti);
 				}
 			}
+		}
+	}
+
+	.disabled-row {
+		opacity: 0.5;
+		cursor: not-allowed;
+		pointer-events: none;
+
+		&:hover {
+			color: var(--text-color);
+			background-color: transparent;
 		}
 	}
 }

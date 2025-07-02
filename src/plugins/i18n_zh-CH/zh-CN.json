@@ -275,6 +275,7 @@
 		},
 		"PluginsView": {
 			"toast": {
+				"disabledTip": "标记为 disabled 的插件被禁止启用!",
 				"enableSuccess": "启用插件成功",
 				"disableSuccess": "禁用插件成功",
 				"statusUpdateError": "状态更新失败"
