@@ -180,11 +180,11 @@ export default {
 								<span class="custom-checkbox"></span>
 							</label>
 						</th>
-						<th>{{ t("views.PluginsView.pluginEnable") }}</th>
-						<th>{{ t("views.PluginsView.pluginName") }}</th>
-						<th>{{ t("views.PluginsView.pluginAuthor") }}</th>
-						<th>{{ t("views.PluginsView.pluginDescription") }}</th>
-						<th>{{ t("views.PluginsView.pluginVersion") }}</th>
+						<th>{{ t("views.PluginsView.info.enabled") }}</th>
+						<th>{{ t("views.PluginsView.info.name") }}</th>
+						<th>{{ t("views.PluginsView.info.author") }}</th>
+						<th>{{ t("views.PluginsView.info.description") }}</th>
+						<th>{{ t("views.PluginsView.info.version") }}</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -242,11 +242,12 @@ export default {
 								<span class="custom-checkbox"></span>
 							</label>
 						</th>
-						<th>{{ t("views.PluginsView.pluginEnable") }}</th>
-						<th>{{ t("views.PluginsView.pluginName") }}</th>
-						<th>{{ t("views.PluginsView.pluginAuthor") }}</th>
-						<th>{{ t("views.PluginsView.pluginDescription") }}</th>
-						<th>{{ t("views.PluginsView.pluginVersion") }}</th>
+						<th>{{ t("views.PluginsView.info.enabled") }}</th>
+						<th>{{ t("views.PluginsView.info.logo") }}</th>
+						<th>{{ t("views.PluginsView.info.name") }}</th>
+						<th>{{ t("views.PluginsView.info.author") }}</th>
+						<th>{{ t("views.PluginsView.info.description") }}</th>
+						<th>{{ t("views.PluginsView.info.version") }}</th>
 					</tr>
 					</thead>
 					<tbody>

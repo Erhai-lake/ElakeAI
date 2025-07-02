@@ -285,13 +285,15 @@
 				"platform": "Platform",
 				"i18n": "Language Pack"
 			},
+			"info": {
+				"enabled": "Enable",
+				"name": "Name",
+				"author": "Author",
+				"description": "DescriptionDescription",
+				"version": "Version"
+			},
 			"systemPlugins": "System Plugins",
 			"thirdPartyPlugins": "Third-Party Plugins",
-			"pluginEnable": "Enable",
-			"pluginName": "Plugin Name",
-			"pluginAuthor": "Plugin Author",
-			"pluginDescription": "Plugin Description",
-			"pluginVersion": "Plugin Version",
 			"noPlugins": "No plugins available",
 			"thirdPartyPluginsTip": "Third-party plugins may pose security risks. Please use with caution!",
 			"envProhibition": "Third-party plugins are not allowed in browser environments"
