@@ -7,6 +7,7 @@ import {PublicClass} from "@/services/plugin/api/PublicClass"
 import axios from "axios"
 import dexie from "@/services/Dexie"
 import {I18nClass} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 /**
  * 插件安装成功
@@ -88,7 +89,11 @@ export async function initEnabledPlugins(appContext) {
 					// axios实例
 					axios: axios,
 					// 平台注册类
-					PlatformRegistrarClass: PlatformClass
+					PlatformRegistrarClass: PlatformClass,
+					// 通知
+					ToastClass: toastRegistry,
+					// 日志
+					logger: Logger
 				}
 			}
 
