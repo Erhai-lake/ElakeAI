@@ -3,6 +3,7 @@ import {defineComponent} from "vue"
 import EventBus from "@/services/EventBus"
 import {useRoute} from "vue-router"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default defineComponent({
 	name: "HomeSidebar",
@@ -85,7 +86,7 @@ export default defineComponent({
 				this.chatList = GROUPED_CHATS.sort((a, b) => b.timestamp - a.timestamp)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表获取失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.HomeSidebar.toast.errorGettingChatList")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.HomeSidebar.toast.errorGettingChatList")}`)
 			}
 		},
 		/**
@@ -117,14 +118,14 @@ export default defineComponent({
 		async deleteChat(key) {
 			try {
 				await this.$DB.chats.delete(key)
-				this.$toast.success(`[${this.name}] ${this.t("components.HomeSidebar.toast.successDeletingChatList")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.HomeSidebar.toast.successDeletingChatList")}`)
 				await this.chatListGet()
 				if (this.route.params.key === key) {
 					this.$router.push("/")
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表删除失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.HomeSidebar.toast.errorDeletingChatList")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.HomeSidebar.toast.errorDeletingChatList")}`)
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import {useRoute} from "vue-router"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default defineComponent({
 	name: "AIInput",
@@ -96,7 +97,7 @@ export default defineComponent({
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.components.toast.getDefaultSettingsError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.components.toast.getDefaultSettingsError")}`)
 			}
 		},
 		/**
@@ -173,7 +174,7 @@ export default defineComponent({
 						this.adjustTextareaHeight()
 					})
 					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
-					this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
+					toastRegistry.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
 				}
 			} catch (error) {
 				this.ChatInput = CONTENT
@@ -181,7 +182,7 @@ export default defineComponent({
 					this.adjustTextareaHeight()
 				})
 				this.$log.error(`[${this.name}] 发送消息失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
 			} finally {
 				this.stopStatus = false
 			}
@@ -231,7 +232,7 @@ export default defineComponent({
 					this.adjustTextareaHeight()
 				})
 				this.$log.error(`[${this.name}] 创建新聊天失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.createNewChatError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.createNewChatError")}`)
 			}
 		},
 		/**
@@ -251,7 +252,7 @@ export default defineComponent({
 			} catch (error) {
 				this.stopStatus = true
 				this.$log.error(`[${this.name}] 停止失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
 			}
 		},
 		/**

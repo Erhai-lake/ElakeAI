@@ -2,6 +2,7 @@
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "ImportExport",
@@ -98,14 +99,14 @@ export default {
 				this.apiKeys.options = await this.$DB.apiKeys.toArray()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载子选项失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToLoadSubOptions")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToLoadSubOptions")}`)
 			}
 			// 加载单选项数据
 			try {
 				if (await this.$DB.chats.count() > 0) this.singleSelection.optional.push("chats")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
 				return null
 			}
 			this.$log.info(`[${this.name}] 初始化导出完成`)
@@ -123,7 +124,7 @@ export default {
 			if (CHATS) EXPORT_DATA.chats = CHATS
 			if (Object.keys(EXPORT_DATA).length === 0) {
 				this.$log.warn(`[${this.name}] 没有数据可导出`, EXPORT_DATA)
-				this.$toast.warning(`[${this.name}] ${this.t("components.ImportExport.toast.noDataToExport")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.ImportExport.toast.noDataToExport")}`)
 				return
 			}
 			// 开始导出
@@ -146,10 +147,10 @@ export default {
 					URL.revokeObjectURL(DOWNLOAD_URL)
 				}, 100)
 				this.$log.info(`[${this.name}] 导出成功`, EXPORT_DATA)
-				this.$toast.success(`[${this.name}] ${this.t("components.ImportExport.toast.exportSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.ImportExport.toast.exportSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导出失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.exportFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.exportFailed")}`)
 			}
 		},
 		/**
@@ -169,7 +170,7 @@ export default {
 				return CONFIGS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取configs数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -190,7 +191,7 @@ export default {
 				return API_KEYS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取apiKeys数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -210,7 +211,7 @@ export default {
 				return CHATS_DATA
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取chats数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -244,7 +245,7 @@ export default {
 				this.$log.info(`[${this.name}] 解析完成`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 解析失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.parsingFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.parsingFailed")}`)
 			} finally {
 				event.target.value = ""
 			}
@@ -276,7 +277,7 @@ export default {
 				}
 				if (IMPORT_TASKS.length === 0) {
 					this.$log.warn(`[${this.name}] 没有数据可导入`, IMPORT_TASKS)
-					this.$toast.warning(`[${this.name}] ${this.t("components.ImportExport.toast.noDataToImport")}`)
+					toastRegistry.warning(`[${this.name}] ${this.t("components.ImportExport.toast.noDataToImport")}`)
 					return
 				}
 				if (!confirm(this.t("components.ImportExport.confirmImportTip"))) return
@@ -284,7 +285,7 @@ export default {
 				this.$log.info(`[${this.name}] 导入完成`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailed")}`)
 			}
 		},
 		/**
@@ -300,13 +301,13 @@ export default {
 						resolve(JSON.parse(returnData.target.result))
 					} catch (error) {
 						this.$log.error(`[${this.name}] 无效的JSON格式`, error)
-						this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.invalidJsonFormat")}`)
+						toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.invalidJsonFormat")}`)
 						reject(new Error(this.t("components.ImportExport.toast.invalidJsonFormat")))
 					}
 				}
 				reader.onerror = () => {
 					this.$log.error(`[${this.name}] 读取文件失败`, reader.error)
-					this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.fileReadError")}`)
+					toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.fileReadError")}`)
 					reject(new Error(this.t("components.ImportExport.toast.fileReadError")))
 				}
 				reader.readAsText(file)
@@ -335,7 +336,7 @@ export default {
 				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入configs数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
 			}
 		},
 		/**
@@ -357,7 +358,7 @@ export default {
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入apiKey数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
 			}
 		},
 		/**
@@ -380,7 +381,7 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入chat数据失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ImportExport.toast.importFailedSkipped")}`)
 			}
 		}
 	}

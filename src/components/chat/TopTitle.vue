@@ -1,6 +1,7 @@
 <script>
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
     name: "TopTitle",
@@ -72,11 +73,11 @@ export default {
                 const NEW_TITLE = this.editingTitle.value.trim()
                 this.title = NEW_TITLE
                 await this.$DB.chats.update(this.chatKey, {title: NEW_TITLE})
-                this.$toast.success(this.t("views.ChatView.toast.titleUpdated"))
+                toastRegistry.success(this.t("views.ChatView.toast.titleUpdated"))
                 EventBus.emit("[update] chatListUpdate")
             } catch (error) {
                 this.$log.error(`[${this.name}] 标题更新失败`, error)
-                this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
+                toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
                 this.editingTitle.value = this.title
             } finally {
                 this.editingTitle.show = false

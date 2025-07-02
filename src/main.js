@@ -9,9 +9,6 @@ import "@/assets/styles/theme.less"
 import DB from "@/services/Dexie"
 // 多语言(i18n)
 import i18n from "@/services/I18n"
-// Toast 通知
-import toastPlugin from "vue-toast-notification"
-import "vue-toast-notification/dist/theme-bootstrap.css"
 // 日志
 import Logger, { setupLogCleanup } from "@/services/Logger"
 // 插件管理
@@ -25,11 +22,6 @@ async function bootstrap() {
 		APP.use(store)
 			.use(router)
 			.use(i18n)
-			.use(toastPlugin, {
-				type: "error",
-				position: "top",
-				dismissible: false
-			})
 
 		APP.config.globalProperties.$log = Logger
 		APP.provide("$DB", DB)

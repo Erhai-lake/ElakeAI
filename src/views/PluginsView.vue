@@ -6,6 +6,7 @@ import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import Tabs from "@/components/Tabs.vue";
 import TabsTab from "@/components/TabsTab.vue";
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "PluginsView",
@@ -134,18 +135,18 @@ export default {
 		async togglePluginEnable(plugin) {
 			if (plugin.disabled) {
 				this.$log.warn(`[${this.name}] 标记为 disabled 的插件被禁止启用! ${plugin.name}`)
-				this.$toast.warning(`[${this.name}] ${this.t("views.PluginsView.toast.disabledTip")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("views.PluginsView.toast.disabledTip")}`)
 				return
 			}
 			try {
 				const NEW_STATUS = !plugin.enabled
 				await updatePluginEnabled(plugin.uuid, NEW_STATUS)
-				this.$toast.success(`[${this.name}] ${this.t(`views.PluginsView.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
+				toastRegistry.success(`[${this.name}] ${this.t(`views.PluginsView.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
 				await initEnabledPlugins()
 				await this.loadPlugInList()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败 ${plugin.name}`, error)
-				this.$toast.error(`[${this.name}] ${this.t("views.PluginsView.toast.statusUpdateError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.PluginsView.toast.statusUpdateError")}`)
 			}
 		}
 	}

@@ -7,6 +7,7 @@ import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import Log from "@/components/options/Log.vue"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
     name: "DeBUGView",
@@ -36,7 +37,7 @@ export default {
                 this.configs = await this.$DB.configs.toArray()
             } catch (error) {
                 console.error("[DeBUG View] Configs数据获取错误", error)
-                this.$toast.error("[DeBUG View] Configs数据获取错误")
+                toastRegistry.error("[DeBUG View] Configs数据获取错误")
             }
         },
         // 清空Configs数据库数据
@@ -45,10 +46,10 @@ export default {
             try {
                 await this.$DB.configs.clear()
                 await this.configsLoading()
-                this.$toast.success("Configs数据库已清空")
+                toastRegistry.success("Configs数据库已清空")
             } catch (error) {
                 console.error("[DeBUG View] Configs数据清空错误", error)
-                this.$toast.error("[DeBUG View] Configs数据清空错误")
+                toastRegistry.error("[DeBUG View] Configs数据清空错误")
             }
         },
         // 删除Configs数据
@@ -57,10 +58,10 @@ export default {
             try {
                 await this.$DB.configs.delete(item)
                 this.configs = this.configs.filter(config => config.item !== item)
-                this.$toast.success("数据删除成功")
+                toastRegistry.success("数据删除成功")
             } catch (error) {
                 console.error("[DeBUG View] Configs数据删除错误", error)
-                this.$toast.error("[DeBUG View] Configs数据删除错误")
+                toastRegistry.error("[DeBUG View] Configs数据删除错误")
             }
         },
         // 生成DEBUG聊天
@@ -164,7 +165,7 @@ export default {
             }
             EventBus.emit("[update] chatListUpdate")
             await this.chatsLoading()
-            this.$toast.success("生成完毕")
+            toastRegistry.success("生成完毕")
         },
         // 获取Chats数据库数据
         async chatsLoading() {
@@ -172,7 +173,7 @@ export default {
                 this.chats = await this.$DB.chats.toArray()
             } catch (error) {
                 console.error("[DeBUG View] Chats数据获取错误", error)
-                this.$toast.error("[DeBUG View] Chats数据获取错误")
+                toastRegistry.error("[DeBUG View] Chats数据获取错误")
             }
         },
         // 清空Chats数据库数据
@@ -182,10 +183,10 @@ export default {
                 await this.$DB.chats.clear()
                 await this.chatsLoading()
                 EventBus.emit("[update] chatListUpdate")
-                this.$toast.success("Chats数据库已清空")
+                toastRegistry.success("Chats数据库已清空")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据清空错误", error)
-                this.$toast.error("[DeBUG View] Chats数据清空错误")
+                toastRegistry.error("[DeBUG View] Chats数据清空错误")
             }
         },
         // 删除Chats数据
@@ -195,10 +196,10 @@ export default {
                 await this.$DB.chats.delete(item)
                 this.chats = this.chats.filter(chat => chat.key !== item)
                 EventBus.emit("[update] chatListUpdate")
-                this.$toast.success("数据删除成功")
+                toastRegistry.success("数据删除成功")
             } catch (error) {
                 console.error("[DeBUG View] Chats数据删除错误", error)
-                this.$toast.error("[DeBUG View] Chats数据删除错误")
+                toastRegistry.error("[DeBUG View] Chats数据删除错误")
             }
         },
         // 处理Title输入框
@@ -209,10 +210,10 @@ export default {
                 await this.$DB.chats.update(item.key, {title: NEW_VALUE})
                 item.title = NEW_VALUE
                 EventBus.emit("[update] chatListUpdate")
-                this.$toast.success("标题更新成功")
+                toastRegistry.success("标题更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 标题更新错误", error)
-                this.$toast.error("[DeBUG View] 标题更新错误")
+                toastRegistry.error("[DeBUG View] 标题更新错误")
                 event.target.value = item.title
             }
         },
@@ -225,10 +226,10 @@ export default {
                 await this.$DB.chats.update(item.key, parsedData)
                 item.data = JSON.parse(JSON.stringify(parsedData))
                 EventBus.emit("[update] chatListUpdate")
-                this.$toast.success("数据更新成功")
+                toastRegistry.success("数据更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 数据更新错误", error)
-                this.$toast.error("[DeBUG View] JSON格式错误")
+                toastRegistry.error("[DeBUG View] JSON格式错误")
                 event.target.value = JSON.stringify(item.data, null)
             }
         },
@@ -240,19 +241,11 @@ export default {
                 const parsedData = JSON.parse(RAW_VALUE)
                 await this.$DB.configs.update(item.item, parsedData)
                 item.value = JSON.parse(JSON.stringify(parsedData))
-                this.$toast.success("数据更新成功")
+                toastRegistry.success("数据更新成功")
             } catch (error) {
                 console.error("[DeBUG View] 数据更新错误", error)
-                this.$toast.error("[DeBUG View] JSON格式错误")
+                toastRegistry.error("[DeBUG View] JSON格式错误")
                 event.target.value = JSON.stringify(item.data, null)
-            }
-        },
-        // toast测试
-        toastTest(id) {
-            if (id === 1) {
-                this.$toast.clear()
-            } else {
-                this.$toast.open(this.toastOptions)
             }
         }
     }
@@ -346,56 +339,6 @@ export default {
             </template>
         </FoldingPanel>
         <ChatAIKey/>
-        <FoldingPanel :Height="500">
-            <template #Title>Toast</template>
-            <template #Content>
-                <div>
-                    <label for="message">
-                        提示信息
-                        <input type="text" v-model="toastOptions.message" id="message" style="margin: 20px 0">
-                    </label>
-                    <br>
-                    <label for="type">
-                        提示类型
-                        <select v-model="toastOptions.type" id="type">
-                            <option value="success">成功</option>
-                            <option value="error">错误</option>
-                            <option value="info">信息</option>
-                            <option value="warning">警告</option>
-                        </select>
-                    </label>
-                    <br>
-                    <br>
-                    <label for="position">
-                        提示位置
-                        <select v-model="toastOptions.position">
-                            <option value="top">顶部居中</option>
-                            <option value="top-left">顶部左</option>
-                            <option value="top-right">顶部右</option>
-                            <option value="bottom">底部居中</option>
-                            <option value="bottom-left">底部左</option>
-                            <option value="bottom-right">底部右</option>
-                        </select>
-                    </label>
-                    <br>
-                    <label for="duration">
-                        提示时间
-                        <input type="number" v-model="toastOptions.duration" id="duration" style="margin: 20px 0">
-                    </label>
-                    <br>
-                    <label for="dismissible">
-                        鼠标点击是否可以关闭
-                        <input type="checkbox" v-model="toastOptions.dismissible" id="dismissible"
-                               style="margin: 20px 0">
-                    </label>
-                </div>
-                <textarea v-text="toastOptions"/>
-                <div>
-                    <Button @click="toastTest(1)">清空</Button>
-                    <Button @click="toastTest">提示</Button>
-                </div>
-            </template>
-        </FoldingPanel>
         <FoldingPanel :Height="600">
             <template #Title>Log</template>
             <template #Content>

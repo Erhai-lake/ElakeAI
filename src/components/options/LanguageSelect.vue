@@ -1,6 +1,7 @@
 <script>
 import Selector from "@/components/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "LanguageSelect",
@@ -33,7 +34,7 @@ export default {
 			}
 		} catch (error) {
 			this.$log.error(`[${this.name}] 语言获取失败`, error)
-			this.$toast.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.getLanguageError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.getLanguageError")}`)
 		}
 	},
 	methods: {
@@ -108,7 +109,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 语言应用失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.applicationLanguageError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.applicationLanguageError")}`)
 			}
 		}
 	}

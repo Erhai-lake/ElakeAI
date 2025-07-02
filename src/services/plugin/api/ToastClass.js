@@ -1,4 +1,5 @@
 import {useToast} from "vue-toast-notification"
+import "vue-toast-notification/dist/theme-bootstrap.css"
 
 const TOAST = useToast()
 
@@ -25,7 +26,7 @@ export class ToastClass {
 	 * @param message - 消息内容
 	 */
 	success = (message) => {
-		return TOAST.success(message)
+		return this.open(message, "success")
 	}
 
 	/**
@@ -33,7 +34,7 @@ export class ToastClass {
 	 * @param message - 消息内容
 	 */
 	warning = (message) => {
-		return TOAST.warning(message)
+		return this.open(message, "warning")
 	}
 
 	/**
@@ -41,7 +42,7 @@ export class ToastClass {
 	 * @param message - 消息内容
 	 */
 	error = (message) => {
-		return TOAST.error(message)
+		return this.open(message, "error")
 	}
 
 	/**
@@ -49,7 +50,7 @@ export class ToastClass {
 	 * @param message - 消息内容
 	 */
 	info = (message) => {
-		return TOAST.info(message)
+		return this.open(message, "info")
 	}
 
 	/**

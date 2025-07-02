@@ -4,6 +4,7 @@ import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "DefaultChatSettings",
@@ -133,7 +134,7 @@ export default {
 			} catch (error) {
 				this.keyPools.list = []
 				this.$log.error(`[${this.name}] 加载Key池失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
 			}
 		},
 		/**
@@ -194,7 +195,7 @@ export default {
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载Key池失败`, error)
-					this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
+					toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
 				}
 			} finally {
 				this.loading.keys = false
@@ -224,7 +225,7 @@ export default {
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载模型失败`, error)
-					this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadModelError")}`)
+					toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadModelError")}`)
 				}
 			} finally {
 				this.loading.models = false
@@ -259,7 +260,7 @@ export default {
 			if (RESPONSE.error) {
 				// TODO: 处理错误
 				this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE)
-				this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
+				toastRegistry.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
 			}
 			const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
 			return UNIQUE_MODELS.map(model => ({title: model}))
@@ -289,7 +290,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.getDefaultSettingsError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.getDefaultSettingsError")}`)
 			}
 		},
 		/**
@@ -319,10 +320,10 @@ export default {
 						}
 					})
 				}
-				this.$toast.success(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存设置失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsError")}`)
 			}
 		}
 	}

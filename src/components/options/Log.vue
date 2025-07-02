@@ -4,6 +4,7 @@ import EventBus from "@/services/EventBus"
 import {nextTick} from "vue"
 import Selector from "@/components/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "Log",
@@ -58,7 +59,7 @@ export default {
 			this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
 		} catch (error) {
 			this.$log.error(`[${this.name}] 日志悬浮窗设置获取失败`, error)
-			this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.getLogSuspensionWindowError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.getLogSuspensionWindowError")}`)
 		}
 	},
 	methods: {
@@ -83,7 +84,7 @@ export default {
 				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载日志失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.loadError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.loadError")}`)
 			}
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
@@ -104,7 +105,7 @@ export default {
 				EventBus.emit("[update] logUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 清空日志失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.clearError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.clearError")}`)
 			}
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
@@ -164,7 +165,7 @@ export default {
 				this.isLogSuspensionWindow = !this.isLogSuspensionWindow
 			} catch (error) {
 				this.$log.error(`[${this.name}] 悬浮窗设置保存失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.saveLogSuspensionWindowError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.saveLogSuspensionWindowError")}`)
 			}
 		},
 		/**
@@ -193,10 +194,10 @@ export default {
 					document.body.removeChild(DOWNLOAD_LINK)
 					URL.revokeObjectURL(DOWNLOAD_URL)
 				}, 100)
-				this.$toast.success(`[${this.name}] ${this.t("components.Log.toast.exportSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Log.toast.exportSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导出日志失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.Log.toast.exportError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.exportError")}`)
 			}
 		}
 	}

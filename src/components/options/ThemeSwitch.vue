@@ -2,6 +2,7 @@
 import {defineComponent} from "vue"
 import Selector from "@/components/Selector.vue";
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default defineComponent({
 	name: "ThemeSelect",
@@ -47,7 +48,7 @@ export default defineComponent({
 			}
 		} catch (error) {
 			this.$log.error(`[${this.name}] 主题获取失败`, error)
-			this.$toast.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.getThemeError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.getThemeError")}`)
 		}
 	},
 	methods: {
@@ -93,7 +94,7 @@ export default defineComponent({
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 主题应用失败`, error)
-				this.$toast.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.applicationThemeError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.applicationThemeError")}`)
 			}
 		}
 	}

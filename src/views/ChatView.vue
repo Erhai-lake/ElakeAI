@@ -6,6 +6,7 @@ import UserMessageCard from "@/components/chat/UserMessageCard.vue"
 import AssistantMessageCard from "@/components/chat/AssistantMessageCard.vue"
 import TopTitle from "@/components/chat/TopTitle.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "ChatView",
@@ -142,7 +143,7 @@ export default {
 				const CHAT_DATA = await this.$DB.chats.get(chatKey)
 				// 检查ChatKey是否存在
 				if (!CHAT_DATA) {
-					this.$toast.warning(this.t("views.ChatView.toast.noChatKey"))
+					toastRegistry.warning(this.t("views.ChatView.toast.noChatKey"))
 					this.$router.push("/")
 					EventBus.emit("[update] chatListUpdate")
 					return
@@ -157,7 +158,7 @@ export default {
 				this.scrollToUpAndDownMessages("bottom")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天记录获取错误`, error)
-				this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.getChatLogError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.getChatLogError")}`)
 			}
 		},
 		/**
@@ -233,7 +234,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 标题更新错误`, error)
-				this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
 			}
 		},
 		/**
@@ -254,7 +255,7 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 消息移除错误`, error)
-				this.$toast.error(`[${this.name}] ${this.t("views.ChatView.toast.removeMessageError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.removeMessageError")}`)
 			}
 		}
 	}
