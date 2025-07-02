@@ -69,77 +69,77 @@ export default {
                 {
                     title: "各种标题测试",
                     content: "# 你好!\n\n## 你好!!\n\n### 你好!!!\n\n#### 你好!!!!\n\n##### 你好!!!!!\n\n###### 你好!!!!!!",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "文字属性测试",
                     content: "加粗: **加粗**\n\n斜体: *斜体*\n\n删除线: ~~删除线~~",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "段落测试",
                     content: "123\n456\n\n489\n123\n\n456\n\n489",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "引用测试",
                     content: "单行引用:\n\n> 单行引用\n\n多行引用:\n\n> 多行引用\n> 多行引用\n> 多行引用\n\n嵌套引用:\n\n> 嵌套引用\n> > 嵌套引用\n> > > 嵌套引用",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "列表测试",
                     content: "无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n嵌套列表\n\n* 11111\n    * 2222",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "代码行测试",
                     content: "右边的代码: `print(\"你好, 世界!\")` 这个是Python!",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "代码块测试",
                     content: "代码块测试\n\n```js\nfunction hello() {\n  console.log(\"Hello, world!\")\n}\n```\n\n这是一段JavaScript代码, lang属性写的是js",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "分割行测试",
                     content: "分割行测试\n\n***\n\n123456789",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "链接测试",
                     content: "[Markdown语法](https://markdown.com.cn \"最好的markdown教程\")\n\n<https://markdown.com.cn>",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "图片测试",
                     content: "![图片](https://flagcdn.com/cn.svg \"中国国旗\")\n\n![图片](https://img.loliapi.com/i/pc/img462.webp \"二次元\")",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "表格测试",
                     content: "| Syntax      | Description | Test Text     |\n| :---        |    :----:   |          ---: |\n| Header      | Title       | Here's this   |\n| Paragraph   | Text        | And more      |",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "任务列表测试",
                     content: "- [x] Write the press release\n- [ ] Update the website\n- [ ] Contact the media",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "Emoji测试",
                     content: "去露营了！ :tent: 很快回来。",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "数学公式测试",
                     content: "假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$\n\nKaTeX:\n\n$$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$\n\nMathJax3:\n\n$$ \\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 },
                 {
                     title: "流程图测试",
                     content: "Mermaid\n\n```mermaid\nflowchart TD;A[Christmas] -->|Get money| B(Go shopping);B --> C{Let me think};C -->|One| D[Laptop];C -->|Two| E[iPhone];C -->|Three| F[fa:fa-car Car];C --> D((This is the <br  />text<br  /> in the circle))\n```\n\n```mermaid\ngraph TD; A[开始] --> B{是否登录？}; B -- 是 --> C[进入系统]; B -- 否 --> D[跳转登录页]; D --> E[登录后返回]; E --> C\n```\n\nFlowchart\n\n```flow\nst=>start: 开始\ne=>end: 结束\nop=>operation: 输入用户名和密码\ncond=>condition: 验证成功？\nerr=>operation: 提示错误\nlogin=>operation: 跳转首页\n\nst->op->cond\ncond(yes)->login->e\ncond(no)->err->op\n```\n\n```flow\nst=>start: 开始\ne=>end: 结束\nop=>operation: 输入用户名和密码\ncond=>condition: 验证成功？\nerr=>operation: 提示错误\nlogin=>operation: 跳转首页\n\nst->op->cond\ncond(yes)->login->e\ncond(no)->err->op\n```\n\nPlantUML\n\n```plantuml\n@startuml\nskinparam backgroundColor #EEEBDC\n\nskinparam sequenceArrowColor DeepSkyBlue\nskinparam sequenceActorBorderColor DeepSkyBlueskinparam sequenceActorBorderColor DeepSkyBlue\nskinparam sequenceLifeLineBorderColor blue\nskinparam sequenceLifeLineBackgroundColor #A9DCDF\nskinparam sequenceParticipantBorderColor DeepSkyBlue\nskinparam sequenceParticipantBackgroundColor DodgerBlue\nskinparam sequenceParticipantFontName Impact\nskinparam sequenceParticipantFontSize 17\nskinparam sequenceParticipantFontColor #A9DCDF\nskinparam sequenceActorBackgroundColor aqua\nskinparam sequenceActorFontColor DeepSkyBlue\nskinparam sequenceActorFontSize 17\nskinparam sequenceActorFontName Aapex\n\nactor User\nparticipant \"First Class\" as ParticipantA\nparticipant \"Second Class\" as ParticipantB\nparticipant \"Last Class\" as ParticipantC\n\nUser -> ParticipantA: DoWork\nactivate ParticipantA\n\nParticipantA -> ParticipantB: Create Request\nactivate ParticipantBv\nParticipantB -> ParticipantC: DoWork\nactivate ParticipantC\nParticipantC --> ParticipantB: WorkDone\ndestroy ParticipantC\nParticipantB --> ParticipantA: Request Created\ndeactivate ParticipantB\n\nParticipantA --> User: Done\ndeactivate ParticipantA\n@enduml",
-                    model: {"largeModel": "ChatGPT", "model": "gpt-4o"}
+                    model: {"platform": "ChatGPT", "model": "gpt-4o"}
                 }
             ]
             for (const chat of DEBUG_CHAT) {

@@ -44,8 +44,6 @@
 			"inputTip": "Please enter your question",
 			"newChat": "New Chat",
 			"toast": {
-				"loadKeyPoolError": "Failed to load key pool",
-				"loadModelError": "Failed to load model",
 				"getDefaultSettingsError": "Failed to get default settings",
 				"sendMessageError": "Failed to send message",
 				"createNewChatError": "Failed to create new chat",

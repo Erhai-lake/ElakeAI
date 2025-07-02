@@ -1,38 +1,38 @@
-export default class StreamChatHandler {
+import {publicRegistry} from "@/services/plugin/api/PublicClass"
+import EventBus from "@/services/EventBus"
+import DB from "@/services/Dexie"
+
+export default class StreamChatHandlerClass {
 	/**
 	 * 初始化StreamChatHandler
 	 * @param {string} platform - 平台名称
-	 * @param eventBus - 事件总线
-	 * @param {Dexie} db - 数据库实例
 	 */
-	constructor(platform, eventBus, db) {
+	constructor(platform) {
 		this.platform = platform
-		this.eventBus = eventBus
-		this.db = db
 		this.abortController = null
 	}
 
 	/**
 	 * 处理流式响应
 	 * @param {Object} params - 请求参数
-	 * @param {Object} paramsData - 参数数据
 	 * @param {Response} response - 响应对象
 	 * @returns {Promise<Object>} 响应结果
 	 */
-	async handleStream(params, paramsData, response) {
+	async handleStream(params, response) {
 		const DIALOGUE_ID = crypto.randomUUID()
 		const USER_DIALOGUE_ID = crypto.randomUUID()
 
 		// 发送用户消息事件
-		this.eventBus.emit("[stream] userMessage", {
+		EventBus.emit("[stream] userMessage", {
 			id: USER_DIALOGUE_ID,
 			message: params.content
 		})
 
 		if (!response.body) {
-			return this.response(params, null, "noResponseBody")
+			return publicRegistry.response(params, null, "noResponseBody")
 		}
 
+		const API_KEY_DATA = await DB.apiKeys.get(params.apiKey)
 		const DECODER = new TextDecoder()
 		let buffer = ""
 		let reasoningMessage = ""
@@ -54,16 +54,16 @@ export default class StreamChatHandler {
 
 					const MESSAGE = LINE.replace(/^data: /, "")
 					if (MESSAGE === "[DONE]") {
-						await this.handleCompletion(params, paramsData, {
+						await this.handleCompletion(params, {
 							userMessageId: USER_DIALOGUE_ID,
 							dialogueId: DIALOGUE_ID,
 							userContent: params.content,
 							reasoning: reasoningMessage,
 							assistant: assistantMessage,
 							model: params.model,
-							largeModel: paramsData.apiKeyData.model
+							platform: API_KEY_DATA.model
 						})
-						return this.response(params, {
+						return publicRegistry.response(params, {
 							reasoning: reasoningMessage,
 							assistant: assistantMessage
 						})
@@ -74,7 +74,7 @@ export default class StreamChatHandler {
 						const UPDATED_MESSAGES = await this.handleStreamData(PARSED, {
 							dialogueId: DIALOGUE_ID,
 							model: params.model,
-							largeModel: paramsData.apiKeyData.model
+							platform: API_KEY_DATA.model
 						}, {
 							reasoningMessage,
 							assistantMessage,
@@ -85,28 +85,28 @@ export default class StreamChatHandler {
 						assistantMessage = UPDATED_MESSAGES.assistantMessage
 						streamMessage = UPDATED_MESSAGES.streamMessage
 					} catch (error) {
-						return this.response(params, null, "streamingDataParsingError")
+						return publicRegistry.response(params, null, "streamingDataParsingError")
 					}
 				}
 			}
 		} catch (error) {
-			return this.response(params, null, "streamError")
+			return publicRegistry.response(params, null, "streamError")
 		}
 	}
 
 	/**
 	 * 处理完成事件
 	 * @param {Object} params - 请求参数
-	 * @param {Object} paramsData - 参数数据
 	 * @param {Object} messageData - 消息数据
 	 * @returns {Promise<void>}
 	 */
-	async handleCompletion(params, paramsData, messageData) {
-		this.eventBus.emit("[stream] streamComplete")
+	async handleCompletion(params, messageData) {
+		EventBus.emit("[stream] streamComplete")
+		const CHAT_KEY_DATA = await DB.chats.get(params.chatKey)
 		// 保存消息到数据库
-		await this.db.chats.update(params.chatKey, {
+		await DB.chats.update(params.chatKey, {
 			data: [
-				...paramsData.chatKeyData.data,
+				...CHAT_KEY_DATA.data,
 				{
 					id: messageData.userMessageId,
 					message: {
@@ -118,7 +118,7 @@ export default class StreamChatHandler {
 				{
 					id: messageData.dialogueId,
 					model: {
-						largeModel: messageData.largeModel,
+						platform: messageData.platform,
 						model: messageData.model,
 					},
 					message: {
@@ -132,7 +132,7 @@ export default class StreamChatHandler {
 		})
 
 		// 更新聊天列表
-		this.eventBus.emit("[update] chatListUpdate")
+		EventBus.emit("[update] chatListUpdate")
 	}
 
 	/**
@@ -148,11 +148,11 @@ export default class StreamChatHandler {
 		if (parsed.choices?.[0]?.delta?.reasoning_content) {
 			UPDATED_MESSAGES.reasoningMessage += parsed.choices[0].delta.reasoning_content
 			UPDATED_MESSAGES.streamMessage = parsed.choices[0].delta.reasoning_content
-			this.eventBus.emit("[stream] streamStream", {
+			EventBus.emit("[stream] streamStream", {
 				id: ids.dialogueId,
 				reasoning: UPDATED_MESSAGES.streamMessage,
 				model: {
-					largeModel: ids.largeModel,
+					platform: ids.platform,
 					model: ids.model
 				}
 			})
@@ -161,11 +161,11 @@ export default class StreamChatHandler {
 		if (parsed.choices?.[0]?.delta?.content) {
 			UPDATED_MESSAGES.assistantMessage += parsed.choices[0].delta.content
 			UPDATED_MESSAGES.streamMessage = parsed.choices[0].delta.content
-			this.eventBus.emit("[stream] streamStream", {
+			EventBus.emit("[stream] streamStream", {
 				id: ids.dialogueId,
 				message: UPDATED_MESSAGES.streamMessage,
 				model: {
-					largeModel: ids.largeModel,
+					platform: ids.platform,
 					model: ids.model
 				}
 			})

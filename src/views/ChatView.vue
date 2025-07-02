@@ -187,7 +187,7 @@ export default {
 				this.data.data.push({
 					id: message.id,
 					model: {
-						largeModel: message.model.largeModel,
+						platform: message.model.platform,
 						model: message.model.model
 					},
 					message: {

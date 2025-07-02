@@ -12,7 +12,7 @@ import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 import MermaidRenderer from "@/components/chat/renderer/MermaidRenderer.vue"
 import FlowchartRenderer from "@/components/chat/renderer/FlowchartRenderer.vue"
 import PlantUMLRenderer from "@/components/chat/renderer/PlantUMLRenderer.vue"
-import ModelList from "@/assets/data/ModelList.json"
+import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
@@ -96,12 +96,13 @@ export default {
 		},
 		/**
 		 * 获取模型图片
-		 * @param model {String} - 模型
-		 * @returns {String} - 模型图片
+		 * @param platform {String} - 平台名称
+		 * @returns {String} - 平台图片
 		 */
-		modelImages(model) {
-			if (!model) return null
-			return ModelList.find(modelItem => modelItem.title === model)?.images || ""
+		modelImages(platform) {
+			if (!platform) return null
+			const PLATFORM = platformRegistry.getPlatform(platform)
+			return PLATFORM.info.image
 		},
 		/**
 		 * 解析内容
@@ -231,7 +232,7 @@ export default {
 			</div>
 			<div class="message-info">
 				<div>
-					[{{ message.model.largeModel }}]
+					[{{ message.model.platform }}]
 					-
 					[{{ message.model.model }}]
 					-
@@ -240,7 +241,7 @@ export default {
 				<div>{{ message.id }}</div>
 			</div>
 		</div>
-		<img :src="modelImages(message.model.largeModel)" :alt="message.model.largeModel" class="model-logo">
+		<img :src="modelImages(message.model.platform)" :alt="message.model.platform" class="model-logo">
 	</div>
 </template>
 

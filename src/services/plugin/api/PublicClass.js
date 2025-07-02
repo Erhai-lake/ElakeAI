@@ -1,4 +1,5 @@
 import axios from "axios"
+import StreamChatHandlerClass from "@/services/plugin/api/StreamChatHandlerClass"
 
 export class PublicClass {
 	constructor() {
@@ -19,6 +20,7 @@ export class PublicClass {
 			timestamp: Date.now()
 		}
 	}
+
 	/**
 	 * 创建API客户端
 	 * @param {Object} keyData - Key数据
@@ -35,6 +37,7 @@ export class PublicClass {
 			timeout: timeout
 		})
 	}
+
 	/**
 	 * 错误处理
 	 * @param {Object} error - 错误对象
@@ -70,6 +73,32 @@ export class PublicClass {
 		} catch (error) {
 			return this.response(params, null, "unknownError")
 		}
+	}
+
+	/**
+	 * 创建流聊天处理器
+	 * @param {string} platform - 平台名称
+	 */
+	streamChatHandler = (platform) => {
+		return new StreamChatHandlerClass(platform)
+	}
+
+	/**
+	 * 处理聊天错误
+	 * @param {Error} error - 错误对象
+	 * @param {Object} params - 请求参数
+	 * @returns {{data: *, error, traceability: *, timestamp: *|number}} 错误响应
+	 */
+	handleChatError = (error, params) => {
+		if (error.name === "AbortError") {
+			return this.response(params, null, "requestCancelled")
+		}
+		if (error.message.includes("Failed to fetch")) {
+			return this.response(params, null, "networkError")
+		} else if (error.message.includes("Unexpected token")) {
+			return this.response(params, null, "invalidResponse")
+		}
+		return this.response(params, null, "requestFailed")
 	}
 }
 

@@ -15,7 +15,6 @@ export default defineComponent({
 		return {
 			name: "AIInput",
 			route: useRoute(),
-			saved: false,
 			// 平台
 			platformSelected: null,
 			// Key
@@ -35,6 +34,9 @@ export default defineComponent({
 		"route.path"() {
 			this.focusInput()
 		},
+	},
+	created() {
+		this.restoreSettings()
 	},
 	beforeDestroy() {
 		this.cancelAllRequests()
@@ -70,6 +72,32 @@ export default defineComponent({
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
+		},
+		/**
+		 * 获取设置
+		 */
+		async restoreSettings() {
+			try {
+				const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.configs.get("DefaultChatSettings")
+				if (DEFAULT_CHAT_SETTINGS_DATA) {
+					this.platformSelected = {title: DEFAULT_CHAT_SETTINGS_DATA.value.platform}
+					const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+					if (!KEY_DATA) {
+						this.keyPoolsSelected = null
+						this.modelSelected = null
+						return
+					}
+					this.keyPoolsSelected = {key: KEY_DATA.key, title: KEY_DATA.remark}
+					this.modelSelected = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
+				} else {
+					this.platformSelected = null
+					this.keyPoolsSelected = null
+					this.modelSelected = null
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
+				this.$toast.error(`[${this.name}] ${this.t("components.components.toast.getDefaultSettingsError")}`)
+			}
 		},
 		/**
 		 * 更新平台所选项
@@ -129,33 +157,34 @@ export default defineComponent({
 				newChatKey = await this.newChat(CONTENT)
 			}
 			// 发送消息
-			// TODO: 发生消息API
-			// try {
-			// 	this.stopStatus = true
-			// 	const RESPONSE = await APIManager.execute(this.selector.selectedLargeModel.title, "chat", {
-			// 		apiKey: this.selector.selectedKey.key,
-			// 		chatKey: newChatKey,
-			// 		content: CONTENT.trim(),
-			// 		model: this.selector.selectedModel.title,
-			// 	})
-			// 	if (RESPONSE.error) {
-			// 		this.ChatInput = CONTENT
-			// 		await this.$nextTick(() => {
-			// 			this.adjustTextareaHeight()
-			// 		})
-			// 		this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
-			// 		this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
-			// 	}
-			// } catch (error) {
-			// 	this.ChatInput = CONTENT
-			// 	await this.$nextTick(() => {
-			// 		this.adjustTextareaHeight()
-			// 	})
-			// 	this.$log.error(`[${this.name}] 发送消息失败`, error)
-			// 	this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
-			// } finally {
-			// 	this.stopStatus = false
-			// }
+			const INSTANCE = platformRegistry.getPlatform(this.platformSelected.title)
+			try {
+				this.stopStatus = true
+				const RESPONSE = await INSTANCE.api.chat({
+					apiKey: this.keyPoolsSelected.key,
+					chatKey: newChatKey,
+					content: CONTENT.trim(),
+					model: this.modelSelected.title,
+				})
+				if (RESPONSE.error) {
+					// TODO: 处理错误
+					this.ChatInput = CONTENT
+					await this.$nextTick(() => {
+						this.adjustTextareaHeight()
+					})
+					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
+					this.$toast.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
+				}
+			} catch (error) {
+				this.ChatInput = CONTENT
+				await this.$nextTick(() => {
+					this.adjustTextareaHeight()
+				})
+				this.$log.error(`[${this.name}] 发送消息失败`, error)
+				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
+			} finally {
+				this.stopStatus = false
+			}
 		},
 		/**
 		 * 新的聊天
@@ -214,15 +243,15 @@ export default defineComponent({
 		 * 停止
 		 */
 		async stop() {
-			// TODO: 停止消息API
-			// try {
-			// 	await APIManager.execute(this.selector.selectedLargeModel.title, "stop")
-			// 	this.stopStatus = false
-			// } catch (error) {
-			// 	this.stopStatus = true
-			// 	this.$log.error(`[${this.name}] 停止失败`, error)
-			// 	this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
-			// }
+			const INSTANCE = platformRegistry.getPlatform(this.platformSelected.title)
+			try {
+				await INSTANCE.api.chatStop()
+				this.stopStatus = false
+			} catch (error) {
+				this.stopStatus = true
+				this.$log.error(`[${this.name}] 停止失败`, error)
+				this.$toast.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
+			}
 		},
 		/**
 		 * 处理换行
