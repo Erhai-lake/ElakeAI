@@ -52,23 +52,19 @@ const scanAllPlugins = async () => {
 
 /**
  * 获取已启用的插件
+ * 首次加载插件系统时, 如果未配置, 则默认启用所有插件
  * @returns {Promise<Array|*[]>}
  */
 export async function getEnabledPlugins() {
 	_cachedPlugins = null
-	const ALL_PLUGINS = await scanAllPlugins()
-	const CONFIG_DATA = await DB.configs.get("plugins")
-	// 不存在配置数据, 初始化配置数据
+	const ALL_PLUGINS = (await scanAllPlugins()).filter(p => !p.disabled)
+	let CONFIG_DATA = await DB.configs.get("plugins")
 	if (!CONFIG_DATA) {
-		await DB.configs.add({item: "plugins", value: []})
-		return ALL_PLUGINS
+		const ALL_UUIDS = ALL_PLUGINS.map(p => p.uuid)
+		await DB.configs.add({item: "plugins", value: ALL_UUIDS})
+		CONFIG_DATA = {value: ALL_UUIDS}
 	}
-	const ENABLED_UUIDS = CONFIG_DATA?.value
-	// 配置数据为空, 返回空数组
-	if (Array.isArray(ENABLED_UUIDS) && ENABLED_UUIDS.length === 0) {
-		return []
-	}
-	// 正常情况, 返回已启用的插件
+	const ENABLED_UUIDS = CONFIG_DATA.value
 	return ALL_PLUGINS.filter(p => ENABLED_UUIDS.includes(p.uuid))
 }
 
@@ -88,6 +84,12 @@ export async function getAllPlugins() {
  * @param {boolean} enabled - 是否启用
  */
 export async function updatePluginEnabled(uuid, enabled) {
+	const ALL_PLUGINS = await scanAllPlugins()
+	const TARGET_PLUGIN = ALL_PLUGINS.find(p => p.uuid === uuid)
+	if (enabled && TARGET_PLUGIN?.disabled) {
+		console.warn(`[PluginManager] 禁止启用被标记为 disabled 的插件: ${TARGET_PLUGIN.name}`)
+		return
+	}
 	const CONFIG_DATA = (await DB.configs.get("plugins"))?.value || []
 	const SET = new Set(CONFIG_DATA)
 	enabled ? SET.add(uuid) : SET.delete(uuid)

@@ -688,7 +688,6 @@ export default {
 			}
 
 			.selected-row {
-				--Active-Background-Color: rgba(107, 130, 145, 0.5);
 				color: var(--text-color);
 				background-color: var(--Active-Background-Color);
 
