@@ -1,6 +1,9 @@
 {
 	"name": "ChatGPT",
 	"author": "Erhai-lake",
+	"type": [
+		"platform"
+	],
 	"uuid": "6f16c165-25dd-432c-824e-3fed0192d506",
 	"version": "1.0.0",
 	"description": "ChatGPT 接入插件",

@@ -279,6 +279,12 @@
 				"disableSuccess": "禁用插件成功",
 				"statusUpdateError": "状态更新失败"
 			},
+			"type": {
+				"all": "全部",
+				"other": "其他",
+				"platform": "平台",
+				"i18n": "语言包"
+			},
 			"systemPlugins": "系统插件",
 			"thirdPartyPlugins": "第三方插件",
 			"pluginEnable": "启用",

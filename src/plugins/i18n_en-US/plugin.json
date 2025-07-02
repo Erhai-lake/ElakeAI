@@ -1,6 +1,9 @@
 {
 	"name": "i18n_en-US",
 	"author": "Erhai-lake",
+	"type": [
+		"i18n"
+	],
 	"uuid": "fd980c34-ae46-41fc-a262-7df6485b5095",
 	"version": "1.0.0",
 	"description": "English language package",

@@ -4,26 +4,38 @@ import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/PluginManage
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import Tabs from "@/components/Tabs.vue";
+import TabsTab from "@/components/TabsTab.vue";
 
 export default {
 	name: "PluginsView",
-	components: {FoldingPanel},
+	components: {TabsTab, Tabs, FoldingPanel},
 	data() {
 		return {
 			name: "PluginsView",
 			isElectron: isElectron(),
 			system: {
+				activeTab: "all",
 				plugins: [],
 				operationSelection: []
 			},
 			thirdParty: {
+				activeTab: "all",
 				plugins: [],
 				operationSelection: []
 			}
 		}
 	},
+	watch: {
+		"system.activeTab"(newVal) {
+			this.loadPlugInList(newVal)
+		},
+		"thirdParty.activeTab"(newVal) {
+			this.loadPlugInList(newVal)
+		}
+	},
 	created() {
-		this.loadPlugInList()
+		this.loadPlugInList("all")
 	},
 	computed: {
 		// 是否全选
@@ -52,9 +64,24 @@ export default {
 		},
 		/**
 		 * 加载插件列表
+		 * @param type {String} - 类型, 可选值: "all", "platform", "i18n", "other"
 		 */
-		async loadPlugInList() {
-			this.system.plugins = await getAllPlugins()
+		async loadPlugInList(type = "all") {
+			const KNOWN_TYPES = ["platform", "i18n"]
+			const PLUGINS = await getAllPlugins()
+			if (type === "all") {
+				this.system.plugins = PLUGINS
+				return
+			}
+			this.system.plugins = PLUGINS.filter(plugin => {
+				const TYPES = Array.isArray(plugin.type) ? plugin.type : []
+				if (type === "other") {
+					// 没有类型 或 没有与已知类型匹配的, 都归为 Other
+					return TYPES.length === 0 || !TYPES.some(t => KNOWN_TYPES.includes(t))
+				}
+				// 其他分类: 匹配 plugin.type 中是否包含当前类型
+				return TYPES.includes(type)
+			})
 		},
 		/**
 		 * 切换全选状态(系统插件)
@@ -128,6 +155,20 @@ export default {
 			</template>
 			<template #Content>
 				<div class="header"></div>
+				<Tabs v-model="system.activeTab">
+					<TabsTab name="all">
+						<template #label>{{ t("views.PluginsView.type.all") }}</template>
+					</TabsTab>
+					<TabsTab name="platform">
+						<template #label>{{ t("views.PluginsView.type.platform") }}</template>
+					</TabsTab>
+					<TabsTab name="i18n">
+						<template #label>{{ t("views.PluginsView.type.i18n") }}</template>
+					</TabsTab>
+					<TabsTab name="other">
+						<template #label>{{ t("views.PluginsView.type.other") }}</template>
+					</TabsTab>
+				</Tabs>
 				<table class="list">
 					<thead>
 					<tr>
