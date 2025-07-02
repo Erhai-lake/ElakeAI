@@ -254,7 +254,6 @@ export default {
 							</label>
 						</th>
 						<th>{{ t("views.PluginsView.info.enabled") }}</th>
-						<th>{{ t("views.PluginsView.info.logo") }}</th>
 						<th>{{ t("views.PluginsView.info.name") }}</th>
 						<th>{{ t("views.PluginsView.info.author") }}</th>
 						<th>{{ t("views.PluginsView.info.description") }}</th>
@@ -350,15 +349,15 @@ export default {
 	}
 
 	th:nth-child(3), td:nth-child(3) {
-		width: 20%;
+		width: 25%;
 	}
 
 	th:nth-child(4), td:nth-child(4) {
-		width: 25%;
+		width: 15%;
 	}
 
 	th:nth-child(5), td:nth-child(5) {
-		width: 25%;
+		width: 30%;
 	}
 
 	th:nth-child(6), td:nth-child(6) {

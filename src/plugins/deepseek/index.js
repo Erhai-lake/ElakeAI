@@ -1,6 +1,4 @@
-let PublicClass = null
-let dexie = null
-let PlatformRegistrarClass = null
+let context = null
 const PLATFORM_INFO = {
 	name: "DeepSeek",
 	image: "https://chat.deepseek.com/favicon.svg",
@@ -18,13 +16,15 @@ class DeepSeek {
 	 * @returns {Promise<Object>}
 	 */
 	balance = async (params) => {
+		const PUBLIC_CLASS = new context.api.PublicClass()
+		const DEXIE = context.api.dexie
 		try {
-			const KEY_DATA = await dexie.apiKeys.get(params.apiKey)
-			const CLIENT = PublicClass.createClient(KEY_DATA)
+			const KEY_DATA = await DEXIE.apiKeys.get(params.apiKey)
+			const CLIENT = PUBLIC_CLASS.createClient(KEY_DATA)
 			const RESPONSE = await CLIENT.get("/user/balance")
-			return PublicClass.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
+			return PUBLIC_CLASS.response(params, `${RESPONSE.data.balance_infos[0].total_balance} ${RESPONSE.data.balance_infos[0].currency}`)
 		} catch (error) {
-			return PublicClass.errorHandler(error, params)
+			return PUBLIC_CLASS.errorHandler(error, params)
 		}
 	}
 	/**
@@ -33,28 +33,28 @@ class DeepSeek {
 	 * @returns {Promise<Object>}
 	 */
 	models = async (params) => {
+		const PUBLIC_CLASS = new context.api.PublicClass()
+		const DEXIE = context.api.dexie
 		try {
-			const KEY_DATA = await dexie.apiKeys.get(params.apiKey)
-			const CLIENT = PublicClass.createClient(KEY_DATA)
+			const KEY_DATA = await DEXIE.apiKeys.get(params.apiKey)
+			const CLIENT = PUBLIC_CLASS.createClient(KEY_DATA)
 			const RESPONSE = await CLIENT.get("/models")
 			const MODELS = RESPONSE.data.data.map(model => model.id)
-			return PublicClass.response(params, MODELS)
+			return PUBLIC_CLASS.response(params, MODELS)
 		} catch (error) {
-			return PublicClass.errorHandler(error, params)
+			return PUBLIC_CLASS.errorHandler(error, params)
 		}
 	}
 }
 
 module.exports = {
 	onRegister(ctx) {
-		PublicClass = new ctx.api.PublicClass()
-		dexie = ctx.api.dexie
-		PlatformRegistrarClass = new ctx.api.PlatformRegistrarClass()
-		PlatformRegistrarClass.registerPlatform(PLATFORM_INFO, new DeepSeek(ctx))
+		context = ctx
+		const PLATFORM_REGISTRAR_CLASS = new context.api.PlatformRegistrarClass()
+		PLATFORM_REGISTRAR_CLASS.registerPlatform(PLATFORM_INFO, new DeepSeek(ctx))
 	},
 	onUnload() {
-		if (PlatformRegistrarClass) {
-			PlatformRegistrarClass.unregisterPlatform(PLATFORM_INFO.name)
-		}
+		const PLATFORM_REGISTRAR_CLASS = new context.api.PlatformRegistrarClass()
+		PLATFORM_REGISTRAR_CLASS.unregisterPlatform(PLATFORM_INFO.name)
 	}
 }
