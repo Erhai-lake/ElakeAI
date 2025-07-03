@@ -29,26 +29,29 @@ export default {
 	},
 	watch: {
 		"system.activeTab"(newVal) {
-			this.loadPlugInList(newVal)
+			this.loadPlugInList(newVal, "system")
 		},
 		"thirdParty.activeTab"(newVal) {
-			this.loadPlugInList(newVal)
+			this.loadPlugInList(newVal, "thirdParty")
 		}
 	},
 	created() {
-		this.loadPlugInList("all")
+		this.loadPlugInList("all", "all")
 	},
 	computed: {
-		// 是否全选
+		// 是否全选(系统插件)
 		isAllSelectedSystem() {
-			return this.system.plugins.length > 0 &&
-				this.system.plugins.every(item =>
+			const AVAILABLE_PLUGINS = this.system.plugins.filter(plugin => !plugin.disabled)
+			return AVAILABLE_PLUGINS.length > 0 &&
+				AVAILABLE_PLUGINS.every(item =>
 					this.system.operationSelection.includes(item.uuid)
 				)
 		},
+		// 是否全选(第三方插件)
 		isAllSelectedThirdParty() {
-			return this.thirdParty.plugins.length > 0 &&
-				this.thirdParty.plugins.every(item =>
+			const AVAILABLE_PLUGINS = this.thirdParty.plugins.filter(plugin => !plugin.disabled)
+			return AVAILABLE_PLUGINS.length > 0 &&
+				AVAILABLE_PLUGINS.every(item =>
 					this.thirdParty.operationSelection.includes(item.uuid)
 				)
 		}
@@ -66,23 +69,35 @@ export default {
 		/**
 		 * 加载插件列表
 		 * @param type {String} - 类型, 可选值: "all", "platform", "i18n", "other"
+		 * @param category {String} - 分类, 可选值: "all", "system", "thirdParty"
 		 */
-		async loadPlugInList(type = "all") {
+		async loadPlugInList(type = "all", category = "all") {
 			const KNOWN_TYPES = ["platform", "i18n"]
-			const PLUGINS = await getAllPlugins()
-			if (type === "all") {
-				this.system.plugins = PLUGINS
-				return
-			}
-			this.system.plugins = PLUGINS.filter(plugin => {
+			const ALL_PLUGINS = await getAllPlugins()
+			// 类型过滤
+			let filtered = ALL_PLUGINS.filter(plugin => {
 				const TYPES = Array.isArray(plugin.type) ? plugin.type : []
+				if (type === "all") return true
 				if (type === "other") {
-					// 没有类型 或 没有与已知类型匹配的, 都归为 Other
 					return TYPES.length === 0 || !TYPES.some(t => KNOWN_TYPES.includes(t))
 				}
-				// 其他分类: 匹配 plugin.type 中是否包含当前类型
 				return TYPES.includes(type)
 			})
+			if (category === "all") {
+				this.system.plugins = []
+				this.thirdParty.plugins = []
+			}
+			if (category === "system") this.system.plugins = []
+			if (category === "thirdParty") this.thirdParty.plugins = []
+			// 分类过滤 + 分配到对应列表
+			for (const plugin of filtered) {
+				if (category === "all" || category === "system") {
+					if (plugin.system) this.system.plugins.push(plugin)
+				}
+				if (category === "all" || category === "thirdParty") {
+					if (!plugin.system) this.thirdParty.plugins.push(plugin)
+				}
+			}
 		},
 		/**
 		 * 切换全选状态(系统插件)
@@ -91,7 +106,9 @@ export default {
 			if (this.isAllSelectedSystem) {
 				this.system.operationSelection = []
 			} else {
-				this.system.operationSelection = this.system.plugins.map(item => item.uuid)
+				this.system.operationSelection = this.system.plugins
+					.filter(plugin => !plugin.disabled)
+					.map(item => item.uuid)
 			}
 		},
 		/**
@@ -101,7 +118,9 @@ export default {
 			if (this.isAllSelectedThirdParty) {
 				this.thirdParty.operationSelection = []
 			} else {
-				this.thirdParty.operationSelection = this.thirdParty.plugins.map(item => item.uuid)
+				this.thirdParty.operationSelection = this.thirdParty.plugins
+					.filter(plugin => !plugin.disabled)
+					.map(item => item.uuid)
 			}
 		},
 		/**
@@ -243,6 +262,21 @@ export default {
 				</span>
 			</template>
 			<template #Content>
+				<div class="header"></div>
+				<Tabs v-model="thirdParty.activeTab">
+					<TabsTab name="all">
+						<template #label>{{ t("views.PluginsView.type.all") }}</template>
+					</TabsTab>
+					<TabsTab name="platform">
+						<template #label>{{ t("views.PluginsView.type.platform") }}</template>
+					</TabsTab>
+					<TabsTab name="i18n">
+						<template #label>{{ t("views.PluginsView.type.i18n") }}</template>
+					</TabsTab>
+					<TabsTab name="other">
+						<template #label>{{ t("views.PluginsView.type.other") }}</template>
+					</TabsTab>
+				</Tabs>
 				<table class="list">
 					<thead>
 					<tr>
@@ -265,13 +299,18 @@ export default {
 					<tr
 						v-for="plugin in thirdParty.plugins"
 						:key="plugin.uuid"
-						@click="toggleRowSelectionThirdParty(plugin.uuid)"
-						:class="{ 'selected-row': thirdParty.operationSelection.includes(plugin.uuid) }">
+						:title="plugin.disabled ? t('views.PluginsView.toast.disabledTip') : ''"
+						@click="!plugin.disabled && toggleRowSelectionThirdParty(plugin.uuid)"
+						:class="{
+							'selected-row': thirdParty.operationSelection.includes(plugin.uuid),
+							'disabled-row': plugin.disabled
+						}">
 						<td>
 							<label>
 								<input type="checkbox"
 									   :value="plugin.uuid"
 									   v-model="thirdParty.operationSelection"
+									   :disabled="plugin.disabled"
 									   @click.stop>
 								<span class="custom-checkbox"></span>
 							</label>
@@ -281,6 +320,7 @@ export default {
 								<input
 									type="checkbox"
 									:checked="plugin.enabled"
+									:disabled="plugin.disabled"
 									@change="togglePluginEnable(plugin)">
 								<span class="custom-checkbox"></span>
 							</label>

@@ -22,6 +22,12 @@
 			"!**/node_modules/*",
 			"package.json"
 		],
+		"extraFiles": [
+			{
+				"from": "electron/plugins",
+				"to": "plugins"
+			}
+		],
 		"extraMetadata": {
 			"main": "electron/main.js"
 		},

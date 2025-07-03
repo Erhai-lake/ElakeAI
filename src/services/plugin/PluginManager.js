@@ -10,8 +10,8 @@ let _cachedPlugins = null
 const loadPluginsInBrowser = () => {
 	const PLUGINS = []
 	// require.context(路径, 是否递归, 正则)
-	const PLUGIN_JSONS = require.context("../../../electron/plugins", true, /plugin\.json$/)
-	const PLUGIN_ENTRIES = require.context("../../../electron/plugins", true, /index\.js$/)
+	const PLUGIN_JSONS = require.context("../../../electron/plugins/system", true, /plugin\.json$/)
+	const PLUGIN_ENTRIES = require.context("../../../electron/plugins/system", true, /index\.js$/)
 	PLUGIN_JSONS.keys().forEach((jsonPath) => {
 		const META = PLUGIN_JSONS(jsonPath)
 		const FOLDER_PATH = jsonPath.replace("/plugin.json", "")
@@ -20,7 +20,7 @@ const loadPluginsInBrowser = () => {
 		const entry = PLUGIN_ENTRIES(ENTRY_KEY)
 		PLUGINS.push({
 			...META,
-			uuid: META.uuid,
+			system: true,
 			entry
 		})
 	})
@@ -45,7 +45,12 @@ const scanAllPlugins = async () => {
 	if (isElectron()) {
 		_cachedPlugins = await loadPluginsInElectron()
 	} else {
-		_cachedPlugins = loadPluginsInBrowser()
+		try {
+			_cachedPlugins = loadPluginsInBrowser()
+		} catch (error) {
+			console.warn("[PluginManager] 加载本地插件失败, 返回空列表", error)
+			_cachedPlugins = []
+		}
 	}
 	return _cachedPlugins
 }

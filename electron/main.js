@@ -30,7 +30,7 @@ function createWindow() {
 		mainWindow.webContents.openDevTools()
 	} else {
 		// 加载生产环境的HTML文件
-		mainWindow.loadFile(PATH.join(__dirname, "../../dist_vue/index.html")).catch((error) => {
+		mainWindow.loadFile(PATH.join(__dirname, "../dist_vue/index.html")).catch((error) => {
 			Logger.error("[main] 无法加载文件:", error)
 		})
 
