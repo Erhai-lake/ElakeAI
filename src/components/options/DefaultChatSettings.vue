@@ -71,7 +71,7 @@ export default {
 		// 获取设置
 		await this.restoreSettings()
 		// 初始化Key池
-		await this.loadKeyPools()
+		await this.loadKeyPools(true)
 	},
 	methods: {
 		/**
@@ -108,7 +108,7 @@ export default {
 		/**
 		 * 加载Key
 		 */
-		async loadKeyPools() {
+		async loadKeyPools(skipSelection = false) {
 			const currentRequestId = Symbol()
 			this.currentKeyPoolRequest = currentRequestId
 			if (!this.saved) {
@@ -128,8 +128,9 @@ export default {
 					...KEYS_DATA.map(key => ({key: key.key, title: key.remark})) || []
 				]
 				if (this.keyPools.list.length === 0) return
-				if (!this.saved) {
-					this.platform.selected = this.keyPools.list[0]
+				// 如果 skipSelection 为 true 且已有选中项，则不覆盖
+				if (!skipSelection || !this.keyPools.selected) {
+					this.keyPools.selected = this.keyPools.list[0]
 				}
 			} catch (error) {
 				this.keyPools.list = []
@@ -272,15 +273,29 @@ export default {
 			try {
 				const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.configs.get("DefaultChatSettings")
 				if (DEFAULT_CHAT_SETTINGS_DATA) {
-					this.platform.selected = this.platform.list.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.platform)
-					const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
-					if (!KEY_DATA) {
-						this.keyPools.selected = null
-						this.model.selected = null
-						return
+					// 查找对应的平台选项
+					const PLATFORM_ITEM = this.platform.list.find(model => model.title === DEFAULT_CHAT_SETTINGS_DATA.value.platform)
+					if (PLATFORM_ITEM) {
+						this.platform.selected = PLATFORM_ITEM
+					} else {
+						// 如果未找到平台选项, 使用默认值
+						this.platform.selected = this.platform.list[0]
+						this.$log.warn(`[${this.name}] 未找到对应的平台选项: ${DEFAULT_CHAT_SETTINGS_DATA.value.platform}`)
 					}
-					this.keyPools.selected = {key: KEY_DATA.key, title: KEY_DATA.remark}
-					this.model.selected = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
+					// 获取 Key 数据
+					const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+					if (KEY_DATA) {
+						this.keyPools.selected = {key: KEY_DATA.key, title: KEY_DATA.remark || KEY_DATA.key}
+					} else {
+						this.keyPools.selected = null
+						this.$log.warn(`[${this.name}] 未找到对应的 Key 数据: ${DEFAULT_CHAT_SETTINGS_DATA.value.key}`)
+					}
+					// 设置模型选项
+					if (this.keyPools.selected && DEFAULT_CHAT_SETTINGS_DATA.value.model) {
+						this.model.selected = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
+					} else {
+						this.model.selected = null
+					}
 					this.saved = true
 				} else {
 					this.platform.selected = this.platform.list[0]

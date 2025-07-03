@@ -1,6 +1,8 @@
 {
 	"name": "elake_ai",
 	"version": "0.1.0",
+	"author": "Erhai-lake",
+	"description": "elake_ai",
 	"private": true,
 	"scripts": {
 		"vue:serve": "vue-cli-service serve",
@@ -15,6 +17,7 @@
 		"directories": {
 			"output": "dist_electron"
 		},
+		"icon": "src/assets/images/Logo",
 		"files": [
 			"dist_vue/**/*",
 			"src/**/*",
@@ -24,12 +27,20 @@
 		],
 		"extraFiles": [
 			{
-				"from": "electron/plugins",
-				"to": "plugins"
+				"from": "electron/plugins/system",
+				"to": "plugins/system"
 			}
 		],
 		"extraMetadata": {
 			"main": "electron/main.js"
+		},
+		"nsis": {
+			"oneClick": false,
+			"allowToChangeInstallationDirectory": true,
+			"createDesktopShortcut": true,
+			"createStartMenuShortcut": true,
+			"shortcutName": "elake_ai",
+			"deleteAppDataOnUninstall": false
 		},
 		"win": {
 			"target": "nsis"
@@ -73,6 +84,7 @@
 		"cross-env": "^7.0.3",
 		"electron": "^37.1.0",
 		"electron-builder": "^26.0.12",
+		"electron-wix-msi": "^5.1.3",
 		"less": "^4.0.0",
 		"less-loader": "^8.0.0",
 		"typescript": "^5.8.3",
