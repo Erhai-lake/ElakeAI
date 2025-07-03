@@ -1,0 +1,10 @@
+{
+	"name": "ThirdPartyExample",
+	"author": "Erhai-lake",
+	"type": [],
+	"uuid": "a393bc66-cca3-4ds4-bcb8-669cf19e3fb2",
+	"version": "1.0.0",
+	"description": "这是一个示例插件!",
+	"disabled": true,
+	"entry": "index.js"
+}
