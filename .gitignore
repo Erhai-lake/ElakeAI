@@ -1,9 +1,10 @@
 .DS_Store
-node_modules
+/node_modules
 /dist_vue
 /dist_electron
-electron/logs
-userdata
+/electron/logs
+/userdata
+pnpm-lock.yaml
 
 # local env files
 .env.local

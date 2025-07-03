@@ -239,7 +239,7 @@ export default defineComponent({
 	.sidebar-top-logo {
 		width: 48px;
 		height: 48px;
-		background-image: url("@/assets/images/logo/logo.svg");
+		background-image: url("@/assets/images/logo.svg");
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
