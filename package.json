@@ -8,7 +8,7 @@
 		"vue:serve": "vue-cli-service serve",
 		"vue:build": "vue-cli-service build",
 		"electron:serve": "cross-env VUE_DEV_SERVER_URL=http://localhost:8080 electron .",
-		"electron:build": "vue-cli-service build && electron-builder install-app-deps && electron-builder"
+		"electron:build-win": "vue-cli-service build && electron-builder --win --dir && node build/installer.js"
 	},
 	"main": "electron/main.js",
 	"build": {
@@ -20,9 +20,7 @@
 		"icon": "src/assets/images/Logo",
 		"files": [
 			"dist_vue/**/*",
-			"src/**/*",
 			"electron/**/*",
-			"!**/node_modules/*",
 			"package.json"
 		],
 		"extraFiles": [
@@ -34,22 +32,8 @@
 		"extraMetadata": {
 			"main": "electron/main.js"
 		},
-		"nsis": {
-			"oneClick": false,
-			"allowToChangeInstallationDirectory": true,
-			"createDesktopShortcut": true,
-			"createStartMenuShortcut": true,
-			"shortcutName": "elake_ai",
-			"deleteAppDataOnUninstall": false
-		},
 		"win": {
-			"target": "nsis"
-		},
-		"mac": {
-			"target": "dmg"
-		},
-		"linux": {
-			"target": "AppImage"
+			"target": "zip"
 		}
 	},
 	"dependencies": {
