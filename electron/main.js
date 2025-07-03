@@ -2,9 +2,11 @@ const {app, BrowserWindow, ipcMain} = require("electron")
 const Logger = require("./Logger")
 const PATH = require("path")
 const {scanAllPlugins} = require("./plugin-loader.js")
-const {unloadPlugins} = require("../services/plugin/UnloadPlugins")
+const {unloadPlugins} = require("../src/services/plugin/UnloadPlugins")
 
 let mainWindow
+
+app.setPath("userData", PATH.join(process.cwd(), "userdata"))
 
 function createWindow() {
 	// 创建浏览器窗口
@@ -31,6 +33,8 @@ function createWindow() {
 		mainWindow.loadFile(PATH.join(__dirname, "../../dist_vue/index.html")).catch((error) => {
 			Logger.error("[main] 无法加载文件:", error)
 		})
+
+		mainWindow.webContents.openDevTools()
 	}
 }
 

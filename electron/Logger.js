@@ -1,7 +1,9 @@
 const FS = require("fs")
 const PATH = require("path")
 
-const LOG_DIR = PATH.join(__dirname, "../../logs")
+const IS_DEV = process.env.NODE_ENV === "development" || process.env.VUE_DEV_SERVER_URL
+const ROOT_PATH = IS_DEV ? __dirname : process.cwd()
+const LOG_DIR = PATH.join(ROOT_PATH, "logs")
 const LOG_FILE = PATH.join(LOG_DIR, "main.log")
 
 if (!FS.existsSync(LOG_DIR)) {

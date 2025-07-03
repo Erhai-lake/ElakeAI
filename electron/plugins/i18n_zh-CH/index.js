@@ -1,16 +1,16 @@
-const EN_US = require("./en-US")
+const ZH_CN = require("./zh-CN.json")
 
 let I18nClass = null
 const LANG_INFO = {
-	code: "en-US",
-	title: "English",
-	image: "https://flagcdn.com/us.svg"
+	code: "zh-CN",
+	title: "简体中文",
+	image: "https://flagcdn.com/cn.svg",
 }
 
 module.exports = {
 	onRegister(ctx) {
 		I18nClass = new ctx.api.I18nClass()
-		I18nClass.registerLang(LANG_INFO, EN_US)
+		I18nClass.registerLang(LANG_INFO, ZH_CN)
 	},
 	onUnload() {
 		I18nClass.unregisterLang(LANG_INFO.code)

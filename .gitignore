@@ -2,8 +2,8 @@
 node_modules
 /dist_vue
 /dist_electron
-/logs
-
+electron/logs
+userdata
 
 # local env files
 .env.local

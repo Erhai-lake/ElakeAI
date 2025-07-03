@@ -8,7 +8,7 @@
 		"electron:serve": "cross-env VUE_DEV_SERVER_URL=http://localhost:8080 electron .",
 		"electron:build": "vue-cli-service build && electron-builder install-app-deps && electron-builder"
 	},
-	"main": "src/electron/main.js",
+	"main": "electron/main.js",
 	"build": {
 		"appId": "top.elake.elake_ai",
 		"productName": "elake_ai",
@@ -17,12 +17,13 @@
 		},
 		"files": [
 			"dist_vue/**/*",
-			"src/electron/**/*",
-			"node_modules/**/*",
+			"src/**/*",
+			"electron/**/*",
+			"!**/node_modules/*",
 			"package.json"
 		],
 		"extraMetadata": {
-			"main": "src/electron/main.js"
+			"main": "electron/main.js"
 		},
 		"win": {
 			"target": "nsis"

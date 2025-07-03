@@ -1,17 +1,21 @@
 const Logger = require("./Logger")
 
-const NAME = "pluginLoader"
 const FS = require("fs")
 const PATH = require("path")
 
-const PLUGIN_DIR = PATH.join(__dirname, "../plugins")
+const IS_DEV = process.env.NODE_ENV === "development" || process.env.VUE_DEV_SERVER_URL
+const ROOT_PATH = IS_DEV ? __dirname : process.cwd()
+const PLUGIN_DIR = PATH.join(ROOT_PATH, "plugins")
+
+const NAME = "pluginLoader"
 
 const scanAllPlugins = () => {
 	const PLUGINS = []
 
 	if (!FS.existsSync(PLUGIN_DIR)) {
-		Logger.warn(`[${NAME}] 插件目录不存在: ${PLUGIN_DIR}`)
-		return PLUGINS
+		Logger.warn(`[${NAME}] 插件目录不存在，正在尝试创建: ${PLUGIN_DIR}`)
+		FS.mkdirSync(PLUGIN_DIR, { recursive: true })
+		return []
 	}
 
 	const DIRS = FS.readdirSync(PLUGIN_DIR)

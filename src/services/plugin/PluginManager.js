@@ -10,8 +10,8 @@ let _cachedPlugins = null
 const loadPluginsInBrowser = () => {
 	const PLUGINS = []
 	// require.context(路径, 是否递归, 正则)
-	const PLUGIN_JSONS = require.context("../../plugins", true, /plugin\.json$/)
-	const PLUGIN_ENTRIES = require.context("../../plugins", true, /index\.js$/)
+	const PLUGIN_JSONS = require.context("../../../electron/plugins", true, /plugin\.json$/)
+	const PLUGIN_ENTRIES = require.context("../../../electron/plugins", true, /index\.js$/)
 	PLUGIN_JSONS.keys().forEach((jsonPath) => {
 		const META = PLUGIN_JSONS(jsonPath)
 		const FOLDER_PATH = jsonPath.replace("/plugin.json", "")
