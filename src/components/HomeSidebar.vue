@@ -7,7 +7,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default defineComponent({
 	name: "HomeSidebar",
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	data() {
 		return {
 			name: "HomeSidebar",

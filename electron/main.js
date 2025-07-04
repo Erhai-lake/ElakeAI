@@ -2,7 +2,6 @@ const {app, BrowserWindow, ipcMain} = require("electron")
 const Logger = require("./Logger")
 const PATH = require("path")
 const {scanAllPlugins} = require("./plugin-loader.js")
-const {unloadPlugins} = require("../src/services/plugin/UnloadPlugins")
 
 let mainWindow
 
@@ -50,6 +49,8 @@ app.whenReady().then(() => {
 
 // 主动退出
 app.on("before-quit", async () => {
+	const UNLOAD_PATH = PATH.resolve(__dirname, "../services/plugin/UnloadPlugins.js")
+	const {unloadPlugins} = require(UNLOAD_PATH)
 	await unloadPlugins()
 })
 

@@ -6,7 +6,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "HazardousOperations",
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	components: {Button},
 	data() {
 		return {

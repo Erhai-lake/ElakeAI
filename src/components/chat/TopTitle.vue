@@ -5,7 +5,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
     name: "TopTitle",
-    inject: ["$DB"],
+    inject: ["$DB", "$log"],
     props: {
         chatTitle: {
             type: String,

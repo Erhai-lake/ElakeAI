@@ -10,7 +10,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 export default {
 	name: "ChatAIKey",
 	components: {Selector, Button, FoldingPanel},
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	data() {
 		return {
 			name: "ChatAIKey",

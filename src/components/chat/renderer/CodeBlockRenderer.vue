@@ -9,6 +9,7 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "CodeBlockRenderer",
+	inject: ["$log"],
 	components: {Button},
 	props: {
 		code: {

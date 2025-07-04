@@ -6,7 +6,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 export default {
 	name: "LanguageSelect",
 	components: {Selector},
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	data() {
 		return {
 			name: "LanguageSelect",
@@ -92,9 +92,9 @@ export default {
 			try {
 				if (!selectLang) return
 				if (selectLang.code === "System") {
-					this.$i18n.locale = navigator.language || this.languages[0].code
+					i18nRegistry.locale = navigator.language || this.languages[0].code
 				} else {
-					this.$i18n.locale = selectLang.code
+					i18nRegistry.locale = selectLang.code
 				}
 				if (await this.$DB.configs.get("language")) {
 					await this.$DB.configs.put({

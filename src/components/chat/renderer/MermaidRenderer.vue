@@ -11,7 +11,7 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 export default {
 	name: "MermaidRenderer",
 	components: {Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	props: {
 		code: {
 			type: String,

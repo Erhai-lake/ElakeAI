@@ -9,7 +9,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
     name: "App",
-    inject: ["$DB"],
+    inject: ["$DB", "$log"],
     components: {Button, Log, HomeSidebar},
     data() {
         return {
@@ -148,10 +148,10 @@ export default {
                 const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
                 if (LANGUAGE === "System") {
                     const SYSTEM_LANG = window.navigator.language || "zh-CN"
-                    this.$i18n.locale = SYSTEM_LANG
+					i18nRegistry.locale = SYSTEM_LANG
                     info.Language = SYSTEM_LANG
                 } else {
-                    this.$i18n.locale = LANGUAGE
+					i18nRegistry.locale = LANGUAGE
                     info.Language = LANGUAGE
                 }
                 // Log悬浮窗

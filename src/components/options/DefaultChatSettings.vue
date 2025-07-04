@@ -8,7 +8,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "DefaultChatSettings",
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	props: {
 		save: {
 			type: Boolean,

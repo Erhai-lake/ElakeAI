@@ -71,6 +71,18 @@ export class I18nClass {
 			return keyPath
 		}
 	}
+
+	/**
+	 * 切换语言
+	 * @param {string} code - 目标语言代码
+	 */
+	locale(code) {
+		try {
+			i18n.global.locale = code
+		} catch (error) {
+			Logger.error(`[${NAME}] 切换语言出错`, error)
+		}
+	}
 }
 
 export const i18nRegistry = new I18nClass()

@@ -7,8 +7,6 @@ import store from "@/store"
 import "@/assets/styles/theme.less"
 // 数据库操作
 import DB from "@/services/Dexie"
-// 多语言(i18n)
-import i18n from "@/services/I18n"
 // 日志
 import Logger, { setupLogCleanup } from "@/services/Logger"
 // 插件管理
@@ -20,10 +18,8 @@ async function bootstrap() {
 		const APP = createApp(app)
 
 		APP.use(store)
-			.use(router)
-			.use(i18n)
-
-		APP.config.globalProperties.$log = Logger
+		APP.use(router)
+		APP.provide("$log", Logger)
 		APP.provide("$DB", DB)
 
 		// 插件卸载和初始化 —— 等待完成后再挂载

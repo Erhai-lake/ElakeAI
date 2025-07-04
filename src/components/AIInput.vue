@@ -11,7 +11,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 export default defineComponent({
 	name: "AIInput",
 	components: {DefaultChatSettings, Selector},
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	data() {
 		return {
 			name: "AIInput",

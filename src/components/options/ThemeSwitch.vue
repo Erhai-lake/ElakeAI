@@ -7,7 +7,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 export default defineComponent({
 	name: "ThemeSelect",
 	components: {Selector},
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	data() {
 		return {
 			theme: [

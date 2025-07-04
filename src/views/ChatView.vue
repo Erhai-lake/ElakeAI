@@ -10,7 +10,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "ChatView",
-	inject: ["$DB"],
+	inject: ["$DB", "$log"],
 	components: {TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
 	data() {
 		return {

@@ -10,6 +10,7 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "FlowchartRenderer",
+	inject: ["$log"],
 	components: {Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
 	props: {
 		code: {

@@ -10,6 +10,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "PluginsView",
+	inject: ["$log"],
 	components: {TabsTab, Tabs, FoldingPanel},
 	data() {
 		return {
