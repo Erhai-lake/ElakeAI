@@ -6,6 +6,8 @@ const createLoadingWindow = require("./createLoadingWindow")
 
 let mainWindow
 let loadingWin
+let isLoadingWindowClosed = false
+let isMainWindowLoaded = false
 
 app.setPath("userData", PATH.join(process.cwd(), "userdata"))
 
@@ -28,28 +30,56 @@ function createWindow() {
 	// 主窗口崩溃监听
 	setupCrashListener(mainWindow)
 
+	// 监听加载窗口关闭消息
+	ipcMain.on("loading-window-closed", () => {
+		if (!isMainWindowLoaded) {
+			if (mainWindow && !mainWindow.isDestroyed()) {
+				mainWindow.close()
+			}
+			app.quit()
+		} else {
+			// 主窗口已加载完成, 不退出应用
+			if (loadingWin && !loadingWin.isDestroyed()) {
+				loadingWin.destroy()
+			}
+			if (mainWindow && !mainWindow.isDestroyed()) {
+				mainWindow.show()
+			}
+		}
+	})
+
 	if (process.env.VUE_DEV_SERVER_URL) {
 		mainWindow.loadURL(process.env.VUE_DEV_SERVER_URL).then(() => {
 			Logger.info("[main] 加载开发环境页面完成")
 		}).catch((error) => {
 			Logger.error("[main] 无法加载开发URL:", error)
 		})
-		mainWindow.webContents.openDevTools()
+		if (!isLoadingWindowClosed) {
+			mainWindow.webContents.openDevTools()
+		}
 	} else {
 		mainWindow.loadFile(PATH.join(__dirname, "../dist_vue/index.html")).then(() => {
-			Logger.info("[main] 加载生产页面完成")
+			if (!isLoadingWindowClosed) {
+				Logger.info("[main] 加载生产页面完成")
+			}
 		}).catch((error) => {
-			Logger.error("[main] 无法加载文件:", error)
+			if (!isLoadingWindowClosed) {
+				Logger.error("[main] 无法加载文件:", error)
+			}
 		})
 	}
 
 	// 当主窗口加载完成
 	mainWindow.once("ready-to-show", () => {
-		// 延迟关闭 loading, 防止闪烁
-		setTimeout(() => {
-			if (loadingWin && !loadingWin.isDestroyed()) loadingWin.destroy()
-			mainWindow.show()
-		}, 500)
+		// 标记主窗口已加载完成
+		isMainWindowLoaded = true
+		if (!isLoadingWindowClosed) {
+			// 延迟关闭 loading, 防止闪烁
+			setTimeout(() => {
+				if (loadingWin && !loadingWin.isDestroyed()) loadingWin.destroy()
+				mainWindow.show()
+			}, 500)
+		}
 	})
 }
 
@@ -65,9 +95,14 @@ app.whenReady().then(() => {
 	// 监听渲染进程发送的消息
 	ipcMain.handle("get-all-plugins", async () => {
 		try {
-			return await scanAllPlugins()
+			if (!isLoadingWindowClosed) {
+				return await scanAllPlugins()
+			}
+			return []
 		} catch (error) {
-			Logger.error("[main] get-all-plugins 扫描失败", error)
+			if (!isLoadingWindowClosed) {
+				Logger.error("[main] get-all-plugins 扫描失败", error)
+			}
 			return []
 		}
 	})
@@ -87,7 +122,7 @@ app.on("window-all-closed", () => {
 
 function setupCrashListener(win) {
 	win.webContents.on("render-process-gone", (event, details) => {
-		Logger.error("[main] g渲染进程崩溃", details)
+		Logger.error("[main] 渲染进程崩溃", details)
 
 		const CHOICE = dialog.showMessageBoxSync(win, {
 			type: "error",
