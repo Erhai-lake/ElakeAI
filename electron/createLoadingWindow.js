@@ -3,8 +3,8 @@ const PATH = require("path")
 
 function createLoadingWindow(parentWindow) {
 	const WIN = new BrowserWindow({
-		width: 400,
-		height: 300,
+		width: 1200,
+		height: 800,
 		frame: false,
 		transparent: false,
 		resizable: false,
