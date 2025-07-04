@@ -21,6 +21,8 @@ function createWindow() {
 	// 移除默认菜单
 	mainWindow.removeMenu()
 
+	setupCrashListener(mainWindow)
+
 	if (process.env.VUE_DEV_SERVER_URL) {
 		// 加载开发环境的URL
 		mainWindow.loadURL(process.env.VUE_DEV_SERVER_URL).catch((error) => {
@@ -34,6 +36,10 @@ function createWindow() {
 		})
 	}
 }
+
+process.on("uncaughtException", (error) => {
+	Logger.error("[main] 主进程捕获异常", error)
+})
 
 // 当Electron完成初始化时创建窗口
 app.whenReady().then(() => {
@@ -62,3 +68,18 @@ app.on("before-quit", async () => {
 app.on("window-all-closed", () => {
 	if (process.platform !== "darwin") app.quit()
 })
+
+function setupCrashListener(win) {
+	win.webContents.on("render-process-gone", (event, details) => {
+		Logger.error("[main] g渲染进程崩溃", details)
+
+		dialog.showMessageBoxSync(win, {
+			type: "error",
+			title: "进程崩溃",
+			message: "渲染进程崩溃了, 是否重启应用?",
+			buttons: ["重启", "退出"]
+		}) === 0
+			? app.relaunch() && app.exit(0)
+			: app.quit()
+	})
+}

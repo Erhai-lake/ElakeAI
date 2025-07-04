@@ -23,6 +23,10 @@ async function bootstrap() {
 		APP.provide("$DB", DB)
 
 		APP.mount("#app")
+		const STARTUP_LOADING = document.getElementById("startup-loading")
+		if (STARTUP_LOADING) {
+			STARTUP_LOADING.remove()
+		}
 
 		try {
 			await unloadPlugins()
