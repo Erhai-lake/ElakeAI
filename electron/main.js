@@ -1,9 +1,11 @@
-const {app, BrowserWindow, ipcMain} = require("electron")
+const {app, BrowserWindow, ipcMain, dialog} = require("electron")
 const Logger = require("./Logger")
 const PATH = require("path")
 const {scanAllPlugins} = require("./plugin-loader.js")
+const createLoadingWindow = require("./createLoadingWindow")
 
 let mainWindow
+let loadingWin
 
 app.setPath("userData", PATH.join(process.cwd(), "userdata"))
 
@@ -12,6 +14,7 @@ function createWindow() {
 	mainWindow = new BrowserWindow({
 		width: 1200,
 		height: 800,
+		show: false,
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false
@@ -20,21 +23,34 @@ function createWindow() {
 
 	// 移除默认菜单
 	mainWindow.removeMenu()
-
+	// 创建加载页
+	loadingWin = createLoadingWindow(mainWindow)
+	// 主窗口崩溃监听
 	setupCrashListener(mainWindow)
 
 	if (process.env.VUE_DEV_SERVER_URL) {
-		// 加载开发环境的URL
-		mainWindow.loadURL(process.env.VUE_DEV_SERVER_URL).catch((error) => {
-			Logger.error("[main] 无法加载URL:", error)
+		mainWindow.loadURL(process.env.VUE_DEV_SERVER_URL).then(() => {
+			Logger.info("[main] 加载开发环境页面完成")
+		}).catch((error) => {
+			Logger.error("[main] 无法加载开发URL:", error)
 		})
 		mainWindow.webContents.openDevTools()
 	} else {
-		// 加载生产环境的HTML文件
-		mainWindow.loadFile(PATH.join(__dirname, "../dist_vue/index.html")).catch((error) => {
+		mainWindow.loadFile(PATH.join(__dirname, "../dist_vue/index.html")).then(() => {
+			Logger.info("[main] 加载生产页面完成")
+		}).catch((error) => {
 			Logger.error("[main] 无法加载文件:", error)
 		})
 	}
+
+	// 当主窗口加载完成
+	mainWindow.once("ready-to-show", () => {
+		// 延迟关闭 loading, 防止闪烁
+		setTimeout(() => {
+			if (loadingWin && !loadingWin.isDestroyed()) loadingWin.destroy()
+			mainWindow.show()
+		}, 500)
+	})
 }
 
 process.on("uncaughtException", (error) => {
@@ -73,13 +89,17 @@ function setupCrashListener(win) {
 	win.webContents.on("render-process-gone", (event, details) => {
 		Logger.error("[main] g渲染进程崩溃", details)
 
-		dialog.showMessageBoxSync(win, {
+		const CHOICE = dialog.showMessageBoxSync(win, {
 			type: "error",
 			title: "进程崩溃",
 			message: "渲染进程崩溃了, 是否重启应用?",
 			buttons: ["重启", "退出"]
-		}) === 0
-			? app.relaunch() && app.exit(0)
-			: app.quit()
+		})
+		if (CHOICE === 0) {
+			app.relaunch()
+			app.exit(0)
+		} else {
+			app.quit()
+		}
 	})
 }
