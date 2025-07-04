@@ -56,7 +56,8 @@ export async function initEnabledPlugins(appContext) {
 	await unloadPlugins()
 	const PLUGINS = await getEnabledPlugins()
 
-	for (const PLUGIN of PLUGINS) {
+	for (let i = 0; i < PLUGINS.length; i++) {
+		const PLUGIN = PLUGINS[i]
 		try {
 			let mod = null
 			if (isElectron()) {
@@ -106,6 +107,14 @@ export async function initEnabledPlugins(appContext) {
 			registerPluginInstance(PLUGIN.uuid, mod)
 		} catch (error) {
 			Logger.warn(`[registerPlugins] 插件注册失败: ${PLUGIN.name}`, error)
+		} finally {
+			window.dispatchEvent(new CustomEvent("plugin-progress", {
+				detail: {
+					loaded: i + 1,
+					total: PLUGINS.length,
+					name: PLUGIN.name
+				}
+			}))
 		}
 	}
 }

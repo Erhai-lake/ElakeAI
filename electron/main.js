@@ -37,6 +37,9 @@ function createWindow() {
 
 // 当Electron完成初始化时创建窗口
 app.whenReady().then(() => {
+	// 创建窗口
+	createWindow()
+
 	// 监听渲染进程发送的消息
 	ipcMain.handle("get-all-plugins", async () => {
 		try {
@@ -46,8 +49,6 @@ app.whenReady().then(() => {
 			return []
 		}
 	})
-	// 创建窗口
-	createWindow()
 })
 
 // 主动退出
