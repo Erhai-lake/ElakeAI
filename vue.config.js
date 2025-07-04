@@ -1,5 +1,6 @@
 const {defineConfig} = require("@vue/cli-service")
 module.exports = defineConfig({
+	productionSourceMap: false,
 	transpileDependencies: true,
 	configureWebpack: {
 		plugins: [
@@ -11,6 +12,11 @@ module.exports = defineConfig({
 		performance: {
 			maxEntrypointSize: 1024000,
 			maxAssetSize: 1024000
+		},
+		optimization: {
+			splitChunks: {
+				chunks: "all"
+			}
 		}
 	},
 	publicPath: "./",
