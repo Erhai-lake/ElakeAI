@@ -5,12 +5,13 @@ import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import LoadingPage from "@/components/LoadingPage.vue"
 // import eruda from "eruda"
 
 export default {
 	name: "App",
 	inject: ["$DB", "$log"],
-	components: {Button, Log, HomeSidebar},
+	components: {LoadingPage, Button, Log, HomeSidebar},
 	data() {
 		return {
 			name: "App",
@@ -210,6 +211,7 @@ export default {
 
 <template>
 	<div v-if="loading.status" class="loading-container">
+		<LoadingPage/>
 		<div class="loading-text">{{ loading.loadingMessage }}</div>
 		<div class="progress-text">
 			<div v-if="loading.loadedCount !== loading.totalCount">
