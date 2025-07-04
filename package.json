@@ -73,6 +73,7 @@
 		"electron-builder": "^26.0.12",
 		"less": "^4.0.0",
 		"less-loader": "^8.0.0",
+		"source-map-explorer": "^2.5.3",
 		"typescript": "^5.8.3",
 		"wait-on": "^8.0.3",
 		"webpack": "^5.99.9"

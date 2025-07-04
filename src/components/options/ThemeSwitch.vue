@@ -81,17 +81,10 @@ export default defineComponent({
 				document.documentElement.setAttribute("data-theme", THEME_CODE)
 				void document.body.offsetWidth
 				// 保存设置
-				if (await this.$DB.configs.get("theme")) {
-					await this.$DB.configs.put({
-						item: "theme",
-						value: theme.code
-					})
-				} else {
-					await this.$DB.configs.add({
-						item: "theme",
-						value: theme.code
-					})
-				}
+				await this.$DB.configs.put({
+					item: "theme",
+					value: theme.code
+				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 主题应用失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.applicationThemeError")}`)

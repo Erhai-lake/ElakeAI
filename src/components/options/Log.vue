@@ -151,17 +151,10 @@ export default {
 		async suspensionWindow() {
 			// 保存设置
 			try {
-				if (await this.$DB.configs.get("logSuspensionWindow")) {
-					await this.$DB.configs.put({
-						item: "logSuspensionWindow",
-						value: !this.isLogSuspensionWindow
-					})
-				} else {
-					await this.$DB.configs.add({
-						item: "logSuspensionWindow",
-						value: !this.isLogSuspensionWindow
-					})
-				}
+				await this.$DB.configs.put({
+					item: "logSuspensionWindow",
+					value: !this.isLogSuspensionWindow
+				})
 				EventBus.emit("[update] logSuspensionWindowUpdate")
 				this.isLogSuspensionWindow = !this.isLogSuspensionWindow
 			} catch (error) {

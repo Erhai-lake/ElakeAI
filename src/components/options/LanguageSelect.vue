@@ -96,17 +96,10 @@ export default {
 				} else {
 					i18nRegistry.locale = selectLang.code
 				}
-				if (await this.$DB.configs.get("language")) {
-					await this.$DB.configs.put({
-						item: "language",
-						value: selectLang.code
-					})
-				} else {
-					await this.$DB.configs.add({
-						item: "language",
-						value: selectLang.code
-					})
-				}
+				await this.$DB.configs.put({
+					item: "language",
+					value: selectLang.code
+				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 语言应用失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.applicationLanguageError")}`)

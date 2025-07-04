@@ -8,6 +8,7 @@ import axios from "axios"
 import dexie from "@/services/Dexie"
 import {I18nClass} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import EventBus from "@/services/EventBus"
 
 /**
  * 插件安装成功
@@ -108,13 +109,11 @@ export async function initEnabledPlugins(appContext) {
 		} catch (error) {
 			Logger.warn(`[registerPlugins] 插件注册失败: ${PLUGIN.name}`, error)
 		} finally {
-			window.dispatchEvent(new CustomEvent("plugin-progress", {
-				detail: {
-					loaded: i + 1,
-					total: PLUGINS.length,
-					name: PLUGIN.name
-				}
-			}))
+			EventBus.emit("[update] pluginProgress", {
+				loaded: i + 1,
+				total: PLUGINS.length,
+				name: PLUGIN.name
+			})
 		}
 	}
 }

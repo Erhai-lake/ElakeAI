@@ -316,25 +316,14 @@ export default {
 				if (!this.platform.selected.title) return
 				if (!this.keyPools.selected.key) return
 				if (!this.model.selected.title) return
-				if (await this.$DB.configs.get("DefaultChatSettings")) {
-					await this.$DB.configs.put({
-						item: "DefaultChatSettings",
-						value: {
-							platform: this.platform.selected.title,
-							key: this.keyPools.selected.key,
-							model: this.model.selected.title
-						}
-					})
-				} else {
-					await this.$DB.configs.add({
-						item: "DefaultChatSettings",
-						value: {
-							platform: this.platform.selected.title,
-							key: this.keyPools.selected.key,
-							model: this.model.selected.title
-						}
-					})
-				}
+				await this.$DB.configs.put({
+					item: "DefaultChatSettings",
+					value: {
+						platform: this.platform.selected.title,
+						key: this.keyPools.selected.key,
+						model: this.model.selected.title
+					}
+				})
 				toastRegistry.success(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存设置失败`, error)

@@ -6,11 +6,14 @@ import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import LoadingPage from "@/components/LoadingPage.vue"
+import Dexie from "@/services/Dexie"
+import Logger, {setupLogCleanup} from "@/services/Logger"
+import {unloadPlugins} from "@/services/plugin/UnloadPlugins";
+import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins";
 // import eruda from "eruda"
 
 export default {
 	name: "App",
-	inject: ["$DB", "$log"],
 	components: {LoadingPage, Button, Log, HomeSidebar},
 	data() {
 		return {
@@ -27,48 +30,36 @@ export default {
 		}
 	},
 	mounted() {
-		window.addEventListener("plugin-ready", () => {
-			this.loading.status = false
-		})
-		window.addEventListener("plugin-progress", (e) => {
-			const DETAIL = e.detail || {}
+		EventBus.on("[update] pluginProgress", (data) => {
+			const DETAIL = data.detail || {}
 			this.loading.loadedCount = DETAIL.loaded || 0
 			this.loading.totalCount = DETAIL.total || 0
 			this.loading.currentPluginName = DETAIL.name || ""
 		})
-		// 监听日志悬浮窗设置
 		EventBus.on("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
-		// 监听初始化设置
 		EventBus.on("[function] configInitialization", this.configInitialization)
 	},
 	beforeUnmount() {
-		// 移除日志悬浮窗设置监听
+		EventBus.off("[update] plugin-progress")
 		EventBus.off("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
-		// 移除初始化设置监听
 		EventBus.off("[function] configInitialization", this.configInitialization)
 	},
 	async created() {
+		// 加载界面初始化
 		this.updateMessage()
+		// 数据库操作
+		this.$.appContext.provides.$DB = Dexie
+		// 日志
+		this.$.appContext.provides.$log = Logger
+		// 加载插件系统
+		await this.loadPluginSystem()
 		// 移动端调试工具eruda
 		// if (process.env.NODE_ENV === "development") {
 		//     eruda.init()
 		// }
-		this.$log.info(`[${this.name}] 环境信息`, this.getEnvInfo())
-		const VERSION = this.getIEVersion()
-		if (VERSION) {
-			this.$log.error(`[${this.name}] 检测到IE浏览器`, VERSION)
-			toastRegistry.error(`[${this.name}] ${this.t("app.IEDetected", {version: VERSION})}`)
-		}
-		// 检查浏览器是否支持 IndexedDB
-		if (!"indexedDB" in window) {
-			this.$log.error(`[${this.name}] 浏览器不支持'IndexedDB'`)
-			toastRegistry.error(`[${this.name}] ${this.t("app.indexedDBNotSupported")}`)
-		}
-		// 检查浏览器是否支持 IDBTransaction
-		if (!"IDBTransaction" in window) {
-			this.$log.error(`[${this.name}] 浏览器不支持'IDBTransaction'`)
-			toastRegistry.error(`[${this.name}] ${this.t("app.iDBTransactionNotSupported")}`)
-		}
+		// 日志清理定时任务
+		await setupLogCleanup()
+		setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
 		await this.configInitialization()
 	},
 	methods: {
@@ -80,6 +71,27 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
+		},
+		/**
+		 * 日志保存运行环境
+		 */
+		information() {
+			Logger.info(`[${this.name}] 环境信息`, this.getEnvInfo())
+			const VERSION = this.getIEVersion()
+			if (VERSION) {
+				Logger.error(`[${this.name}] 检测到IE浏览器`, VERSION)
+				toastRegistry.error(`[${this.name}] ${this.t("app.IEDetected", {version: VERSION})}`)
+			}
+			// 检查浏览器是否支持 IndexedDB
+			if (!"indexedDB" in window) {
+				Logger.error(`[${this.name}] 浏览器不支持'IndexedDB'`)
+				toastRegistry.error(`[${this.name}] ${this.t("app.indexedDBNotSupported")}`)
+			}
+			// 检查浏览器是否支持 IDBTransaction
+			if (!"IDBTransaction" in window) {
+				Logger.error(`[${this.name}] 浏览器不支持'IDBTransaction'`)
+				toastRegistry.error(`[${this.name}] ${this.t("app.iDBTransactionNotSupported")}`)
+			}
 		},
 		/**
 		 * 获取运行环境信息
@@ -150,7 +162,7 @@ export default {
 			let info = {}
 			try {
 				// 应用主题
-				const THEME_DATA = await this.$DB.configs.get("theme")
+				const THEME_DATA = await Dexie.configs.get("theme")
 				const THEME = THEME_DATA ? THEME_DATA.value : "System"
 				if (THEME === "System") {
 					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
@@ -162,7 +174,7 @@ export default {
 				}
 
 				// 应用语言
-				const LANGUAGE_DATA = await this.$DB.configs.get("language")
+				const LANGUAGE_DATA = await Dexie.configs.get("language")
 				const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
 				if (LANGUAGE === "System") {
 					const SYSTEM_LANG = window.navigator.language || "zh-CN"
@@ -173,12 +185,12 @@ export default {
 					info.Language = LANGUAGE
 				}
 				// Log悬浮窗
-				const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.configs.get("logSuspensionWindow")
+				const LOG_SUSPENSION_WINDOW_DATA = await Dexie.configs.get("logSuspensionWindow")
 				this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
 				info.LogSuspensionWindow = this.isLogSuspensionWindow
-				this.$log.info(`[${this.name}] 初始化配置`, info)
+				Logger.info(`[${this.name}] 初始化配置`, info)
 			} catch (error) {
-				this.$log.error(`[${this.name}] 配置初始化失败`, error)
+				Logger.error(`[${this.name}] 配置初始化失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("app.configInitializationError")}`)
 			}
 		},
@@ -204,6 +216,23 @@ export default {
 		 */
 		logSuspensionWindow() {
 			this.isLogSuspensionWindow = !this.isLogSuspensionWindow
+		},
+		/**
+		 * 加载插件系统
+		 */
+		loadPluginSystem() {
+			try {
+				// 延迟一点, 避免阻塞渲染
+				setTimeout(async () => {
+					const APP = this.$.appContext.app
+					await unloadPlugins()
+					await initEnabledPlugins(APP)
+					Logger.info("[App.vue] 插件加载完成")
+					this.loading.status = false
+				}, 300)
+			} catch (error) {
+				Logger.error("[App.vue] 插件系统加载失败", error)
+			}
 		}
 	}
 }
