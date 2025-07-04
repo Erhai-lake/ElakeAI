@@ -32,16 +32,19 @@ function createWindow() {
 		mainWindow.loadFile(PATH.join(__dirname, "../dist_vue/index.html")).catch((error) => {
 			Logger.error("[main] 无法加载文件:", error)
 		})
-
-		mainWindow.webContents.openDevTools()
 	}
 }
 
 // 当Electron完成初始化时创建窗口
 app.whenReady().then(() => {
 	// 监听渲染进程发送的消息
-	ipcMain.handle("get-all-plugins", () => {
-		return scanAllPlugins()
+	ipcMain.handle("get-all-plugins", async () => {
+		try {
+			return await scanAllPlugins()
+		} catch (error) {
+			Logger.error("[main] get-all-plugins 扫描失败", error)
+			return []
+		}
 	})
 	// 创建窗口
 	createWindow()
