@@ -256,14 +256,16 @@ export default {
 			<div v-else>!!!插件全部加载完成!!!</div>
 		</div>
 	</div>
-	<HomeSidebar v-if="!loading.status"/>
-	<div class="RouterView" v-if="!loading.status">
-		<router-view/>
-	</div>
-	<Button class="IsLog" v-if="isLogSuspensionWindow" @click="isLogView = !isLogView">Log</Button>
-	<div class="IsLogSuspensionWindow" v-if="isLogView && isLogSuspensionWindow">
-		<Log/>
-	</div>
+	<template v-if="!loading.status">
+		<HomeSidebar/>
+		<div class="RouterView">
+			<router-view/>
+		</div>
+		<Button class="IsLog" v-if="isLogSuspensionWindow" @click="isLogView = !isLogView">Log</Button>
+		<div class="IsLogSuspensionWindow" v-if="isLogView && isLogSuspensionWindow">
+			<Log/>
+		</div>
+	</template>
 </template>
 
 <style lang="less">
