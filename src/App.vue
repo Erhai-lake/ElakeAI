@@ -9,7 +9,7 @@ import LoadingPage from "@/components/LoadingPage.vue"
 import Dexie from "@/services/Dexie"
 import Logger, {setupLogCleanup} from "@/services/Logger"
 import {unloadPlugins} from "@/services/plugin/UnloadPlugins";
-import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins";
+import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 // import eruda from "eruda"
 
 export default {
@@ -36,31 +36,38 @@ export default {
 			this.loading.totalCount = DETAIL.total || 0
 			this.loading.currentPluginName = DETAIL.name || ""
 		})
+		EventBus.on("[update] pluginReady", () => {
+			this.$.appContext.provides.$DB = Dexie
+			this.$.appContext.provides.$log = Logger
+		})
 		EventBus.on("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
 		EventBus.on("[function] configInitialization", this.configInitialization)
 	},
 	beforeUnmount() {
-		EventBus.off("[update] plugin-progress")
+		EventBus.off("[update] pluginProgress")
 		EventBus.off("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
 		EventBus.off("[function] configInitialization", this.configInitialization)
 	},
 	async created() {
 		// 加载界面初始化
 		this.updateMessage()
-		// 数据库操作
-		this.$.appContext.provides.$DB = Dexie
-		// 日志
-		this.$.appContext.provides.$log = Logger
-		// 加载插件系统
-		await this.loadPluginSystem()
+		// 环境信息
+		this.information()
 		// 移动端调试工具eruda
 		// if (process.env.NODE_ENV === "development") {
 		//     eruda.init()
 		// }
-		// 日志清理定时任务
-		await setupLogCleanup()
-		setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
-		await this.configInitialization()
+		// 初始化配置
+		await this.$nextTick(() => {
+			requestIdleCallback(() => this.configInitialization())
+		})
+		// 空闲时间加载执行
+		requestIdleCallback(async () => {
+			// 日志清理定时任务
+			await setupLogCleanup()
+			setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
+			await this.loadPluginSystem()
+		})
 	},
 	methods: {
 		/**
@@ -73,7 +80,7 @@ export default {
 			return i18nRegistry.translate(key, params)
 		},
 		/**
-		 * 日志保存运行环境
+		 * 保存运行环境
 		 */
 		information() {
 			Logger.info(`[${this.name}] 环境信息`, this.getEnvInfo())
@@ -220,7 +227,7 @@ export default {
 		/**
 		 * 加载插件系统
 		 */
-		loadPluginSystem() {
+		async loadPluginSystem() {
 			try {
 				// 延迟一点, 避免阻塞渲染
 				setTimeout(async () => {

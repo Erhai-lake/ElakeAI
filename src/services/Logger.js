@@ -7,7 +7,7 @@ const formatMessage = (arg) => {
 	}
 	if (typeof arg === "object") {
 		try {
-			return JSON.stringify(arg, null, 2)
+			return JSON.stringify(arg, null)
 		} catch {
 			return "[Circular Object]"
 		}

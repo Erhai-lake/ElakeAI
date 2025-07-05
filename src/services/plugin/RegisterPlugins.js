@@ -116,4 +116,5 @@ export async function initEnabledPlugins(appContext) {
 			})
 		}
 	}
+	EventBus.emit("[update] pluginReady")
 }
