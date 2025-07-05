@@ -23,6 +23,11 @@ function createWindow() {
 		}
 	})
 
+	// 监听加载页面失败
+	mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDesc, validatedURL) => {
+		Logger.error("[main] 页面加载失败:", {errorCode, errorDesc, validatedURL})
+	})
+
 	// 移除默认菜单
 	mainWindow.removeMenu()
 	// 创建加载页
@@ -33,40 +38,25 @@ function createWindow() {
 	// 监听加载窗口关闭消息
 	ipcMain.on("loading-window-closed", () => {
 		if (!isMainWindowLoaded) {
-			if (mainWindow && !mainWindow.isDestroyed()) {
-				mainWindow.close()
-			}
+			if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close()
 			app.quit()
 		} else {
 			// 主窗口已加载完成, 不退出应用
-			if (loadingWin && !loadingWin.isDestroyed()) {
-				loadingWin.destroy()
-			}
-			if (mainWindow && !mainWindow.isDestroyed()) {
-				mainWindow.show()
-			}
+			if (loadingWin && !loadingWin.isDestroyed()) loadingWin.destroy()
+			if (mainWindow && !mainWindow.isDestroyed()) mainWindow.show()
 		}
 	})
 
 	if (process.env.VUE_DEV_SERVER_URL) {
 		mainWindow.loadURL(process.env.VUE_DEV_SERVER_URL).then(() => {
 			Logger.info("[main] 加载开发环境页面完成")
-		}).catch((error) => {
-			Logger.error("[main] 无法加载开发URL:", error)
-		})
-		if (!isLoadingWindowClosed) {
 			mainWindow.webContents.openDevTools()
-		}
+		}).catch(error => Logger.error("[main] 无法加载开发URL:", error))
 	} else {
 		mainWindow.loadFile(PATH.join(__dirname, "../dist_vue/index.html")).then(() => {
-			if (!isLoadingWindowClosed) {
-				Logger.info("[main] 加载生产页面完成")
-			}
-		}).catch((error) => {
-			if (!isLoadingWindowClosed) {
-				Logger.error("[main] 无法加载文件:", error)
-			}
-		})
+			Logger.info("[main] 加载生产页面完成")
+			mainWindow.webContents.openDevTools()
+		}).catch(error => Logger.error("[main] 无法加载页面:", error))
 	}
 
 	// 当主窗口加载完成
