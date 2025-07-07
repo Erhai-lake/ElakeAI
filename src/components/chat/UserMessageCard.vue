@@ -91,14 +91,18 @@ export default {
 		</div>
 		<div class="message-bottom">
 			<div class="functional-controls">
-				<Button @click="remove()">{{ t("components.UserMessageCard.remove") }}</Button>
-				<Button @click="editInput()" v-if="!editingContent.show">
-					{{ t("components.UserMessageCard.edit") }}
-				</Button>
-				<Button @click="saveContent()" v-if="editingContent.show">{{ t("components.UserMessageCard.save") }}</Button>
-				<Button @click="editingContent.show = false" v-if="editingContent.show">
-					{{ t("components.AssistantMessageCard.cancel") }}
-				</Button>
+				<template v-if="editingContent.show">
+					<Button @click="saveContent()">{{ t("components.UserMessageCard.save") }}</Button>
+					<Button @click="editingContent.show = false">
+						{{ t("components.UserMessageCard.cancel") }}
+					</Button>
+				</template>
+				<template v-if="!editingContent.show">
+					<Button @click="remove()">{{ t("components.UserMessageCard.remove") }}</Button>
+					<Button @click="editInput()">
+						{{ t("components.UserMessageCard.edit") }}
+					</Button>
+				</template>
 			</div>
 			<div class="message-info">
 				<div>
