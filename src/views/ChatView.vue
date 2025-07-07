@@ -253,6 +253,7 @@ export default {
 				// 更新数据库中的消息
 				const DATA = JSON.parse(JSON.stringify(this.data.data))
 				await this.$DB.chats.update(this.data.key, {data: DATA})
+				toastRegistry.success(`[${this.name}] ${this.t("views.ChatView.toast.removeMessageSuccess")}`)
 				// 更新侧边栏
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
@@ -270,6 +271,7 @@ export default {
 				// 更新数据库中的消息
 				const DATA = JSON.parse(JSON.stringify(this.data.data))
 				await this.$DB.chats.update(this.data.key, {data: DATA})
+				toastRegistry.success(`[${this.name}] ${this.t("views.ChatView.toast.editMessageSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 消息编辑错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.editMessageError")}`)

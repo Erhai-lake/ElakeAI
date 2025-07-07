@@ -245,6 +245,18 @@ export default {
 				// 设置最大高度为 600px
 				textarea.style.height = Math.min(scrollHeight, 600) + "px"
 			}
+		},
+		/**
+		 * 当 textarea 失去焦点时隐藏输入框
+		 */
+		handleTextareaBlur() {
+			if (this.editingContent.value.trim() === "") {
+				this.editingContent.show = false
+			} else if (this.editingContent.value !== this.message.message.content) {
+				this.saveContent()
+			} else {
+				this.editingContent.show = false
+			}
 		}
 	}
 }
@@ -273,7 +285,8 @@ export default {
 				v-model="editingContent.value"
 				class="content-input"
 				ref="textarea"
-				@input="adjustTextareaHeight"></textarea>
+				@input="adjustTextareaHeight"
+				@blur="handleTextareaBlur"></textarea>
 		</div>
 		<div class="message-bottom">
 			<div class="functional-controls">

@@ -262,7 +262,9 @@
 				"mermaidInitializationError": "Mermaid初始化失败",
 				"titleUpdated": "标题更新成功",
 				"titleUpdateError": "标题更新失败",
+				"removeMessageSuccess": "移除消息成功",
 				"removeMessageError": "移除消息失败",
+				"editMessageSuccess": "编辑消息成功",
 				"editMessageError": "编辑消息失败"
 			},
 			"FunctionalControls": {

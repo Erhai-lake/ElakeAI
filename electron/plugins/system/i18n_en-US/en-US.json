@@ -262,7 +262,9 @@
 				"mermaidInitializationError": "Mermaid initialization failed",
 				"titleUpdated": "Title updated successfully",
 				"titleUpdateError": "Failed to update title",
+				"removeMessageSuccess": "Message removed successfully",
 				"removeMessageError": "Failed to remove message",
+				"editMessageSuccess": "Message edited successfully",
 				"editMessageError": "Failed to edit message"
 			},
 			"FunctionalControls": {
