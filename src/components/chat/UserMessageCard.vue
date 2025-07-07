@@ -65,6 +65,9 @@ export default {
 		editInput() {
 			this.editingContent.value = this.message.message.content
 			this.editingContent.show = true
+			this.$nextTick(() => {
+				this.adjustTextareaHeight()
+			})
 		},
 		/**
 		 * 保存消息
@@ -74,6 +77,19 @@ export default {
 			if (this.editingContent.value === this.message.message.content) return
 			if (this.editingContent.value.trim() === "") return
 			EventBus.emit("[function] editMessage", this.message.id, this.editingContent.value)
+		},
+		/**
+		 * 调整 textarea 高度
+		 */
+		adjustTextareaHeight() {
+			const textarea = this.$refs.textarea
+			if (textarea) {
+				textarea.style.height = "auto"
+				// 获取滚动高度
+				const scrollHeight = textarea.scrollHeight
+				// 设置最大高度为 600px
+				textarea.style.height = Math.min(scrollHeight, 600) + "px"
+			}
 		}
 	}
 }
@@ -87,7 +103,9 @@ export default {
 				v-else
 				spellcheck="false"
 				v-model="editingContent.value"
-				class="content-input"></textarea>
+				class="content-input"
+				ref="textarea"
+				@input="adjustTextareaHeight"></textarea>
 		</div>
 		<div class="message-bottom">
 			<div class="functional-controls">
@@ -147,7 +165,6 @@ export default {
 		padding: 8px 12px;
 		box-sizing: border-box;
 		width: 100%;
-		height: 600px;
 		border: 1px solid var(--border-color);
 		border-radius: 4px;
 		background: var(--background-color);
