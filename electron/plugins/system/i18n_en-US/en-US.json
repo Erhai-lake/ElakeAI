@@ -158,7 +158,11 @@
 		},
 		"UserMessageCard": {
 			"earthOnline": "Earth Online",
-			"players": "Players"
+			"players": "Players",
+			"remove": "Remove",
+			"edit": "Edit",
+			"save": "Save",
+			"cancel": "Cancel"
 		},
 		"CodeBlockRenderer": {
 			"copy": "Copy",
@@ -167,7 +171,12 @@
 			"notSupported": "Unsupported language"
 		},
 		"AssistantMessageCard": {
-			"reasoning": "Reasoning"
+			"reasoning": "Reasoning",
+			"thinking": "Thinking...",
+			"remove": "Remove",
+			"edit": "Edit",
+			"save": "Save",
+			"cancel": "Cancel"
 		},
 		"Log": {
 			"toast": {
@@ -253,7 +262,8 @@
 				"mermaidInitializationError": "Mermaid initialization failed",
 				"titleUpdated": "Title updated successfully",
 				"titleUpdateError": "Failed to update title",
-				"removeMessageError": "Failed to remove message"
+				"removeMessageError": "Failed to remove message",
+				"editMessageError": "Failed to edit message"
 			},
 			"FunctionalControls": {
 				"scrollToTopMessages": "Scroll to Top",

@@ -4,15 +4,23 @@ import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
-    name: "UserMessageCard",
-    components: {Button},
-    props: {
-        message: {
-            type: Object,
-            required: true
-        }
-    },
-    methods: {
+	name: "UserMessageCard",
+	components: {Button},
+	props: {
+		message: {
+			type: Object,
+			required: true
+		}
+	},
+	data() {
+		return {
+			editingContent: {
+				show: false,
+				value: ""
+			}
+		}
+	},
+	methods: {
 		/**
 		 * 翻译
 		 * @param key {String} - 键
@@ -22,106 +30,153 @@ export default {
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
 		},
-        /**
-         * 格式化信息
-         * @param message {String} - 信息
-         * @returns {String} - 格式化后的信息
-         */
-        formattingMessage(message) {
-            return message.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")
-        },
-        /**
-         * 格式化时间戳
-         * @param {number} timestamp 时间戳
-         * @returns {string} 格式化后的时间字符串
-         */
-        formatTimestamp(timestamp) {
-            const DATE = new Date(timestamp)
-            const YEAR = DATE.getFullYear()
-            const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
-            const DAY = String(DATE.getDate()).padStart(2, "0")
-            const HOURS = String(DATE.getHours()).padStart(2, "0")
-            const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
-            const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
-            return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
-        },
-        /**
-         * 移除消息
-         * @param {string} id 消息ID
-         */
-        remove(id) {
-            EventBus.emit("[function] removeMessage", id)
-        }
-    }
+		/**
+		 * 格式化信息
+		 * @param message {String} - 信息
+		 * @returns {String} - 格式化后的信息
+		 */
+		formattingMessage(message) {
+			return message.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")
+		},
+		/**
+		 * 格式化时间戳
+		 * @param {number} timestamp 时间戳
+		 * @returns {string} 格式化后的时间字符串
+		 */
+		formatTimestamp(timestamp) {
+			const DATE = new Date(timestamp)
+			const YEAR = DATE.getFullYear()
+			const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
+			const DAY = String(DATE.getDate()).padStart(2, "0")
+			const HOURS = String(DATE.getHours()).padStart(2, "0")
+			const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
+			const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
+			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
+		},
+		/**
+		 * 移除消息
+		 */
+		remove() {
+			EventBus.emit("[function] removeMessage", this.message.id)
+		},
+		/**
+		 * 显示输入框
+		 */
+		editInput() {
+			this.editingContent.value = this.message.message.content
+			this.editingContent.show = true
+		},
+		/**
+		 * 保存消息
+		 */
+		saveContent() {
+			this.editingContent.show = false
+			if (this.editingContent.value === this.message.message.content) return
+			if (this.editingContent.value.trim() === "") return
+			EventBus.emit("[function] editMessage", this.message.id, this.editingContent.value)
+		}
+	}
 }
 </script>
 
 <template>
-    <div class="user-message-card">
-        <div class="message-content" v-html="formattingMessage(message.message.content)"></div>
-        <div class="message-bottom">
-            <div class="functional-controls">
-                <Button @click="remove(message.id)">移除</Button>
-            </div>
-            <div class="message-info">
-                <div>
-                    [{{ t("components.UserMessageCard.earthOnline") }}]
-                    -
-                    [{{ t("components.UserMessageCard.players") }}]
-                    -
-                    {{ formatTimestamp(message.timestamp) }}
-                </div>
-                <div>{{ message.id }}</div>
-            </div>
-        </div>
-    </div>
+	<div class="user-message-card">
+		<div class="message-content">
+			<div v-if="!editingContent.show" v-html="formattingMessage(message.message.content)"></div>
+			<textarea
+				v-else
+				spellcheck="false"
+				v-model="editingContent.value"
+				class="content-input"></textarea>
+		</div>
+		<div class="message-bottom">
+			<div class="functional-controls">
+				<Button @click="remove()">{{ t("components.UserMessageCard.remove") }}</Button>
+				<Button @click="editInput()" v-if="!editingContent.show">
+					{{ t("components.UserMessageCard.edit") }}
+				</Button>
+				<Button @click="saveContent()" v-if="editingContent.show">{{ t("components.UserMessageCard.save") }}</Button>
+				<Button @click="editingContent.show = false" v-if="editingContent.show">
+					{{ t("components.AssistantMessageCard.cancel") }}
+				</Button>
+			</div>
+			<div class="message-info">
+				<div>
+					[{{ t("components.UserMessageCard.earthOnline") }}]
+					-
+					[{{ t("components.UserMessageCard.players") }}]
+					-
+					{{ formatTimestamp(message.timestamp) }}
+				</div>
+				<div>{{ message.id }}</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <style scoped lang="less">
 @media screen and (max-width: 768px) {
-    .message-info {
-        display: none;
-    }
+	.message-info {
+		display: none;
+	}
 }
 
 .user-message-card {
-    position: relative;
-    padding: 16px 20px;
-    border-radius: 12px;
+	position: relative;
+	padding: 16px 20px;
+	border-radius: 12px;
 
-    .user & {
-        background-color: var(--chat-user-background-color);
-        color: var(--chat-user-text-color);
-    }
+	.user & {
+		background-color: var(--chat-user-background-color);
+		color: var(--chat-user-text-color);
+	}
 
-    .message-content{
-        font-size: 16px;
-        line-height: 1.5;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        white-space: pre-wrap;
-    }
+	.message-content {
+		font-size: 16px;
+		line-height: 1.5;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		white-space: pre-wrap;
+	}
 
-    .message-bottom {
-        margin-top: 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        white-space: pre-wrap;
-        word-break: break-word;
-    }
+	.content-input {
+		padding: 8px 12px;
+		box-sizing: border-box;
+		width: 100%;
+		height: 600px;
+		border: 1px solid var(--border-color);
+		border-radius: 4px;
+		background: var(--background-color);
+		color: var(--text-color);
+		font-size: 18px;
 
-    &:hover .functional-controls {
-        opacity: 1;
-    }
+		&:focus {
+			outline: none;
+		}
+	}
 
-    .functional-controls {
-        opacity: 0;
-    }
+	.message-bottom {
+		margin-top: 8px;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
 
-    .message-info {
-        font-size: 12px;
-        color: var(--chat-dialogue-time-text-color);
-    }
+	&:hover .functional-controls {
+		opacity: 1;
+	}
+
+	.functional-controls {
+		opacity: 0;
+		display: flex;
+		gap: 10px;
+	}
+
+	.message-info {
+		font-size: 12px;
+		color: var(--chat-dialogue-time-text-color);
+	}
 }
 </style>

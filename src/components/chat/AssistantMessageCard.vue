@@ -38,19 +38,26 @@ export default {
 		return {
 			parsedBlocks: [],
 			reasoningHtml: "",
-			isReasoningExpanded: false
+			isReasoningExpanded: false,
+			reasoning: this.t("components.AssistantMessageCard.reasoning"),
+			editingContent: {
+				show: false,
+				value: ""
+			}
 		}
 	},
 	watch: {
 		"message.message.reasoning"(newVal, oldVal) {
 			if (newVal && newVal !== oldVal) {
 				this.isReasoningExpanded = true
+				this.reasoning = this.t("components.AssistantMessageCard.thinking")
 				this.parseReasoning()
 			}
 		},
 		"message.message.content"(newVal, oldVal) {
 			if (newVal !== oldVal) {
 				this.isReasoningExpanded = false
+				this.reasoning = this.t("components.AssistantMessageCard.reasoning")
 				const HAS_UNCLOSED_MERMAID = /```(mermaid|flow)[\s\S]*$/.test(newVal) && !/```(mermaid|flow)[\s\S]*```/.test(newVal)
 				if (!HAS_UNCLOSED_MERMAID) {
 					this.parseContent()
@@ -71,13 +78,6 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 移除消息
-		 * @param {string} id 消息ID
-		 */
-		remove(id) {
-			EventBus.emit("[function] removeMessage", id)
 		},
 		/**
 		 * 格式化时间戳
@@ -187,6 +187,9 @@ export default {
 			}
 			this.parsedBlocks = BLOCKS
 		},
+		/**
+		 * 解析推理
+		 */
 		parseReasoning() {
 			if (!this.message.message.reasoning) {
 				this.reasoningHtml = ""
@@ -204,6 +207,28 @@ export default {
 				.use(markdownItMathjax3)
 				.use(imgLazyload)
 			this.reasoningHtml = MD.render(this.message.message.reasoning)
+		},
+		/**
+		 * 移除消息
+		 */
+		remove() {
+			EventBus.emit("[function] removeMessage", this.message.id)
+		},
+		/**
+		 * 显示输入框
+		 */
+		editInput() {
+			this.editingContent.value = this.message.message.content
+			this.editingContent.show = true
+		},
+		/**
+		 * 保存消息
+		 */
+		saveContent() {
+			this.editingContent.show = false
+			if (this.editingContent.value === this.message.message.content) return
+			if (this.editingContent.value.trim() === "") return
+			EventBus.emit("[function] editMessage", this.message.id, this.editingContent.value)
 		}
 	}
 }
@@ -213,7 +238,7 @@ export default {
 	<div class="assistant-message-card">
 		<FoldingPanel class="reasoning-content" v-if="message.message.reasoning" :is="isReasoningExpanded">
 			<template #Title>
-				<span>{{ t("components.AssistantMessageCard.reasoning") }}</span>
+				<span>{{ reasoning }}</span>
 			</template>
 			<template #Content>
 				<MarkdownBlockRenderer :html="reasoningHtml"/>
@@ -223,12 +248,25 @@ export default {
 			<component
 				v-for="(block, index) in parsedBlocks"
 				:key="index"
+				v-if="!editingContent.show"
 				:is="block.component"
 				v-bind="block.props"/>
+			<textarea
+				v-else
+				spellcheck="false"
+				v-model="editingContent.value"
+				class="content-input"></textarea>
 		</div>
 		<div class="message-bottom">
 			<div class="functional-controls">
-				<Button @click="remove(message.id)">移除</Button>
+				<Button @click="remove()">{{ t("components.AssistantMessageCard.remove") }}</Button>
+				<Button @click="editInput()" v-if="!editingContent.show">
+					{{ t("components.AssistantMessageCard.edit") }}
+				</Button>
+				<Button @click="saveContent()" v-if="editingContent.show">{{ t("components.AssistantMessageCard.save") }}</Button>
+				<Button @click="editingContent.show = false" v-if="editingContent.show">
+					{{ t("components.AssistantMessageCard.cancel") }}
+				</Button>
 			</div>
 			<div class="message-info">
 				<div>
@@ -282,6 +320,22 @@ export default {
 		white-space: pre-wrap;
 	}
 
+	.content-input {
+		padding: 8px 12px;
+		box-sizing: border-box;
+		width: 100%;
+		height: 600px;
+		border: 1px solid var(--border-color);
+		border-radius: 4px;
+		background: var(--background-color);
+		color: var(--text-color);
+		font-size: 18px;
+
+		&:focus {
+			outline: none;
+		}
+	}
+
 	.message-bottom {
 		margin-top: 8px;
 		display: flex;
@@ -297,6 +351,8 @@ export default {
 
 	.functional-controls {
 		opacity: 0;
+		display: flex;
+		gap: 10px;
 	}
 
 	.message-info {

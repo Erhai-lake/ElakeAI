@@ -158,7 +158,11 @@
 		},
 		"UserMessageCard": {
 			"earthOnline": "地球Online",
-			"players": "玩家"
+			"players": "玩家",
+			"remove": "移除",
+			"edit": "编辑",
+			"save": "保存",
+			"cancel": "取消"
 		},
 		"CodeBlockRenderer": {
 			"copy": "复制",
@@ -167,7 +171,12 @@
 			"notSupported": "不支持的语言"
 		},
 		"AssistantMessageCard": {
-			"reasoning": "推理"
+			"reasoning": "推理",
+			"thinking": "思考中...",
+			"remove": "移除",
+			"edit": "编辑",
+			"save": "保存",
+			"cancel": "取消"
 		},
 		"Log": {
 			"toast": {
@@ -253,7 +262,8 @@
 				"mermaidInitializationError": "Mermaid初始化失败",
 				"titleUpdated": "标题更新成功",
 				"titleUpdateError": "标题更新失败",
-				"removeMessageError": "移除消息失败"
+				"removeMessageError": "移除消息失败",
+				"editMessageError": "编辑消息失败"
 			},
 			"FunctionalControls": {
 				"scrollToTopMessages": "返回顶部",

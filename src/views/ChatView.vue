@@ -16,7 +16,7 @@ export default {
 		return {
 			name: "ChatView",
 			route: useRoute(),
-				currentMessageId: null,
+			currentMessageId: null,
 			typingEffect: {
 				active: false,
 				cursorVisible: true,
@@ -44,12 +44,14 @@ export default {
 		EventBus.on("[stream] streamStream", this.streamStream)
 		EventBus.on("[stream] streamComplete", this.streamComplete)
 		EventBus.on("[function] removeMessage", this.removeMessage)
+		EventBus.on("[function] editMessage", this.editMessage)
 	},
 	beforeUnmount() {
 		EventBus.off("[stream] userMessage", this.userMessage)
 		EventBus.off("[stream] streamStream", this.streamStream)
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 		EventBus.off("[function] removeMessage", this.removeMessage)
+		EventBus.off("[function] editMessage", this.editMessage)
 	},
 	methods: {
 		/**
@@ -256,6 +258,21 @@ export default {
 			} catch (error) {
 				this.$log.error(`[${this.name}] 消息移除错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.removeMessageError")}`)
+			}
+		},
+		async editMessage(id, content) {
+			try {
+				// 编辑本地中的消息
+				const INDEX = this.data.data.findIndex((msg) => msg.id === id)
+				if (INDEX !== -1) {
+					this.data.data[INDEX].message.content = content
+				}
+				// 更新数据库中的消息
+				const DATA = JSON.parse(JSON.stringify(this.data.data))
+				await this.$DB.chats.update(this.data.key, {data: DATA})
+			} catch (error) {
+				this.$log.error(`[${this.name}] 消息编辑错误`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.editMessageError")}`)
 			}
 		}
 	}
