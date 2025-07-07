@@ -120,7 +120,7 @@
 		"Selector": {
 			"loading": "Loading..."
 		},
-		"HomeSidebar": {
+		"Sidebar": {
 			"toast": {
 				"errorGettingChatList": "Failed to retrieve chat list",
 				"successDeletingChatList": "Chat list deleted successfully",

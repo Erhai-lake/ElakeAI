@@ -120,7 +120,7 @@
 		"Selector": {
 			"loading": "加载中..."
 		},
-		"HomeSidebar": {
+		"Sidebar": {
 			"toast": {
 				"errorGettingChatList": "获取聊天列表失败",
 				"successDeletingChatList": "删除聊天列表成功",

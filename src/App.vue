@@ -1,5 +1,5 @@
 <script>
-import HomeSidebar from "@/components/HomeSidebar.vue"
+import Sidebar from "@/components/Sidebar.vue"
 import Log from "@/components/options/Log.vue"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
@@ -14,7 +14,7 @@ import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 
 export default {
 	name: "App",
-	components: {LoadingPage, Button, Log, HomeSidebar},
+	components: {LoadingPage, Button, Log, Sidebar},
 	data() {
 		return {
 			name: "App",
@@ -257,7 +257,7 @@ export default {
 		</div>
 	</div>
 	<template v-if="!loading.status">
-		<HomeSidebar/>
+		<Sidebar/>
 		<div class="RouterView">
 			<router-view/>
 		</div>
