@@ -2,6 +2,7 @@
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import { encode } from "gpt-tokenizer"
 
 export default {
 	name: "UserMessageCard",
@@ -32,19 +33,17 @@ export default {
 		},
 		/**
 		 * 格式化信息
-		 * @param message {String} - 信息
 		 * @returns {String} - 格式化后的信息
 		 */
-		formattingMessage(message) {
-			return message.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")
+		formattingMessage() {
+			return this.message.message.content.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")
 		},
 		/**
 		 * 格式化时间戳
-		 * @param {number} timestamp 时间戳
 		 * @returns {string} 格式化后的时间字符串
 		 */
-		formatTimestamp(timestamp) {
-			const DATE = new Date(timestamp)
+		formatTimestamp() {
+			const DATE = new Date(this.message.timestamp)
 			const YEAR = DATE.getFullYear()
 			const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
 			const DAY = String(DATE.getDate()).padStart(2, "0")
@@ -52,6 +51,12 @@ export default {
 			const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
 			const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
 			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
+		},
+		/**
+		 * 计算tokens
+		 */
+		tokens() {
+			return encode(this.message.message.content).length
 		},
 		/**
 		 * 移除消息
@@ -107,7 +112,7 @@ export default {
 <template>
 	<div class="user-message-card">
 		<div class="message-content">
-			<div v-if="!editingContent.show" v-html="formattingMessage(message.message.content)"></div>
+			<div v-if="!editingContent.show" v-html="formattingMessage()"></div>
 			<textarea
 				v-else
 				spellcheck="false"
@@ -138,9 +143,13 @@ export default {
 					-
 					[{{ t("components.UserMessageCard.players") }}]
 					-
-					{{ formatTimestamp(message.timestamp) }}
+					{{ formatTimestamp() }}
 				</div>
-				<div>{{ message.id }}</div>
+				<div>
+					{{ message.id }}
+					-
+					{{ tokens() }} tokens
+				</div>
 			</div>
 		</div>
 	</div>

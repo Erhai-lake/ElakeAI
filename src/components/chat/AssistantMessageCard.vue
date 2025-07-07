@@ -1,4 +1,5 @@
 <script>
+import {encode} from "gpt-tokenizer"
 import markdownit from "markdown-it"
 import markdownItTaskLists from "markdown-it-task-lists"
 import {full as emoji} from "markdown-it-emoji"
@@ -81,11 +82,10 @@ export default {
 		},
 		/**
 		 * 格式化时间戳
-		 * @param {number} timestamp 时间戳
 		 * @returns {string} 格式化后的时间字符串
 		 */
-		formatTimestamp(timestamp) {
-			const DATE = new Date(timestamp)
+		formatTimestamp() {
+			const DATE = new Date(this.message.timestamp)
 			const YEAR = DATE.getFullYear()
 			const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
 			const DAY = String(DATE.getDate()).padStart(2, "0")
@@ -95,13 +95,18 @@ export default {
 			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
 		},
 		/**
+		 * 计算tokens
+		 */
+		tokens() {
+			return encode(this.message.message.content).length
+		},
+		/**
 		 * 获取模型图片
-		 * @param platform {String} - 平台名称
 		 * @returns {String} - 平台图片
 		 */
-		modelImages(platform) {
-			if (!platform) return null
-			const PLATFORM = platformRegistry.getPlatform(platform)
+		modelImages() {
+			if (!this.message.model.platform) return null
+			const PLATFORM = platformRegistry.getPlatform(this.message.model.platform)
 			return PLATFORM.info.image
 		},
 		/**
@@ -304,12 +309,16 @@ export default {
 					-
 					[{{ message.model.model }}]
 					-
-					{{ formatTimestamp(message.timestamp) }}
+					{{ formatTimestamp() }}
 				</div>
-				<div>{{ message.id }}</div>
+				<div>
+					{{ message.id }}
+					-
+					{{ tokens() }} tokens
+				</div>
 			</div>
 		</div>
-		<img :src="modelImages(message.model.platform)" :alt="message.model.platform" class="model-logo">
+		<img :src="modelImages()" :alt="message.model.platform" class="model-logo">
 	</div>
 </template>
 
