@@ -221,6 +221,7 @@ export default {
 			this.editingContent.value = this.message.message.content
 			this.editingContent.show = true
 			this.$nextTick(() => {
+				this.$refs.textarea.focus()
 				this.adjustTextareaHeight()
 			})
 		},
@@ -228,35 +229,31 @@ export default {
 		 * 保存消息
 		 */
 		saveContent() {
-			this.editingContent.show = false
 			if (this.editingContent.value === this.message.message.content) return
 			if (this.editingContent.value.trim() === "") return
 			EventBus.emit("[function] editMessage", this.message.id, this.editingContent.value)
+			this.editingContent.show = false
 		},
 		/**
 		 * 调整 textarea 高度
 		 */
 		adjustTextareaHeight() {
-			const textarea = this.$refs.textarea
-			if (textarea) {
-				textarea.style.height = "auto"
+			const TEXTAREA = this.$refs.textarea
+			if (TEXTAREA) {
+				TEXTAREA.style.height = "auto"
 				// 获取滚动高度
-				const scrollHeight = textarea.scrollHeight
+				const scrollHeight = TEXTAREA.scrollHeight
 				// 设置最大高度为 600px
-				textarea.style.height = Math.min(scrollHeight, 600) + "px"
+				TEXTAREA.style.height = Math.min(scrollHeight, 600) + "px"
 			}
 		},
 		/**
 		 * 当 textarea 失去焦点时隐藏输入框
 		 */
 		handleTextareaBlur() {
-			if (this.editingContent.value.trim() === "") {
+			setTimeout(() => {
 				this.editingContent.show = false
-			} else if (this.editingContent.value !== this.message.message.content) {
-				this.saveContent()
-			} else {
-				this.editingContent.show = false
-			}
+			}, 200)
 		}
 	}
 }
@@ -291,14 +288,14 @@ export default {
 		<div class="message-bottom">
 			<div class="functional-controls">
 				<template v-if="editingContent.show">
-					<Button @click="saveContent()">{{ t("components.AssistantMessageCard.save") }}</Button>
 					<Button @click="editingContent.show = false">
 						{{ t("components.AssistantMessageCard.cancel") }}
 					</Button>
+					<Button @click="saveContent">{{ t("components.AssistantMessageCard.save") }}</Button>
 				</template>
 				<template v-if="!editingContent.show">
-					<Button @click="remove()">{{ t("components.AssistantMessageCard.remove") }}</Button>
-					<Button @click="editInput()">{{ t("components.AssistantMessageCard.edit") }}</Button>
+					<Button @click="remove">{{ t("components.AssistantMessageCard.remove") }}</Button>
+					<Button @click="editInput">{{ t("components.AssistantMessageCard.edit") }}</Button>
 				</template>
 			</div>
 			<div class="message-info">
