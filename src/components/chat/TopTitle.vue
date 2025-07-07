@@ -48,10 +48,10 @@ export default {
             this.editingTitle.value = this.title
             this.editingTitle.show = true
             this.$nextTick(() => {
-                const input = this.$el.querySelector(".top-title input")
-                if (input) {
-                    input.focus()
-                    input.select()
+                const INPUT = this.$el.querySelector(".top-title input")
+                if (INPUT) {
+					INPUT.focus()
+					INPUT.select()
                 }
             })
         },
