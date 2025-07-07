@@ -51,22 +51,15 @@ export default {
 		async chatListGet() {
 			try {
 				const CHAT_LIST = await this.$DB.chats.toArray()
-				let GROUPED_CHATS = []
-				for (const ITEM of CHAT_LIST) {
-					GROUPED_CHATS = GROUPED_CHATS || []
-					let timestamp = ITEM.timestamp
-					if (ITEM.data.length > 0) {
-						timestamp = ITEM.data[ITEM.data.length - 1].timestamp
-					}
-					GROUPED_CHATS.push({
+				this.chatList = CHAT_LIST.map(ITEM => {
+					const lastMsg = ITEM.data.at(-1)
+					return {
 						key: String(ITEM.key),
 						title: ITEM.title,
 						length: ITEM.data.length,
-						timestamp: timestamp,
-					})
-				}
-				// 按时间排序
-				this.chatList = GROUPED_CHATS.sort((a, b) => b.timestamp - a.timestamp)
+						timestamp: lastMsg?.timestamp || ITEM.timestamp,
+					}
+				}).sort((a, b) => b.timestamp - a.timestamp)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表获取失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorGettingChatList")}`)
@@ -118,55 +111,81 @@ export default {
 <template>
 	<div
 		class="sidebar-container"
-		:class="sidebarStatus ? 'sidebar-expand-container' : 'sidebar-stow-container'">
+		:class="sidebarStatus ? 'sidebar-expand-container' : 'sidebar-stow-container'"
+		:aria-label="t('components.Sidebar.barrierFree.title')">
 		<div class="sidebar-top">
-			<div class="sidebar-top-logo"></div>
-			<p v-if="sidebarStatus">ElakeAI</p>
-			<router-link to="/" class="sidebar-new" :title="t('components.Sidebar.function.new')">
-				<svg class="icon">
+			<div class="sidebar-top-logo" aria-hidden="true"></div>
+			<h1 v-if="sidebarStatus" aria-label="ElakeAI">ElakeAI</h1>
+			<router-link
+				to="/"
+				class="sidebar-new"
+				:title="t('components.Sidebar.function.new')"
+				:aria-label="t('components.Sidebar.function.new')">
+				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-new"></use>
 				</svg>
 			</router-link>
-			<div class="sidebar-stow" :title="t('components.Sidebar.function.stow')" @click="sidebarSwitch">
-				<svg class="icon">
+			<div
+				class="sidebar-stow"
+				:title="t('components.Sidebar.function.stow')"
+				@click="sidebarSwitch"
+				:aria-label="t('components.Sidebar.function.stow')">
+				<svg class="icon" aria-hidden="true">
 					<use xlink:href="#icon-stow"></use>
 				</svg>
 			</div>
 		</div>
-		<div class="sidebar-conversation-list" v-if="sidebarStatus">
+		<div
+			class="sidebar-conversation-list"
+			v-if="sidebarStatus"
+			:aria-label="t('components.Sidebar.barrierFree.conversationList')">
 			<div
 				class="conversation-card"
+				role="button"
+				:aria-label="chatItem.title"
 				:class="{ active: route.params.key === chatItem.key }"
 				v-for="chatItem in chatList"
 				:key="chatItem.key"
 				@click="openChat(chatItem.key)">
-				<p class="title" :title="chatItem.title">{{ chatItem.title }}</p>
+				<p class="title" :title="chatItem.title" :aria-label="chatItem.title">{{ chatItem.title }}</p>
 				<div class="bottom">
-					<p>{{ t("components.Sidebar.numberOfConversations", {num: chatItem.length}) }}</p>
-					<p>{{ formatTimestamp(chatItem.timestamp) }}</p>
+					<p aria-hidden="true">
+						{{ t("components.Sidebar.numberOfConversations", {num: chatItem.length}) }}
+					</p>
+					<p :aria-label="formatTimestamp(chatItem.timestamp)">
+						{{ formatTimestamp(chatItem.timestamp) }}
+					</p>
 				</div>
 				<div
 					class="conversation-delete"
 					:title="t('components.Sidebar.function.delete')"
-					@click.stop="deleteChat(chatItem.key)">
-					<svg class="icon">
+					@click.stop="deleteChat(chatItem.key)"
+					:aria-label="t('components.Sidebar.function.delete')">
+					<svg class="icon" aria-hidden="true">
 						<use xlink:href="#icon-delete"></use>
 					</svg>
 				</div>
 			</div>
 		</div>
 		<div v-if="!sidebarStatus"></div>
-		<div class="sidebar-preset" :title="t('components.Sidebar.function.preset')">
-			<svg class="icon">
+		<div
+			class="sidebar-preset"
+			:title="t('components.Sidebar.function.preset')"
+			:aria-label="t('components.Sidebar.function.preset')">
+			<svg class="icon" aria-hidden="true">
 				<use xlink:href="#icon-preset"></use>
 			</svg>
-			<p v-if="sidebarStatus">{{ t("components.Sidebar.function.preset") }}</p>
+			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.preset") }}</p>
 		</div>
-		<router-link to="/options" class="sidebar-setup" :title="t('components.Sidebar.function.options')">
-			<svg class="icon">
+		<router-link
+			to="/options"
+			class="sidebar-setup"
+			:title="t('components.Sidebar.function.options')"
+			:aria-label="t('components.Sidebar.function.options')">
+			<svg class="icon" aria-hidden="true">
 				<use xlink:href="#icon-setup"></use>
 			</svg>
-			<p v-if="sidebarStatus">{{ t("components.Sidebar.function.options") }}</p>
+			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.options") }}</p>
 		</router-link>
 	</div>
 </template>
@@ -204,7 +223,7 @@ export default {
 	align-items: center;
 	justify-items: center;
 
-	p {
+	h1 {
 		margin: 0 20px;
 		font-size: 18px;
 		color: var(--text-color);

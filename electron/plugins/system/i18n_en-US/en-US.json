@@ -121,6 +121,10 @@
 			"loading": "Loading..."
 		},
 		"Sidebar": {
+			"barrierFree": {
+				"title": "Sidebar",
+				"conversationList": "Conversation List"
+			},
 			"toast": {
 				"errorGettingChatList": "Failed to retrieve chat list",
 				"successDeletingChatList": "Chat list deleted successfully",

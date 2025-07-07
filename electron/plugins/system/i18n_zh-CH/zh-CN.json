@@ -121,6 +121,10 @@
 			"loading": "加载中..."
 		},
 		"Sidebar": {
+			"barrierFree": {
+				"title": "侧边栏",
+				"conversationList": "对话列表"
+			},
 			"toast": {
 				"errorGettingChatList": "获取聊天列表失败",
 				"successDeletingChatList": "删除聊天列表成功",
