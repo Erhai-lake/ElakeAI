@@ -28,6 +28,11 @@ export default {
 			copyButtonText: this.t("components.CodeBlockRenderer.copy")
 		}
 	},
+	watch: {
+		code() {
+			this.highlightCode()
+		}
+	},
 	mounted() {
 		this.highlightCode()
 	},
