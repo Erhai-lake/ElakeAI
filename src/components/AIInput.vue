@@ -185,6 +185,7 @@ export default defineComponent({
 					})
 					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
 					toastRegistry.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
+					EventBus.emit("[stream] streamComplete", {chatKey: newChatKey})
 				}
 			} catch (error) {
 				this.ChatInput = CONTENT

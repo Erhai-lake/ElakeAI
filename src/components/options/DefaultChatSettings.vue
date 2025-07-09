@@ -38,7 +38,7 @@ export default {
 			// 当前模型请求
 			currentModelRequest: null,
 			// 当前Key请求
-			currentKeyRequest: null,
+			currentKeyPoolRequest: null,
 			// 加载状态
 			loading: {
 				keys: false,
@@ -61,8 +61,6 @@ export default {
 	},
 	beforeUnmount() {
 		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
-	},
-	beforeDestroy() {
 		this.cancelAllRequests()
 	},
 	async created() {
@@ -145,8 +143,8 @@ export default {
 			if (this.currentModelRequest?.cancel) {
 				this.currentModelRequest.cancel()
 			}
-			if (this.currentKeyRequest?.cancel) {
-				this.currentKeyRequest.cancel()
+			if (this.currentKeyPoolRequest?.cancel) {
+				this.currentKeyPoolRequest.cancel()
 			}
 		},
 		/**
@@ -174,6 +172,11 @@ export default {
 			this.model.selected = newVal
 			this.$emit("update:selectedModel", newVal)
 		},
+		emitSelected() {
+			this.$emit("update:selectedPlatformList", this.platform.selected)
+			this.$emit("update:selectedKey", this.keyPools.selected)
+			this.$emit("update:selectedModel", this.model.selected)
+		},
 		/**
 		 * 选择平台
 		 * @param newModel {Object} - 新的平台选项
@@ -181,7 +184,7 @@ export default {
 		async selectPlatform(newModel) {
 			this.cancelAllRequests()
 			const requestContext = {cancelled: false}
-			this.currentKeyRequest = {
+			this.currentKeyPoolRequest = {
 				cancel: () => {
 					requestContext.cancelled = true
 				}
@@ -200,6 +203,7 @@ export default {
 				}
 			} finally {
 				this.loading.keys = false
+				this.emitSelected()
 			}
 		},
 		/**
@@ -230,6 +234,7 @@ export default {
 				}
 			} finally {
 				this.loading.models = false
+				this.emitSelected()
 			}
 		},
 		/**

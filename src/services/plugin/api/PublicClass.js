@@ -46,6 +46,7 @@ export class PublicClass {
 	 */
 	errorHandler = (error, params) => {
 		try {
+			// TODO: 错误处理
 			if (error.response.status !== 200) {
 				// return this.response(params, null, `${this.platform}.${error.response.status}`)
 			}
