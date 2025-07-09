@@ -12,7 +12,8 @@ export default {
 			name: "Sidebar",
 			route: useRoute(),
 			sidebarStatus: true,
-			chatList: []
+			chatList: [],
+			inProgress: []
 		}
 	},
 	mounted() {
@@ -24,10 +25,14 @@ export default {
 		this.chatListGet()
 		// 监听更新列表事件
 		EventBus.on("[update] chatListUpdate", this.chatListGet)
+		EventBus.on("[stream] userMessage", this.userMessage)
+		EventBus.on("[stream] streamComplete", this.streamComplete)
 	},
 	beforeUnmount() {
 		// 移除更新列表事件监听
 		EventBus.off("[update] chatListUpdate", this.chatListGet)
+		EventBus.off("[stream] userMessage", this.userMessage)
+		EventBus.off("[stream] streamComplete", this.streamComplete)
 	},
 	methods: {
 		/**
@@ -103,6 +108,23 @@ export default {
 				this.$log.error(`[${this.name}] 聊天列表删除失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorDeletingChatList")}`)
 			}
+		},
+		/**
+		 * 用户消息
+		 * @param message {Object} - 消息
+		 */
+		userMessage(message) {
+			this.inProgress.push(message.chatKey)
+		},
+		/**
+		 * 流完成
+		 * @param message {Object} - 消息
+		 */
+		streamComplete(message) {
+			const INDEX = this.inProgress.indexOf(message.chatKey)
+			if (INDEX !== -1) {
+				this.inProgress.splice(INDEX, 1)
+			}
 		}
 	}
 }
@@ -143,7 +165,7 @@ export default {
 				class="conversation-card"
 				role="button"
 				:aria-label="chatItem.title"
-				:class="{ active: route.params.key === chatItem.key }"
+				:class="{ active: route.params.key === chatItem.key , progress: inProgress.includes(chatItem.key)}"
 				v-for="chatItem in chatList"
 				:key="chatItem.key"
 				@click="openChat(chatItem.key)">
@@ -290,6 +312,10 @@ export default {
 
 		&.active {
 			border-color: #80ceff;
+		}
+		
+		&.progress {
+			background-color: #9eaeb7;
 		}
 
 		&:hover {

@@ -157,11 +157,21 @@ export default defineComponent({
 			if (!this.route.params.key) {
 				newChatKey = await this.newChat(CONTENT)
 			}
+			const DIALOGUE_ID = crypto.randomUUID()
+			const USER_DIALOGUE_ID = crypto.randomUUID()
+			// 发送用户消息事件
+			EventBus.emit("[stream] userMessage", {
+				chatKey: newChatKey,
+				id: USER_DIALOGUE_ID,
+				message: CONTENT.trim()
+			})
 			// 发送消息
 			const INSTANCE = platformRegistry.getPlatform(this.platformSelected.title)
 			try {
 				this.stopStatus = true
 				const RESPONSE = await INSTANCE.api.chat({
+					dialogueId: DIALOGUE_ID,
+					userDialogueId: USER_DIALOGUE_ID,
 					apiKey: this.keyPoolsSelected.key,
 					chatKey: newChatKey,
 					content: CONTENT.trim(),

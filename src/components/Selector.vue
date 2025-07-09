@@ -1,5 +1,6 @@
 <script>
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import EventBus from "@/services/EventBus";
 
 export default {
 	name: "Selector",
@@ -32,6 +33,12 @@ export default {
 			dropdownDirection: "bottom",
 			isLoading: false
 		}
+	},
+	mounted() {
+		document.addEventListener("click", this.handleClickOutside)
+	},
+	beforeUnmount() {
+		document.removeEventListener("click", this.handleClickOutside)
 	},
 	computed: {
 		showLoading() {
@@ -112,12 +119,6 @@ export default {
 		stopLoading() {
 			this.isLoading = false
 		}
-	},
-	mounted() {
-		document.addEventListener("click", this.handleClickOutside)
-	},
-	beforeDestroy() {
-		document.removeEventListener("click", this.handleClickOutside)
 	}
 }
 </script>

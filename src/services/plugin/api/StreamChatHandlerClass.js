@@ -19,20 +19,9 @@ export default class StreamChatHandlerClass {
 	 * @returns {Promise<Object>} 响应结果
 	 */
 	async handleStream(params, response) {
-		const DIALOGUE_ID = crypto.randomUUID()
-		const USER_DIALOGUE_ID = crypto.randomUUID()
-
-		// 发送用户消息事件
-		EventBus.emit("[stream] userMessage", {
-			chatKey: params.chatKey,
-			id: USER_DIALOGUE_ID,
-			message: params.content
-		})
-
 		if (!response.body) {
 			return publicRegistry.response(params, null, "noResponseBody")
 		}
-
 		const API_KEY_DATA = await DB.apiKeys.get(params.apiKey)
 		const DECODER = new TextDecoder()
 		let buffer = ""
@@ -56,8 +45,8 @@ export default class StreamChatHandlerClass {
 					const MESSAGE = LINE.replace(/^data: /, "")
 					if (MESSAGE === "[DONE]") {
 						await this.handleCompletion(params, {
-							userMessageId: USER_DIALOGUE_ID,
-							dialogueId: DIALOGUE_ID,
+							userMessageId: params.userDialogueId,
+							dialogueId: params.dialogueId,
 							userContent: params.content,
 							reasoning: reasoningMessage,
 							assistant: assistantMessage,
@@ -74,7 +63,7 @@ export default class StreamChatHandlerClass {
 						const PARSED = JSON.parse(MESSAGE)
 						const UPDATED_MESSAGES = await this.handleStreamData(PARSED, {
 							chatKey: params.chatKey,
-							dialogueId: DIALOGUE_ID,
+							dialogueId: params.dialogueId,
 							model: params.model,
 							platform: API_KEY_DATA.model
 						}, {
@@ -188,22 +177,6 @@ export default class StreamChatHandlerClass {
 		if (this.abortController) {
 			this.abortController.abort()
 			this.abortController = null
-		}
-	}
-
-	/**
-	 * 构建响应对象
-	 * @param {Object} params - 请求参数
-	 * @param {*} data - 响应数据
-	 * @param {string} [error] - 错误信息
-	 * @returns {Object} 响应对象
-	 */
-	response(params, data, error) {
-		return {
-			error: error || "",
-			data: data,
-			traceability: params,
-			timestamp: Date.now()
 		}
 	}
 }
