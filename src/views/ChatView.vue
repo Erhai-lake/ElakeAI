@@ -168,6 +168,7 @@ export default {
 		 * @param message {Object} - 消息
 		 */
 		async userMessage(message) {
+			if(message.chatKey !== this.data.key) return
 			this.data.data.push({
 				id: message.id,
 				message: {
@@ -182,6 +183,7 @@ export default {
 		 * @param message {Object} - 消息
 		 */
 		async streamStream(message) {
+			if(message.chatKey !== this.data.key) return
 			if (!Array.isArray(this.data.data)) {
 				this.data.data = []
 			}
@@ -211,7 +213,8 @@ export default {
 		/**
 		 * 消息流完成
 		 */
-		async streamComplete() {
+		async streamComplete(message) {
+			if(message.chatKey !== this.data.key) return
 			try {
 				// 如果是第一条AI回复且是默认标题
 				if (this.data.title === this.t("components.AIInput.newChat")) {

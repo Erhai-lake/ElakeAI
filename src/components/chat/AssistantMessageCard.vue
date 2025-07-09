@@ -1,6 +1,5 @@
 <script>
 import {encode} from "gpt-tokenizer"
-import markdownit from "markdown-it"
 import markdownItTaskLists from "markdown-it-task-lists"
 import {full as emoji} from "markdown-it-emoji"
 import markdownItKatex from "@iktakahiro/markdown-it-katex"
@@ -112,8 +111,9 @@ export default {
 		/**
 		 * 解析内容
 		 */
-		parseContent() {
-			const MD = markdownit({
+		async parseContent() {
+			const MARKDOWNIT = (await import("markdown-it")).default
+			const MD = MARKDOWNIT({
 				html: false,
 				breaks: true,
 				linkify: true,
@@ -136,8 +136,8 @@ export default {
 					flowchart: "flowchart",
 					plantuml: "plantuml",
 				}
-				const safeLang = TYPE_MAP[LANG] || "code"
-				return `<div data-lang="${safeLang}" data-language="${LANG || "plaintext"}" data-code="${encodeURIComponent(CODE)}"></div>`
+				const SAFE_LANG = TYPE_MAP[LANG] || "code"
+				return `<div data-lang="${SAFE_LANG}" data-language="${LANG || "plaintext"}" data-code="${encodeURIComponent(CODE)}"></div>`
 			}
 			const RAW_HTML = MD.render(this.message.message.content)
 			const CONTAINER = document.createElement("div")
@@ -195,12 +195,13 @@ export default {
 		/**
 		 * 解析推理
 		 */
-		parseReasoning() {
+		async parseReasoning() {
 			if (!this.message.message.reasoning) {
 				this.reasoningHtml = ""
 				return
 			}
-			const MD = markdownit({
+			const MARKDOWNIT = (await import("markdown-it")).default
+			const MD = MARKDOWNIT({
 				html: false,
 				breaks: true,
 				linkify: true,

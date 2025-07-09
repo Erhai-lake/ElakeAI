@@ -24,6 +24,7 @@ export default class StreamChatHandlerClass {
 
 		// 发送用户消息事件
 		EventBus.emit("[stream] userMessage", {
+			chatKey: params.chatKey,
 			id: USER_DIALOGUE_ID,
 			message: params.content
 		})
@@ -72,6 +73,7 @@ export default class StreamChatHandlerClass {
 					try {
 						const PARSED = JSON.parse(MESSAGE)
 						const UPDATED_MESSAGES = await this.handleStreamData(PARSED, {
+							chatKey: params.chatKey,
 							dialogueId: DIALOGUE_ID,
 							model: params.model,
 							platform: API_KEY_DATA.model
@@ -101,7 +103,11 @@ export default class StreamChatHandlerClass {
 	 * @returns {Promise<void>}
 	 */
 	async handleCompletion(params, messageData) {
-		EventBus.emit("[stream] streamComplete")
+		EventBus.emit("[stream] streamComplete", {
+			chatKey: params.chatKey,
+			id: messageData.dialogueId,
+			message: messageData.assistant
+		})
 		const CHAT_KEY_DATA = await DB.chats.get(params.chatKey)
 		// 保存消息到数据库
 		await DB.chats.update(params.chatKey, {
@@ -149,6 +155,7 @@ export default class StreamChatHandlerClass {
 			UPDATED_MESSAGES.reasoningMessage += parsed.choices[0].delta.reasoning_content
 			UPDATED_MESSAGES.streamMessage = parsed.choices[0].delta.reasoning_content
 			EventBus.emit("[stream] streamStream", {
+				chatKey: ids.chatKey,
 				id: ids.dialogueId,
 				reasoning: UPDATED_MESSAGES.streamMessage,
 				model: {
@@ -162,6 +169,7 @@ export default class StreamChatHandlerClass {
 			UPDATED_MESSAGES.assistantMessage += parsed.choices[0].delta.content
 			UPDATED_MESSAGES.streamMessage = parsed.choices[0].delta.content
 			EventBus.emit("[stream] streamStream", {
+				chatKey: ids.chatKey,
 				id: ids.dialogueId,
 				message: UPDATED_MESSAGES.streamMessage,
 				model: {
