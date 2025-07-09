@@ -1,4 +1,5 @@
 <script>
+import Loading from "@/components/Loading.vue"
 import AIInput from "@/components/AIInput.vue"
 import {useRoute} from "vue-router"
 import EventBus from "@/services/EventBus"
@@ -11,11 +12,12 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 export default {
 	name: "ChatView",
 	inject: ["$DB", "$log"],
-	components: {TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
+	components: {Loading, TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
 	data() {
 		return {
 			name: "ChatView",
 			route: useRoute(),
+			isLoading: true,
 			currentMessageId: null,
 			typingEffect: {
 				active: false,
@@ -141,6 +143,7 @@ export default {
 		 * @param chatKey {string} - 聊天Key
 		 */
 		async initChatView(chatKey = this.route.params.key) {
+			this.isLoading = true
 			try {
 				const CHAT_DATA = await this.$DB.chats.get(chatKey)
 				// 检查ChatKey是否存在
@@ -157,18 +160,52 @@ export default {
 					timestamp: CHAT_DATA.timestamp,
 					data: Array.isArray(CHAT_DATA.data) ? CHAT_DATA.data : []
 				}
+				await this.$nextTick()
+				await this.waitForMessageListRendered()
 				this.scrollToUpAndDownMessages("bottom")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天记录获取错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.getChatLogError")}`)
+			} finally {
+				this.isLoading = false
 			}
+		},
+		/**
+		 * 等待 message-list 渲染稳定（高度不再变化）
+		 * @returns {Promise<void>}
+		 */
+		waitForMessageListRendered() {
+			return new Promise((resolve) => {
+				const CONTAINER = this.$el.querySelector(".message-list")
+				if (!CONTAINER) return resolve()
+				let lastHeight = CONTAINER.scrollHeight
+				let stableCounter = 0
+				let maxTries = 30
+				const check = () => {
+					requestAnimationFrame(() => {
+						const CURRENT_HEIGHT = CONTAINER.scrollHeight
+						if (CURRENT_HEIGHT === lastHeight) {
+							stableCounter++
+						} else {
+							stableCounter = 0
+							lastHeight = CURRENT_HEIGHT
+						}
+						if (stableCounter >= 5 || --maxTries <= 0) {
+							resolve()
+						} else {
+							check()
+						}
+					})
+				}
+				check()
+			})
 		},
 		/**
 		 * 用户消息
 		 * @param message {Object} - 消息
 		 */
 		async userMessage(message) {
-			if(message.chatKey !== this.data.key) return
+			if (message.chatKey !== this.data.key) return
 			this.data.data.push({
 				id: message.id,
 				message: {
@@ -183,7 +220,7 @@ export default {
 		 * @param message {Object} - 消息
 		 */
 		async streamStream(message) {
-			if(message.chatKey !== this.data.key) return
+			if (message.chatKey !== this.data.key) return
 			if (!Array.isArray(this.data.data)) {
 				this.data.data = []
 			}
@@ -214,7 +251,7 @@ export default {
 		 * 消息流完成
 		 */
 		async streamComplete(message) {
-			if(message.chatKey !== this.data.key) return
+			if (message.chatKey !== this.data.key) return
 			try {
 				// 如果是第一条AI回复且是默认标题
 				if (this.data.title === this.t("components.AIInput.newChat")) {
@@ -285,77 +322,79 @@ export default {
 </script>
 
 <template>
-	<div class="chat-view">
-		<!-- 顶部标题 -->
-		<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
-		<!-- 消息列表 -->
-		<div class="message-list" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
-			<div
-				v-for="message in data.data"
-				:key="message.id"
-				:class="['message', currentMessageId === message.id ? 'current' : '', message.message.role]"
-				:data-message-id="message.id"
-				@click="setCurrentMessageId(message.id)">
-				<UserMessageCard v-if="message.message.role === 'user'" :message="message"/>
-				<AssistantMessageCard v-if="message.message.role === 'assistant'" :message="message"/>
+	<Loading :loading="isLoading" text="请耐心等待聊天记录载入...">
+		<div class="chat-view">
+			<!-- 顶部标题 -->
+			<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
+			<!-- 消息列表 -->
+			<div class="message-list" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
+				<div
+					v-for="message in data.data"
+					:key="message.id"
+					:class="['message', currentMessageId === message.id ? 'current' : '', message.message.role]"
+					:data-message-id="message.id"
+					@click="setCurrentMessageId(message.id)">
+					<UserMessageCard v-if="message.message.role === 'user'" :message="message"/>
+					<AssistantMessageCard v-if="message.message.role === 'assistant'" :message="message"/>
+				</div>
+			</div>
+			<div></div>
+			<!-- 底部输入框 -->
+			<div class="input-area" :class="{'show-input-box': !showInputBox}">
+				<AIInput/>
+			</div>
+			<!-- AI提示信息 -->
+			<div class="ai-disclaimer">{{ t("views.ChatView.aiDisclaimer") }}</div>
+			<!-- 功能控件 -->
+			<div class="functional-controls">
+				<!-- 回到顶部按钮 -->
+				<button
+					class="scroll-to-top-messages"
+					:title="t('views.ChatView.FunctionalControls.scrollToTopMessages')"
+					@click="scrollToUpAndDownMessages('top')"
+					:disabled="data.data.length === 0">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#icon-topArrow"></use>
+					</svg>
+				</button>
+				<!-- 上一条按钮 -->
+				<button
+					:title="t('views.ChatView.FunctionalControls.scrollToUpMessages')"
+					@click="scrollToUpAndDownMessages('up')"
+					:disabled="data.data.length === 0">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#icon-upArrow"></use>
+					</svg>
+				</button>
+				<!-- 下一条按钮 -->
+				<button
+					:title="t('views.ChatView.FunctionalControls.scrollToDownMessages')"
+					@click="scrollToUpAndDownMessages('Down')"
+					:disabled="data.data.length === 0">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#icon-downArrow"></use>
+					</svg>
+				</button>
+				<!-- 回到底部按钮 -->
+				<button
+					:title="t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
+					@click="scrollToUpAndDownMessages('bottom')"
+					:disabled="data.data.length === 0">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#icon-bottomArrow"></use>
+					</svg>
+				</button>
+				<!-- 显示输入框按钮 -->
+				<button
+					:title="t('views.ChatView.FunctionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
+					@click="showInputBox = !showInputBox">
+					<svg class="icon" aria-hidden="true">
+						<use xlink:href="#icon-inputBox"></use>
+					</svg>
+				</button>
 			</div>
 		</div>
-		<div></div>
-		<!-- 底部输入框 -->
-		<div class="input-area" :class="{'show-input-box': !showInputBox}">
-			<AIInput/>
-		</div>
-		<!-- AI提示信息 -->
-		<div class="ai-disclaimer">{{ t("views.ChatView.aiDisclaimer") }}</div>
-		<!-- 功能控件 -->
-		<div class="functional-controls">
-			<!-- 回到顶部按钮 -->
-			<button
-				class="scroll-to-top-messages"
-				:title="t('views.ChatView.FunctionalControls.scrollToTopMessages')"
-				@click="scrollToUpAndDownMessages('top')"
-				:disabled="data.data.length === 0">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-topArrow"></use>
-				</svg>
-			</button>
-			<!-- 上一条按钮 -->
-			<button
-				:title="t('views.ChatView.FunctionalControls.scrollToUpMessages')"
-				@click="scrollToUpAndDownMessages('up')"
-				:disabled="data.data.length === 0">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-upArrow"></use>
-				</svg>
-			</button>
-			<!-- 下一条按钮 -->
-			<button
-				:title="t('views.ChatView.FunctionalControls.scrollToDownMessages')"
-				@click="scrollToUpAndDownMessages('Down')"
-				:disabled="data.data.length === 0">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-downArrow"></use>
-				</svg>
-			</button>
-			<!-- 回到底部按钮 -->
-			<button
-				:title="t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
-				@click="scrollToUpAndDownMessages('bottom')"
-				:disabled="data.data.length === 0">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-bottomArrow"></use>
-				</svg>
-			</button>
-			<!-- 显示输入框按钮 -->
-			<button
-				:title="t('views.ChatView.FunctionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
-				@click="showInputBox = !showInputBox">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-inputBox"></use>
-				</svg>
-			</button>
-		</div>
-	</div>
+	</Loading>
 </template>
 
 <style scoped lang="less">
