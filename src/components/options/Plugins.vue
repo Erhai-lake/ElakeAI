@@ -345,10 +345,6 @@ export default {
 </template>
 
 <style scoped lang="less">
-.plugins-view {
-	padding: 20px;
-}
-
 .list {
 	min-width: 1000px;
 	width: 100%;

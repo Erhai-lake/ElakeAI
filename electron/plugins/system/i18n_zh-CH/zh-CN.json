@@ -285,7 +285,12 @@
 			"defaultChatSettings": "默认对话设置",
 			"importExport": "导入/导出",
 			"hazardousOperations": "危险操作",
-			"plugins": "插件"
+			"plugins": "插件",
+			"advancedTools": "高级工具",
+			"about": "关于",
+			"aboutApp": "关于 ElakeAI",
+			"githubRepo": "GitHub仓库",
+			"contactSupport": "联系支持"
 		},
 		"PluginsView": {
 			"toast": {

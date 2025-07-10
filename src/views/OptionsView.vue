@@ -6,6 +6,7 @@ import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import ImportExport from "@/components/options/ImportExport.vue"
 import HazardousOperations from "@/components/options/HazardousOperations.vue"
+import Plugins from "@/components/options/Plugins.vue"
 import Button from "@/components/Button.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
@@ -13,7 +14,14 @@ export default {
 	name: "OptionsView",
 	components: {
 		HazardousOperations,
-		ImportExport, DefaultChatSettings, Button, ChatAIKey, LanguageSelect, ThemeSelect, FoldingPanel
+		ImportExport,
+		DefaultChatSettings,
+		Button,
+		ChatAIKey,
+		LanguageSelect,
+		ThemeSelect,
+		FoldingPanel,
+		Plugins
 	},
 	methods: {
 		/**
@@ -66,25 +74,55 @@ export default {
 				<ImportExport/>
 			</template>
 		</FoldingPanel>
-		<FoldingPanel style="--bg-color: #F44336" :Height="50">
+		<FoldingPanel :Height="600">
 			<template #Title>
-				{{ t("views.OptionsView.hazardousOperations") }}
+				{{ t("views.OptionsView.plugins") }}
 			</template>
 			<template #Content>
-				<HazardousOperations/>
+				<Plugins/>
 			</template>
 		</FoldingPanel>
-		<div class="container">
-			<router-link :to="{ path: '/options/plugins' }">
-				<Button>{{ t("views.OptionsView.plugins") }}</Button>
-			</router-link>
-			<router-link :to="{ path: '/options/debug' }">
-				<Button>BeBUG</Button>
-			</router-link>
-			<router-link :to="{ path: '/options/log' }">
-				<Button>Log</Button>
-			</router-link>
-		</div>
+		<FoldingPanel>
+			<template #Title>
+				{{ t("views.OptionsView.advancedTools") }}
+			</template>
+			<template #Content>
+				<div class="tool-item-list">
+					<router-link to="/options/debug">
+						<Button>BeBUG</Button>
+					</router-link>
+					<router-link to="/options/log">
+						<Button>Log</Button>
+					</router-link>
+				</div>
+				<FoldingPanel style="--bg-color: #F44336" :Height="50">
+					<template #Title>
+						{{ t("views.OptionsView.hazardousOperations") }}
+					</template>
+					<template #Content>
+						<HazardousOperations/>
+					</template>
+				</FoldingPanel>
+			</template>
+		</FoldingPanel>
+		<FoldingPanel>
+			<template #Title>
+				{{ t("views.OptionsView.about") }}
+			</template>
+			<template #Content>
+				<div class="tool-item-list">
+					<router-link to="/options/about">
+						<Button>{{ t("views.OptionsView.aboutApp") }}</Button>
+					</router-link>
+					<a href="https://github.com/Erhai-lake/ElakeAI" target="_blank">
+						<Button>{{ t("views.OptionsView.githubRepo") }}</Button>
+					</a>
+					<a href="mailto:fuzixuan0714.0826@gmail.com">
+						<Button>{{ t("views.OptionsView.contactSupport") }}</Button>
+					</a>
+				</div>
+			</template>
+		</FoldingPanel>
 	</div>
 </template>
 
@@ -101,6 +139,13 @@ export default {
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid var(--border-color);
 	white-space: nowrap;
+	gap: 10px;
+}
+
+.tool-item-list {
+	margin: 5px 0;
+	display: flex;
+	flex-wrap: wrap;
 	gap: 10px;
 }
 

@@ -285,7 +285,12 @@
 			"defaultChatSettings": "Default Chat Settings",
 			"importExport": "Import/Export",
 			"hazardousOperations": "Hazardous Operations",
-			"plugins": "Plugins"
+			"plugins": "Plugins",
+			"advancedTools": "Advanced Tools",
+			"about": "About",
+			"aboutApp": "About ElakeAI",
+			"githubRepo": "GitHub Repository",
+			"contactSupport": "Contact Support"
 		},
 		"PluginsView": {
 			"toast": {
