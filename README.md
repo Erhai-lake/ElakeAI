@@ -1,19 +1,81 @@
-# README
+# ElakeAI
 
-## About
+ElakeAI 是一个基于 Vue 3 的 AI 对话应用, 支持多种大语言模型 API 接入, 提供"理论上"流畅的聊天体验和个性化设置.
 
-This is the official Wails Vanilla template.
+## 技术栈
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+* **后端**: Golang + wails
+* **前端**: Vue 3 + Vue Router
+* **样式**: Less
+* **数据库**: DexieClass (IndexedDB)
+* **国际化**: vue-i18n
+* **Markdown 渲染**: markdown-it + 插件
+* **API 请求**: axios
 
-## Live Development
+## 功能状态
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+### 🎉 已上线功能
 
-## Building
+具体看看已完成的Issue(可能没有Issue), 或者[更新日志](UpdateLog.md).
 
-To build a redistributable, production mode package, use `wails build`.
+* **正经聊天功能**
+	* 能发消息(偶尔会卡)
+	* 能看历史记录(如果没崩)
+	* 标题可以改(但改完可能不记得)
+	* 删除消息(删了可能还在)
+	* 编辑消息(改完可能还是旧的)
+
+* **Key 管理**
+	* 添加 Key(加了不一定能用)
+	* 禁用 Key(禁用后可能还在用)
+	* 自定义 API 地址(填错不负责)
+
+* **花里胡哨的**
+	* 亮色/暗色主题(随缘切换)
+	* 中英文切换(翻译看心情)
+	* Markdown 渲染(代码高亮是真的)
+	* 自定义导出配置和自定义导入配置(可能可以导配置, apiKey, 聊天记录)
+
+### 🚧 施工中功能
+
+具体看看未完成的Issue(可能没有Issue)
+
+* **消息管理**
+	* 导出记录(导出来可能是乱码)
+
+* **高级功能**
+	* 搜索聊天记录(搜不到别怪我)
+	* 文件上传(传了可能不认)
+	* 使用统计(数字看看就好)
+
+## 技术栈
+
+* **前端框架**: Vue 3 + Vue Router
+* **状态管理**: DexieClass (IndexedDB)
+* **国际化**: vue-i18n
+* **Markdown 渲染**: markdown-it + 插件
+* **API 请求**: axios
+* **样式**: Less
+
+## 数据库设计
+
+使用 DexieClass (IndexedDB) 存储以下数据:
+
+* chats: 聊天记录
+* configs: 应用配置
+* apiKeys: API Key 管理
+* logs: 日志记录
+
+## 贡献
+
+欢迎提交 Issue 或 Pull Request.
+
+## 已知问题
+
+* 有时候能聊, 有时候不能
+* 看起来能用, 实际可能不能用
+* 理论上稳定, 实际上看运气
+
+## 免责声明
+
+ElakeAI 处于薛定谔的稳定状态, 所有功能既可以说是已实现也可以说是未实现, 取决于您观察时的量子态.
