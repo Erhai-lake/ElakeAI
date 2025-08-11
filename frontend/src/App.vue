@@ -29,7 +29,10 @@ export default {
 			isLogView: false
 		}
 	},
-	mounted() {
+	async mounted() {
+		if (window.go) {
+			document.addEventListener("contextmenu", event => event.preventDefault())
+		}
 		EventBus.on("[update] pluginProgress", (data) => {
 			const DETAIL = data.detail || {}
 			this.loading.loadedCount = DETAIL.loaded || 0
