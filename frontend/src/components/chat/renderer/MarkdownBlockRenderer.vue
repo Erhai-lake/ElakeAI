@@ -77,6 +77,10 @@ export default {
 		tr:nth-child(even) {
 			background-color: rgba(175, 184, 193, 0.1);
 		}
+
+		tr:hover {
+			background-color: var(--Active-Background-Color);
+		}
 	}
 
 	// 任务列表
@@ -93,9 +97,9 @@ export default {
 	blockquote {
 		margin: 16px 0;
 		padding: 0 16px;
-		color: var(--blockquote-text-color, #6a737d);
-		border-left: 4px solid var(--blockquote-border-color, #dfe2e5);
-		background-color: var(--blockquote-bg-color, rgba(175, 184, 193, 0.1));
+		color: var(--blockquote-text-color);
+		border-left: 4px solid var(--blockquote-border-color);
+		background-color: var(--blockquote-bg-color);
 
 		p {
 			margin: 12px 0;

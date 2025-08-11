@@ -16,9 +16,11 @@ import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "AssistantMessageCard",
+	inject: ["$log"],
 	components: {
 		FoldingPanel,
 		Button,
@@ -36,6 +38,7 @@ export default {
 	},
 	data() {
 		return {
+			name: "AssistantMessageCard",
 			parsedBlocks: [],
 			reasoningHtml: "",
 			isReasoningExpanded: false,
@@ -105,8 +108,17 @@ export default {
 		 */
 		modelImages() {
 			if (!this.message.model.platform) return null
-			const PLATFORM = platformRegistry.getPlatform(this.message.model.platform)
-			return PLATFORM.info.image
+			try {
+				const PLATFORM = platformRegistry.getPlatform(this.message.model.platform)
+				if (!PLATFORM) {
+					this.$log.error(`[${this.name}] 平台Logo不存在`)
+					return null
+				}
+				return PLATFORM.info.image
+			} catch (error) {
+				this.$log.error(`[${this.name}] 平台Logo加载错误`, error)
+				return null
+			}
 		},
 		/**
 		 * 解析内容

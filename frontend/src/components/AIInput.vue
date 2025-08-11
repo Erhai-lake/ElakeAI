@@ -97,7 +97,7 @@ export default defineComponent({
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.components.toast.getDefaultSettingsError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.getDefaultSettingsError")}`)
 			}
 		},
 		/**
