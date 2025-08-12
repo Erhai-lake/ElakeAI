@@ -267,7 +267,7 @@
 				"editMessageSuccess": "Message edited successfully",
 				"editMessageError": "Failed to edit message"
 			},
-			"FunctionalControls": {
+			"functionalControls": {
 				"scrollToTopMessages": "Scroll to Top",
 				"scrollToUpMessages": "Previous",
 				"scrollToDownMessages": "Next",
@@ -275,6 +275,7 @@
 				"showInputBox": "Show Input Box",
 				"hideInputBox": "Hide Input Box"
 			},
+			"loading": "Please wait patiently for the chat history to load...<br />{totalMessages} / {loadedMessages}",
 			"aiDisclaimer": "This content is AI-generated. Please verify carefully."
 		},
 		"OptionsView": {

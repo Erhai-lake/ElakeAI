@@ -18,6 +18,8 @@ export default {
 			name: "ChatView",
 			route: useRoute(),
 			isLoading: true,
+			loadedMessages: 0,
+			totalMessages: 0,
 			currentMessageId: null,
 			typingEffect: {
 				active: false,
@@ -142,6 +144,8 @@ export default {
 		 */
 		async initChatView(chatKey = this.route.params.key) {
 			this.isLoading = true
+			this.loadedMessages = 0
+			this.totalMessages = 0
 			try {
 				const CHAT_DATA = await this.$DB.chats.get(chatKey)
 				// 检查ChatKey是否存在
@@ -151,15 +155,26 @@ export default {
 					EventBus.emit("[update] chatListUpdate")
 					return
 				}
-				// 写入聊天记录
+				// 基本聊天信息
 				this.data = {
 					key: CHAT_DATA.key,
 					title: CHAT_DATA.title,
 					timestamp: CHAT_DATA.timestamp,
-					data: Array.isArray(CHAT_DATA.data) ? CHAT_DATA.data : []
+					data: []
 				}
-				await this.$nextTick()
-				await this.waitForMessageListRendered()
+				const ALL_MESSAGES = Array.isArray(CHAT_DATA.data) ? CHAT_DATA.data : []
+				this.totalMessages = ALL_MESSAGES.length
+				// 分批渲染(每批 20 条)
+				const BATCH_SIZE = 20
+				for (let i = 0; i < ALL_MESSAGES.length; i += BATCH_SIZE) {
+					const BATCH = ALL_MESSAGES.slice(i, i + BATCH_SIZE)
+					this.data.data.push(...BATCH)
+					this.loadedMessages = this.data.data.length
+					// 等待 DOM 更新
+					await this.$nextTick()
+					// 等待当前批次渲染稳定, 避免闪动
+					await this.waitForMessageListRendered()
+				}
 				this.scrollToUpAndDownMessages("bottom")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天记录获取错误`, error)
@@ -320,7 +335,7 @@ export default {
 </script>
 
 <template>
-	<Loading :loading="isLoading" text="请耐心等待聊天记录载入...">
+	<Loading :loading="isLoading" :text="t('views.ChatView.loading', {loadedMessages: loadedMessages, totalMessages: totalMessages})">
 		<div class="chat-view">
 			<!-- 顶部标题 -->
 			<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
@@ -348,7 +363,7 @@ export default {
 				<!-- 回到顶部按钮 -->
 				<button
 					class="scroll-to-top-messages"
-					:title="t('views.ChatView.FunctionalControls.scrollToTopMessages')"
+					:title="t('views.ChatView.functionalControls.scrollToTopMessages')"
 					@click="scrollToUpAndDownMessages('top')"
 					:disabled="data.data.length === 0">
 					<svg class="icon" aria-hidden="true">
@@ -357,7 +372,7 @@ export default {
 				</button>
 				<!-- 上一条按钮 -->
 				<button
-					:title="t('views.ChatView.FunctionalControls.scrollToUpMessages')"
+					:title="t('views.ChatView.functionalControls.scrollToUpMessages')"
 					@click="scrollToUpAndDownMessages('up')"
 					:disabled="data.data.length === 0">
 					<svg class="icon" aria-hidden="true">
@@ -366,7 +381,7 @@ export default {
 				</button>
 				<!-- 下一条按钮 -->
 				<button
-					:title="t('views.ChatView.FunctionalControls.scrollToDownMessages')"
+					:title="t('views.ChatView.functionalControls.scrollToDownMessages')"
 					@click="scrollToUpAndDownMessages('Down')"
 					:disabled="data.data.length === 0">
 					<svg class="icon" aria-hidden="true">
@@ -375,7 +390,7 @@ export default {
 				</button>
 				<!-- 回到底部按钮 -->
 				<button
-					:title="t('views.ChatView.FunctionalControls.scrollToBottomMessages')"
+					:title="t('views.ChatView.functionalControls.scrollToBottomMessages')"
 					@click="scrollToUpAndDownMessages('bottom')"
 					:disabled="data.data.length === 0">
 					<svg class="icon" aria-hidden="true">
@@ -384,7 +399,7 @@ export default {
 				</button>
 				<!-- 显示输入框按钮 -->
 				<button
-					:title="t('views.ChatView.FunctionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
+					:title="t('views.ChatView.functionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
 					@click="showInputBox = !showInputBox">
 					<svg class="icon" aria-hidden="true">
 						<use xlink:href="#icon-inputBox"></use>

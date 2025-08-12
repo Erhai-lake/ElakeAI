@@ -5,16 +5,16 @@ import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
-import LoadingPage from "@/components/LoadingPage.vue"
 import Dexie from "@/services/Dexie"
 import Logger, {setupLogCleanup} from "@/services/Logger"
 import {unloadPlugins} from "@/services/plugin/UnloadPlugins"
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
+import Loading from "@/components/Loading.vue"
 // import eruda from "eruda"
 
 export default {
 	name: "App",
-	components: {LoadingPage, Button, Log, Sidebar},
+	components: {Loading, Button, Log, Sidebar},
 	data() {
 		return {
 			name: "App",
@@ -210,7 +210,7 @@ export default {
 		updateMessage() {
 			const MESSAGE_MAP = [
 				{time: 0, content: "正在加载插件系统..."},
-				{time: 2000, content: "额^^是有点久了..."},
+				{time: 2000, content: "额......等会, 这是有点久了..."},
 				{time: 4000, content: "再等等也许就好了?"},
 				{time: 6000, content: "你确定插件都放对了吗😓"},
 				{time: 8000, content: "👊😡"}
@@ -249,64 +249,57 @@ export default {
 </script>
 
 <template>
-	<div v-if="loading.status" class="loading-container">
-		<LoadingPage/>
-		<div class="loading-text">{{ loading.loadingMessage }}</div>
-		<div class="progress-text">
-			<div v-if="loading.loadedCount !== loading.totalCount">
-				正在加载 {{ loading.currentPluginName }} 插件({{ loading.loadedCount }}/{{ loading.totalCount }})
+	<Loading
+		class="app"
+		:loading="loading.status"
+		:text="loading.status ? `${loading.loadingMessage}<br />正在加载 ${loading.currentPluginName} 插件 (${loading.loadedCount}/${loading.totalCount})` : '!!!插件全部加载完成!!!'">
+		<template v-if="!loading.status">
+			<Sidebar/>
+			<div class="RouterView">
+				<router-view/>
 			</div>
-			<div v-else>!!!插件全部加载完成!!!</div>
-		</div>
-	</div>
-	<template v-if="!loading.status">
-		<Sidebar/>
-		<div class="RouterView">
-			<router-view/>
-		</div>
-		<Button class="IsLog" v-if="isLogSuspensionWindow" @click="isLogView = !isLogView">Log</Button>
-		<div class="IsLogSuspensionWindow" v-if="isLogView && isLogSuspensionWindow">
-			<Log/>
-		</div>
-	</template>
+			<Button class="IsLog" v-if="isLogSuspensionWindow" @click="isLogView = !isLogView">Log</Button>
+			<div class="IsLogSuspensionWindow" v-if="isLogView && isLogSuspensionWindow">
+				<Log/>
+			</div>
+		</template>
+	</Loading>
 </template>
 
-<style>
-#app {
+<style scoped lang="less">
+.app {
 	display: grid;
 	grid-template-columns: auto 1fr;
 	grid-template-rows: 100vh;
 	overflow: hidden;
 }
-</style>
 
-<style scoped lang="less">
-.loading-container {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100vh;
-	color: var(--text-color);
-	background-color: var(--background-color);
-	font-size: 18px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	z-index: 9999;
-
-	.loading-text {
-		margin-bottom: 10px;
-		font-size: 20px;
-		font-weight: bold;
-	}
-
-	.progress-text {
-		font-size: 14px;
-		color: #888;
-	}
-}
+//.loading-container {
+//	position: absolute;
+//	top: 0;
+//	left: 0;
+//	width: 100%;
+//	height: 100vh;
+//	color: var(--text-color);
+//	background-color: var(--background-color);
+//	font-size: 18px;
+//	display: flex;
+//	justify-content: center;
+//	align-items: center;
+//	flex-direction: column;
+//	z-index: 9999;
+//
+//	.loading-text {
+//		margin-bottom: 10px;
+//		font-size: 20px;
+//		font-weight: bold;
+//	}
+//
+//	.progress-text {
+//		font-size: 14px;
+//		color: #888;
+//	}
+//}
 
 .RouterView {
 	overflow-y: auto;

@@ -10,7 +10,7 @@ export default {
 			type: String,
 			default: ""
 		}
-	}
+	},
 }
 </script>
 
@@ -23,7 +23,7 @@ export default {
 				<slot name="spinner">
 					<div class="default-spinner"></div>
 				</slot>
-				<div class="loading-text" v-if="text">{{ text }}</div>
+				<div class="loading-text" v-if="text" v-html="text"></div>
 			</div>
 		</div>
 	</div>
@@ -67,6 +67,7 @@ export default {
 	margin-top: 10px;
 	font-size: 14px;
 	color: var(--text-color);
+	text-align: center;
 }
 
 @keyframes spin {
