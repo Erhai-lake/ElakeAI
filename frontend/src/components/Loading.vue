@@ -23,7 +23,7 @@ export default {
 				<slot name="spinner">
 					<div class="default-spinner"></div>
 				</slot>
-				<div class="loading-text" v-if="text" v-html="text"></div>
+				<div class="loading-text" v-if="text" v-html="text.replace(/\n/g, '<br />')"></div>
 			</div>
 		</div>
 	</div>

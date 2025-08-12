@@ -16,12 +16,13 @@ import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import RightClickMenu from "@/components/RightClickMenu.vue"
 
 export default {
 	name: "AssistantMessageCard",
 	inject: ["$log"],
 	components: {
+		RightClickMenu,
 		FoldingPanel,
 		Button,
 		MarkdownBlockRenderer,
@@ -227,10 +228,33 @@ export default {
 			this.reasoningHtml = MD.render(this.message.message.reasoning)
 		},
 		/**
-		 * 移除消息
+		 * 右键点击
+		 * @param event 事件
+		 * @param item 项
 		 */
-		remove() {
-			EventBus.emit("[function] removeMessage", this.message.id)
+		onRightClick(event, item) {
+			event.preventDefault()
+			event.stopPropagation()
+			this.$refs.menu.show(event.clientX, event.clientY, [
+				{
+					title: this.t("components.AssistantMessageCard.editMessage"),
+					icon: {
+						type: "svg",
+						src: "#icon-inputBox"
+					},
+					color: "#80ceff",
+					onClick: () => this.editInput()
+				},
+				{
+					title: this.t("components.AssistantMessageCard.removeMessage"),
+					icon: {
+						type: "svg",
+						src: "#icon-delete"
+					},
+					color: "red",
+					onClick: () => this.remove()
+				}
+			], item.id)
 		},
 		/**
 		 * 显示输入框
@@ -272,13 +296,20 @@ export default {
 			setTimeout(() => {
 				this.editingContent.show = false
 			}, 200)
+		},
+		/**
+		 * 移除消息
+		 */
+		remove() {
+			EventBus.emit("[function] removeMessage", this.message.id)
 		}
 	}
 }
 </script>
 
 <template>
-	<div class="assistant-message-card">
+	<RightClickMenu ref="menu" />
+	<div class="assistant-message-card" @contextmenu.prevent="onRightClick($event, message)">
 		<FoldingPanel class="reasoning-content" v-if="message.message.reasoning" :is="isReasoningExpanded">
 			<template #Title>
 				<span>{{ reasoning }}</span>
@@ -312,8 +343,8 @@ export default {
 					<Button @click="saveContent">{{ t("components.AssistantMessageCard.save") }}</Button>
 				</template>
 				<template v-if="!editingContent.show">
-					<Button @click="editInput">{{ t("components.AssistantMessageCard.edit") }}</Button>
-					<Button @click="remove">{{ t("components.AssistantMessageCard.remove") }}</Button>
+					<Button @click="editInput">{{ t("components.AssistantMessageCard.editMessage") }}</Button>
+					<Button @click="remove">{{ t("components.AssistantMessageCard.removeMessage") }}</Button>
 				</template>
 			</div>
 			<div class="message-info">

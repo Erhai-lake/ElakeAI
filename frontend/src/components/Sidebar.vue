@@ -3,9 +3,11 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {useRoute} from "vue-router"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
+import RightClickMenu from "@/components/RightClickMenu.vue"
 
 export default {
 	name: "Sidebar",
+	components: {RightClickMenu},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
@@ -86,6 +88,35 @@ export default {
 			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
 		},
 		/**
+		 * 右键点击
+		 * @param event 事件
+		 * @param item 项
+		 */
+		onRightClick(event, item) {
+			event.preventDefault()
+			event.stopPropagation()
+			this.$refs.menu.show(event.clientX, event.clientY, [
+				{
+					title: this.t("components.Sidebar.openChat"),
+					icon: {
+						type: "svg",
+						src: "#icon-new"
+					},
+					color: "#80ceff",
+					onClick: (key) => this.openChat(key)
+				},
+				{
+					title: this.t("components.Sidebar.deleteChat"),
+					icon: {
+						type: "svg",
+						src: "#icon-delete"
+					},
+					color: "red",
+					onClick: (key) => this.deleteChat(key)
+				}
+			], item.key)
+		},
+		/**
 		 * 打开聊天
 		 * @param key 聊天ID
 		 */
@@ -131,6 +162,7 @@ export default {
 </script>
 
 <template>
+	<RightClickMenu ref="menu" />
 	<div
 		class="sidebar-container"
 		:class="sidebarStatus ? 'sidebar-expand-container' : 'sidebar-stow-container'"
@@ -168,7 +200,8 @@ export default {
 				:class="{ active: route.params.key === chatItem.key , progress: inProgress.includes(chatItem.key)}"
 				v-for="chatItem in chatList"
 				:key="chatItem.key"
-				@click="openChat(chatItem.key)">
+				@click="openChat(chatItem.key)"
+				@contextmenu.prevent="onRightClick($event, chatItem)">
 				<p class="title" :title="chatItem.title" :aria-label="chatItem.title">{{ chatItem.title }}</p>
 				<div class="bottom">
 					<p aria-hidden="true">

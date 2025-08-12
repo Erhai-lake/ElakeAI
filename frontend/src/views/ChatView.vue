@@ -8,11 +8,12 @@ import AssistantMessageCard from "@/components/chat/AssistantMessageCard.vue"
 import TopTitle from "@/components/chat/TopTitle.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import RightClickMenu from "@/components/RightClickMenu.vue"
 
 export default {
 	name: "ChatView",
 	inject: ["$DB", "$log"],
-	components: {Loading, TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
+	components: {RightClickMenu, Loading, TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
 	data() {
 		return {
 			name: "ChatView",
@@ -64,6 +65,57 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
+		},
+		/**
+		 * 右键点击
+		 * @param event 事件
+		 * @param item 项
+		 */
+		onRightClick(event, item) {
+			event.preventDefault()
+			event.stopPropagation()
+			this.$refs.menu.show(event.clientX, event.clientY, [
+				{
+					title: this.t("views.ChatView.functionalControls.scrollToTopMessages"),
+					icon: {
+						type: "svg",
+						src: "#icon-topArrow"
+					},
+					onClick: () => this.scrollToUpAndDownMessages("top")
+				},
+				{
+					title: this.t("views.ChatView.functionalControls.scrollToUpMessages"),
+					icon: {
+						type: "svg",
+						src: "#icon-upArrow"
+					},
+					onClick: () => this.scrollToUpAndDownMessages("up")
+				},
+				{
+					title: this.t("views.ChatView.functionalControls.scrollToDownMessages"),
+					icon: {
+						type: "svg",
+						src: "#icon-downArrow"
+					},
+					onClick: () => this.scrollToUpAndDownMessages("down")
+				},
+				{
+					title: this.t("views.ChatView.functionalControls.scrollToBottomMessages"),
+					icon: {
+						type: "svg",
+						src: "#icon-bottomArrow"
+					},
+					onClick: () => this.scrollToUpAndDownMessages("bottom")
+				},
+				{
+					title: this.t("views.ChatView.functionalControls." + (this.showInputBox ? "hideInputBox" : "showInputBox")),
+					icon: {
+						type: "svg",
+						src: "#icon-inputBox"
+					},
+					onClick: () => this.showInputBox = !this.showInputBox
+				}
+			], item.key)
 		},
 		/**
 		 * 设置当前聚焦的消息ID
@@ -293,6 +345,27 @@ export default {
 			}
 		},
 		/**
+		 * 编辑消息
+		 * @param id {string} - 消息ID
+		 * @param content {string} - 消息内容
+		 */
+		async editMessage(id, content) {
+			try {
+				// 编辑本地中的消息
+				const INDEX = this.data.data.findIndex((msg) => msg.id === id)
+				if (INDEX !== -1) {
+					this.data.data[INDEX].message.content = content
+				}
+				// 更新数据库中的消息
+				const DATA = JSON.parse(JSON.stringify(this.data.data))
+				await this.$DB.chats.update(this.data.key, {data: DATA})
+				toastRegistry.success(`[${this.name}] ${this.t("views.ChatView.toast.editMessageSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 消息编辑错误`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.editMessageError")}`)
+			}
+		},
+		/**
 		 * 移除消息
 		 * @param id {string} - 消息ID
 		 */
@@ -313,34 +386,24 @@ export default {
 				this.$log.error(`[${this.name}] 消息移除错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.removeMessageError")}`)
 			}
-		},
-		async editMessage(id, content) {
-			try {
-				// 编辑本地中的消息
-				const INDEX = this.data.data.findIndex((msg) => msg.id === id)
-				if (INDEX !== -1) {
-					this.data.data[INDEX].message.content = content
-				}
-				// 更新数据库中的消息
-				const DATA = JSON.parse(JSON.stringify(this.data.data))
-				await this.$DB.chats.update(this.data.key, {data: DATA})
-				toastRegistry.success(`[${this.name}] ${this.t("views.ChatView.toast.editMessageSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 消息编辑错误`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.editMessageError")}`)
-			}
 		}
 	}
 }
 </script>
 
 <template>
-	<Loading :loading="isLoading" :text="t('views.ChatView.loading', {loadedMessages: loadedMessages, totalMessages: totalMessages})">
+	<Loading
+		:loading="isLoading"
+		:text="t('views.ChatView.loading', {loadedMessages: loadedMessages, totalMessages: totalMessages})">
 		<div class="chat-view">
 			<!-- 顶部标题 -->
 			<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
 			<!-- 消息列表 -->
-			<div class="message-list" :style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`">
+			<RightClickMenu ref="menu" />
+			<div
+				class="message-list"
+				:style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`"
+				@contextmenu.prevent="onRightClick($event, data)">
 				<div
 					v-for="message in data.data"
 					:key="message.id"

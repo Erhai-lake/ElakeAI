@@ -29,17 +29,13 @@ export default {
 			isLogView: false
 		}
 	},
-	async mounted() {
-		if (window.go) {
-			document.addEventListener("contextmenu", event => event.preventDefault())
-		}
-	},
 	beforeUnmount() {
 		EventBus.off("[update] pluginProgress")
 		EventBus.off("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
 		EventBus.off("[function] configInitialization", this.configInitialization)
 	},
 	async created() {
+		document.addEventListener("contextmenu", event => event.preventDefault())
 		EventBus.on("[update] pluginProgress", (data) => {
 			const DETAIL = data.detail || {}
 			this.loading.loadedCount = DETAIL.loaded || 0
@@ -274,33 +270,6 @@ export default {
 	overflow: hidden;
 }
 
-//.loading-container {
-//	position: absolute;
-//	top: 0;
-//	left: 0;
-//	width: 100%;
-//	height: 100vh;
-//	color: var(--text-color);
-//	background-color: var(--background-color);
-//	font-size: 18px;
-//	display: flex;
-//	justify-content: center;
-//	align-items: center;
-//	flex-direction: column;
-//	z-index: 9999;
-//
-//	.loading-text {
-//		margin-bottom: 10px;
-//		font-size: 20px;
-//		font-weight: bold;
-//	}
-//
-//	.progress-text {
-//		font-size: 14px;
-//		color: #888;
-//	}
-//}
-
 .RouterView {
 	overflow-y: auto;
 	scrollbar-width: thin;
@@ -312,7 +281,7 @@ export default {
 	top: 10px;
 	right: 10px;
 	cursor: pointer;
-	z-index: 3;
+	z-index: 4;
 }
 
 .IsLogSuspensionWindow {

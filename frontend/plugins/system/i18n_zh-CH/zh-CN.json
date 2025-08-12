@@ -138,7 +138,9 @@
 				"options": "设置",
 				"delete": "删除对话"
 			},
-			"numberOfConversations": "{num} 条对话"
+			"numberOfConversations": "{num} 条对话",
+			"openChat": "打开对话",
+			"deleteChat": "删除对话"
 		},
 		"LanguageSelect": {
 			"toast": {
@@ -159,8 +161,8 @@
 		"UserMessageCard": {
 			"earthOnline": "地球Online",
 			"players": "玩家",
-			"remove": "移除",
-			"edit": "编辑",
+			"editMessage": "编辑消息",
+			"removeMessage": "移除消息",
 			"save": "保存",
 			"cancel": "取消"
 		},
@@ -173,8 +175,8 @@
 		"AssistantMessageCard": {
 			"reasoning": "推理",
 			"thinking": "思考中...",
-			"remove": "移除",
-			"edit": "编辑",
+			"editMessage": "编辑消息",
+			"removeMessage": "移除消息",
 			"save": "保存",
 			"cancel": "取消"
 		},
@@ -275,7 +277,7 @@
 				"showInputBox": "显示输入框",
 				"hideInputBox": "隐藏输入框"
 			},
-			"loading": "请耐心等待聊天记录载入...<br />加载进度: {loadedMessages} / {totalMessages} 条",
+			"loading": "请耐心等待聊天记录载入...\n加载进度: {loadedMessages} / {totalMessages} 条",
 			"aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
 		},
 		"OptionsView": {

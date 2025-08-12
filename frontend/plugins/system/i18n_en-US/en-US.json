@@ -138,7 +138,9 @@
 				"options": "Settings",
 				"delete": "Delete Chat"
 			},
-			"numberOfConversations": "{num} conversations"
+			"numberOfConversations": "{num} conversations",
+			"openChat": "Open Chat",
+			"deleteChat": "Delete Chat"
 		},
 		"LanguageSelect": {
 			"toast": {
@@ -159,8 +161,8 @@
 		"UserMessageCard": {
 			"earthOnline": "Earth Online",
 			"players": "Players",
-			"remove": "Remove",
-			"edit": "Edit",
+			"editMessage": "Edit Message",
+			"removeMessage": "Remove Message",
 			"save": "Save",
 			"cancel": "Cancel"
 		},
@@ -173,8 +175,8 @@
 		"AssistantMessageCard": {
 			"reasoning": "Reasoning",
 			"thinking": "Thinking...",
-			"remove": "Remove",
-			"edit": "Edit",
+			"editMessage": "Edit Message",
+			"removeMessage": "Remove Message",
 			"save": "Save",
 			"cancel": "Cancel"
 		},
@@ -275,7 +277,7 @@
 				"showInputBox": "Show Input Box",
 				"hideInputBox": "Hide Input Box"
 			},
-			"loading": "Please wait patiently for the chat history to load...<br />{totalMessages} / {loadedMessages}",
+			"loading": "Please wait patiently for the chat history to load...\n{totalMessages} / {loadedMessages}",
 			"aiDisclaimer": "This content is AI-generated. Please verify carefully."
 		},
 		"OptionsView": {
