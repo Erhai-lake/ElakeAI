@@ -1,8 +1,8 @@
 <script>
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import {useRoute} from "vue-router";
-import {toastRegistry} from "@/services/plugin/api/ToastClass";
-import EventBus from "@/services/EventBus";
+import {useRoute} from "vue-router"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import EventBus from "@/services/EventBus"
 
 export default {
 	name: "Sidebar",

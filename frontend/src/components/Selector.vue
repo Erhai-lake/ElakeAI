@@ -1,6 +1,5 @@
 <script>
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import EventBus from "@/services/EventBus";
 
 export default {
 	name: "Selector",

@@ -120,7 +120,7 @@ export default {
 			const HOURS = String(DATE.getHours()).padStart(2, "0")
 			const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
 			const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
-			const MILLISECONDS = String(DATE.getMilliseconds()).padStart(3, "0");
+			const MILLISECONDS = String(DATE.getMilliseconds()).padStart(3, "0")
 			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}.${MILLISECONDS}`
 		},
 		/**

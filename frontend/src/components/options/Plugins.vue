@@ -3,8 +3,8 @@ import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/PluginManage
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import Tabs from "@/components/Tabs.vue";
-import TabsTab from "@/components/TabsTab.vue";
+import Tabs from "@/components/Tabs.vue"
+import TabsTab from "@/components/TabsTab.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
