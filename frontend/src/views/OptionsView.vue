@@ -24,12 +24,12 @@ export default {
 	data() {
 		return {
 			menuItems: [
-				{key: "personalization", label: this.t("views.OptionsView.personalization")},
-				{key: "chats", label: this.t("views.OptionsView.chats")},
-				{key: "importExport", label: this.t("views.OptionsView.importExport")},
-				{key: "plugins", label: this.t("views.OptionsView.plugins")},
-				{key: "advancedTools", label: this.t("views.OptionsView.advancedTools")},
-				{key: "about", label: this.t("views.OptionsView.about")}
+				{key: "personalization", label: "views.OptionsView.personalization"},
+				{key: "chats", label: "views.OptionsView.chats"},
+				{key: "importExport", label: "views.OptionsView.importExport"},
+				{key: "plugins", label: "views.OptionsView.plugins"},
+				{key: "advancedTools", label: "views.OptionsView.advancedTools"},
+				{key: "about", label: "views.OptionsView.about"}
 			],
 			activeKey: "personalization"
 		}
@@ -144,7 +144,7 @@ export default {
 				:key="item.key"
 				:class="['menu-item', { active: activeKey === item.key }]"
 				@click="changeMenu(item.key)">
-				{{ item.label }}
+				{{ t(item.label) }}
 			</div>
 		</div>
 	</div>
