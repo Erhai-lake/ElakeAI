@@ -1,6 +1,9 @@
 <script>
+import SVGIcon from "@/components/SVGIcon.vue"
+
 export default {
 	name: "FoldingPanel",
+	components: {SVGIcon},
 	props: {
 		Height: {
 			type: Number,
@@ -46,9 +49,7 @@ export default {
 			</div>
 			<div></div>
 			<div class="arrow" :class="{ expanded: isExpand }">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-downArrow"></use>
-				</svg>
+				<SVGIcon name="#icon-downArrow"/>
 			</div>
 		</div>
 		<div class="folding-panel-content" :style="{ height: isExpand ? contentHeight + 'px' : '0px' }">
@@ -62,14 +63,6 @@ export default {
 </template>
 
 <style scoped lang="less">
-.icon {
-	width: 1em;
-	height: 1em;
-	vertical-align: -0.15em;
-	fill: currentColor;
-	overflow: hidden;
-}
-
 .folding-panel {
 	--bg-color: #b3b3b33f;
 	margin: 5px 0;

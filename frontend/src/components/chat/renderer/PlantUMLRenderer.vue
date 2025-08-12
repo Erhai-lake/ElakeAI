@@ -7,11 +7,12 @@ import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 import Button from "@/components/Button.vue"
 import Selector from "@/components/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import SVGIcon from "@/components/SVGIcon.vue"
 
 export default {
 	name: "PlantUMLRenderer",
 	inject: ["$log"],
-	components: {Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
+	components: {SVGIcon, Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
 	props: {
 		code: {
 			type: String,
@@ -103,42 +104,28 @@ export default {
 						<!--第一排-->
 						<div></div>
 						<Button class="toolbar-btn move-up">
-							<svg class="icon" aria-hidden="true">
-								<use xlink:href="#icon-upArrow"></use>
-							</svg>
+							<SVGIcon name="#icon-upArrow" size="2em"/>
 						</Button>
 						<Button class="toolbar-btn zoom-in">
-							<svg class="icon" aria-hidden="true">
-								<use xlink:href="#icon-zoomIn"></use>
-							</svg>
+							<SVGIcon name="#icon-zoomIn" size="2em"/>
 						</Button>
 						<!--第二排-->
 						<Button class="toolbar-btn move-left">
-							<svg class="icon" aria-hidden="true">
-								<use xlink:href="#icon-leftArrow"></use>
-							</svg>
+							<SVGIcon name="#icon-leftArrow" size="2em"/>
 						</Button>
 						<Button class="toolbar-btn zoom-reset">
-							<svg class="icon" aria-hidden="true">
-								<use xlink:href="#icon-reset"></use>
-							</svg>
+							<SVGIcon name="#icon-reset" size="2em"/>
 						</Button>
 						<Button class="toolbar-btn move-right">
-							<svg class="icon" aria-hidden="true">
-								<use xlink:href="#icon-rightArrow"></use>
-							</svg>
+							<SVGIcon name="#icon-rightArrow" size="2em"/>
 						</Button>
 						<!--第三排-->
 						<div></div>
 						<Button class="toolbar-btn move-down">
-							<svg class="icon" aria-hidden="true">
-								<use xlink:href="#icon-downArrow"></use>
-							</svg>
+							<SVGIcon name="#icon-downArrow" size="2em"/>
 						</Button>
 						<Button class="toolbar-btn zoom-out">
-							<svg class="icon" aria-hidden="true">
-								<use xlink:href="#icon-zoomOut"></use>
-							</svg>
+							<SVGIcon name="#icon-zoomOut" size="2em"/>
 						</Button>
 					</div>
 					<Selector
@@ -180,12 +167,6 @@ export default {
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	overflow: auto;
 	min-height: 138px;
-
-	.icon {
-		width: 2em;
-		height: 2em;
-		fill: currentColor;
-	}
 
 	&:hover {
 		.toolbar, .toolbar-export {

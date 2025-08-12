@@ -9,11 +9,12 @@ import TopTitle from "@/components/chat/TopTitle.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import RightClickMenu from "@/components/RightClickMenu.vue"
+import SVGIcon from "@/components/SVGIcon.vue"
 
 export default {
 	name: "ChatView",
 	inject: ["$DB", "$log"],
-	components: {RightClickMenu, Loading, TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
+	components: {SVGIcon, RightClickMenu, Loading, TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
 	data() {
 		return {
 			name: "ChatView",
@@ -429,44 +430,34 @@ export default {
 					:title="t('views.ChatView.functionalControls.scrollToTopMessages')"
 					@click="scrollToUpAndDownMessages('top')"
 					:disabled="data.data.length === 0">
-					<svg class="icon" aria-hidden="true">
-						<use xlink:href="#icon-topArrow"></use>
-					</svg>
+					<SVGIcon name="#icon-topArrow" size="2em"/>
 				</button>
 				<!-- 上一条按钮 -->
 				<button
 					:title="t('views.ChatView.functionalControls.scrollToUpMessages')"
 					@click="scrollToUpAndDownMessages('up')"
 					:disabled="data.data.length === 0">
-					<svg class="icon" aria-hidden="true">
-						<use xlink:href="#icon-upArrow"></use>
-					</svg>
+					<SVGIcon name="#icon-upArrow" size="2em"/>
 				</button>
 				<!-- 下一条按钮 -->
 				<button
 					:title="t('views.ChatView.functionalControls.scrollToDownMessages')"
 					@click="scrollToUpAndDownMessages('Down')"
 					:disabled="data.data.length === 0">
-					<svg class="icon" aria-hidden="true">
-						<use xlink:href="#icon-downArrow"></use>
-					</svg>
+					<SVGIcon name="#icon-downArrow" size="2em"/>
 				</button>
 				<!-- 回到底部按钮 -->
 				<button
 					:title="t('views.ChatView.functionalControls.scrollToBottomMessages')"
 					@click="scrollToUpAndDownMessages('bottom')"
 					:disabled="data.data.length === 0">
-					<svg class="icon" aria-hidden="true">
-						<use xlink:href="#icon-bottomArrow"></use>
-					</svg>
+					<SVGIcon name="#icon-bottomArrow" size="2em"/>
 				</button>
 				<!-- 显示输入框按钮 -->
 				<button
 					:title="t('views.ChatView.functionalControls.' + (showInputBox ? 'hideInputBox' : 'showInputBox'))"
 					@click="showInputBox = !showInputBox">
-					<svg class="icon" aria-hidden="true">
-						<use xlink:href="#icon-inputBox"></use>
-					</svg>
+					<SVGIcon name="#icon-inputBox" size="2em"/>
 				</button>
 			</div>
 		</div>
@@ -474,14 +465,6 @@ export default {
 </template>
 
 <style scoped lang="less">
-.icon {
-	width: 2em;
-	height: 2em;
-	vertical-align: -0.15em;
-	fill: currentColor;
-	overflow: hidden;
-}
-
 .chat-view {
 	position: relative;
 	width: 100%;

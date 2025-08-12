@@ -4,10 +4,11 @@ import {useRoute} from "vue-router"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import RightClickMenu from "@/components/RightClickMenu.vue"
+import SVGIcon from "@/components/SVGIcon.vue"
 
 export default {
 	name: "Sidebar",
-	components: {RightClickMenu},
+	components: {SVGIcon, RightClickMenu},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
@@ -175,18 +176,14 @@ export default {
 				class="sidebar-new"
 				:title="t('components.Sidebar.function.new')"
 				:aria-label="t('components.Sidebar.function.new')">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-new"></use>
-				</svg>
+				<SVGIcon name="#icon-new" size="2em"/>
 			</router-link>
 			<div
 				class="sidebar-stow"
 				:title="t('components.Sidebar.function.stow')"
 				@click="sidebarSwitch"
 				:aria-label="t('components.Sidebar.function.stow')">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-stow"></use>
-				</svg>
+				<SVGIcon name="#icon-stow" size="2em"/>
 			</div>
 		</div>
 		<div
@@ -216,9 +213,7 @@ export default {
 					:title="t('components.Sidebar.function.delete')"
 					@click.stop="deleteChat(chatItem.key)"
 					:aria-label="t('components.Sidebar.function.delete')">
-					<svg class="icon" aria-hidden="true">
-						<use xlink:href="#icon-delete"></use>
-					</svg>
+					<SVGIcon name="#icon-delete" size="2em"/>
 				</div>
 			</div>
 		</div>
@@ -227,9 +222,7 @@ export default {
 			class="sidebar-preset"
 			:title="t('components.Sidebar.function.preset')"
 			:aria-label="t('components.Sidebar.function.preset')">
-			<svg class="icon" aria-hidden="true">
-				<use xlink:href="#icon-preset"></use>
-			</svg>
+			<SVGIcon name="#icon-preset" size="2em"/>
 			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.preset") }}</p>
 		</div>
 		<router-link
@@ -237,23 +230,13 @@ export default {
 			class="sidebar-setup"
 			:title="t('components.Sidebar.function.options')"
 			:aria-label="t('components.Sidebar.function.options')">
-			<svg class="icon" aria-hidden="true">
-				<use xlink:href="#icon-setup"></use>
-			</svg>
+			<SVGIcon name="#icon-setup" size="2em"/>
 			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.options") }}</p>
 		</router-link>
 	</div>
 </template>
 
 <style scoped lang="less">
-.icon {
-	width: 2em;
-	height: 2em;
-	vertical-align: -0.15em;
-	fill: currentColor;
-	overflow: hidden;
-}
-
 .sidebar-container {
 	height: 100%;
 	background-color: var(--sidebar-expand-container-background-color);

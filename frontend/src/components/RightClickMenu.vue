@@ -1,8 +1,10 @@
 <script>
 import EventBus from "@/services/EventBus"
+import SVGIcon from "@/components/SVGIcon.vue"
 
 export default {
 	name: "RightClickMenu",
+	components: {SVGIcon},
 	data() {
 		return {
 			visible: false,
@@ -83,9 +85,7 @@ export default {
 				class="menu-item"
 				:style="{ color: item.color}"
 				@click="handleClick(item)">
-				<svg v-if=" item.icon && item.icon.type === 'svg'" class="icon" aria-hidden="true">
-					<use :xlink:href="item.icon.src"></use>
-				</svg>
+				<SVGIcon :name="item.icon.src" v-if=" item.icon && item.icon.type === 'svg'"/>
 				<img v-else-if="item.icon && item.icon.type === 'img'" :src="item.icon" :alt="item.title" class="icon"/>
 				<span>{{ item.title }}</span>
 			</div>
@@ -126,11 +126,6 @@ export default {
 }
 
 .icon {
-	width: 16px;
-	height: 16px;
 	margin-right: 8px;
-	vertical-align: -0.15em;
-	fill: currentColor;
-	overflow: hidden;
 }
 </style>

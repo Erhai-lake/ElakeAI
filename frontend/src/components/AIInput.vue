@@ -1,6 +1,7 @@
 <script>
 import {defineComponent, ref} from "vue"
 import EventBus from "@/services/EventBus"
+import SVGIcon from "@/components/SVGIcon.vue"
 import Selector from "@/components/Selector.vue"
 import {useRoute} from "vue-router"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
@@ -10,7 +11,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default defineComponent({
 	name: "AIInput",
-	components: {DefaultChatSettings, Selector},
+	components: {SVGIcon, DefaultChatSettings, Selector},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
@@ -301,46 +302,34 @@ export default defineComponent({
 		<div class="AppendixBar">
 			<!--关闭-->
 			<label for="Appendix" :title="t('components.AIInput.appendix.close')">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-close"></use>
-				</svg>
+				<SVGIcon name="#icon-close" size="2em"/>
 			</label>
 			<!--拍照-->
 			<label for="Camera" :title="t('components.AIInput.appendix.camera')">
 				<input type="file" id="Camera" accept="image/*" capture="environment"/>
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-photograph"></use>
-				</svg>
+				<SVGIcon name="#icon-photograph" size="2em"/>
 			</label>
 			<!--相册-->
 			<label for="Photos" :title="t('components.AIInput.appendix.picture')">
 				<input type="file" id="Photos" accept="image/*"/>
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-photoAlbum"></use>
-				</svg>
+				<SVGIcon name="#icon-photoAlbum" size="2em"/>
 			</label>
 			<!--文件-->
 			<label for="Files" :title="t('components.AIInput.appendix.file')">
 				<input type="file" id="Files"/>
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-file"></use>
-				</svg>
+				<SVGIcon name="#icon-file" size="2em"/>
 			</label>
 		</div>
 		<!--顶部按钮栏-->
 		<div class="TopButtonBar">
 			<!--附件-->
 			<label for="Appendix" :title="t('components.AIInput.function.appendix')">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-link"></use>
-				</svg>
+				<SVGIcon name="#icon-link" size="2em"/>
 			</label>
 			<!--联网搜索-->
 			<input id="Search" type="checkbox" v-model="enableWebSearch"/>
 			<label for="Search" :title="t('components.AIInput.function.webSearch')">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-webSearch"></use>
-				</svg>
+				<SVGIcon name="#icon-webSearch" size="2em"/>
 			</label>
 			<DefaultChatSettings
 				:save="false"
@@ -366,9 +355,7 @@ export default defineComponent({
 				class="send"
 				v-if="!stopStatus"
 				@click="send">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-send"></use>
-				</svg>
+				<SVGIcon name="#icon-send" size="2em"/>
 			</label>
 			<!--停止-->
 			<label
@@ -377,23 +364,13 @@ export default defineComponent({
 				class="Stop"
 				v-if="stopStatus"
 				@click="stop">
-				<svg class="icon" aria-hidden="true">
-					<use xlink:href="#icon-close"></use>
-				</svg>
+				<SVGIcon name="#icon-close" size="2em"/>
 			</label>
 		</div>
 	</div>
 </template>
 
 <style scoped lang="less">
-.icon {
-	width: 2em;
-	height: 2em;
-	vertical-align: -0.15em;
-	fill: currentColor;
-	overflow: hidden;
-}
-
 @media screen and (max-width: 768px) {
 	.AIInput {
 		width: 100% !important;
