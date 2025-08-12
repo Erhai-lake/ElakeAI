@@ -188,10 +188,10 @@ export default {
 				const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
 				if (LANGUAGE === "System") {
 					const SYSTEM_LANG = window.navigator.language || "zh-CN"
-					i18nRegistry.locale = SYSTEM_LANG
+					i18nRegistry.locale(SYSTEM_LANG)
 					info.Language = SYSTEM_LANG
 				} else {
-					i18nRegistry.locale = LANGUAGE
+					i18nRegistry.locale(LANGUAGE)
 					info.Language = LANGUAGE
 				}
 				// Log悬浮窗

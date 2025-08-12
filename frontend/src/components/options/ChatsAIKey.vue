@@ -586,7 +586,7 @@ export default {
 <style scoped lang="less">
 .top {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, 200px);
+	grid-template-columns: repeat(auto-fill, 150px);
 	gap: 10px;
 }
 

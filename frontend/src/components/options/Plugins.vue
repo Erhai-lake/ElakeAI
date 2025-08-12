@@ -174,7 +174,7 @@ export default {
 
 <template>
 	<div class="plugins-view">
-		<FoldingPanel :Height="600">
+		<FoldingPanel :Height="600" :is="true">
 			<template #Title>
 				{{ t("views.PluginsView.systemPlugins") }}
 			</template>

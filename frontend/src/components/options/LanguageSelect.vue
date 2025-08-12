@@ -92,9 +92,9 @@ export default {
 			try {
 				if (!selectLang) return
 				if (selectLang.code === "System") {
-					i18nRegistry.locale = navigator.language || this.languages[0].code
+					i18nRegistry.locale(navigator.language || this.languages[0].code)
 				} else {
-					i18nRegistry.locale = selectLang.code
+					i18nRegistry.locale(selectLang.code)
 				}
 				await this.$DB.configs.put({
 					item: "language",

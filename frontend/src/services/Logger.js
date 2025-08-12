@@ -26,9 +26,6 @@ const storeLog = async (level, ...args) => {
 			message: [MATCH[2], ...args].map(formatMessage).join(" "),
 			timestamp: Date.now()
 		}
-
-		EventBus.emit("[update] logUpdate", LOG_ENTRY)
-
 		if (DB?.logs) {
 			try {
 				await DB.logs.add(LOG_ENTRY)
@@ -39,6 +36,7 @@ const storeLog = async (level, ...args) => {
 		} else {
 			setTimeout(() => storeLog(level, ...args), 100)
 		}
+		EventBus.emit("[update] logUpdate")
 	} catch (error) {
 		console.error("日志存储失败", error)
 	}

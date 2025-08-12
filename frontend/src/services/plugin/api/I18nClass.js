@@ -78,7 +78,7 @@ export class I18nClass {
 	 */
 	locale(code) {
 		try {
-			i18n.global.locale = code
+			i18n.global.locale.value = code
 		} catch (error) {
 			Logger.error(`[${NAME}] 切换语言出错`, error)
 		}
