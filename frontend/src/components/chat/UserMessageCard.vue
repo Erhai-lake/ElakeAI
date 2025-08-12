@@ -2,7 +2,7 @@
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import { encode } from "gpt-tokenizer"
+import {encode} from "gpt-tokenizer"
 
 export default {
 	name: "UserMessageCard",
@@ -131,10 +131,8 @@ export default {
 					<Button @click="saveContent">{{ t("components.UserMessageCard.save") }}</Button>
 				</template>
 				<template v-if="!editingContent.show">
+					<Button @click="editInput">{{ t("components.UserMessageCard.edit") }}</Button>
 					<Button @click="remove">{{ t("components.UserMessageCard.remove") }}</Button>
-					<Button @click="editInput">
-						{{ t("components.UserMessageCard.edit") }}
-					</Button>
 				</template>
 			</div>
 			<div class="message-info">

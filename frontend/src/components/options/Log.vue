@@ -44,13 +44,11 @@ export default {
 			isLogSuspensionWindow: false,
 		}
 	},
-	mounted() {
-		EventBus.on("[update] logUpdate", this.loadLogs)
-	},
 	beforeUnmount() {
 		EventBus.off("[update] logUpdate", this.loadLogs)
 	},
 	async created() {
+		EventBus.on("[update] logUpdate", this.loadLogs)
 		// 加载日志
 		await this.loadLogs()
 		// 获取悬浮窗设置

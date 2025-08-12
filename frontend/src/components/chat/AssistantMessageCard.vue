@@ -68,7 +68,7 @@ export default {
 			}
 		}
 	},
-	mounted() {
+	created() {
 		this.parseContent()
 		this.parseReasoning()
 	},
@@ -312,8 +312,8 @@ export default {
 					<Button @click="saveContent">{{ t("components.AssistantMessageCard.save") }}</Button>
 				</template>
 				<template v-if="!editingContent.show">
-					<Button @click="remove">{{ t("components.AssistantMessageCard.remove") }}</Button>
 					<Button @click="editInput">{{ t("components.AssistantMessageCard.edit") }}</Button>
+					<Button @click="remove">{{ t("components.AssistantMessageCard.remove") }}</Button>
 				</template>
 			</div>
 			<div class="message-info">

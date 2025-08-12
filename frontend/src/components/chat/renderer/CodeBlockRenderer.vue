@@ -33,7 +33,7 @@ export default {
 			this.highlightCode()
 		}
 	},
-	mounted() {
+	created() {
 		this.highlightCode()
 	},
 	methods: {

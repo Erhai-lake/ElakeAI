@@ -34,7 +34,7 @@ export default {
 			}
 		}
 	},
-	mounted() {
+	created() {
 		this.renderMermaid()
 	},
 	methods: {

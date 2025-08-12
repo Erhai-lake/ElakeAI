@@ -26,15 +26,13 @@ export default {
 			this.apiKeys.selectAll = this.apiKeys.options.length > 0 && newVal.length === this.apiKeys.options.length
 		}
 	},
-	mounted() {
-		EventBus.on("[update] keyPoolUpdate", this.loadExportData)
-		EventBus.on("[update] chatListUpdate", this.loadExportData)
-	},
 	beforeUnmount() {
 		EventBus.off("[update] keyPoolUpdate", this.loadExportData)
 		EventBus.off("[update] chatListUpdate", this.loadExportData)
 	},
 	async created() {
+		EventBus.on("[update] keyPoolUpdate", this.loadExportData)
+		EventBus.on("[update] chatListUpdate", this.loadExportData)
 		await this.loadExportData()
 	},
 	methods: {

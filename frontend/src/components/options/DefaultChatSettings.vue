@@ -56,14 +56,12 @@ export default {
 			this.selectKey(newVal)
 		}
 	},
-	mounted() {
-		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
-	},
 	beforeUnmount() {
 		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
 		this.cancelAllRequests()
 	},
 	async created() {
+		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
 		// 初始化平台列表
 		await this.loadPlatform()
 		// 获取设置

@@ -50,13 +50,11 @@ export default {
 			this.selectModel(newVal)
 		}
 	},
-	mounted() {
-		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
-	},
 	beforeUnmount() {
 		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	created() {
+		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
 		this.loadPlatform()
 		// 初始化Key池
 		this.loadKeyPools()

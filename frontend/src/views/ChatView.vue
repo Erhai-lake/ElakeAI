@@ -33,20 +33,10 @@ export default {
 			showInputBox: true
 		}
 	},
-	async created() {
-		await this.initChatView()
-	},
 	watch: {
 		"route.params.key"(newKey) {
 			this.initChatView(newKey)
 		}
-	},
-	mounted() {
-		EventBus.on("[stream] userMessage", this.userMessage)
-		EventBus.on("[stream] streamStream", this.streamStream)
-		EventBus.on("[stream] streamComplete", this.streamComplete)
-		EventBus.on("[function] removeMessage", this.removeMessage)
-		EventBus.on("[function] editMessage", this.editMessage)
 	},
 	beforeUnmount() {
 		EventBus.off("[stream] userMessage", this.userMessage)
@@ -54,6 +44,14 @@ export default {
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 		EventBus.off("[function] removeMessage", this.removeMessage)
 		EventBus.off("[function] editMessage", this.editMessage)
+	},
+	async created() {
+		EventBus.on("[stream] userMessage", this.userMessage)
+		EventBus.on("[stream] streamStream", this.streamStream)
+		EventBus.on("[stream] streamComplete", this.streamComplete)
+		EventBus.on("[function] removeMessage", this.removeMessage)
+		EventBus.on("[function] editMessage", this.editMessage)
+		await this.initChatView()
 	},
 	methods: {
 		/**

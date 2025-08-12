@@ -16,23 +16,23 @@ export default {
 			inProgress: []
 		}
 	},
-	mounted() {
+	beforeUnmount() {
+		// 移除更新列表事件监听
+		EventBus.off("[update] chatListUpdate", this.chatListGet)
+		EventBus.off("[stream] userMessage", this.userMessage)
+		EventBus.off("[stream] streamComplete", this.streamComplete)
+	},
+	created() {
+		// 监听更新列表事件
+		EventBus.on("[update] chatListUpdate", this.chatListGet)
+		EventBus.on("[stream] userMessage", this.userMessage)
+		EventBus.on("[stream] streamComplete", this.streamComplete)
 		// 判断是否为移动端
 		if (window.innerWidth < 768) {
 			this.sidebarStatus = false
 		}
 		// 初始化时获取聊天列表
 		this.chatListGet()
-		// 监听更新列表事件
-		EventBus.on("[update] chatListUpdate", this.chatListGet)
-		EventBus.on("[stream] userMessage", this.userMessage)
-		EventBus.on("[stream] streamComplete", this.streamComplete)
-	},
-	beforeUnmount() {
-		// 移除更新列表事件监听
-		EventBus.off("[update] chatListUpdate", this.chatListGet)
-		EventBus.off("[stream] userMessage", this.userMessage)
-		EventBus.off("[stream] streamComplete", this.streamComplete)
 	},
 	methods: {
 		/**

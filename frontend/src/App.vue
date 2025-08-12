@@ -33,6 +33,13 @@ export default {
 		if (window.go) {
 			document.addEventListener("contextmenu", event => event.preventDefault())
 		}
+	},
+	beforeUnmount() {
+		EventBus.off("[update] pluginProgress")
+		EventBus.off("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
+		EventBus.off("[function] configInitialization", this.configInitialization)
+	},
+	async created() {
 		EventBus.on("[update] pluginProgress", (data) => {
 			const DETAIL = data.detail || {}
 			this.loading.loadedCount = DETAIL.loaded || 0
@@ -45,13 +52,6 @@ export default {
 		})
 		EventBus.on("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
 		EventBus.on("[function] configInitialization", this.configInitialization)
-	},
-	beforeUnmount() {
-		EventBus.off("[update] pluginProgress")
-		EventBus.off("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
-		EventBus.off("[function] configInitialization", this.configInitialization)
-	},
-	async created() {
 		// 加载界面初始化
 		this.updateMessage()
 		// 环境信息

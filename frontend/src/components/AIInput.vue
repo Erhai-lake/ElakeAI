@@ -36,9 +36,6 @@ export default defineComponent({
 			this.focusInput()
 		},
 	},
-	created() {
-		this.restoreSettings()
-	},
 	beforeDestroy() {
 		this.cancelAllRequests()
 	},
@@ -52,17 +49,18 @@ export default defineComponent({
 			this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
 			this.focusInput()
 		}
-		EventBus.on("[stream] streamComplete", this.streamComplete)
-		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	beforeUnmount() {
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
-	},
-	unmounted() {
 		if (this.textareaRef) {
 			this.textareaRef.removeEventListener("input", this.adjustTextareaHeight)
 		}
+	},
+	created() {
+		this.restoreSettings()
+		EventBus.on("[stream] streamComplete", this.streamComplete)
+		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
 	},
 	methods: {
 		/**

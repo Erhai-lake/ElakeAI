@@ -8,7 +8,7 @@ export default {
 		}
 	},
 	inject: ["registerTab", "activeName"],
-	mounted() {
+	created() {
 		this.registerTab({
 			name: this.name,
 			labelSlot: this.$slots.label
@@ -22,6 +22,3 @@ export default {
 		<slot/>
 	</div>
 </template>
-
-<style scoped lang="less">
-</style>
