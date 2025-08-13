@@ -28,6 +28,11 @@ const routes = [
 				component: () => import("@/views/options/ChatsView.vue")
 			},
 			{
+				path: "import",
+				name: "OptionsImport",
+				component: () => import("@/views/options/ImportView.vue")
+			},
+			{
 				path: "import_export",
 				name: "OptionsImportExport",
 				component: () => import("@/views/options/ImportExportView.vue")
@@ -43,6 +48,16 @@ const routes = [
 				component: () => import("@/views/options/AdvancedToolsView.vue")
 			},
 			{
+				path: "log",
+				name: "Log",
+				component: () => import("@/views/options/LogView.vue")
+			},
+			{
+				path: "debug",
+				name: "DeBUG",
+				component: () => import("@/views/options/DeBUGView.vue")
+			},
+			{
 				path: "about",
 				name: "OptionsAbout",
 				component: () => import("@/views/options/AboutView.vue")
@@ -52,16 +67,6 @@ const routes = [
 				name: "OptionsNotFound",
 				component: () => import("@/views/options/OptionsNotFoundView.vue")
 			}
-			// {
-			// 	path: "debug",
-			// 	name: "DeBUG",
-			// 	component: () => import("@/views/DeBUGView.vue")
-			// },
-			// {
-			// 	path: "log",
-			// 	name: "Log",
-			// 	component: () => import("@/views/LogView.vue")
-			// }
 		]
 	},
 	{

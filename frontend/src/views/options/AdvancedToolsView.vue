@@ -22,15 +22,15 @@ export default {
 
 <template>
 	<div class="item">
-		BeBUG View
-		<router-link to="/options/debug">
-			<Button>Open BeBUG View</Button>
-		</router-link>
-	</div>
-	<div class="item">
 		Log View
 		<router-link to="/options/log">
 			<Button>Open Log View</Button>
+		</router-link>
+	</div>
+	<div class="item">
+		BeBUG View
+		<router-link to="/options/debug">
+			<Button>Open BeBUG View</Button>
 		</router-link>
 	</div>
 	<div class="item">
