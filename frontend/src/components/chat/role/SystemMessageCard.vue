@@ -69,7 +69,7 @@ export default {
 			event.stopPropagation()
 			this.$refs.menu.show(event.clientX, event.clientY, [
 				{
-					title: this.t("components.AssistantMessageCard.editMessage"),
+					title: this.t("components.SystemMessageCard.editMessage"),
 					icon: {
 						type: "svg",
 						src: "#icon-inputBox"
@@ -78,7 +78,7 @@ export default {
 					onClick: () => this.editInput()
 				},
 				{
-					title: this.t("components.AssistantMessageCard.removeMessage"),
+					title: this.t("components.SystemMessageCard.removeMessage"),
 					icon: {
 						type: "svg",
 						src: "#icon-delete"
@@ -157,17 +157,17 @@ export default {
 			<div class="functional-controls">
 				<template v-if="editingContent.show">
 					<Button @click="editingContent.show = false">
-						{{ t("components.UserMessageCard.cancel") }}
+						{{ t("components.SystemMessageCard.cancel") }}
 					</Button>
-					<Button @click="saveContent">{{ t("components.UserMessageCard.save") }}</Button>
+					<Button @click="saveContent">{{ t("components.SystemMessageCard.save") }}</Button>
 				</template>
 				<template v-if="!editingContent.show">
-					<Button @click="editInput">{{ t("components.UserMessageCard.editMessage") }}</Button>
-					<Button @click="remove">{{ t("components.UserMessageCard.removeMessage") }}</Button>
+					<Button @click="editInput">{{ t("components.SystemMessageCard.editMessage") }}</Button>
+					<Button @click="remove">{{ t("components.SystemMessageCard.removeMessage") }}</Button>
 				</template>
 			</div>
 			<div class="message-info">
-				<div>System-Prompt-{{ formatTimestamp() }}
+				<div>{{ t("components.SystemMessageCard.systemPrompt") }}-{{ formatTimestamp() }}
 				</div>
 				<div>{{ message.id }} - {{ tokens() }} tokens</div>
 			</div>

@@ -69,7 +69,7 @@ export default {
 			event.stopPropagation()
 			this.$refs.menu.show(event.clientX, event.clientY, [
 				{
-					title: this.t("components.AssistantMessageCard.editMessage"),
+					title: this.t("components.UserMessageCard.editMessage"),
 					icon: {
 						type: "svg",
 						src: "#icon-inputBox"
@@ -78,7 +78,7 @@ export default {
 					onClick: () => this.editInput()
 				},
 				{
-					title: this.t("components.AssistantMessageCard.removeMessage"),
+					title: this.t("components.UserMessageCard.removeMessage"),
 					icon: {
 						type: "svg",
 						src: "#icon-delete"

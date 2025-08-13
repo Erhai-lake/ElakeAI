@@ -158,9 +158,24 @@
 			"dark": "Dark",
 			"system": "System"
 		},
+		"SystemMessageCard": {
+			"systemPrompt": "System prompt",
+			"editMessage": "Edit message",
+			"removeMessage": "Remove message",
+			"save": "Save",
+			"cancel": "Cancel"
+		},
 		"UserMessageCard": {
 			"earthOnline": "Earth Online",
 			"players": "Players",
+			"editMessage": "Edit message",
+			"removeMessage": "Remove message",
+			"save": "Save",
+			"cancel": "Cancel"
+		},
+		"AssistantMessageCard": {
+			"reasoning": "Reasoning",
+			"thinking": "Thinking...",
 			"editMessage": "Edit message",
 			"removeMessage": "Remove message",
 			"save": "Save",
@@ -171,14 +186,6 @@
 			"copied": "Copied",
 			"failed": "Failed",
 			"notSupported": "Unsupported language"
-		},
-		"AssistantMessageCard": {
-			"reasoning": "Reasoning",
-			"thinking": "Thinking...",
-			"editMessage": "Edit message",
-			"removeMessage": "Remove message",
-			"save": "Save",
-			"cancel": "Cancel"
 		},
 		"Log": {
 			"toast": {

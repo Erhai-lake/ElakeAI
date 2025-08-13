@@ -158,9 +158,24 @@
 			"dark": "深夜",
 			"system": "系统"
 		},
+		"SystemMessageCard": {
+			"systemPrompt": "系统提示词",
+			"editMessage": "编辑消息",
+			"removeMessage": "移除消息",
+			"save": "保存",
+			"cancel": "取消"
+		},
 		"UserMessageCard": {
 			"earthOnline": "地球Online",
 			"players": "玩家",
+			"editMessage": "编辑消息",
+			"removeMessage": "移除消息",
+			"save": "保存",
+			"cancel": "取消"
+		},
+		"AssistantMessageCard": {
+			"reasoning": "推理",
+			"thinking": "思考中...",
 			"editMessage": "编辑消息",
 			"removeMessage": "移除消息",
 			"save": "保存",
@@ -171,14 +186,6 @@
 			"copied": "已复制",
 			"failed": "失败",
 			"notSupported": "不支持的语言"
-		},
-		"AssistantMessageCard": {
-			"reasoning": "推理",
-			"thinking": "思考中...",
-			"editMessage": "编辑消息",
-			"removeMessage": "移除消息",
-			"save": "保存",
-			"cancel": "取消"
 		},
 		"Log": {
 			"toast": {
