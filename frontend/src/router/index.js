@@ -13,22 +13,55 @@ const routes = [
 	},
 	{
 		path: "/options",
+		name: "Options",
+		redirect: "/options/personalization",
+		component: () => import("@/views/OptionsView.vue"),
 		children: [
 			{
-				path: "",
-				name: "Options",
-				component: () => import("@/views/OptionsView.vue")
+				path: "personalization",
+				name: "OptionsPersonalization",
+				component: () => import("@/views/options/PersonalizationView.vue")
 			},
 			{
-				path: "debug",
-				name: "DeBUG",
-				component: () => import("@/views/DeBUGView.vue")
+				path: "chats",
+				name: "OptionsChats",
+				component: () => import("@/views/options/ChatsView.vue")
 			},
 			{
-				path: "log",
-				name: "Log",
-				component: () => import("@/views/LogView.vue")
+				path: "import_export",
+				name: "OptionsImportExport",
+				component: () => import("@/views/options/ImportExportView.vue")
+			},
+			{
+				path: "plugins",
+				name: "OptionsPlugins",
+				component: () => import("@/views/options/PluginsView.vue")
+			},
+			{
+				path: "advanced_tools",
+				name: "OptionsAdvancedTools",
+				component: () => import("@/views/options/AdvancedToolsView.vue")
+			},
+			{
+				path: "about",
+				name: "OptionsAbout",
+				component: () => import("@/views/options/AboutView.vue")
+			},
+			{
+				path: ":pathMatch(.*)*",
+				name: "OptionsNotFound",
+				component: () => import("@/views/options/OptionsNotFoundView.vue")
 			}
+			// {
+			// 	path: "debug",
+			// 	name: "DeBUG",
+			// 	component: () => import("@/views/DeBUGView.vue")
+			// },
+			// {
+			// 	path: "log",
+			// 	name: "Log",
+			// 	component: () => import("@/views/LogView.vue")
+			// }
 		]
 	},
 	{

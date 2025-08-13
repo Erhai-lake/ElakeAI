@@ -282,19 +282,28 @@
 		},
 		"OptionsView": {
 			"personalization": "个性化",
-			"theme": "主题",
-			"language": "语言",
 			"chats": "对话",
-			"defaultChatSettings": "默认对话设置",
 			"importExport": "导入/导出",
-			"hazardousOperations": "危险操作",
 			"plugins": "插件",
 			"advancedTools": "高级工具",
-			"about": "关于",
+			"about": "关于"
+		},
+		"PersonalizationView": {
+			"theme": "主题",
+			"language": "语言"
+		},
+		"ChatsView": {
+			"defaultChat": "默认对话"
+		},
+		"AdvancedToolsView": {
+			"hazardousOperations": "危险操作"
+		},
+		"AboutView": {
 			"aboutApp": "关于 ElakeAI",
 			"githubRepo": "GitHub仓库",
 			"contactSupport": "联系支持"
 		},
+		"OptionsNotFoundView": "这里什么都没有, 返回吧~",
 		"PluginsView": {
 			"toast": {
 				"disabledTip": "标记为 disabled 的插件被禁止启用!",

@@ -1,24 +1,12 @@
 <script>
-import ThemeSelect from "@/components/options/ThemeSwitch.vue"
-import LanguageSelect from "@/components/options/LanguageSelect.vue"
-import ChatAIKey from "@/components/options/ChatsAIKey.vue"
-import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
-import ImportExport from "@/components/options/ImportExport.vue"
 import HazardousOperations from "@/components/options/HazardousOperations.vue"
 import Plugins from "@/components/options/Plugins.vue"
-import Button from "@/components/Button.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "OptionsView",
 	components: {
 		HazardousOperations,
-		ImportExport,
-		DefaultChatSettings,
-		Button,
-		ChatAIKey,
-		LanguageSelect,
-		ThemeSelect,
 		Plugins
 	},
 	data() {
@@ -26,20 +14,13 @@ export default {
 			menuItems: [
 				{key: "personalization", label: "views.OptionsView.personalization"},
 				{key: "chats", label: "views.OptionsView.chats"},
-				{key: "importExport", label: "views.OptionsView.importExport"},
+				{key: "import_export", label: "views.OptionsView.importExport"},
 				{key: "plugins", label: "views.OptionsView.plugins"},
-				{key: "advancedTools", label: "views.OptionsView.advancedTools"},
+				{key: "advanced_tools", label: "views.OptionsView.advancedTools"},
 				{key: "about", label: "views.OptionsView.about"}
 			],
 			activeKey: "personalization"
 		}
-	},
-	beforeUnmount() {
-		window.removeEventListener("hashchange", this.setActiveByHash)
-	},
-	created() {
-		this.setActiveByHash()
-		window.addEventListener("hashchange", this.setActiveByHash)
 	},
 	methods: {
 		/**
@@ -50,149 +31,67 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 监听 hash 变化, 切换 activeKey
-		 */
-		setActiveByHash() {
-			const HASHES = window.location.hash.split("#")
-			const KEY = HASHES.length > 2 ? HASHES[2] : ""
-			if (this.menuItems.some(item => item.key === KEY)) {
-				this.activeKey = KEY
-			}
-		},
-		/**
-		 * 切换菜单
-		 * @param key {String} - 键
-		 */
-		changeMenu(key) {
-			const BASE_HASH = window.location.hash.split("#")[1] || "/options"
-			window.location.hash = `${BASE_HASH}#${key}`
 		}
 	}
 }
 </script>
 
 <template>
-	<div class="options-layout">
+	<div class="options-view">
 		<div class="main-content">
-			<div v-if="activeKey === 'personalization'">
-				<div class="item">
-					{{ t("views.OptionsView.theme") }}
-					<ThemeSelect/>
-				</div>
-				<div class="item">
-					{{ t("views.OptionsView.language") }}
-					<LanguageSelect/>
-				</div>
-			</div>
-			<div v-else-if="activeKey === 'chats'">
-				<ChatAIKey/>
-				<div class="item">
-					{{ t("views.OptionsView.defaultChatSettings") }}
-					<DefaultChatSettings/>
-				</div>
-			</div>
-			<div v-else-if="activeKey === 'importExport'">
-				<ImportExport/>
-			</div>
-			<div v-else-if="activeKey === 'plugins'">
-				<Plugins/>
-			</div>
-			<div v-else-if="activeKey === 'advancedTools'">
-				<div class="item">
-					BeBUG View
-					<router-link to="/options/debug">
-						<Button>Open BeBUG View</Button>
-					</router-link>
-				</div>
-				<div class="item">
-					Log View
-					<router-link to="/options/log">
-						<Button>Open Log View</Button>
-					</router-link>
-				</div>
-				<div class="item">
-					{{ t("views.OptionsView.hazardousOperations") }}
-					<HazardousOperations/>
-				</div>
-			</div>
-			<div v-else-if="activeKey === 'about'">
-				<div class="item">
-					{{ t("views.OptionsView.aboutApp") }}
-					<router-link to="/options/about">
-						<Button>{{ t("views.OptionsView.aboutApp") }}</Button>
-					</router-link>
-				</div>
-				<div class="item">
-					{{ t("views.OptionsView.githubRepo") }}
-					<a href="https://github.com/Erhai-lake/ElakeAI" target="_blank">
-						<Button>{{ t("views.OptionsView.githubRepo") }}</Button>
-					</a>
-				</div>
-				<div class="item">
-					{{ t("views.OptionsView.contactSupport") }}
-					<a href="mailto:fuzixuan0714.0826@gmail.com">
-						<Button>{{ t("views.OptionsView.contactSupport") }}</Button>
-					</a>
-				</div>
-			</div>
+			<router-view/>
 		</div>
 		<div class="sidebar">
-			<div
+			<router-link
 				v-for="item in menuItems"
 				:key="item.key"
-				:class="['menu-item', { active: activeKey === item.key }]"
-				@click="changeMenu(item.key)">
+				:to="`/options/${item.key}`"
+				class="menu-item"
+				active-class="active"
+				exact-active-class="active">
 				{{ t(item.label) }}
-			</div>
+			</router-link>
 		</div>
 	</div>
 </template>
 
 <style scoped lang="less">
-.options-layout {
-	display: flex;
+.options-view {
 	height: 100%;
 	user-select: none;
+	display: grid;
+	grid-template-columns: 1fr 240px;
 }
-
 
 .sidebar {
-	width: 240px;
 	border-left: 1px solid var(--border-color);
 	padding: 10px;
-}
 
-.menu-item {
-	padding: 10px;
-	margin-bottom: 10px;
-	cursor: pointer;
-	border-radius: 20px;
-	border: 2px solid transparent;
+	.menu-item {
+		padding: 10px;
+		margin-bottom: 10px;
+		cursor: pointer;
+		border-radius: 20px;
+		border: 2px solid transparent;
+		display: flex;
 
-	&:hover {
-		background-color: var(--sidebar-item-hover-background-color);
-	}
+		&:hover {
+			background-color: var(--sidebar-item-hover-background-color);
+		}
 
-	&.active {
-		border: 2px solid #80ceff;
+		&.active {
+			border: 2px solid #80ceff;
+		}
 	}
 }
 
 .main-content {
-	flex: 1;
 	padding: 20px;
 	overflow-y: auto;
 }
+</style>
 
-.tool-item-list {
-	margin: 5px 0;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 10px;
-}
-
+<style>
 .item {
 	padding: 10px;
 	display: flex;

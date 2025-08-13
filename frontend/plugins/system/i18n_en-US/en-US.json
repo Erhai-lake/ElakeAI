@@ -282,19 +282,28 @@
 		},
 		"OptionsView": {
 			"personalization": "Personalization",
-			"theme": "Theme",
-			"language": "Language",
 			"chats": "Chats",
-			"defaultChatSettings": "Default Chat Settings",
 			"importExport": "Import/Export",
-			"hazardousOperations": "Hazardous Operations",
 			"plugins": "Plugins",
 			"advancedTools": "Advanced Tools",
-			"about": "About",
+			"about": "About"
+		},
+		"PersonalizationView": {
+			"theme": "Theme",
+			"language": "Language"
+		},
+		"ChatsView": {
+			"defaultChat": "Default Chat"
+		},
+		"AdvancedToolsView": {
+			"hazardousOperations": "Hazardous Operations"
+		},
+		"AboutView": {
 			"aboutApp": "About ElakeAI",
 			"githubRepo": "GitHub Repository",
 			"contactSupport": "Contact Support"
 		},
+		"OptionsNotFoundView": "There is nothing here, go back ~",
 		"PluginsView": {
 			"toast": {
 				"disabledTip": "Plugins marked as disabled are not allowed to be enabled!",
