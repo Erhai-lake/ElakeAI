@@ -1,8 +1,8 @@
 {
 	"app": {
 		"IEDetected": "你还在用IE {version}? 真是滑天下之大稽, 如果你确定要用IE的话你将无法使用 ElakeAI 的部分功能! 请使用Google Chrome, Mozilla Firefox或Microsoft Edge等现代浏览器! 请谅解!",
-		"indexedDBNotSupported": "很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该 ElakeAI 的部分功能! 请使用请使用Google Chrome, Firefox或Microsoft Edge等现代浏览器! 请谅解!",
-		"iDBTransactionNotSupported": "很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该 ElakeAI 的部分功能! 请使用请使用Google Chrome, Firefox或Microsoft Edge等现代浏览器! 请谅解!",
+		"indexedDBNotSupported": "很抱歉, 你的浏览器不支持'IndexedDB', 将无法使用该 ElakeAI 的部分功能! 请使用Google Chrome, Firefox或Microsoft Edge等现代浏览器! 请谅解!",
+		"iDBTransactionNotSupported": "很抱歉, 你的浏览器不支持'IDBTransaction', 将无法使用该 ElakeAI 的部分功能! 请使用Google Chrome, Firefox或Microsoft Edge等现代浏览器! 请谅解!",
 		"configInitializationError": "配置初始化失败"
 	},
 	"api": {

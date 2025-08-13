@@ -1,9 +1,9 @@
 {
 	"app": {
-		"IEDetected": "You're still using IE {version}? That's quite surprising! If you insist on using Internet Explorer, some features of ElakeAI may not work properly. Please use a modern browser like Google Chrome, Mozilla Firefox, or Microsoft Edge. Thank you for your understanding!",
-		"indexedDBNotSupported": "Sorry, your browser does not support 'IndexedDB', which means some features of ElakeAI will not be available. Please use a modern browser like Google Chrome, Firefox, or Microsoft Edge. Thank you for your understanding!",
-		"iDBTransactionNotSupported": "Sorry, your browser does not support 'IDBTransaction', which means some features of ElakeAI will not be available. Please use a modern browser like Google Chrome, Firefox, or Microsoft Edge. Thank you for your understanding!",
-		"configInitializationError": "Failed to initialize configuration"
+		"IEDetected": "You're still using IE {version}? That's unbelievable! If you insist on using IE, some features of ElakeAI will not be available! Please use a modern browser like Google Chrome, Mozilla Firefox, or Microsoft Edge. Thank you for your understanding!",
+		"indexedDBNotSupported": "Sorry, your browser does not support 'IndexedDB', and some features of ElakeAI will not work! Please use a modern browser like Google Chrome, Firefox, or Microsoft Edge. Thank you for your understanding!",
+		"iDBTransactionNotSupported": "Sorry, your browser does not support 'IDBTransaction', and some features of ElakeAI will not work! Please use a modern browser like Google Chrome, Firefox, or Microsoft Edge. Thank you for your understanding!",
+		"configInitializationError": "Configuration initialization failed"
 	},
 	"api": {
 		"unsupportedPlatform": "Unsupported platform",
@@ -11,38 +11,38 @@
 		"ChatGPT": {
 			"401": "Authentication failed",
 			"403": "Invalid region",
-			"429": "Too many requests or quota exceeded",
+			"429": "Too many requests or insufficient quota",
 			"500": "Server error",
-			"503": "Service unavailable"
+			"503": "Service busy"
 		},
 		"DeepSeek": {
 			"400": "Invalid request",
 			"401": "Authentication failed",
 			"402": "Insufficient balance",
 			"422": "Invalid request parameters",
-			"429": "Too many requests or quota exceeded",
+			"429": "Too many requests or insufficient quota",
 			"500": "Server error",
-			"503": "Service unavailable"
+			"503": "Service busy"
 		},
-		"requestTimeout": "Request timed out",
+		"requestTimeout": "Request timeout",
 		"badRequest": "Bad request",
 		"networkError": "Network error",
-		"getError": "Failed to retrieve",
+		"getError": "Failed to fetch",
 		"noResponse": "No response",
 		"unknownError": "Unknown error",
 		"keyDoesNotExist": "Key does not exist",
 		"getKeyError": "Failed to retrieve key",
 		"noResponseBody": "No response body",
-		"streamingDataParsingError": "Failed to parse streaming data",
-		"streamError": "Streaming error",
-		"requestCancelled": "Request was cancelled",
+		"streamingDataParsingError": "Streaming data parsing error",
+		"streamError": "Stream error",
+		"requestCancelled": "Request cancelled",
 		"invalidResponse": "Invalid response",
 		"requestFailed": "Request failed"
 	},
 	"components": {
 		"AIInput": {
 			"inputTip": "Please enter your question",
-			"newChat": "New Chat",
+			"newChat": "New chat",
 			"toast": {
 				"getDefaultSettingsError": "Failed to get default settings",
 				"sendMessageError": "Failed to send message",
@@ -51,7 +51,7 @@
 			},
 			"function": {
 				"appendix": "Appendix",
-				"webSearch": "Web Search",
+				"webSearch": "Web search",
 				"send": "Send",
 				"stop": "Stop"
 			},
@@ -66,10 +66,10 @@
 			"title": "API Key Pool",
 			"operationButton": {
 				"add": "Add",
-				"remove": "Remove {count} Keys",
+				"remove": "Remove {count} keys",
 				"edit": "Edit",
-				"enable": "Enable {count} Keys",
-				"disable": "Disable {count} Keys"
+				"enable": "Enable {count} keys",
+				"disable": "Disable {count} keys"
 			},
 			"toast": {
 				"loadKeyPoolError": "Failed to load key pool",
@@ -79,28 +79,28 @@
 				"invalidUrl": "Invalid URL",
 				"addKeySuccess": "Key added successfully",
 				"addKeyError": "Failed to add key",
-				"selectKeysOperate": "Please select the keys to operate",
+				"selectKeysOperate": "Please select keys to operate on",
 				"removeKeySuccess": "Key removed successfully",
 				"removeKeysError": "Failed to remove keys",
 				"selectAKey": "You can only select one key at a time",
-				"getKeyError": "Failed to retrieve key",
+				"getKeyError": "Failed to get key",
 				"editKeySuccess": "Key edited successfully",
 				"editKeyError": "Failed to edit key",
 				"enableSuccess": "Key enabled successfully",
 				"disableSuccess": "Key disabled successfully",
-				"batchEnableSuccess": "Keys enabled in batch successfully",
-				"batchDisableSuccess": "Keys disabled in batch successfully",
+				"batchEnableSuccess": "Batch enable successful",
+				"batchDisableSuccess": "Batch disable successful",
 				"statusUpdateError": "Failed to update status",
-				"remarkDuplicate": "Duplicate remark"
+				"remarkDuplicate": "Remark is duplicated"
 			},
 			"form": {
 				"enable": "Enable",
 				"key": "Key",
-				"pleaseEnterKey": "Please enter the key",
+				"pleaseEnterKey": "Please enter key",
 				"remarks": "Remarks",
-				"pleaseEnterKeyRemarks": "Please enter remarks for the key",
+				"pleaseEnterKeyRemarks": "Please enter key remarks",
 				"url": "URL",
-				"pleaseEnterKeyUrl": "Please enter the API mirror URL (defaults to official)",
+				"pleaseEnterKeyUrl": "Please enter API mirror site URL (default is official)",
 				"save": "Save",
 				"cancel": "Cancel",
 				"balance": "Balance"
@@ -115,7 +115,7 @@
 				"saveSettingsSuccess": "Settings saved successfully",
 				"saveSettingsError": "Failed to save settings"
 			},
-			"saveSettings": "Save Settings"
+			"saveSettings": "Save settings"
 		},
 		"Selector": {
 			"loading": "Loading..."
@@ -123,28 +123,28 @@
 		"Sidebar": {
 			"barrierFree": {
 				"title": "Sidebar",
-				"conversationList": "Conversation List"
+				"conversationList": "Conversation list"
 			},
 			"toast": {
-				"errorGettingChatList": "Failed to retrieve chat list",
+				"errorGettingChatList": "Failed to get chat list",
 				"successDeletingChatList": "Chat list deleted successfully",
 				"errorDeletingChatList": "Failed to delete chat list"
 			},
 			"function": {
-				"new": "New Chat",
-				"stow": "Collapse Sidebar",
-				"expand": "Expand Sidebar",
+				"new": "New chat",
+				"stow": "Collapse sidebar",
+				"expand": "Expand sidebar",
 				"preset": "Presets",
 				"options": "Settings",
-				"delete": "Delete Chat"
+				"delete": "Delete chat"
 			},
 			"numberOfConversations": "{num} conversations",
-			"openChat": "Open Chat",
-			"deleteChat": "Delete Chat"
+			"openChat": "Open chat",
+			"deleteChat": "Delete chat"
 		},
 		"LanguageSelect": {
 			"toast": {
-				"getLanguageError": "Failed to get language list",
+				"getLanguageError": "Failed to get language",
 				"applicationLanguageError": "Failed to apply language"
 			},
 			"system": "System"
@@ -161,8 +161,8 @@
 		"UserMessageCard": {
 			"earthOnline": "Earth Online",
 			"players": "Players",
-			"editMessage": "Edit Message",
-			"removeMessage": "Remove Message",
+			"editMessage": "Edit message",
+			"removeMessage": "Remove message",
 			"save": "Save",
 			"cancel": "Cancel"
 		},
@@ -175,36 +175,36 @@
 		"AssistantMessageCard": {
 			"reasoning": "Reasoning",
 			"thinking": "Thinking...",
-			"editMessage": "Edit Message",
-			"removeMessage": "Remove Message",
+			"editMessage": "Edit message",
+			"removeMessage": "Remove message",
 			"save": "Save",
 			"cancel": "Cancel"
 		},
 		"Log": {
 			"toast": {
-				"getLogSuspensionWindowError": "Failed to get floating window status for logs",
-				"saveLogSuspensionWindowError": "Failed to save floating window status for logs",
+				"getLogSuspensionWindowError": "Failed to get log floating window status",
+				"saveLogSuspensionWindowError": "Failed to save log floating window status",
 				"loadError": "Failed to load logs",
 				"clearError": "Failed to clear logs",
 				"exportSuccess": "Logs exported successfully",
 				"exportError": "Failed to export logs"
 			},
 			"function": {
-				"load": "Load Logs",
-				"clear": "Clear Logs",
-				"export": "Export Logs",
-				"keepScrollToBottom": "Keep scrolled to bottom {is}",
-				"suspensionWindow": "Floating Window {is}"
+				"load": "Load logs",
+				"clear": "Clear logs",
+				"export": "Export logs",
+				"keepScrollToBottom": "Keep scroll to bottom {is}",
+				"suspensionWindow": "Floating window {is}"
 			},
 			"count": "Total {count} {level} logs",
-			"empty": "No logs available"
+			"empty": "No logs"
 		},
 		"HazardousOperations": {
 			"toast": {
 				"operationSuccess": "Operation successful",
 				"operationFailed": "Operation failed"
 			},
-			"confirmOperationTip": "Are you sure you want to proceed? This action cannot be undone!",
+			"confirmOperationTip": "Are you sure you want to perform this operation? This action cannot be undone!",
 			"clearChat": "Clear all chats",
 			"clearApiKey": "Clear all API Keys",
 			"clearConfig": "Clear all settings",
@@ -213,19 +213,19 @@
 		"MermaidRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "Mermaid rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content",
+			"renderError": "Mermaid rendering failed! Please check the code or switch to the \"Code\" tab to view the original content",
 			"export": "Export"
 		},
 		"FlowchartRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "Flowchart rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content",
+			"renderError": "Flowchart rendering failed! Please check the code or switch to the \"Code\" tab to view the original content",
 			"export": "Export"
 		},
 		"PlantUMLRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "PlantUML rendering failed! Please check the code or switch to the \"Code\" tab to view the raw content",
+			"renderError": "PlantUML rendering failed! Please check the code or switch to the \"Code\" tab to view the original content",
 			"export": "Export"
 		}
 	},
@@ -233,7 +233,7 @@
 		"ChatView": {
 			"toast": {
 				"noChatKey": "Chat does not exist",
-				"getChatLogError": "Failed to retrieve chat history",
+				"getChatLogError": "Failed to get chat log",
 				"mermaidRenderingError": "Mermaid rendering failed",
 				"mermaidInitializationError": "Mermaid initialization failed",
 				"titleUpdated": "Title updated successfully",
@@ -244,15 +244,15 @@
 				"editMessageError": "Failed to edit message"
 			},
 			"functionalControls": {
-				"scrollToTopMessages": "Scroll to Top",
+				"scrollToTopMessages": "Scroll to top",
 				"scrollToUpMessages": "Previous",
 				"scrollToDownMessages": "Next",
-				"scrollToBottomMessages": "Scroll to Bottom",
-				"showInputBox": "Show Input Box",
-				"hideInputBox": "Hide Input Box"
+				"scrollToBottomMessages": "Scroll to bottom",
+				"showInputBox": "Show input box",
+				"hideInputBox": "Hide input box"
 			},
-			"loading": "Please wait patiently for the chat history to load...\n{totalMessages} / {loadedMessages}",
-			"aiDisclaimer": "This content is AI-generated. Please verify carefully."
+			"loading": "Please wait patiently for the chat history to load...\nProgress: {loadedMessages} / {totalMessages}",
+			"aiDisclaimer": "Content generated by AI, please verify carefully"
 		},
 		"OptionsView": {
 			"personalization": "Personalization",
@@ -260,7 +260,7 @@
 			"import": "Import",
 			"export": "Export",
 			"plugins": "Plugins",
-			"advancedTools": "Advanced Tools",
+			"advancedTools": "Advanced tools",
 			"about": "About"
 		},
 		"PersonalizationView": {
@@ -268,22 +268,22 @@
 			"language": "Language"
 		},
 		"ChatsView": {
-			"defaultChat": "Default Chat"
+			"defaultChat": "Default chat"
 		},
 		"ImportView": {
 			"toast": {
-				"parsingFailed": "Failed to parse data",
+				"parsingFailed": "Parsing failed",
 				"invalidJsonFormat": "Invalid JSON format",
 				"fileReadError": "Failed to read file",
 				"importFailed": "Import failed",
-				"importFailedSkipped": "Import failed, some items were skipped",
-				"noDataToImport": "No data available for import",
-				"confirmImportTip": "Confirm import? Imported data will be merged with the current data!"
+				"importFailedSkipped": "Import failed, skipped",
+				"noDataToImport": "No data to import",
+				"confirmImportTip": "Confirm import? Data will be merged after import!"
 			},
-			"selectImportedConfiguration": "Select the configuration items to import",
-			"importTip": "Imported data will be merged with the current data!",
+			"selectImportedConfiguration": "Select the configuration to import",
+			"importTip": "Data will be merged after import!",
 			"import": "Import",
-			"confirmImport": "Confirm Import",
+			"confirmImport": "Confirm import",
 			"selectAll": "Select all {item}",
 			"chats": "Chats",
 			"configs": "Configurations",
@@ -293,47 +293,47 @@
 			"toast": {
 				"failedToLoadSubOptions": "Failed to load sub-options",
 				"failedToGetData": "Failed to get data",
-				"noDataToExport": "No data available for export",
+				"noDataToExport": "No data to export",
 				"exportSuccess": "Export successful",
 				"exportFailed": "Export failed"
 			},
-			"loadExportData": "Load Export Data",
+			"loadExportData": "Load export data",
 			"loading": "Loading",
-			"exportTip": "Are you sure you want to export the selected data?",
+			"exportTip": "Export selected data?",
 			"export": "Export"
 		},
 		"AdvancedToolsView": {
-			"hazardousOperations": "Hazardous Operations"
+			"hazardousOperations": "Hazardous operations"
 		},
 		"AboutView": {
 			"aboutApp": "About ElakeAI",
-			"githubRepo": "GitHub Repository",
-			"contactSupport": "Contact Support"
+			"githubRepo": "GitHub repository",
+			"contactSupport": "Contact support"
 		},
-		"OptionsNotFoundView": "There is nothing here, go back ~",
+		"OptionsNotFoundView": "Nothing here, please go back~",
 		"PluginsView": {
 			"toast": {
-				"disabledTip": "Plugins marked as disabled are not allowed to be enabled!",
+				"disabledTip": "Plugins marked as disabled cannot be enabled!",
 				"enableSuccess": "Plugin enabled successfully",
 				"disableSuccess": "Plugin disabled successfully",
-				"statusUpdateError": "Failed to update plugin status"
+				"statusUpdateError": "Failed to update status"
 			},
 			"type": {
 				"all": "All",
 				"other": "Other",
 				"platform": "Platform",
-				"i18n": "Language Pack"
+				"i18n": "Language pack"
 			},
 			"info": {
-				"enabled": "Enable",
+				"enabled": "Enabled",
 				"name": "Name",
 				"author": "Author",
-				"description": "DescriptionDescription",
+				"description": "Description",
 				"version": "Version"
 			},
-			"systemPlugins": "System Plugins",
-			"thirdPartyPlugins": "Third-Party Plugins",
-			"noPlugins": "No plugins available",
+			"systemPlugins": "System plugins",
+			"thirdPartyPlugins": "Third-party plugins",
+			"noPlugins": "No plugins",
 			"thirdPartyPluginsTip": "Third-party plugins may pose security risks. Please use with caution!",
 			"envProhibition": "Third-party plugins are not allowed in browser environments"
 		}
