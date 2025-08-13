@@ -33,9 +33,9 @@ const routes = [
 				component: () => import("@/views/options/ImportView.vue")
 			},
 			{
-				path: "import_export",
-				name: "OptionsImportExport",
-				component: () => import("@/views/options/ImportExportView.vue")
+				path: "export",
+				name: "OptionsExport",
+				component: () => import("@/views/options/ExportView.vue")
 			},
 			{
 				path: "plugins",

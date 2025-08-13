@@ -14,8 +14,8 @@ export default {
 			menuItems: [
 				{key: "personalization", label: "views.OptionsView.personalization"},
 				{key: "chats", label: "views.OptionsView.chats"},
-				{key: "import", label: "导入"},
-				{key: "import_export", label: "views.OptionsView.importExport"},
+				{key: "import", label: "views.OptionsView.import"},
+				{key: "export", label: "views.OptionsView.export"},
 				{key: "plugins", label: "views.OptionsView.plugins"},
 				{key: "advanced_tools", label: "views.OptionsView.advancedTools"},
 				{key: "about", label: "views.OptionsView.about"}

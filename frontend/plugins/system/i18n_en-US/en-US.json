@@ -199,32 +199,6 @@
 			"count": "Total {count} {level} logs",
 			"empty": "No logs available"
 		},
-		"ImportExport": {
-			"toast": {
-				"failedToLoadSubOptions": "Failed to load sub-options",
-				"failedToGetData": "Failed to retrieve data",
-				"noDataToExport": "No data available for export",
-				"exportSuccess": "Export successful",
-				"exportFailed": "Export failed",
-				"parsingFailed": "Parsing failed",
-				"invalidJsonFormat": "Invalid JSON format",
-				"fileReadError": "Failed to read file",
-				"noDataToImport": "No data available for import",
-				"importFailed": "Import failed",
-				"importFailedSkipped": "Import failed, some items were skipped"
-			},
-			"confirmImportTip": "Confirm import? Imported data will be merged with the current data!",
-			"selectConfigurationItemPromptExport": "Please select the configuration items to export",
-			"selectConfigurationItemPromptImport": "Please select the configuration items to import",
-			"selectAll": "Select all {item}",
-			"configs": "Configurations",
-			"apiKeys": "API Keys",
-			"chats": "Chats",
-			"loadExportData": "Reload export data",
-			"export": "Export",
-			"import": "Import",
-			"confirmImport": "Confirm Import"
-		},
 		"HazardousOperations": {
 			"toast": {
 				"operationSuccess": "Operation successful",
@@ -283,7 +257,8 @@
 		"OptionsView": {
 			"personalization": "Personalization",
 			"chats": "Chats",
-			"importExport": "Import/Export",
+			"import": "Import",
+			"export": "Export",
 			"plugins": "Plugins",
 			"advancedTools": "Advanced Tools",
 			"about": "About"
@@ -294,6 +269,38 @@
 		},
 		"ChatsView": {
 			"defaultChat": "Default Chat"
+		},
+		"ImportView": {
+			"toast": {
+				"parsingFailed": "Failed to parse data",
+				"invalidJsonFormat": "Invalid JSON format",
+				"fileReadError": "Failed to read file",
+				"importFailed": "Import failed",
+				"importFailedSkipped": "Import failed, some items were skipped",
+				"noDataToImport": "No data available for import",
+				"confirmImportTip": "Confirm import? Imported data will be merged with the current data!"
+			},
+			"selectImportedConfiguration": "Select the configuration items to import",
+			"importTip": "Imported data will be merged with the current data!",
+			"import": "Import",
+			"confirmImport": "Confirm Import",
+			"selectAll": "Select all {item}",
+			"chats": "Chats",
+			"configs": "Configurations",
+			"apiKeys": "API Keys"
+		},
+		"ExportView": {
+			"toast": {
+				"failedToLoadSubOptions": "Failed to load sub-options",
+				"failedToGetData": "Failed to get data",
+				"noDataToExport": "No data available for export",
+				"exportSuccess": "Export successful",
+				"exportFailed": "Export failed"
+			},
+			"loadExportData": "Load Export Data",
+			"loading": "Loading",
+			"exportTip": "Are you sure you want to export the selected data?",
+			"export": "Export"
 		},
 		"AdvancedToolsView": {
 			"hazardousOperations": "Hazardous Operations"

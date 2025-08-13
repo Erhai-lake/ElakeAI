@@ -199,32 +199,6 @@
 			"count": "共 {count} 条 {level} 日志",
 			"empty": "暂无日志"
 		},
-		"ImportExport": {
-			"toast": {
-				"failedToLoadSubOptions": "加载子选项失败",
-				"failedToGetData": "获取数据失败",
-				"noDataToExport": "没有数据可导出",
-				"exportSuccess": "导出成功",
-				"exportFailed": "导出失败",
-				"parsingFailed": "解析失败",
-				"invalidJsonFormat": "无效的JSON格式",
-				"fileReadError": "读取文件失败",
-				"noDataToImport": "没有数据可导入",
-				"importFailed": "导入失败",
-				"importFailedSkipped": "导入失败, 已跳过"
-			},
-			"confirmImportTip": "确认导入? 导入后将合并当前数据!",
-			"selectConfigurationItemPromptExport": "请选择要导出的配置项",
-			"selectConfigurationItemPromptImport": "请选择要导入的配置项",
-			"selectAll": "全选 {item}",
-			"configs": "配置",
-			"apiKeys": "API Keys",
-			"chats": "对话",
-			"loadExportData": "重新加载导出数据",
-			"export": "导出",
-			"import": "导入",
-			"confirmImport": "确认导入"
-		},
 		"HazardousOperations": {
 			"toast": {
 				"operationSuccess": "操作成功",
@@ -283,7 +257,8 @@
 		"OptionsView": {
 			"personalization": "个性化",
 			"chats": "对话",
-			"importExport": "导入/导出",
+			"import": "导入",
+			"export": "导出",
 			"plugins": "插件",
 			"advancedTools": "高级工具",
 			"about": "关于"
@@ -294,6 +269,38 @@
 		},
 		"ChatsView": {
 			"defaultChat": "默认对话"
+		},
+		"ImportView": {
+			"toast": {
+				"parsingFailed": "解析失败",
+				"invalidJsonFormat": "无效的JSON格式",
+				"fileReadError": "读取文件失败",
+				"importFailed": "导入失败",
+				"importFailedSkipped": "导入失败, 已跳过",
+				"noDataToImport": "没有数据可导入",
+				"confirmImportTip": "确认导入? 导入后将合并当前数据!"
+			},
+			"selectImportedConfiguration": "请选择要导入的配置",
+			"importTip": "导入后将合并当前数据!",
+			"import": "导入",
+			"confirmImport": "确认导入",
+			"selectAll": "全选 {item}",
+			"chats": "对话",
+			"configs": "配置",
+			"apiKeys": "API Keys"
+		},
+		"ExportView": {
+			"toast": {
+				"failedToLoadSubOptions": "加载子选项失败",
+				"failedToGetData": "获取数据失败",
+				"noDataToExport": "没有数据可导出",
+				"exportSuccess": "导出成功",
+				"exportFailed": "导出失败"
+			},
+			"loadExportData": "加载导出数据",
+			"loading": "加载",
+			"exportTip": "是否导出所选数据?",
+			"export": "导出"
 		},
 		"AdvancedToolsView": {
 			"hazardousOperations": "危险操作"
