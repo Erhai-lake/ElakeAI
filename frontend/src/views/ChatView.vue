@@ -3,8 +3,9 @@ import Loading from "@/components/Loading.vue"
 import AIInput from "@/components/AIInput.vue"
 import {useRoute} from "vue-router"
 import EventBus from "@/services/EventBus"
-import UserMessageCard from "@/components/chat/UserMessageCard.vue"
-import AssistantMessageCard from "@/components/chat/AssistantMessageCard.vue"
+import DefaultMessageCard from "@/components/chat/role/DefaultMessageCard.vue"
+import UserMessageCard from "@/components/chat/role/UserMessageCard.vue"
+import AssistantMessageCard from "@/components/chat/role/AssistantMessageCard.vue"
 import TopTitle from "@/components/chat/TopTitle.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
@@ -28,6 +29,10 @@ export default {
 				cursorVisible: true,
 				currentMessageIndex: -1
 			},
+			messageComponentMap: {
+				user: UserMessageCard,
+				assistant: AssistantMessageCard
+			},
 			data: {
 				key: null,
 				title: null,
@@ -48,6 +53,11 @@ export default {
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 		EventBus.off("[function] removeMessage", this.removeMessage)
 		EventBus.off("[function] editMessage", this.editMessage)
+	},
+	computed: {
+		DefaultMessageCard() {
+			return DefaultMessageCard
+		}
 	},
 	async created() {
 		EventBus.on("[stream] userMessage", this.userMessage)
@@ -408,11 +418,12 @@ export default {
 				<div
 					v-for="message in data.data"
 					:key="message.id"
-					:class="['message', currentMessageId === message.id ? 'current' : '', message.message.role]"
+					:class="['message', currentMessageId === message.id ? 'current' : '']"
 					:data-message-id="message.id"
 					@click="setCurrentMessageId(message.id)">
-					<UserMessageCard v-if="message.message.role === 'user'" :message="message"/>
-					<AssistantMessageCard v-if="message.message.role === 'assistant'" :message="message"/>
+					<component
+						:is="messageComponentMap[message.message.role] || DefaultMessageCard"
+						:message="message"/>
 				</div>
 			</div>
 			<div></div>

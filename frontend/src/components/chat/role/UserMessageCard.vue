@@ -140,8 +140,8 @@ export default {
 </script>
 
 <template>
-	<RightClickMenu ref="menu" />
-	<div class="user-message-card"  @contextmenu.prevent="onRightClick($event, message)">
+	<RightClickMenu ref="menu"/>
+	<div class="user-message-card" @contextmenu.prevent="onRightClick($event, message)">
 		<div class="message-content">
 			<div v-if="!editingContent.show" v-html="formattingMessage()"></div>
 			<textarea
@@ -174,11 +174,7 @@ export default {
 					-
 					{{ formatTimestamp() }}
 				</div>
-				<div>
-					{{ message.id }}
-					-
-					{{ tokens() }} tokens
-				</div>
+				<div>{{ message.id }} - {{ tokens() }} tokens</div>
 			</div>
 		</div>
 	</div>
@@ -195,11 +191,8 @@ export default {
 	position: relative;
 	padding: 16px 20px;
 	border-radius: 12px;
-
-	.user & {
-		background-color: var(--chat-user-background-color);
-		color: var(--chat-user-text-color);
-	}
+	background-color: var(--chat-user-background-color);
+	color: var(--chat-user-text-color);
 
 	.message-content {
 		font-size: 16px;

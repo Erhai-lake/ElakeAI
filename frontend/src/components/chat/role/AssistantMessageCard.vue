@@ -308,7 +308,7 @@ export default {
 </script>
 
 <template>
-	<RightClickMenu ref="menu" />
+	<RightClickMenu ref="menu"/>
 	<div class="assistant-message-card" @contextmenu.prevent="onRightClick($event, message)">
 		<FoldingPanel class="reasoning-content" v-if="message.message.reasoning" :is="isReasoningExpanded">
 			<template #Title>
@@ -355,11 +355,7 @@ export default {
 					-
 					{{ formatTimestamp() }}
 				</div>
-				<div>
-					{{ message.id }}
-					-
-					{{ tokens() }} tokens
-				</div>
+				<div>{{ message.id }} - {{ tokens() }} tokens</div>
 			</div>
 		</div>
 		<img :src="modelImages()" :alt="message.model.platform" class="model-logo">
@@ -378,11 +374,8 @@ export default {
 	position: relative;
 	padding: 16px 20px;
 	border-radius: 12px;
-
-	.assistant & {
-		background-color: var(--chat-assistant-background-color);
-		color: var(--chat-assistant-text-color);
-	}
+	background-color: var(--chat-assistant-background-color);
+	color: var(--chat-assistant-text-color);
 
 	.model-logo {
 		position: absolute;
