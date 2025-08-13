@@ -12,13 +12,13 @@ export default {
 	data() {
 		return {
 			menuItems: [
-				{key: "personalization", label: "views.OptionsView.personalization"},
-				{key: "chats", label: "views.OptionsView.chats"},
-				{key: "import", label: "views.OptionsView.import"},
-				{key: "export", label: "views.OptionsView.export"},
-				{key: "plugins", label: "views.OptionsView.plugins"},
-				{key: "advanced_tools", label: "views.OptionsView.advancedTools"},
-				{key: "about", label: "views.OptionsView.about"}
+				"personalization",
+				"chats",
+				"import",
+				"export",
+				"plugins",
+				"advancedTools",
+				"about"
 			],
 			activeKey: "personalization"
 		}
@@ -45,12 +45,12 @@ export default {
 		<div class="sidebar">
 			<router-link
 				v-for="item in menuItems"
-				:key="item.key"
-				:to="`/options/${item.key}`"
+				:key="item"
+				:to="`/options/${item}`"
 				class="menu-item"
 				active-class="active"
 				exact-active-class="active">
-				{{ t(item.label) }}
+				{{ t(`views.OptionsView.${item}`) }}
 			</router-link>
 		</div>
 	</div>

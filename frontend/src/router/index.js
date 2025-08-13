@@ -43,7 +43,7 @@ const routes = [
 				component: () => import("@/views/options/PluginsView.vue")
 			},
 			{
-				path: "advanced_tools",
+				path: "advancedTools",
 				name: "OptionsAdvancedTools",
 				component: () => import("@/views/options/AdvancedToolsView.vue")
 			},
