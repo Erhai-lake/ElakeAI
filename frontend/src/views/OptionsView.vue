@@ -61,7 +61,7 @@ export default {
 	height: 100%;
 	user-select: none;
 	display: grid;
-	grid-template-columns: 1fr 240px;
+	grid-template-columns: 1fr 256px;
 }
 
 .sidebar {
