@@ -6,7 +6,7 @@ import {encode} from "gpt-tokenizer"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 
 export default {
-	name: "DefaultMessageCard",
+	name: "SystemMessageCard",
 	components: {RightClickMenu, Button},
 	props: {
 		message: {
@@ -141,7 +141,7 @@ export default {
 
 <template>
 	<RightClickMenu ref="menu"/>
-	<div class="default-message-card" @contextmenu.prevent="onRightClick($event, message)">
+	<div class="system-message-card" @contextmenu.prevent="onRightClick($event, message)">
 		<div class="message-content">
 			<div v-if="!editingContent.show" v-html="formattingMessage()"></div>
 			<textarea
@@ -167,7 +167,7 @@ export default {
 				</template>
 			</div>
 			<div class="message-info">
-				<div>Unknown-Default-{{ formatTimestamp() }}
+				<div>System-Prompt-{{ formatTimestamp() }}
 				</div>
 				<div>{{ message.id }} - {{ tokens() }} tokens</div>
 			</div>
@@ -182,7 +182,7 @@ export default {
 	}
 }
 
-.default-message-card {
+.system-message-card {
 	position: relative;
 	padding: 16px 20px;
 	border-radius: 12px;

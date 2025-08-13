@@ -3,19 +3,17 @@ import Loading from "@/components/Loading.vue"
 import AIInput from "@/components/AIInput.vue"
 import {useRoute} from "vue-router"
 import EventBus from "@/services/EventBus"
-import DefaultMessageCard from "@/components/chat/role/DefaultMessageCard.vue"
-import UserMessageCard from "@/components/chat/role/UserMessageCard.vue"
-import AssistantMessageCard from "@/components/chat/role/AssistantMessageCard.vue"
 import TopTitle from "@/components/chat/TopTitle.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
+import {markRaw} from "vue"
 
 export default {
 	name: "ChatView",
 	inject: ["$DB", "$log"],
-	components: {SVGIcon, RightClickMenu, Loading, TopTitle, AssistantMessageCard, AIInput, UserMessageCard},
+	components: {SVGIcon, RightClickMenu, Loading, TopTitle, AIInput},
 	data() {
 		return {
 			name: "ChatView",
@@ -29,10 +27,7 @@ export default {
 				cursorVisible: true,
 				currentMessageIndex: -1
 			},
-			messageComponentMap: {
-				user: UserMessageCard,
-				assistant: AssistantMessageCard
-			},
+			messageComponentMap: null,
 			data: {
 				key: null,
 				title: null,
@@ -54,17 +49,13 @@ export default {
 		EventBus.off("[function] removeMessage", this.removeMessage)
 		EventBus.off("[function] editMessage", this.editMessage)
 	},
-	computed: {
-		DefaultMessageCard() {
-			return DefaultMessageCard
-		}
-	},
 	async created() {
 		EventBus.on("[stream] userMessage", this.userMessage)
 		EventBus.on("[stream] streamStream", this.streamStream)
 		EventBus.on("[stream] streamComplete", this.streamComplete)
 		EventBus.on("[function] removeMessage", this.removeMessage)
 		EventBus.on("[function] editMessage", this.editMessage)
+		await this.roleToComponent()
 		await this.initChatView()
 	},
 	methods: {
@@ -76,6 +67,20 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
+		},
+		/**
+		 * 角色到组件
+		 */
+		roleToComponent() {
+			const MODULES = import.meta.glob("@/components/chat/role/*.vue", {eager: true})
+			const MESSAGE_COMPONENT_MAP = {}
+			for (const PATH in MODULES) {
+				const COMPONENT = MODULES[PATH].default
+				const FILE_NAME = PATH.split("/").pop().replace(".vue", "")
+				const ROLE = FILE_NAME.replace("MessageCard", "").toLowerCase()
+				MESSAGE_COMPONENT_MAP[ROLE] = markRaw(COMPONENT)
+			}
+			this.messageComponentMap = MESSAGE_COMPONENT_MAP
 		},
 		/**
 		 * 右键点击
@@ -410,7 +415,7 @@ export default {
 			<!-- 顶部标题 -->
 			<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
 			<!-- 消息列表 -->
-			<RightClickMenu ref="menu" />
+			<RightClickMenu ref="menu"/>
 			<div
 				class="message-list"
 				:style="`padding: 100px 50px ${showInputBox ? '280px' : '50px'}`"
@@ -422,7 +427,7 @@ export default {
 					:data-message-id="message.id"
 					@click="setCurrentMessageId(message.id)">
 					<component
-						:is="messageComponentMap[message.message.role] || DefaultMessageCard"
+						:is="messageComponentMap[message.message.role]"
 						:message="message"/>
 				</div>
 			</div>

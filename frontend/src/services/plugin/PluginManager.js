@@ -9,18 +9,26 @@ let _cachedPlugins = null
 const loadPluginsInBrowser = async () => {
 	const PLUGINS = []
 	try {
-		const PLUGIN_JSONS = import.meta.glob('../../../plugins/system/**/plugin.json')
-		const PLUGIN_ENTRIES = import.meta.glob('../../../plugins/system/**/index.js')
+		const PLUGIN_JSONS = import.meta.glob("../../../plugins/system/**/plugin.json")
 		for (const [jsonPath, jsonLoader] of Object.entries(PLUGIN_JSONS)) {
 			const META = await jsonLoader()
-			const FOLDER_PATH = jsonPath.replace('/plugin.json', '')
-			const ENTRY_KEY = `${FOLDER_PATH}/index.js`
-			if (!META?.uuid || !PLUGIN_ENTRIES[ENTRY_KEY]) continue
-			const entry = await PLUGIN_ENTRIES[ENTRY_KEY]()
+			if (!META?.uuid) continue
+			// 计算插件目录路径
+			const FOLDER_PATH = jsonPath.replace("/plugin.json", "")
+			// 入口文件路径(支持相对路径)
+			const ENTRY_FILE_NAME = META.entry || "index.js";
+			const ENTRY_PATH = `${FOLDER_PATH}/${ENTRY_FILE_NAME}`
+			// 直接按路径动态 import (必须和 import.meta.glob 配合)
+			const IMPORTER = import.meta.glob("../../../plugins/system/**", { eager: false })
+			if (!IMPORTER[ENTRY_PATH]) {
+				console.warn(`[PluginManager] 插件 ${META.name || META.uuid} 缺少入口文件: ${ENTRY_FILE_NAME}`)
+				continue
+			}
+			const ENTRY = await IMPORTER[ENTRY_PATH]()
 			PLUGINS.push({
 				...META,
 				system: true,
-				entry
+				entry: ENTRY
 			})
 		}
 	} catch (error) {
@@ -46,7 +54,8 @@ const loadPluginsInWails = async () => {
 const scanAllPlugins = async () => {
 	if (_cachedPlugins) return _cachedPlugins
 	if (window.go) {
-		_cachedPlugins = await loadPluginsInWails()
+		// _cachedPlugins = await loadPluginsInWails()
+		_cachedPlugins = loadPluginsInBrowser()
 	} else {
 		try {
 			_cachedPlugins = loadPluginsInBrowser()
