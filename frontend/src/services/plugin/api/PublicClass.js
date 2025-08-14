@@ -39,44 +39,6 @@ export class PublicClass {
 	}
 
 	/**
-	 * 错误处理
-	 * @param {Object} error - 错误对象
-	 * @param {Object} params - 请求参数
-	 * @returns {{data: *, error: (string|string), traceability: *, timestamp: number}} 错误信息
-	 */
-	errorHandler = (error, params) => {
-		try {
-			// TODO: 错误处理
-			if (error.response.status !== 200) {
-				// return this.response(params, null, `${this.platform}.${error.response.status}`)
-			}
-			if (error.code === "ECONNABORTED") {
-				// 处理超时错误
-				return this.response(params, null, "requestTimeout")
-			}
-			if (error.code === "ERR_BAD_REQUEST") {
-				// 处理错误的请求
-				return this.response(params, null, "badRequest")
-			}
-			if (error.code === "ERR_NETWORK") {
-				// 处理网络错误
-				return this.response(params, null, "networkError")
-			}
-			if (error.response) {
-				return this.response(params, null, "getError")
-			}
-			if (error.request) {
-				// 请求已发出但没有收到响应
-				return this.response(params, null, "noResponse")
-			}
-			// 其他未知错误
-			return this.response(params, null, "unknownError")
-		} catch (error) {
-			return this.response(params, null, "unknownError")
-		}
-	}
-
-	/**
 	 * 创建流聊天处理器
 	 * @param {string} platform - 平台名称
 	 */

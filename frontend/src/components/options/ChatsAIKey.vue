@@ -150,9 +150,8 @@ export default {
 				const INSTANCE = platformRegistry.getPlatform(this.selectedPlatform.title)
 				const RESPONSE = await INSTANCE.api.balance({apiKey: key})
 				if (RESPONSE.error) {
-					// TODO: 处理错误
 					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE)
-					toastRegistry.error(`[${this.name}] ${RESPONSE}`)
+					toastRegistry.error(`[${this.name}] ${this.t(RESPONSE.error)}`)
 					return RESPONSE.data
 				}
 				return RESPONSE.data

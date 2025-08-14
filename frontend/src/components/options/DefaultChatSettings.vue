@@ -262,9 +262,8 @@ export default {
 			const INSTANCE = platformRegistry.getPlatform(KEY_DATA.model)
 			const RESPONSE = await INSTANCE.api.models({apiKey: key})
 			if (RESPONSE.error) {
-				// TODO: 处理错误
 				this.$log.error(`[${this.name}] 获取Key的模型失败`, RESPONSE)
-				toastRegistry.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
+				toastRegistry.error(`[${this.name}] ${this.t(RESPONSE.error)}`)
 			}
 			const UNIQUE_MODELS = [...new Set(RESPONSE.data)]
 			return UNIQUE_MODELS.map(model => ({title: model}))

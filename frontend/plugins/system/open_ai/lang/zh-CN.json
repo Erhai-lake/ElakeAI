@@ -1,0 +1,17 @@
+{
+	"Plugins": {
+		"OpenAI": {
+			"authenticationFailed": "认证失败",
+			"invalidArea": "无效的地区",
+			"requestTooFastOrInsufficient": "请求过快或额度不足",
+			"serverError": "服务器错误",
+			"busyService": "服务繁忙",
+			"requestTimeout": "请求超时",
+			"badRequest": "错误的请求",
+			"networkError": "网络错误",
+			"getError": "获取错误",
+			"noResponse": "没有响应",
+			"unknownError": "未知错误"
+		}
+	}
+}

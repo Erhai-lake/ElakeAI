@@ -8,22 +8,6 @@
 	"api": {
 		"unsupportedPlatform": "Unsupported platform",
 		"unsupportedCallPolicy": "Unsupported call policy",
-		"ChatGPT": {
-			"401": "Authentication failed",
-			"403": "Invalid region",
-			"429": "Too many requests or insufficient quota",
-			"500": "Server error",
-			"503": "Service busy"
-		},
-		"DeepSeek": {
-			"400": "Invalid request",
-			"401": "Authentication failed",
-			"402": "Insufficient balance",
-			"422": "Invalid request parameters",
-			"429": "Too many requests or insufficient quota",
-			"500": "Server error",
-			"503": "Service busy"
-		},
 		"requestTimeout": "Request timeout",
 		"badRequest": "Bad request",
 		"networkError": "Network error",
