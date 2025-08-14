@@ -40,6 +40,7 @@ export default {
 	watch: {
 		"route.params.key"(newKey) {
 			this.initChatView(newKey)
+			this.checkLastMessage()
 		}
 	},
 	beforeUnmount() {
@@ -244,6 +245,7 @@ export default {
 					await this.waitForMessageListRendered()
 				}
 				this.scrollToUpAndDownMessages("bottom")
+				this.checkLastMessage()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天记录获取错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.getChatLogError")}`)
@@ -287,14 +289,7 @@ export default {
 		 */
 		async userMessage(message) {
 			if (message.chatKey !== this.data.key) return
-			this.data.data.push({
-				id: message.id,
-				message: {
-					content: message.message,
-					role: "user"
-				},
-				timestamp: Date.now()
-			})
+			this.data.data.push(message.userMessage)
 		},
 		/**
 		 * 消息流
@@ -321,10 +316,10 @@ export default {
 					timestamp: Date.now()
 				})
 			} else {
-				if (message.reasoning) {
-					LAST_MESSAGE.message.reasoning += message.reasoning
-				} else if (message.message) {
-					LAST_MESSAGE.message.content += message.message
+				LAST_MESSAGE.message = {
+					...LAST_MESSAGE.message,
+					reasoning: LAST_MESSAGE.message.reasoning + (message.reasoning || ""),
+					content: LAST_MESSAGE.message.content + (message.message || ""),
 				}
 			}
 		},
@@ -333,6 +328,29 @@ export default {
 		 */
 		async streamComplete(message) {
 			if (message.chatKey !== this.data.key) return
+			// 判断错误
+			if(message.status === "error") {
+				this.data.data[this.data.data.length - 2] = {
+					...this.data.data[this.data.data.length - 2],
+					status: "error"
+				}
+				// 移除最后一条assistant消息
+				if (this.data.data[this.data.data.length - 1].message.role === "assistant") {
+					this.data.data.pop()
+				}
+				return
+			}
+			if (this.data.data?.length) {
+				// 更新状态
+				this.data.data[this.data.data.length - 2] = {
+					...this.data.data[this.data.data.length - 2],
+					status: "done"
+				}
+				this.data.data[this.data.data.length - 1] = {
+					...this.data.data[this.data.data.length - 1],
+					status: "done"
+				}
+			}
 			try {
 				// 如果是第一条AI回复且是默认标题
 				if (this.data.title === this.t("components.AIInput.newChat")) {
@@ -358,6 +376,15 @@ export default {
 			} catch (error) {
 				this.$log.error(`[${this.name}] 标题更新错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
+			}
+		},
+		/**
+		 * 检查最后一条消息是否完成
+		 */
+		checkLastMessage() {
+			if (this.data.data?.length) {
+				const LAST_MESSAGE = this.data.data[this.data.data.length - 1]
+				EventBus.emit("[update] stopStatusUpdate", LAST_MESSAGE.status !== "done")
 			}
 		},
 		/**

@@ -158,28 +158,25 @@
 			"dark": "深夜",
 			"system": "系统"
 		},
-		"SystemMessageCard": {
-			"systemPrompt": "系统提示词",
+		"MessageCard": {
 			"editMessage": "编辑消息",
 			"removeMessage": "移除消息",
 			"save": "保存",
-			"cancel": "取消"
+			"cancel": "取消",
+			"done": "已完成",
+			"error": "生成失败",
+			"loading": "生成中..."
+		},
+		"SystemMessageCard": {
+			"systemPrompt": "系统提示词"
 		},
 		"UserMessageCard": {
 			"earthOnline": "地球Online",
-			"players": "玩家",
-			"editMessage": "编辑消息",
-			"removeMessage": "移除消息",
-			"save": "保存",
-			"cancel": "取消"
+			"players": "玩家"
 		},
 		"AssistantMessageCard": {
 			"reasoning": "推理",
-			"thinking": "思考中...",
-			"editMessage": "编辑消息",
-			"removeMessage": "移除消息",
-			"save": "保存",
-			"cancel": "取消"
+			"thinking": "思考中..."
 		},
 		"CodeBlockRenderer": {
 			"copy": "复制",

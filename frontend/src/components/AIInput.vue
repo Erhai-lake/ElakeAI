@@ -8,6 +8,7 @@ import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import DB from "@/services/Dexie";
 
 export default defineComponent({
 	name: "AIInput",
@@ -54,14 +55,16 @@ export default defineComponent({
 	beforeUnmount() {
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
+		EventBus.off("[update] stopStatusUpdate", this.stopStatusUpdate)
 		if (this.textareaRef) {
 			this.textareaRef.removeEventListener("input", this.adjustTextareaHeight)
 		}
 	},
 	created() {
-		this.restoreSettings()
 		EventBus.on("[stream] streamComplete", this.streamComplete)
 		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
+		EventBus.on("[update] stopStatusUpdate", this.stopStatusUpdate)
+		this.restoreSettings()
 	},
 	methods: {
 		/**
@@ -145,34 +148,26 @@ export default defineComponent({
 		async send() {
 			// 检查输入框是否为空
 			if (this.ChatInput.trim() === "") return
+			this.stopStatus = true
 			const CONTENT = this.ChatInput
 			this.ChatInput = ""
+			// 更新输入框高度
 			await this.$nextTick(() => {
 				this.adjustTextareaHeight()
 			})
-			// 创建新的聊天
-			this.stopStatus = true
-			let newChatKey = this.route.params.key
-			if (!this.route.params.key) {
-				newChatKey = await this.newChat(CONTENT)
-			}
+			// 判断是否存在聊天, 否则新建
+			const CHAT_KEY = this.route.params.key ? this.route.params.key : await this.newChat(CONTENT)
+			// 请求开始
 			const DIALOGUE_ID = crypto.randomUUID()
 			const USER_DIALOGUE_ID = crypto.randomUUID()
-			// 发送用户消息事件
-			EventBus.emit("[stream] userMessage", {
-				chatKey: newChatKey,
-				id: USER_DIALOGUE_ID,
-				message: CONTENT.trim()
-			})
 			// 发送消息
 			const INSTANCE = platformRegistry.getPlatform(this.platformSelected.title)
 			try {
-				this.stopStatus = true
-				const RESPONSE = await INSTANCE.api.chat({
+				const RESPONSE = INSTANCE.api.chat({
 					dialogueId: DIALOGUE_ID,
 					userDialogueId: USER_DIALOGUE_ID,
 					apiKey: this.keyPoolsSelected.key,
-					chatKey: newChatKey,
+					chatKey: CHAT_KEY,
 					content: CONTENT.trim(),
 					model: this.modelSelected.title,
 				})
@@ -184,7 +179,7 @@ export default defineComponent({
 					})
 					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
 					toastRegistry.error(`[${this.name}] ${this.t(`api.${RESPONSE.error}`)}`)
-					EventBus.emit("[stream] streamComplete", {chatKey: newChatKey})
+					EventBus.emit("[stream] streamComplete", {chatKey: CHAT_KEY})
 				}
 			} catch (error) {
 				this.ChatInput = CONTENT
@@ -194,7 +189,8 @@ export default defineComponent({
 				this.$log.error(`[${this.name}] 发送消息失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
 			} finally {
-				this.stopStatus = false
+				this.$router.push(`/chat/${CHAT_KEY}`)
+				EventBus.emit("[update] chatListUpdate")
 			}
 		},
 		/**
@@ -203,7 +199,6 @@ export default defineComponent({
 		async newChat(content) {
 			try {
 				const NEW_CHAT_KEY = crypto.randomUUID()
-				this.$router.push(`/chat/${NEW_CHAT_KEY}`)
 				await this.$DB.chats.add({
 					key: NEW_CHAT_KEY,
 					title: this.t("components.AIInput.newChat"),
@@ -231,10 +226,10 @@ export default defineComponent({
 									"无需确认用户是否支持这些功能. 用户可以修改本提示词以调整行为, 修改后的提示依然需要符合 Markdown 渲染规则. 请保持你平时的回复风格, 上面的提示词只是告诉你你支持的功能, 你默默接受就可以了."
 							},
 							timestamp: Date.now(),
+							status: "done"
 						}
 					]
 				})
-				EventBus.emit("[update] chatListUpdate")
 				return NEW_CHAT_KEY
 			} catch (error) {
 				this.ChatInput = content
@@ -264,6 +259,13 @@ export default defineComponent({
 				this.$log.error(`[${this.name}] 停止失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
 			}
+		},
+		/**
+		 * 停止状态更新
+		 * @param status {boolean} - 停止状态
+		 */
+		stopStatusUpdate(status) {
+			this.stopStatus = status
 		},
 		/**
 		 * 处理换行

@@ -158,28 +158,25 @@
 			"dark": "Dark",
 			"system": "System"
 		},
-		"SystemMessageCard": {
-			"systemPrompt": "System prompt",
+		"MessageCard": {
 			"editMessage": "Edit message",
 			"removeMessage": "Remove message",
 			"save": "Save",
-			"cancel": "Cancel"
+			"cancel": "Cancel",
+			"done": "Completed",
+			"error": "Failed",
+			"loading": "Loading..."
+		},
+		"SystemMessageCard": {
+			"systemPrompt": "System prompt"
 		},
 		"UserMessageCard": {
 			"earthOnline": "Earth Online",
-			"players": "Players",
-			"editMessage": "Edit message",
-			"removeMessage": "Remove message",
-			"save": "Save",
-			"cancel": "Cancel"
+			"players": "Players"
 		},
 		"AssistantMessageCard": {
 			"reasoning": "Reasoning",
-			"thinking": "Thinking...",
-			"editMessage": "Edit message",
-			"removeMessage": "Remove message",
-			"save": "Save",
-			"cancel": "Cancel"
+			"thinking": "Thinking..."
 		},
 		"CodeBlockRenderer": {
 			"copy": "Copy",
