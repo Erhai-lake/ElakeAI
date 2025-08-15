@@ -242,6 +242,7 @@
 	"views": {
 		"ChatView": {
 			"toast": {
+				"chatBatchSizeError": "聊天批大小设置错误",
 				"noChatKey": "聊天不存在",
 				"getChatLogError": "获取聊天记录失败",
 				"mermaidRenderingError": "Mermaid渲染失败",
@@ -278,7 +279,13 @@
 			"language": "语言"
 		},
 		"ChatsView": {
-			"defaultChat": "默认对话"
+			"toast": {
+				"invalidChatBatchSize": "无效的聊天批大小",
+				"chatBatchSizeError": "聊天批大小设置错误",
+				"chatBatchSizeSuccess": "聊天批大小设置成功"
+			},
+			"defaultChat": "默认对话",
+			"chatBatchSize": "加载聊天记录时的单批数量"
 		},
 		"ImportView": {
 			"toast": {

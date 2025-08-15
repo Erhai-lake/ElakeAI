@@ -1,0 +1,45 @@
+<script>
+export default {
+	name: "InputText",
+	props: {
+		modelValue: {
+			type: String,
+			default: ""
+		}
+	},
+	emits: ["update:modelValue", "input"],
+	methods: {
+		onInput(event) {
+			const value = event.target.value
+			// v-model
+			this.$emit("update:modelValue", value)
+			// 回调
+			this.$emit("input", value)
+		}
+	}
+}
+</script>
+
+<template>
+	<input type="text" :value="modelValue" @input="onInput"/>
+</template>
+
+<style scoped lang="less">
+input {
+	padding: 10px 12px;
+	background-color: var(--background-color);
+	color: var(--text-color);
+	border: 1px solid #909399FF;
+	border-radius: 8px;
+	font-size: 14px;
+	user-select: none;
+	transition: all 0.15s;
+	white-space: nowrap;
+	outline: none;
+
+	&:focus {
+		border-color: var(--button-hover-background-color);
+		box-shadow: 0 0 4px var(--button-hover-background-color);
+	}
+}
+</style>

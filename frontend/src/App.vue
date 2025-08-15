@@ -372,7 +372,7 @@ export default {
 	cursor: move;
 	opacity: 0.7;
 	transition: 0s;
-	z-index: 4;
+	z-index: 12;
 }
 
 .IsDevToolsSuspensionWindow {
@@ -384,7 +384,7 @@ export default {
 	display: flex;
 	flex-direction: column;
 	transition: 0s;
-	z-index: 3;
+	z-index: 11;
 }
 
 .ResizeHandle {

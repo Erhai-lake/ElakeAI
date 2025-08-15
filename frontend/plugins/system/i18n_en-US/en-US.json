@@ -242,6 +242,7 @@
 	"views": {
 		"ChatView": {
 			"toast": {
+				"chatBatchSizeError": "Chat batch size setting error",
 				"noChatKey": "Chat does not exist",
 				"getChatLogError": "Failed to get chat log",
 				"mermaidRenderingError": "Mermaid rendering failed",
@@ -278,7 +279,13 @@
 			"language": "Language"
 		},
 		"ChatsView": {
-			"defaultChat": "Default chat"
+			"toast": {
+				"invalidChatBatchSize": "Invalid chat batch size",
+				"chatBatchSizeError": "Chat batch size setting error",
+				"chatBatchSizeSuccess": "Chat batch size setting successful"
+			},
+			"defaultChat": "Default chat",
+			"chatBatchSize": "Single batch quantity when loading chat record"
 		},
 		"ImportView": {
 			"toast": {

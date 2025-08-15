@@ -215,6 +215,9 @@ export default {
 			this.isLoading = true
 			this.loadedMessages = 0
 			this.totalMessages = 0
+			// 生成任务 ID 防止并发初始化
+			const TASK_ID = Date.now() + Math.random()
+			this._currentInitTaskId = TASK_ID
 			try {
 				const CHAT_DATA = await this.$DB.chats.get(chatKey)
 				// 检查ChatKey是否存在
@@ -233,10 +236,24 @@ export default {
 				}
 				const ALL_MESSAGES = Array.isArray(CHAT_DATA.data) ? CHAT_DATA.data : []
 				this.totalMessages = ALL_MESSAGES.length
-				// 分批渲染(每批 20 条)
-				const BATCH_SIZE = 20
-				for (let i = 0; i < ALL_MESSAGES.length; i += BATCH_SIZE) {
-					const BATCH = ALL_MESSAGES.slice(i, i + BATCH_SIZE)
+				// 从数据库读取批大小(默认20)
+				let batchSize = 20
+				try {
+					const CHAT_BATCH_SIZE = await this.$DB.configs.get("chatBatchSize")
+					batchSize = parseInt(CHAT_BATCH_SIZE.value, 10) || 20
+					this.$log.info(`[${this.name}] 聊天批大小设置为${batchSize}`)
+				} catch (error) {
+					this.$log.error(`[${this.name}] 读取聊天批大小失败, 使用默认值 20`, error)
+					toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.chatBatchSizeError")}`)
+					batchSize = 20
+				}
+				// 分批渲染
+				for (let i = 0; i < ALL_MESSAGES.length; i += batchSize) {
+					// 如果任务 ID 改变了, 立刻终止初始化
+					if (this._currentInitTaskId !== TASK_ID) {
+						return
+					}
+					const BATCH = ALL_MESSAGES.slice(i, i + batchSize)
 					this.data.data.push(...BATCH)
 					this.loadedMessages = this.data.data.length
 					// 等待 DOM 更新
@@ -244,13 +261,19 @@ export default {
 					// 等待当前批次渲染稳定, 避免闪动
 					await this.waitForMessageListRendered()
 				}
-				this.scrollToUpAndDownMessages("bottom")
-				this.checkLastMessage()
+				// 最终检查一次任务 ID
+				if (this._currentInitTaskId === TASK_ID) {
+					this.scrollToUpAndDownMessages("bottom")
+					this.checkLastMessage()
+				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天记录获取错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.getChatLogError")}`)
 			} finally {
-				this.isLoading = false
+				// 只在当前任务时才结束 loading
+				if (this._currentInitTaskId === TASK_ID) {
+					this.isLoading = false
+				}
 			}
 		},
 		/**

@@ -63,6 +63,22 @@ export class PublicClass {
 		}
 		return this.response(params, null, "requestFailed")
 	}
+
+	/**
+	 * 防抖
+	 * @param {Function} func - 要防抖的函数
+	 * @param {number} delay - 防抖延迟时间(毫秒)
+	 * @returns {Function} 防抖后的函数
+	 */
+	debounce = (func, delay) => {
+		let timeoutId
+		return function (...args) {
+			clearTimeout(timeoutId)
+			timeoutId = setTimeout(() => {
+				func.apply(this, args)
+			}, delay)
+		}
+	}
 }
 
 export const publicRegistry = new PublicClass()
