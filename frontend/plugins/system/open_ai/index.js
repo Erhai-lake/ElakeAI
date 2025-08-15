@@ -146,14 +146,14 @@ export default {
 		const PLATFORM_REGISTRAR_CLASS = new context.api.PlatformRegistrarClass()
 		PLATFORM_REGISTRAR_CLASS.registerPlatform(PLATFORM_INFO, new OpenAI(ctx))
 		const I18N_CLASS = new context.api.I18nClass()
-		I18N_CLASS.registerLang({code: "zh-CN"}, ZH_CN)
-		I18N_CLASS.registerLang({code: "en-US"}, EN_US)
+		I18N_CLASS.registerLang({code: "zh-CN", source: PLATFORM_INFO.name}, ZH_CN)
+		I18N_CLASS.registerLang({code: "en-US", source: PLATFORM_INFO.name}, EN_US)
 	},
 	onUnload() {
 		const PLATFORM_REGISTRAR_CLASS = new context.api.PlatformRegistrarClass()
 		PLATFORM_REGISTRAR_CLASS.unregisterPlatform(PLATFORM_INFO.name)
 		const I18N_CLASS = new context.api.I18nClass()
-		I18N_CLASS.unregisterLang("zh-CN")
-		I18N_CLASS.unregisterLang("en-US")
+		I18N_CLASS.unregisterLang("zh-CN", PLATFORM_INFO.name)
+		I18N_CLASS.unregisterLang("en-US", PLATFORM_INFO.name)
 	}
 }

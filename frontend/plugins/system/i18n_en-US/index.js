@@ -3,8 +3,7 @@ import EN_US from "./en-US.json"
 let I18nClass = null
 const LANG_INFO = {
 	code: "en-US",
-	title: "English",
-	image: "https://flagcdn.com/us.svg"
+	source: "i18n_en-US"
 }
 
 export default {
@@ -13,6 +12,6 @@ export default {
 		I18nClass.registerLang(LANG_INFO, EN_US)
 	},
 	onUnload() {
-		I18nClass.unregisterLang(LANG_INFO.code)
+		I18nClass.unregisterLang(LANG_INFO.code, LANG_INFO.source)
 	}
 }

@@ -299,6 +299,7 @@ export default {
 			this.resizing = true
 			this.startY = event.clientY
 			this.startHeight = this.devToolsHeight
+			document.body.style.userSelect = "none"
 			document.addEventListener("mousemove", this.onResize)
 			document.addEventListener("mouseup", this.stopResize)
 		},
@@ -315,6 +316,7 @@ export default {
 		 */
 		stopResize() {
 			this.resizing = false
+			document.body.style.userSelect = "auto"
 			document.removeEventListener("mousemove", this.onResize)
 			document.removeEventListener("mouseup", this.stopResize)
 		}
@@ -382,7 +384,6 @@ export default {
 	display: flex;
 	flex-direction: column;
 	transition: 0s;
-	user-select: none;
 	z-index: 3;
 }
 

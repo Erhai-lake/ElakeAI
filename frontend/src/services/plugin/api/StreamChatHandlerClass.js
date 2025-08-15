@@ -13,7 +13,7 @@ export default class StreamChatHandlerClass {
 	}
 
 	/**
-	 * 预处理：保存用户消息(pending)到 DB，并返回用于请求的 messages 历史
+	 * 预处理：保存用户消息(pending)到 DB, 并返回用于请求的 messages 历史
 	 */
 	async prepare(params) {
 		const {chatKey: CHAT_KEY, content: CONTENT, userDialogueId: USER_DIALOGUE_ID} = params
@@ -40,7 +40,7 @@ export default class StreamChatHandlerClass {
 		const DECODER = new TextDecoder()
 		const READER = response.body.getReader()
 		let buffer = ""
-		// 插入 assistant 占位，状态 loading
+		// 插入 assistant 占位, 状态 loading
 		await this._ensureAssistantPlaceholder(params)
 		try {
 			while (true) {
