@@ -13,11 +13,13 @@ import Button from "@/components/Button.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
+import InputText from "@/components/InputText.vue"
 
 export default {
 	name: "DevTools",
 	inject: ["$DB", "$log"],
 	components: {
+		InputText,
 		FoldingPanel,
 		Plugins, ChatAIKey, DefaultChatSettings, LanguageSelect, ThemeSelect, Log, TabsTab, Tabs, Button
 	},
@@ -304,11 +306,10 @@ export default {
 						<div class="database-item" v-for="item in chats" :key="item.key">
 							<span class="database-title">{{ item.title }}</span>
 							<span class="database-key">{{ item.key }}</span>
-							<input
-								type="text"
+							<InputText
 								class="database-input"
 								:value="JSON.stringify(item, null)"
-								@blur="updateByKey('chats', item.key, JSON.parse($event.target.value))">
+								@blur="updateByKey('chats', item.key, JSON.parse($event.target.value))"/>
 							<Button class="database-btn" @click="deleteByKey('chats', item.key, 'key')">
 								{{ t("components.DevTools.delete") }}
 							</Button>
@@ -323,11 +324,10 @@ export default {
 					<div class="database-list">
 						<div class="database-item" v-for="item in configs" :key="item.item">
 							<span class="database-title">{{ item.item }}</span>
-							<input
-								type="text"
+							<InputText
 								class="database-input"
 								:value="JSON.stringify(item, null)"
-								@blur="updateByKey('configs', item.item, JSON.parse($event.target.value))">
+								@blur="updateByKey('configs', item.item, JSON.parse($event.target.value))"/>
 							<Button class="database-btn" @click="deleteByKey('configs', item.item, 'item')">
 								{{ t("components.DevTools.delete") }}
 							</Button>
@@ -344,11 +344,10 @@ export default {
 							<span class="database-title">{{ item.remark }}</span>
 							<span class="database-key">{{ item.model }}</span>
 							<span class="database-key">{{ item.key }}</span>
-							<input
-								type="text"
+							<InputText
 								class="database-input"
 								:value="JSON.stringify(item, null)"
-								@blur="updateByKey('apiKeys', item.key, JSON.parse($event.target.value))">
+								@blur="updateByKey('apiKeys', item.key, JSON.parse($event.target.value))"/>
 							<Button class="database-btn" @click="deleteByKey('apiKeys', item.key, 'key')">
 								{{ t("components.DevTools.delete") }}
 							</Button>

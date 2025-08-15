@@ -6,10 +6,11 @@ import Selector from "@/components/Selector.vue"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import InputText from "@/components/InputText.vue"
 
 export default {
 	name: "ChatAIKey",
-	components: {Selector, Button, FoldingPanel},
+	components: {InputText, Selector, Button, FoldingPanel},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
@@ -475,18 +476,21 @@ export default {
 					<h3>{{ t("components.ChatAIKey.operationButton.add") }}</h3>
 					<div class="form-group">
 						<label>{{ t("components.ChatAIKey.form.key") }}</label>
-						<input type="text" v-model="newKey.value"
-							   :placeholder="t('components.ChatAIKey.form.pleaseEnterKey')">
+						<InputText
+							v-model="newKey.value"
+							:placeholder="t('components.ChatAIKey.form.pleaseEnterKey')"/>
 					</div>
 					<div class="form-group">
 						<label>{{ t("components.ChatAIKey.form.remarks") }}</label>
-						<input type="text" v-model="newKey.remark"
-							   :placeholder="t('components.ChatAIKey.form.pleaseEnterKeyRemarks')">
+						<InputText
+							v-model="newKey.remark"
+							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
 					</div>
 					<div class="form-group">
 						<label>{{ t("components.ChatAIKey.form.url") }}</label>
-						<input type="text" v-model="newKey.url"
-							   :placeholder="t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
+						<InputText
+							v-model="newKey.url"
+							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyUrl')"/>
 					</div>
 					<div class="form-actions">
 						<Button @click="addNewKey">{{ t("components.ChatAIKey.form.save") }}</Button>
@@ -500,18 +504,21 @@ export default {
 					<h3>{{ t("components.ChatAIKey.operationButton.edit") }}</h3>
 					<div class="form-group">
 						<label>{{ t("components.ChatAIKey.form.key") }}</label>
-						<input type="text" v-model="editKey.value"
-							   :placeholder="t('components.ChatAIKey.form.pleaseEnterKey')">
+						<InputText
+							v-model="editKey.value"
+							:placeholder="t('components.ChatAIKey.form.pleaseEnterKey')"/>
 					</div>
 					<div class="form-group">
 						<label>{{ t("components.ChatAIKey.form.remarks") }}</label>
-						<input type="text" v-model="editKey.remark"
-							   :placeholder="t('components.ChatAIKey.form.pleaseEnterKeyRemarks')">
+						<InputText
+							v-model="editKey.remark"
+							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
 					</div>
 					<div class="form-group">
 						<label>{{ t("components.ChatAIKey.form.url") }}</label>
-						<input type="text" v-model="editKey.url"
-							   :placeholder="t('components.ChatAIKey.form.pleaseEnterKeyUrl')">
+						<InputText
+							v-model="editKey.url"
+							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyUrl')"/>
 					</div>
 					<div class="form-actions">
 						<Button @click="editSelectedKeys">{{ t("components.ChatAIKey.form.save") }}</Button>
