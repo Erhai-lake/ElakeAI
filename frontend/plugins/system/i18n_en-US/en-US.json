@@ -224,12 +224,15 @@
 				"deleteError": "Failed to delete",
 				"updateSameData": "Updated data is the same as current data",
 				"updateSuccess": "Updated successfully",
-				"updateError": "Failed to update"
+				"updateError": "Failed to update",
+				"areYouSureToGenerateDebugChat": "Are you sure you want to generate debug dialog?",
+				"generateDebugChatSuccess": "Build debug dialog succeeded"
 			},
 			"router": "Router",
 			"goTo": "Go to",
 			"options": "Settings",
 			"database": "Database",
+			"generateDebugChat": "Generate debug chat",
 			"clear": "Clear",
 			"delete": "Delete",
 			"plugins": "Plugins",

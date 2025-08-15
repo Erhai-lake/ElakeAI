@@ -25,7 +25,15 @@ export default {
 				totalCount: 0
 			},
 			isDevToolsSuspensionWindow: false,
-			isDevToolsView: false
+			buttonPosition: { top: 10, left: window.innerWidth - 130 },
+			dragging: false,
+			wasDragged: false,
+			dragOffset: { x: 0, y: 0 },
+			isDevToolsView: false,
+			devToolsHeight: 600,
+			resizing: false,
+			startY: 0,
+			startHeight: 0
 		}
 	},
 	beforeUnmount() {
@@ -212,12 +220,6 @@ export default {
 			requestAnimationFrame(this.updateMessage)
 		},
 		/**
-		 * DevTools悬浮窗
-		 */
-		devToolsSuspensionWindow() {
-			this.isDevToolsSuspensionWindow = !this.isDevToolsSuspensionWindow
-		},
-		/**
 		 * 加载插件系统
 		 */
 		async loadPluginSystem() {
@@ -233,6 +235,88 @@ export default {
 			} catch (error) {
 				Logger.error("[App.vue] 插件系统加载失败", error)
 			}
+		},
+		/**
+		 * DevTools悬浮窗
+		 */
+		devToolsSuspensionWindow() {
+			this.isDevToolsSuspensionWindow = !this.isDevToolsSuspensionWindow
+		},
+		/**
+		 * 拖动按钮(开始)
+		 */
+		startDrag(event) {
+			this.dragging = true
+			this.wasDragged = false
+			this.dragOffset.x = event.clientX - this.buttonPosition.left
+			this.dragOffset.y = event.clientY - this.buttonPosition.top
+			document.addEventListener("mousemove", this.onDrag)
+			document.addEventListener("mouseup", this.stopDrag)
+		},
+		/**
+		 * 拖动按钮(正在)
+		 */
+		onDrag(event) {
+			if (!this.dragging) return
+			// 当鼠标有明显位移时, 标记 wasDragged
+			if (Math.abs(event.movementX) > 2 || Math.abs(event.movementY) > 2) {
+				this.wasDragged = true
+			}
+			const MIN_X = 0
+			const MIN_Y = 0
+			const MAX_X = window.innerWidth - 120
+			const MAX_Y = window.innerHeight - 40
+			this.buttonPosition.left = event.clientX - this.dragOffset.x
+			this.buttonPosition.top = event.clientY - this.dragOffset.y
+			let NEW_LEFT = event.clientX - this.dragOffset.x
+			let NEW_TOP = event.clientY - this.dragOffset.y
+			// 限制范围
+			NEW_LEFT = Math.max(MIN_X, Math.min(MAX_X, NEW_LEFT))
+			NEW_TOP = Math.max(MIN_Y, Math.min(MAX_Y, NEW_TOP))
+			this.buttonPosition.left = NEW_LEFT
+			this.buttonPosition.top = NEW_TOP
+		},
+		/**
+		 * 拖动按钮(结束)
+		 */
+		stopDrag() {
+			this.dragging = false
+			document.removeEventListener("mousemove", this.onDrag)
+			document.removeEventListener("mouseup", this.stopDrag)
+		},
+		/**
+		 * 点击按钮
+		 */
+		handleClick() {
+			if (!this.wasDragged) {
+				this.isDevToolsView = !this.isDevToolsView
+			}
+		},
+		/**
+		 * 调整大小(开始)
+		 */
+		startResize(event) {
+			this.resizing = true
+			this.startY = event.clientY
+			this.startHeight = this.devToolsHeight
+			document.addEventListener("mousemove", this.onResize)
+			document.addEventListener("mouseup", this.stopResize)
+		},
+		/**
+		 * 调整大小(正在)
+		 */
+		onResize(event) {
+			if (!this.resizing) return
+			const DELTA = this.startY - event.clientY
+			this.devToolsHeight = Math.min(window.innerHeight, Math.max(200, this.startHeight + DELTA))
+		},
+		/**
+		 * 调整大小(结束)
+		 */
+		stopResize() {
+			this.resizing = false
+			document.removeEventListener("mousemove", this.onResize)
+			document.removeEventListener("mouseup", this.stopResize)
 		}
 	}
 }
@@ -248,10 +332,19 @@ export default {
 			<div class="RouterView">
 				<router-view/>
 			</div>
-			<Button class="IsDevTools" v-if="isDevToolsSuspensionWindow" @click="isDevToolsView = !isDevToolsView">
+			<Button
+				class="IsDevTools"
+				v-if="isDevToolsSuspensionWindow"
+				:style="{ top: buttonPosition.top + 'px', left: buttonPosition.left + 'px' }"
+				@mousedown="startDrag"
+				@click="handleClick">
 				DevTools
 			</Button>
-			<div class="IsDevToolsSuspensionWindow" v-if="isDevToolsView && isDevToolsSuspensionWindow">
+			<div
+				class="IsDevToolsSuspensionWindow"
+				v-if="isDevToolsView && isDevToolsSuspensionWindow"
+				:style="{ height: devToolsHeight + 'px' }">
+				<div class="ResizeHandle" @mousedown="startResize"></div>
 				<DevTools/>
 			</div>
 		</template>
@@ -273,20 +366,29 @@ export default {
 }
 
 .IsDevTools {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	cursor: pointer;
+	position: fixed;
+	cursor: move;
+	opacity: 0.7;
+	transition: 0s;
 	z-index: 4;
 }
 
 .IsDevToolsSuspensionWindow {
-	position: absolute;
+	position: fixed;
 	bottom: 0;
 	width: 100%;
-	height: 600px;
 	border: 1px solid var(--border-color);
 	background-color: var(--background-color);
+	display: flex;
+	flex-direction: column;
+	transition: 0s;
+	user-select: none;
 	z-index: 3;
+}
+
+.ResizeHandle {
+	border: 2px solid var(--border-color);
+	cursor: ns-resize;
+	background: var(--border-color);
 }
 </style>

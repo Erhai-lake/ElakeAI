@@ -224,12 +224,15 @@
 				"deleteError": "删除失败",
 				"updateSameData": "更新数据与当前数据一致",
 				"updateSuccess": "更新成功",
-				"updateError": "更新失败"
+				"updateError": "更新失败",
+				"areYouSureToGenerateDebugChat": "确定要生成调试对话吗?",
+				"generateDebugChatSuccess": "生成调试对话成功"
 			},
 			"router": "路由",
 			"goTo": "跳转",
 			"options": "设置",
 			"database": "数据库",
+			"generateDebugChat": "生成调试对话",
 			"clear": "清空",
 			"delete": "删除",
 			"plugins": "插件",

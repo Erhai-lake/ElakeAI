@@ -53,11 +53,6 @@ const routes = [
 				component: () => import("@/views/options/LogView.vue")
 			},
 			{
-				path: "debug",
-				name: "DeBUG",
-				component: () => import("@/views/options/DeBUGView.vue")
-			},
-			{
 				path: "about",
 				name: "OptionsAbout",
 				component: () => import("@/views/options/AboutView.vue")

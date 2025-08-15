@@ -63,12 +63,6 @@ export default {
 		</router-link>
 	</div>
 	<div class="item">
-		BeBUG View
-		<router-link to="/options/debug">
-			<Button>Open BeBUG View</Button>
-		</router-link>
-	</div>
-	<div class="item">
 		DevTools
 		<Button @click="devToolsSuspensionWindow">{{ isDevToolsSuspensionWindow }}</Button>
 	</div>
