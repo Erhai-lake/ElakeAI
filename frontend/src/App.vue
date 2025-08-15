@@ -1,6 +1,6 @@
 <script>
 import Sidebar from "@/components/Sidebar.vue"
-import Log from "@/components/options/Log.vue"
+import DevTools from "@/components/DevTools.vue"
 import Button from "@/components/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
@@ -10,11 +10,10 @@ import Logger, {setupLogCleanup} from "@/services/Logger"
 import {unloadPlugins} from "@/services/plugin/UnloadPlugins"
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import Loading from "@/components/Loading.vue"
-// import eruda from "eruda"
 
 export default {
 	name: "App",
-	components: {Loading, Button, Log, Sidebar},
+	components: {Loading, Button, DevTools, Sidebar},
 	data() {
 		return {
 			name: "App",
@@ -25,13 +24,13 @@ export default {
 				loadedCount: 0,
 				totalCount: 0
 			},
-			isLogSuspensionWindow: false,
-			isLogView: false
+			isDevToolsSuspensionWindow: false,
+			isDevToolsView: false
 		}
 	},
 	beforeUnmount() {
 		EventBus.off("[update] pluginProgress")
-		EventBus.off("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
+		EventBus.off("[update] devToolsSuspensionWindowUpdate", this.devToolsSuspensionWindow)
 		EventBus.off("[function] configInitialization", this.configInitialization)
 	},
 	async created() {
@@ -46,16 +45,12 @@ export default {
 			this.$.appContext.provides.$DB = Dexie
 			this.$.appContext.provides.$log = Logger
 		})
-		EventBus.on("[update] logSuspensionWindowUpdate", this.logSuspensionWindow)
+		EventBus.on("[update] devToolsSuspensionWindowUpdate", this.devToolsSuspensionWindow)
 		EventBus.on("[function] configInitialization", this.configInitialization)
 		// 加载界面初始化
 		this.updateMessage()
 		// 环境信息
 		this.information()
-		// 移动端调试工具eruda
-		// if (process.env.NODE_ENV === "development") {
-		//     eruda.init()
-		// }
 		// 初始化配置
 		await this.$nextTick(() => {
 			requestIdleCallback(() => this.configInitialization())
@@ -178,7 +173,6 @@ export default {
 					document.documentElement.setAttribute("data-theme", THEME)
 					info.Theme = THEME
 				}
-
 				// 应用语言
 				const LANGUAGE_DATA = await Dexie.configs.get("language")
 				const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
@@ -190,10 +184,10 @@ export default {
 					i18nRegistry.locale(LANGUAGE)
 					info.Language = LANGUAGE
 				}
-				// Log悬浮窗
-				const LOG_SUSPENSION_WINDOW_DATA = await Dexie.configs.get("logSuspensionWindow")
-				this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
-				info.LogSuspensionWindow = this.isLogSuspensionWindow
+				// DevTools悬浮窗
+				const DEV_TOOLS_SUSPENSION_WINDOW_DATA = await Dexie.configs.get("devToolsSuspensionWindow")
+				this.isDevToolsSuspensionWindow = DEV_TOOLS_SUSPENSION_WINDOW_DATA ? DEV_TOOLS_SUSPENSION_WINDOW_DATA.value : false
+				info.isDevToolsSuspensionWindow = this.isDevToolsSuspensionWindow
 				Logger.info(`[${this.name}] 初始化配置`, info)
 			} catch (error) {
 				Logger.error(`[${this.name}] 配置初始化失败`, error)
@@ -218,10 +212,10 @@ export default {
 			requestAnimationFrame(this.updateMessage)
 		},
 		/**
-		 * 日志悬浮窗
+		 * DevTools悬浮窗
 		 */
-		logSuspensionWindow() {
-			this.isLogSuspensionWindow = !this.isLogSuspensionWindow
+		devToolsSuspensionWindow() {
+			this.isDevToolsSuspensionWindow = !this.isDevToolsSuspensionWindow
 		},
 		/**
 		 * 加载插件系统
@@ -254,9 +248,11 @@ export default {
 			<div class="RouterView">
 				<router-view/>
 			</div>
-			<Button class="IsLog" v-if="isLogSuspensionWindow" @click="isLogView = !isLogView">Log</Button>
-			<div class="IsLogSuspensionWindow" v-if="isLogView && isLogSuspensionWindow">
-				<Log/>
+			<Button class="IsDevTools" v-if="isDevToolsSuspensionWindow" @click="isDevToolsView = !isDevToolsView">
+				DevTools
+			</Button>
+			<div class="IsDevToolsSuspensionWindow" v-if="isDevToolsView && isDevToolsSuspensionWindow">
+				<DevTools/>
 			</div>
 		</template>
 	</Loading>
@@ -276,7 +272,7 @@ export default {
 	scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
 }
 
-.IsLog {
+.IsDevTools {
 	position: absolute;
 	top: 10px;
 	right: 10px;
@@ -284,11 +280,13 @@ export default {
 	z-index: 4;
 }
 
-.IsLogSuspensionWindow {
+.IsDevToolsSuspensionWindow {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
 	height: 600px;
+	border: 1px solid var(--border-color);
+	background-color: var(--background-color);
 	z-index: 3;
 }
 </style>

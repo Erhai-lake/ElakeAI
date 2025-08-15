@@ -18,7 +18,5 @@ export default {
 </script>
 
 <template>
-	<div v-if="activeName() === name">
-		<slot/>
-	</div>
+	<slot v-if="activeName() === name"/>
 </template>

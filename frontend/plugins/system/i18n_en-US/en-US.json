@@ -181,8 +181,7 @@
 				"load": "Load logs",
 				"clear": "Clear logs",
 				"export": "Export logs",
-				"keepScrollToBottom": "Keep scroll to bottom {is}",
-				"suspensionWindow": "Floating window {is}"
+				"keepScrollToBottom": "Keep scroll to bottom {is}"
 			},
 			"count": "Total {count} {level} logs",
 			"empty": "No logs"
@@ -215,6 +214,26 @@
 			"code": "Code",
 			"renderError": "PlantUML rendering failed! Please check the code or switch to the \"Code\" tab to view the original content",
 			"export": "Export"
+		},
+		"DevTools": {
+			"toast": {
+				"failedToGetData": "Failed to get data",
+				"clearSuccess": "Cleared successfully",
+				"clearError": "Failed to clear",
+				"deleteSuccess": "Deleted successfully",
+				"deleteError": "Failed to delete",
+				"updateSameData": "Updated data is the same as current data",
+				"updateSuccess": "Updated successfully",
+				"updateError": "Failed to update"
+			},
+			"router": "Router",
+			"goTo": "Go to",
+			"options": "Settings",
+			"database": "Database",
+			"clear": "Clear",
+			"delete": "Delete",
+			"plugins": "Plugins",
+			"log": "Log"
 		}
 	},
 	"views": {
@@ -291,6 +310,10 @@
 			"export": "Export"
 		},
 		"AdvancedToolsView": {
+			"toast": {
+				"getDevToolsSuspensionWindowError": "Failed to get Dev Tools suspension window settings",
+				"saveDevToolsSuspensionWindowError": "Failed to save Dev Tools suspension window settings"
+			},
 			"hazardousOperations": "Hazardous operations"
 		},
 		"AboutView": {

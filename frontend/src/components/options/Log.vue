@@ -51,14 +51,6 @@ export default {
 		EventBus.on("[update] logUpdate", this.loadLogs)
 		// 加载日志
 		await this.loadLogs()
-		// 获取悬浮窗设置
-		try {
-			const LOG_SUSPENSION_WINDOW_DATA = await this.$DB.configs.get("logSuspensionWindow")
-			this.isLogSuspensionWindow = LOG_SUSPENSION_WINDOW_DATA ? LOG_SUSPENSION_WINDOW_DATA.value : false
-		} catch (error) {
-			this.$log.error(`[${this.name}] 日志悬浮窗设置获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.getLogSuspensionWindowError")}`)
-		}
 	},
 	methods: {
 		/**
@@ -144,23 +136,6 @@ export default {
 			}
 		},
 		/**
-		 * 悬浮窗口
-		 */
-		async suspensionWindow() {
-			// 保存设置
-			try {
-				await this.$DB.configs.put({
-					item: "logSuspensionWindow",
-					value: !this.isLogSuspensionWindow
-				})
-				EventBus.emit("[update] logSuspensionWindowUpdate")
-				this.isLogSuspensionWindow = !this.isLogSuspensionWindow
-			} catch (error) {
-				this.$log.error(`[${this.name}] 悬浮窗设置保存失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.saveLogSuspensionWindowError")}`)
-			}
-		},
-		/**
 		 * 导出日志
 		 */
 		exportLogs() {
@@ -212,9 +187,6 @@ export default {
 			<Button @click="keepScrollToBottom">
 				{{ t("components.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
 			</Button>
-			<Button @click="suspensionWindow">
-				{{ t("components.Log.function.suspensionWindow", {is: isLogSuspensionWindow}) }}
-			</Button>
 			<span class="log-count">{{
 					t("components.Log.count", {count: logs.length, level: levelSelector.label})
 				}}</span>
@@ -238,7 +210,6 @@ export default {
 	height: 100%;
 	border-radius: 4px;
 	border: 1px solid var(--border-color);
-	background-color: var(--background-color);
 	display: flex;
 	flex-direction: column;
 }

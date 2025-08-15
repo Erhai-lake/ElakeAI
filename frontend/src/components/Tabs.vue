@@ -51,6 +51,10 @@ export default {
 
 <style scoped lang="less">
 .tabs {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
 	.tab-labels {
 		display: flex;
 		border-bottom: 1px solid var(--border-color);
@@ -72,6 +76,8 @@ export default {
 
 	.tab-content {
 		padding: 12px;
+		height: 100%;
+		overflow: auto;
 	}
 }
 </style>

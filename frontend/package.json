@@ -14,10 +14,10 @@
 		"vite": "6.3.4"
 	},
 	"dependencies": {
-		"@tailwindcss/vite": "^4.1.11",
 		"@iktakahiro/markdown-it-katex": "^4.0.1",
 		"@mdit/plugin-img-lazyload": "^0.22.0",
 		"@panzoom/panzoom": "^4.6.0",
+		"@tailwindcss/vite": "^4.1.11",
 		"axios": "^1.11.0",
 		"dexie": "^4.0.11",
 		"flowchart.js": "^1.18.0",

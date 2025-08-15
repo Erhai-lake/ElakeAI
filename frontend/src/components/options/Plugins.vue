@@ -3,14 +3,12 @@ import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/PluginManage
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import Tabs from "@/components/Tabs.vue"
-import TabsTab from "@/components/TabsTab.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "PluginsView",
 	inject: ["$log"],
-	components: {TabsTab, Tabs, FoldingPanel},
+	components: {FoldingPanel},
 	data() {
 		return {
 			name: "PluginsView",
@@ -180,20 +178,18 @@ export default {
 			</template>
 			<template #Content>
 				<div class="header"></div>
-				<Tabs v-model="system.activeTab">
-					<TabsTab name="all">
-						<template #label>{{ t("views.PluginsView.type.all") }}</template>
-					</TabsTab>
-					<TabsTab name="platform">
-						<template #label>{{ t("views.PluginsView.type.platform") }}</template>
-					</TabsTab>
-					<TabsTab name="i18n">
-						<template #label>{{ t("views.PluginsView.type.i18n") }}</template>
-					</TabsTab>
-					<TabsTab name="other">
-						<template #label>{{ t("views.PluginsView.type.other") }}</template>
-					</TabsTab>
-				</Tabs>
+				<button :class="{ active: system.activeTab === 'all' }" @click="system.activeTab = 'all'">
+					{{ t("views.PluginsView.type.all") }}
+				</button>
+				<button :class="{ active: system.activeTab === 'platform' }" @click="system.activeTab = 'platform'">
+					{{ t("views.PluginsView.type.platform") }}
+				</button>
+				<button :class="{ active: system.activeTab === 'i18n' }" @click="system.activeTab = 'i18n'">
+					{{ t("views.PluginsView.type.i18n") }}
+				</button>
+				<button :class="{ active: system.activeTab === 'other' }" @click="system.activeTab = 'other'">
+					{{ t("views.PluginsView.type.other") }}
+				</button>
 				<table class="list">
 					<thead>
 					<tr>
@@ -263,20 +259,18 @@ export default {
 			</template>
 			<template #Content>
 				<div class="header"></div>
-				<Tabs v-model="thirdParty.activeTab">
-					<TabsTab name="all">
-						<template #label>{{ t("views.PluginsView.type.all") }}</template>
-					</TabsTab>
-					<TabsTab name="platform">
-						<template #label>{{ t("views.PluginsView.type.platform") }}</template>
-					</TabsTab>
-					<TabsTab name="i18n">
-						<template #label>{{ t("views.PluginsView.type.i18n") }}</template>
-					</TabsTab>
-					<TabsTab name="other">
-						<template #label>{{ t("views.PluginsView.type.other") }}</template>
-					</TabsTab>
-				</Tabs>
+				<button :class="{ active: thirdParty.activeTab === 'all' }" @click="thirdParty.activeTab = 'all'">
+					{{ t("views.PluginsView.type.all") }}
+				</button>
+				<button :class="{ active: thirdParty.activeTab === 'platform' }" @click="thirdParty.activeTab = 'platform'">
+					{{ t("views.PluginsView.type.platform") }}
+				</button>
+				<button :class="{ active: thirdParty.activeTab === 'i18n' }" @click="thirdParty.activeTab = 'i18n'">
+					{{ t("views.PluginsView.type.i18n") }}
+				</button>
+				<button :class="{ active: thirdParty.activeTab === 'other' }" @click="thirdParty.activeTab = 'other'">
+					{{ t("views.PluginsView.type.other") }}
+				</button>
 				<table class="list">
 					<thead>
 					<tr>
@@ -344,6 +338,20 @@ export default {
 </template>
 
 <style scoped lang="less">
+button {
+	padding: 8px 16px;
+	background: none;
+	border: none;
+	border-bottom: 1px solid transparent;
+	color: var(--text-color);
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.active {
+	border-bottom: 1px solid #80ceff;
+}
+
 .list {
 	min-width: 1000px;
 	width: 100%;

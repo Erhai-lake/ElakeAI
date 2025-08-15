@@ -181,8 +181,7 @@
 				"load": "加载日志",
 				"clear": "清空日志",
 				"export": "导出日志",
-				"keepScrollToBottom": "保持滚动到底部 {is}",
-				"suspensionWindow": "悬浮窗 {is}"
+				"keepScrollToBottom": "保持滚动到底部 {is}"
 			},
 			"count": "共 {count} 条 {level} 日志",
 			"empty": "暂无日志"
@@ -215,6 +214,26 @@
 			"code": "代码",
 			"renderError": "PlantUML渲染失败! 请检查代码或切换到\"代码\"标签查看原始内容",
 			"export": "导出"
+		},
+		"DevTools": {
+			"toast": {
+				"failedToGetData": "获取数据失败",
+				"clearSuccess": "清空成功",
+				"clearError": "清空失败",
+				"deleteSuccess": "删除成功",
+				"deleteError": "删除失败",
+				"updateSameData": "更新数据与当前数据一致",
+				"updateSuccess": "更新成功",
+				"updateError": "更新失败"
+			},
+			"router": "路由",
+			"goTo": "跳转",
+			"options": "设置",
+			"database": "数据库",
+			"clear": "清空",
+			"delete": "删除",
+			"plugins": "插件",
+			"log": "日志"
 		}
 	},
 	"views": {
@@ -291,6 +310,10 @@
 			"export": "导出"
 		},
 		"AdvancedToolsView": {
+			"toast": {
+				"getDevToolsSuspensionWindowError": "获取Dev Tools悬浮窗设置失败",
+				"saveDevToolsSuspensionWindowError": "保存Dev Tools悬浮窗设置失败"
+			},
 			"hazardousOperations": "危险操作"
 		},
 		"AboutView": {
