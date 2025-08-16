@@ -407,7 +407,9 @@ export default {
 		checkLastMessage() {
 			if (this.data.data?.length) {
 				const LAST_MESSAGE = this.data.data[this.data.data.length - 1]
-				EventBus.emit("[update] stopStatusUpdate", LAST_MESSAGE.status !== "done")
+				if (LAST_MESSAGE.status) {
+					EventBus.emit("[update] stopStatusUpdate", LAST_MESSAGE.status !== "done")
+				}
 			}
 		},
 		/**

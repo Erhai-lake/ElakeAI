@@ -174,7 +174,9 @@ export default {
 			</div>
 			<div class="message-info">
 				<div>
-					{{ message.status === "done" ? t("components.MessageCard.done") : message.status === "error" ? t("components.MessageCard.error") : t("components.MessageCard.loading") }}
+					{{
+						message.status === "error" ? t("components.MessageCard.error") : message.status === "loading" ? t("components.MessageCard.loading") : t("components.MessageCard.done")
+					}}
 					-
 					{{ t("components.SystemMessageCard.systemPrompt") }}
 					-

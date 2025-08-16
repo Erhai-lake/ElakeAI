@@ -8,7 +8,6 @@ import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
-import DB from "@/services/Dexie";
 
 export default defineComponent({
 	name: "AIInput",
