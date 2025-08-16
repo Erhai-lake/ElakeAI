@@ -402,7 +402,7 @@ export default {
 		justify-content: space-between;
 		border-radius: 10px;
 		border-bottom: 1px solid var(--border-color);
-		background: var(--background-color);
+		background-color: var(--background-color);
 		color: var(--text-color);
 
 		&:hover {

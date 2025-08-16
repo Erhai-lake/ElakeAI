@@ -263,6 +263,11 @@
 				"chatBatchSizeError": "Chat batch size setting error",
 				"chatBatchSizeSuccess": "Chat batch size setting successful"
 			}
+		},
+		"BackgroundImage": {
+			"backgroundImageURL": "Background image URL",
+			"backgroundImageOpacity": "Background image opacity",
+			"backgroundImageMask": "Background image mask"
 		}
 	},
 	"views": {
@@ -310,7 +315,8 @@
 			"PersonalizationView": {
 				"theme": "Theme",
 				"language": "Language",
-				"chatThemes": "Chat Themes"
+				"chatThemes": "Chat Themes",
+				"backgroundImage": "Background Image"
 			},
 			"ChatsView": {
 				"defaultChat": "Default chat",
@@ -345,6 +351,10 @@
 				},
 				"loadExportData": "Load export data",
 				"loading": "Loading",
+				"selectAll": "Select all {item}",
+				"chats": "Chats",
+				"configs": "Configurations",
+				"apiKeys": "API Keys",
 				"exportTip": "Export selected data?",
 				"export": "Export"
 			},

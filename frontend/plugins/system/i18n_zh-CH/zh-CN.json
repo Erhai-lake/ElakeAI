@@ -263,6 +263,11 @@
 				"chatBatchSizeError": "聊天批大小设置错误",
 				"chatBatchSizeSuccess": "聊天批大小设置成功"
 			}
+		},
+		"BackgroundImage": {
+			"backgroundImageURL": "背景图片URL",
+			"backgroundImageOpacity": "背景图片透明度",
+			"backgroundImageMask": "背景图片遮罩"
 		}
 	},
 	"views": {
@@ -310,7 +315,8 @@
 			"PersonalizationView": {
 				"theme": "主题",
 				"language": "语言",
-				"chatThemes": "对话主题"
+				"chatThemes": "对话主题",
+				"backgroundImage": "背景图片"
 			},
 			"ChatsView": {
 				"defaultChat": "默认对话",
@@ -345,6 +351,10 @@
 				},
 				"loadExportData": "加载导出数据",
 				"loading": "加载",
+				"selectAll": "全选 {item}",
+				"chats": "对话",
+				"configs": "配置",
+				"apiKeys": "API Keys",
 				"exportTip": "是否导出所选数据?",
 				"export": "导出"
 			},

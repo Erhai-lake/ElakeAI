@@ -407,6 +407,7 @@ export default defineComponent({
 			padding: 10px;
 			font-size: 12px;
 			border-radius: 50%;
+			opacity: 0.8;
 			background-color: var(--background-color);
 			border: 2px solid var(--chat-input-button-border-color);
 			cursor: pointer;
@@ -438,11 +439,11 @@ export default defineComponent({
 		min-height: 100px;
 		max-height: 600px;
 		background-color: var(--box-shadow-color-anti);
+		border: 1px solid var(--border-color);
 		color: var(--text-color);
 		font-size: 16px;
 		letter-spacing: 3px;
 		border-radius: 10px;
-		border: none;
 		resize: none;
 
 		&:focus {
@@ -459,6 +460,7 @@ export default defineComponent({
 		border-radius: 50%;
 		background-color: var(--background-color);
 		border: 2px solid var(--chat-input-button-border-color);
+		opacity: 0.5;
 		cursor: pointer;
 		outline: none;
 		transition: all 0.2s ease-in-out, transform 0.1s ease-in-out;

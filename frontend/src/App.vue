@@ -25,10 +25,10 @@ export default {
 				totalCount: 0
 			},
 			isDevToolsSuspensionWindow: false,
-			buttonPosition: { top: 10, left: window.innerWidth - 130 },
+			buttonPosition: {top: 10, left: window.innerWidth - 130},
 			dragging: false,
 			wasDragged: false,
-			dragOffset: { x: 0, y: 0 },
+			dragOffset: {x: 0, y: 0},
 			isDevToolsView: false,
 			devToolsHeight: 600,
 			resizing: false,
@@ -351,6 +351,7 @@ export default {
 			</div>
 		</template>
 	</Loading>
+	<div class="images"></div>
 </template>
 
 <style scoped lang="less">
@@ -359,6 +360,7 @@ export default {
 	grid-template-columns: auto 1fr;
 	grid-template-rows: 100vh;
 	overflow: hidden;
+	z-index: 3;
 }
 
 .RouterView {
@@ -391,5 +393,20 @@ export default {
 	border: 2px solid var(--border-color);
 	cursor: ns-resize;
 	background: var(--border-color);
+}
+
+.images {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+	overflow: hidden;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-image: url("https://www.loliapi.com/acg");
+	opacity: 0.2;
+	z-index: 1;
 }
 </style>

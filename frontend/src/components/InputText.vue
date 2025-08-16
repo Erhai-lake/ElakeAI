@@ -5,6 +5,10 @@ export default {
 		modelValue: {
 			type: String,
 			default: ""
+		},
+		placeholder: {
+			type: String,
+			default: ""
 		}
 	},
 	emits: ["update:modelValue", "input"],
@@ -21,7 +25,7 @@ export default {
 </script>
 
 <template>
-	<input type="text" :value="modelValue" @input="onInput"/>
+	<input type="text" :value="modelValue" :placeholder="placeholder" @input="onInput"/>
 </template>
 
 <style scoped lang="less">

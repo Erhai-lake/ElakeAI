@@ -3,11 +3,12 @@ import Button from "@/components/Button.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
+import InputCheckbox from "@/components/InputCheckbox.vue"
 
 export default {
 	name: "ImportView",
 	inject: ["$DB", "$log"],
-	components: {Button},
+	components: {InputCheckbox, Button},
 	data() {
 		return {
 			name: "ImportView",
@@ -293,59 +294,59 @@ export default {
 		<!--单项例子-->
 		<!--<div class="option-group" v-if="singleSelection.optional.length > 0">-->
 		<!--	<label class="option-item" v-if="singleSelection.optional.includes('chats')">-->
-		<!--		<input type="checkbox" v-model="singleSelection.selected" value="chats"/>-->
-		<!--		<span class="custom-checkbox"></span>-->
-		<!--		<span>{{ t("views.OptionsView.ImportView.chats") }}</span>-->
+		<!--		<InputCheckbox v-model="singleSelection.selected" value="chats" titleLocation="right">-->
+		<!--			{{ t("views.OptionsView.ImportView.chats") }}-->
+		<!--		</InputCheckbox>-->
 		<!--	</label>-->
 		<!--</div>-->
 		<div class="option-group" v-if="chats.options.length > 0">
 			<label class="option-item">
-				<input type="checkbox" v-model="chats.selectAll" @change="toggleAll('chats')"/>
-				<span class="custom-checkbox"></span>
-				<span>{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.chats")}) }}</span>
+				<InputCheckbox v-model="chats.selectAll" @change="toggleAll('chats')" titleLocation="right">
+					{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.chats")}) }}
+				</InputCheckbox>
 			</label>
 			<div class="sub-options" v-if="chats.options.length">
 				<label
 					class="option-item sub-option"
 					v-for="(option, index) in chats.options"
 					:key="'chats-'+index">
-					<input type="checkbox" v-model="chats.selected" :value="option.key"/>
-					<span class="custom-checkbox"></span>
-					<span>[{{ option.key }}] {{ option.title }}</span>
+					<InputCheckbox v-model="chats.selected" :value="option.key" titleLocation="right">
+						[{{ option.key }}] {{ option.title }}
+					</InputCheckbox>
 				</label>
 			</div>
 		</div>
 		<div class="option-group" v-if="configs.options.length > 0">
 			<label class="option-item">
-				<input type="checkbox" v-model="configs.selectAll" @change="toggleAll('configs')"/>
-				<span class="custom-checkbox"></span>
-				<span>{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.configs")}) }}</span>
+				<InputCheckbox v-model="configs.selectAll" @change="toggleAll('configs')" titleLocation="right">
+					{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.configs")}) }}
+				</InputCheckbox>
 			</label>
 			<div class="sub-options" v-if="configs.options.length">
 				<label
 					class="option-item sub-option"
 					v-for="(option, index) in configs.options"
 					:key="'configs-'+index">
-					<input type="checkbox" v-model="configs.selected" :value="option.item"/>
-					<span class="custom-checkbox"></span>
-					<span>{{ option.item }}</span>
+					<InputCheckbox v-model="configs.selected" :value="option.item" titleLocation="right">
+						{{ option.item }}
+					</InputCheckbox>
 				</label>
 			</div>
 		</div>
 		<div class="option-group" v-if="apiKeys.options.length > 0">
 			<label class="option-item">
-				<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAll('apiKeys')"/>
-				<span class="custom-checkbox"></span>
-				<span>{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.apiKeys")}) }}</span>
+				<InputCheckbox v-model="apiKeys.selectAll" @change="toggleAll('apiKeys')" titleLocation="right">
+					{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.apiKeys")}) }}
+				</InputCheckbox>
 			</label>
 			<div class="sub-options" v-if="apiKeys.options.length">
 				<label
 					class="option-item sub-option"
 					v-for="(option, index) in apiKeys.options"
 					:key="'apiKeys-'+index">
-					<input type="checkbox" v-model="apiKeys.selected" :value="option.key"/>
-					<span class="custom-checkbox"></span>
-					<span>[{{ option.model }}] {{ option.remark }}</span>
+					<InputCheckbox v-model="apiKeys.selected" :value="option.key" titleLocation="right">
+						[{{ option.model }}] {{ option.remark }}
+					</InputCheckbox>
 				</label>
 			</div>
 		</div>
@@ -375,40 +376,6 @@ export default {
 		align-items: center;
 		padding: 8px 0;
 		cursor: pointer;
-
-		input[type="checkbox"] {
-			display: none;
-
-			&:checked + .custom-checkbox::after {
-				opacity: 1;
-			}
-		}
-
-		.custom-checkbox {
-			margin-right: 10px;
-			display: inline-block;
-			width: 20px;
-			height: 20px;
-			box-sizing: border-box;
-			vertical-align: middle;
-			border: 2px solid var(--border-color);
-			border-radius: 4px;
-			position: relative;
-			cursor: pointer;
-
-			&::after {
-				content: "";
-				position: absolute;
-				top: 50%;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				width: 10px;
-				height: 10px;
-				background-color: var(--background-color-anti);
-				border-radius: 2px;
-				opacity: 0;
-			}
-		}
 	}
 
 	.sub-options {
