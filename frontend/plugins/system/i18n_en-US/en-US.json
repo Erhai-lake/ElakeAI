@@ -234,10 +234,13 @@
 				"generateDebugChatSuccess": "Build debug dialog succeeded"
 			},
 			"router": "Router",
+			"events": "Events",
 			"goTo": "Go to",
+			"emit": "Emit",
 			"options": "Settings",
 			"database": "Database",
 			"generateDebugChat": "Generate debug chat",
+			"getData": "Get data",
 			"clear": "Clear",
 			"delete": "Delete",
 			"plugins": "Plugins",

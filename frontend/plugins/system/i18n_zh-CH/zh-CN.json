@@ -234,10 +234,13 @@
 				"generateDebugChatSuccess": "生成调试对话成功"
 			},
 			"router": "路由",
+			"events": "通信",
 			"goTo": "跳转",
+			"emit": "触发",
 			"options": "设置",
 			"database": "数据库",
 			"generateDebugChat": "生成调试对话",
+			"getData": "获取数据",
 			"clear": "清空",
 			"delete": "删除",
 			"plugins": "插件",

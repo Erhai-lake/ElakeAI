@@ -36,12 +36,14 @@ export default {
 			allRoutes: [],
 			chats: [],
 			configs: [],
-			apiKeys: []
+			apiKeys: [],
+			eventBus: []
 		}
 	},
 	created() {
 		this.allRoutes = this.flattenRoutes(router.options.routes)
 		this.getDBData()
+		this.getEventBus()
 	},
 	methods: {
 		/**
@@ -266,6 +268,19 @@ export default {
 				toastRegistry.error(`[${this.name}] ${this.t("components.DevTools.toast.updateError")}`)
 			}
 			await this.getDBData()
+		},
+		/**
+		 * 获取通信列表
+		 */
+		async getEventBus() {
+			this.eventBus = EventBus.getAllEvents()
+		},
+		/**
+		 * 触发事件
+		 * @param eventName {String} - 事件名
+		 */
+		async emit(eventName) {
+			EventBus.emit(eventName)
 		}
 	}
 }
@@ -281,6 +296,21 @@ export default {
 					<span class="router-path">{{ item.path }}</span>
 					<Button class="router-btn" @click="goTo(item.path)">
 						{{ t("components.DevTools.goTo") }}
+					</Button>
+				</div>
+			</div>
+		</TabsTab>
+		<TabsTab name="events">
+			<template #label>{{ t("components.DevTools.events") }}</template>
+			<div class="item">
+				{{ t("components.DevTools.getData") }}
+				<Button @click="getEventBus">{{ t("components.DevTools.getData") }}</Button>
+			</div>
+			<div class="router-list">
+				<div class="router-item" v-for="item in eventBus" :key="item.path">
+					<span class="router-name">{{ item }}</span>
+					<Button class="router-btn" @click="emit(item)">
+						{{ t("components.DevTools.emit") }}
 					</Button>
 				</div>
 			</div>
@@ -315,6 +345,10 @@ export default {
 		</TabsTab>
 		<TabsTab name="database">
 			<template #label>{{ t("components.DevTools.database") }}</template>
+			<div class="item">
+				{{ t("components.DevTools.getData") }}
+				<Button @click="getDBData">{{ t("components.DevTools.getData") }}</Button>
+			</div>
 			<FoldingPanel>
 				<template #Title>chats</template>
 				<template #Content>
