@@ -81,7 +81,7 @@ export default {
 		}
 
 		&.active {
-			border: 2px solid #80ceff;
+			border: 2px solid var(--theme-color);
 		}
 	}
 }

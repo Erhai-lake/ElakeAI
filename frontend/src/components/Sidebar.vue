@@ -103,7 +103,7 @@ export default {
 						type: "svg",
 						src: "#icon-new"
 					},
-					color: "#80ceff",
+					color: "var(--theme-color)",
 					onClick: (key) => this.openChat(key)
 				},
 				{
@@ -328,7 +328,7 @@ export default {
 		cursor: pointer;
 
 		&.active {
-			border-color: #80ceff;
+			border-color: var(--theme-color);
 		}
 		
 		&.progress {

@@ -176,7 +176,7 @@ export default {
 	background-color: var(--background-color);
 
 	&:hover:not(.loading) {
-		border-color: #80ceff;
+		border-color: var(--theme-color);
 		box-shadow: 0 2px 8px var(--box-shadow-color);
 	}
 

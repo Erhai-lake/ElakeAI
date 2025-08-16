@@ -70,7 +70,7 @@ export default {
 		}
 
 		.active {
-			border-bottom: 1px solid #80ceff;
+			border-bottom: 1px solid var(--theme-color);
 		}
 	}
 

@@ -18,7 +18,7 @@ export default {
 .markdown-body {
 	// 超链接
 	a {
-		color: #80ceff;
+		color: var(--theme-color);
 	}
 
 	// 图片

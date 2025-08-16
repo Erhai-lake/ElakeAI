@@ -266,7 +266,7 @@ export default {
 	}
 
 	.info {
-		color: #80ceff;
+		color: var(--theme-color);
 	}
 
 	.warn {

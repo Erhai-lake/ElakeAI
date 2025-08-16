@@ -256,7 +256,7 @@ export default {
 						type: "svg",
 						src: "#icon-inputBox"
 					},
-					color: "#80ceff",
+					color: "var(--theme-color)",
 					onClick: () => this.editInput()
 				},
 				{

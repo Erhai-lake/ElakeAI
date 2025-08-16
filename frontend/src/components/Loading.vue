@@ -58,7 +58,7 @@ export default {
 	width: 40px;
 	height: 40px;
 	border: 4px solid var(--loading-spinner-border-color);
-	border-top-color: #80ceff;
+	border-top-color: var(--theme-color);
 	border-radius: 50%;
 	animation: spin 0.8s linear infinite;
 }
