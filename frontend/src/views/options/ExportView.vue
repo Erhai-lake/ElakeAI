@@ -107,14 +107,14 @@ export default {
 				this.apiKeys.options = await this.$DB.apiKeys.toArray()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载子选项失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ExportView.toast.failedToLoadSubOptions")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToLoadSubOptions")}`)
 			}
 			// 加载单选项数据
 			try {
 				// if (await this.$DB.chats.count() > 0) this.singleSelection.optional.push("chats")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ExportView.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
 				return null
 			}
 			this.$log.info(`[${this.name}] 初始化导出完成`)
@@ -132,7 +132,7 @@ export default {
 			if (API_KEYS) EXPORT_DATA.apiKeys = API_KEYS
 			if (Object.keys(EXPORT_DATA).length === 0) {
 				this.$log.warn(`[${this.name}] 没有数据可导出`, EXPORT_DATA)
-				toastRegistry.warning(`[${this.name}] ${this.t("views.ExportView.toast.noDataToExport")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.noDataToExport")}`)
 				return
 			}
 			// 开始导出
@@ -155,10 +155,10 @@ export default {
 					URL.revokeObjectURL(DOWNLOAD_URL)
 				}, 100)
 				this.$log.info(`[${this.name}] 导出成功`, EXPORT_DATA)
-				toastRegistry.success(`[${this.name}] ${this.t("views.ExportView.toast.exportSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.exportSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导出失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ExportView.toast.exportFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.exportFailed")}`)
 			}
 		},
 		/**
@@ -178,7 +178,7 @@ export default {
 				return CHATS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取chats数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ExportView.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -199,7 +199,7 @@ export default {
 				return CONFIGS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取configs数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ExportView.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -220,7 +220,7 @@ export default {
 				return API_KEYS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取apiKeys数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ExportView.toast.failedToGetData")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
 				return null
 			}
 		},
@@ -230,8 +230,8 @@ export default {
 
 <template>
 	<div class="item">
-		{{ t("views.ExportView.loadExportData") }}
-		<Button @click="loadExportData">{{ t("views.ExportView.loading") }}</Button>
+		{{ t("views.OptionsView.ExportView.loadExportData") }}
+		<Button @click="loadExportData">{{ t("views.OptionsView.ExportView.loading") }}</Button>
 	</div>
 	<div class="export" v-if="hasDataToImport">
 		<!--单项例子-->
@@ -295,8 +295,8 @@ export default {
 		</div>
 	</div>
 	<div class="item" v-if="hasDataToImport">
-		{{ t("views.ExportView.exportTip") }}
-		<Button @click="handleExport">{{ t("views.ExportView.export") }}</Button>
+		{{ t("views.OptionsView.ExportView.exportTip") }}
+		<Button @click="handleExport">{{ t("views.OptionsView.ExportView.export") }}</Button>
 	</div>
 </template>
 

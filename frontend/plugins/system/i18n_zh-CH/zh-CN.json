@@ -118,11 +118,10 @@
 				"new": "新建对话",
 				"stow": "折叠边栏",
 				"expand": "展开边栏",
-				"preset": "预设",
+				"mask": "面具",
 				"options": "设置",
 				"delete": "删除对话"
 			},
-			"numberOfConversations": "{num} 条对话",
 			"openChat": "打开对话",
 			"deleteChat": "删除对话"
 		},
@@ -155,10 +154,16 @@
 			"systemPrompt": "系统提示词"
 		},
 		"UserMessageCard": {
+			"toast": {
+				"getChatThemeError": "获取对话主题失败"
+			},
 			"earthOnline": "地球Online",
 			"players": "玩家"
 		},
 		"AssistantMessageCard": {
+			"toast": {
+				"getChatThemeError": "获取对话主题失败"
+			},
 			"reasoning": "推理",
 			"thinking": "思考中..."
 		},
@@ -237,9 +242,32 @@
 			"delete": "删除",
 			"plugins": "插件",
 			"log": "日志"
+		},
+		"ChatThemesSelect": {
+			"toast": {
+				"getChatThemeError": "获取对话主题失败",
+				"applicationChatThemeError": "应用对话主题失败"
+			},
+			"card": "卡片",
+			"chatBubble": "聊天气泡"
 		}
 	},
 	"views": {
+		"NotFoundView": {
+			"aiReasoning1": "检测到404错误状态",
+			"aiMessage1": "🔍 哎呀, 看起来你访问的页面迷路了! 让我帮你找找看...",
+			"userMessage1": "这个页面应该存在的, 能再找找吗?",
+			"aiReasoning2": "开始深度搜索数据库",
+			"aiMessage2": "💻 正在全站数据库进行深度扫描...\n\n▰▰▰▱▱ 65% 完成\n\n已检索 114514 个页面索引",
+			"aiReasoning3": "搜索无结果, 尝试备用方案",
+			"aiMessage3": "🤖 非常抱歉, 我已经: \n\n1. 检查了所有服务器节点\n2. 询问了其他AI助手\n3. 甚至查看了回收站\n\n还是没找到这个页面...",
+			"userMessage2": "那现在该怎么办?",
+			"aiReasoning4": "提供解决方案",
+			"aiMessage4": "✨ 我有几个建议: \n\n1. 检查输入的URL是否正确\n2. 或者直接回到 [首页](/)\n\n需要我帮你搜索相关内容吗?",
+			"userMessage3": "好的, 请带我回首页吧",
+			"aiReasoning5": "提供返回首页链接",
+			"aiMessage5": "🚀 [点击这里返回首页](/)"
+		},
 		"ChatView": {
 			"toast": {
 				"chatBatchSizeError": "聊天批大小设置错误",
@@ -266,6 +294,65 @@
 			"aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
 		},
 		"OptionsView": {
+			"PersonalizationView": {
+				"theme": "主题",
+				"language": "语言",
+				"chatThemes": "对话主题"
+			},
+			"ChatsView": {
+				"toast": {
+					"invalidChatBatchSize": "无效的聊天批大小",
+					"chatBatchSizeError": "聊天批大小设置错误",
+					"chatBatchSizeSuccess": "聊天批大小设置成功"
+				},
+				"defaultChat": "默认对话",
+				"chatBatchSize": "加载聊天记录时的单批数量"
+			},
+			"ImportView": {
+				"toast": {
+					"parsingFailed": "解析失败",
+					"invalidJsonFormat": "无效的JSON格式",
+					"fileReadError": "读取文件失败",
+					"importFailed": "导入失败",
+					"importFailedSkipped": "导入失败, 已跳过",
+					"noDataToImport": "没有数据可导入",
+					"confirmImportTip": "确认导入? 导入后将合并当前数据!"
+				},
+				"selectImportedConfiguration": "请选择要导入的配置",
+				"importTip": "导入后将合并当前数据!",
+				"import": "导入",
+				"confirmImport": "确认导入",
+				"selectAll": "全选 {item}",
+				"chats": "对话",
+				"configs": "配置",
+				"apiKeys": "API Keys"
+			},
+			"ExportView": {
+				"toast": {
+					"failedToLoadSubOptions": "加载子选项失败",
+					"failedToGetData": "获取数据失败",
+					"noDataToExport": "没有数据可导出",
+					"exportSuccess": "导出成功",
+					"exportFailed": "导出失败"
+				},
+				"loadExportData": "加载导出数据",
+				"loading": "加载",
+				"exportTip": "是否导出所选数据?",
+				"export": "导出"
+			},
+			"AdvancedToolsView": {
+				"toast": {
+					"getDevToolsSuspensionWindowError": "获取Dev Tools悬浮窗设置失败",
+					"saveDevToolsSuspensionWindowError": "保存Dev Tools悬浮窗设置失败"
+				},
+				"hazardousOperations": "危险操作"
+			},
+			"AboutView": {
+				"aboutApp": "关于 ElakeAI",
+				"githubRepo": "GitHub仓库",
+				"contactSupport": "联系支持"
+			},
+			"OptionsNotFoundView": "这里什么都没有, 返回吧~",
 			"personalization": "个性化",
 			"chats": "对话",
 			"import": "导入",
@@ -274,64 +361,6 @@
 			"advancedTools": "高级工具",
 			"about": "关于"
 		},
-		"PersonalizationView": {
-			"theme": "主题",
-			"language": "语言"
-		},
-		"ChatsView": {
-			"toast": {
-				"invalidChatBatchSize": "无效的聊天批大小",
-				"chatBatchSizeError": "聊天批大小设置错误",
-				"chatBatchSizeSuccess": "聊天批大小设置成功"
-			},
-			"defaultChat": "默认对话",
-			"chatBatchSize": "加载聊天记录时的单批数量"
-		},
-		"ImportView": {
-			"toast": {
-				"parsingFailed": "解析失败",
-				"invalidJsonFormat": "无效的JSON格式",
-				"fileReadError": "读取文件失败",
-				"importFailed": "导入失败",
-				"importFailedSkipped": "导入失败, 已跳过",
-				"noDataToImport": "没有数据可导入",
-				"confirmImportTip": "确认导入? 导入后将合并当前数据!"
-			},
-			"selectImportedConfiguration": "请选择要导入的配置",
-			"importTip": "导入后将合并当前数据!",
-			"import": "导入",
-			"confirmImport": "确认导入",
-			"selectAll": "全选 {item}",
-			"chats": "对话",
-			"configs": "配置",
-			"apiKeys": "API Keys"
-		},
-		"ExportView": {
-			"toast": {
-				"failedToLoadSubOptions": "加载子选项失败",
-				"failedToGetData": "获取数据失败",
-				"noDataToExport": "没有数据可导出",
-				"exportSuccess": "导出成功",
-				"exportFailed": "导出失败"
-			},
-			"loadExportData": "加载导出数据",
-			"loading": "加载",
-			"exportTip": "是否导出所选数据?",
-			"export": "导出"
-		},
-		"AdvancedToolsView": {
-			"toast": {
-				"getDevToolsSuspensionWindowError": "获取Dev Tools悬浮窗设置失败",
-				"saveDevToolsSuspensionWindowError": "保存Dev Tools悬浮窗设置失败"
-			},
-			"hazardousOperations": "危险操作"
-		},
-		"AboutView": {
-			"aboutApp": "关于 ElakeAI",
-			"githubRepo": "GitHub仓库",
-			"contactSupport": "联系支持"
-		},
-		"OptionsNotFoundView": "这里什么都没有, 返回吧~",
 		"PluginsView": {
 			"toast": {
 				"disabledTip": "标记为 disabled 的插件被禁止启用!",

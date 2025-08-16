@@ -17,10 +17,11 @@ import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import RightClickMenu from "@/components/RightClickMenu.vue"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "AssistantMessageCard",
-	inject: ["$log"],
+	inject: ["$DB", "$log"],
 	components: {
 		RightClickMenu,
 		FoldingPanel,
@@ -35,11 +36,16 @@ export default {
 		message: {
 			type: Object,
 			required: true
+		},
+		currentMessageId: {
+			type: String,
+			default: ""
 		}
 	},
 	data() {
 		return {
 			name: "AssistantMessageCard",
+			chatTheme: "card",
 			parsedBlocks: [],
 			reasoningHtml: "",
 			isReasoningExpanded: false,
@@ -69,9 +75,17 @@ export default {
 			}
 		}
 	},
-	created() {
-		this.parseContent()
-		this.parseReasoning()
+	async created() {
+		await this.parseContent()
+		await this.parseReasoning()
+		// 获取对话主题
+		try {
+			const CHAT_THEME_DATA = await this.$DB.configs.get("chatTheme")
+			this.chatTheme = CHAT_THEME_DATA ? CHAT_THEME_DATA.value : "card"
+		} catch (error) {
+			this.$log.error(`[${this.name}] 对话主题获取失败`, error)
+			toastRegistry.error(`[${this.name}] ${this.t("components.AssistantMessageCard.toast.getChatThemeError")}`)
+		}
 	},
 	methods: {
 		/**
@@ -309,7 +323,9 @@ export default {
 
 <template>
 	<RightClickMenu ref="menu"/>
-	<div class="assistant-message-card" @contextmenu.prevent="onRightClick($event, message)">
+	<div
+		:class="['assistant-message-card', currentMessageId === message.id ? 'current' : '', chatTheme]"
+		@contextmenu.prevent="onRightClick($event, message)">
 		<FoldingPanel class="reasoning-content" v-if="message.message.reasoning" :is="isReasoningExpanded">
 			<template #Title>
 				<span>{{ reasoning }}</span>
@@ -349,7 +365,9 @@ export default {
 			</div>
 			<div class="message-info">
 				<div>
-					{{ message.status === "done" ? t("components.MessageCard.done") : message.status === "error" ? t("components.MessageCard.error") : t("components.MessageCard.loading") }}
+					{{
+						message.status === "done" ? t("components.MessageCard.done") : message.status === "error" ? t("components.MessageCard.error") : t("components.MessageCard.loading")
+					}}
 					-
 					[{{ message.model.platform }}]
 					-
@@ -372,10 +390,20 @@ export default {
 	}
 }
 
+.current {
+	border: 1px solid red !important;
+}
+
+.chatBubble {
+	max-width: 60%;
+	align-self: flex-start;
+}
+
 .assistant-message-card {
 	position: relative;
 	padding: 16px 20px;
 	border-radius: 12px;
+	border: 1px solid transparent;
 	background-color: var(--chat-assistant-background-color);
 	color: var(--chat-assistant-text-color);
 

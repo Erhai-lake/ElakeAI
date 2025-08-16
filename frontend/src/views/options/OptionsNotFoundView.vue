@@ -19,6 +19,6 @@ export default {
 
 <template>
 	<div class="item">
-		{{ t("views.OptionsNotFoundView") }}
+		{{ t("views.OptionsView.OptionsNotFoundView") }}
 	</div>
 </template>

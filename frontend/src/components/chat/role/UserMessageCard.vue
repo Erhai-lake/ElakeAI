@@ -4,22 +4,40 @@ import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {encode} from "gpt-tokenizer"
 import RightClickMenu from "@/components/RightClickMenu.vue"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "UserMessageCard",
+	inject: ["$DB", "$log"],
 	components: {RightClickMenu, Button},
 	props: {
 		message: {
 			type: Object,
 			required: true
+		},
+		currentMessageId: {
+			type: String,
+			default: ""
 		}
 	},
 	data() {
 		return {
+			name: "UserMessageCard",
+			chatTheme: "card",
 			editingContent: {
 				show: false,
 				value: ""
 			}
+		}
+	},
+	async created() {
+		// 获取对话主题
+		try {
+			const CHAT_THEME_DATA = await this.$DB.configs.get("chatTheme")
+			this.chatTheme = CHAT_THEME_DATA ? CHAT_THEME_DATA.value : "card"
+		} catch (error) {
+			this.$log.error(`[${this.name}] 对话主题获取失败`, error)
+			toastRegistry.error(`[${this.name}] ${this.t("components.UserMessageCard.toast.getChatThemeError")}`)
 		}
 	},
 	methods: {
@@ -141,7 +159,9 @@ export default {
 
 <template>
 	<RightClickMenu ref="menu"/>
-	<div class="user-message-card" @contextmenu.prevent="onRightClick($event, message)">
+	<div
+		:class="['user-message-card', currentMessageId === message.id ? 'current' : '', chatTheme]"
+		@contextmenu.prevent="onRightClick($event, message)">
 		<div class="message-content">
 			<div v-if="!editingContent.show" v-html="formattingMessage()"></div>
 			<textarea
@@ -168,7 +188,9 @@ export default {
 			</div>
 			<div class="message-info">
 				<div>
-					{{ message.status === "done" ? t("components.MessageCard.done") : message.status === "error" ? t("components.MessageCard.error") : t("components.MessageCard.loading") }}
+					{{
+						message.status === "done" ? t("components.MessageCard.done") : message.status === "error" ? t("components.MessageCard.error") : t("components.MessageCard.loading")
+					}}
 					-
 					[{{ t("components.UserMessageCard.earthOnline") }}]
 					-
@@ -189,10 +211,20 @@ export default {
 	}
 }
 
+.current {
+	border: 1px solid red !important;
+}
+
+.chatBubble {
+	max-width: 60%;
+	align-self: flex-end;
+}
+
 .user-message-card {
 	position: relative;
 	padding: 16px 20px;
 	border-radius: 12px;
+	border: 1px solid transparent;
 	background-color: var(--chat-user-background-color);
 	color: var(--chat-user-text-color);
 

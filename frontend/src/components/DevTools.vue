@@ -14,11 +14,13 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import InputText from "@/components/InputText.vue"
+import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
 
 export default {
 	name: "DevTools",
 	inject: ["$DB", "$log"],
 	components: {
+		ChatThemesSelect,
 		InputText,
 		FoldingPanel,
 		Plugins, ChatAIKey, DefaultChatSettings, LanguageSelect, ThemeSelect, Log, TabsTab, Tabs, Button
@@ -282,17 +284,21 @@ export default {
 		<TabsTab name="options">
 			<template #label>{{ t("components.DevTools.options") }}</template>
 			<div class="item">
-				{{ t("views.PersonalizationView.theme") }}
+				{{ t("views.OptionsView.PersonalizationView.theme") }}
 				<ThemeSelect/>
 			</div>
 			<div class="item">
-				{{ t("views.PersonalizationView.language") }}
+				{{ t("views.OptionsView.PersonalizationView.language") }}
 				<LanguageSelect/>
 			</div>
 			<ChatAIKey/>
 			<div class="item">
-				{{ t("views.ChatsView.defaultChat") }}
+				{{ t("views.OptionsView.ChatsView.defaultChat") }}
 				<DefaultChatSettings/>
+			</div>
+			<div class="item">
+				{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
+				<ChatThemesSelect/>
 			</div>
 		</TabsTab>
 		<TabsTab name="database">

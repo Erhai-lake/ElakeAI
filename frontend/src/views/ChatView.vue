@@ -223,7 +223,7 @@ export default {
 				// 检查ChatKey是否存在
 				if (!CHAT_DATA) {
 					toastRegistry.warning(this.t("views.ChatView.toast.noChatKey"))
-					this.$router.push("/")
+					this.$router.push("/not-found")
 					EventBus.emit("[update] chatListUpdate")
 					return
 				}
@@ -473,12 +473,13 @@ export default {
 				<div
 					v-for="message in data.data"
 					:key="message.id"
-					:class="['message', currentMessageId === message.id ? 'current' : '']"
+					class="message"
 					:data-message-id="message.id"
 					@click="setCurrentMessageId(message.id)">
 					<component
 						:is="messageComponentMap[message.message.role]"
-						:message="message"/>
+						:message="message"
+						:currentMessageId="currentMessageId"/>
 				</div>
 			</div>
 			<div></div>
@@ -551,14 +552,10 @@ export default {
 	overflow: hidden auto;
 }
 
-@media screen and (max-width: 768px) {
-	.message-list {
-		padding: 100px 0 200px 0;
-	}
-}
-
-.message[data-message-id].current {
-	background-color: red;
+.message{
+	border-radius: 12px;
+	display: flex;
+	flex-direction: column;
 }
 
 .input-area {

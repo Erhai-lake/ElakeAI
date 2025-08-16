@@ -1,11 +1,12 @@
 <script>
 import ThemeSelect from "@/components/options/ThemeSwitch.vue"
 import LanguageSelect from "@/components/options/LanguageSelect.vue"
+import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "PersonalizationView",
-	components: {LanguageSelect, ThemeSelect},
+	components: {LanguageSelect, ThemeSelect, ChatThemesSelect},
 	methods: {
 		/**
 		 * 翻译
@@ -22,11 +23,15 @@ export default {
 
 <template>
 	<div class="item">
-		{{ t("views.PersonalizationView.theme") }}
+		{{ t("views.OptionsView.PersonalizationView.theme") }}
 		<ThemeSelect/>
 	</div>
 	<div class="item">
-		{{ t("views.PersonalizationView.language") }}
+		{{ t("views.OptionsView.PersonalizationView.language") }}
 		<LanguageSelect/>
+	</div>
+	<div class="item">
+		{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
+		<ChatThemesSelect/>
 	</div>
 </template>

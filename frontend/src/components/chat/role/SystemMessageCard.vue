@@ -12,6 +12,10 @@ export default {
 		message: {
 			type: Object,
 			required: true
+		},
+		currentMessageId: {
+			type: String,
+			default: ""
 		}
 	},
 	data() {
@@ -141,7 +145,9 @@ export default {
 
 <template>
 	<RightClickMenu ref="menu"/>
-	<div class="system-message-card" @contextmenu.prevent="onRightClick($event, message)">
+	<div
+		:class="['system-message-card', currentMessageId === message.id ? 'current' : '']"
+		@contextmenu.prevent="onRightClick($event, message)">
 		<div class="message-content">
 			<div v-if="!editingContent.show" v-html="formattingMessage()"></div>
 			<textarea
@@ -187,10 +193,15 @@ export default {
 	}
 }
 
+.current {
+	border: 1px solid red !important;
+}
+
 .system-message-card {
 	position: relative;
 	padding: 16px 20px;
 	border-radius: 12px;
+	border: 1px solid transparent;
 	background-color: var(--chat-default-background-color);
 	color: var(--chat-default-text-color);
 

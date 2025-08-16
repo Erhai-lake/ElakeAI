@@ -21,21 +21,21 @@ export default {
 
 <template>
 	<div class="item">
-		{{ t("views.AboutView.aboutApp") }}
+		{{ t("views.OptionsView.AboutView.aboutApp") }}
 		<router-link to="/options/about">
-			<Button>{{ t("views.AboutView.aboutApp") }}</Button>
+			<Button>{{ t("views.OptionsView.AboutView.aboutApp") }}</Button>
 		</router-link>
 	</div>
 	<div class="item">
-		{{ t("views.AboutView.githubRepo") }}
+		{{ t("views.OptionsView.AboutView.githubRepo") }}
 		<a href="https://github.com/Erhai-lake/ElakeAI" target="_blank">
-			<Button>{{ t("views.AboutView.githubRepo") }}</Button>
+			<Button>{{ t("views.OptionsView.AboutView.githubRepo") }}</Button>
 		</a>
 	</div>
 	<div class="item">
-		{{ t("views.AboutView.contactSupport") }}
+		{{ t("views.OptionsView.AboutView.contactSupport") }}
 		<a href="mailto:fuzixuan0714.0826@gmail.com">
-			<Button>{{ t("views.AboutView.contactSupport") }}</Button>
+			<Button>{{ t("views.OptionsView.AboutView.contactSupport") }}</Button>
 		</a>
 	</div>
 </template>

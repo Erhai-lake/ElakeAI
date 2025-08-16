@@ -120,7 +120,7 @@ export default {
 				this.$log.info(`[${this.name}] 解析完成`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 解析失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ImportView.toast.parsingFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.parsingFailed")}`)
 			} finally {
 				event.target.value = ""
 			}
@@ -138,14 +138,14 @@ export default {
 						resolve(JSON.parse(returnData.target.result))
 					} catch (error) {
 						this.$log.error(`[${this.name}] 无效的JSON格式`, error)
-						toastRegistry.error(`[${this.name}] ${this.t("views.ImportView.toast.invalidJsonFormat")}`)
-						reject(new Error(this.t("views.ImportView.toast.invalidJsonFormat")))
+						toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.invalidJsonFormat")}`)
+						reject(new Error(this.t("views.OptionsView.ImportView.toast.invalidJsonFormat")))
 					}
 				}
 				reader.onerror = () => {
 					this.$log.error(`[${this.name}] 读取文件失败`, reader.error)
-					toastRegistry.error(`[${this.name}] ${this.t("views.ImportView.toast.fileReadError")}`)
-					reject(new Error(this.t("views.ImportView.toast.fileReadError")))
+					toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.fileReadError")}`)
+					reject(new Error(this.t("views.OptionsView.ImportView.toast.fileReadError")))
 				}
 				reader.readAsText(file)
 			})
@@ -196,15 +196,15 @@ export default {
 				}
 				if (IMPORT_TASKS.length === 0) {
 					this.$log.warn(`[${this.name}] 没有数据可导入`, IMPORT_TASKS)
-					toastRegistry.warning(`[${this.name}] ${this.t("views.ImportView.toast.noDataToImport")}`)
+					toastRegistry.warning(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.noDataToImport")}`)
 					return
 				}
-				if (!confirm(this.t("views.ImportView.toast.confirmImportTip"))) return
+				if (!confirm(this.t("views.OptionsView.ImportView.toast.confirmImportTip"))) return
 				await Promise.all(IMPORT_TASKS)
 				this.$log.info(`[${this.name}] 导入完成`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ImportView.toast.importFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailed")}`)
 			}
 		},
 		/**
@@ -228,7 +228,7 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入chat数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ImportView.toast.importFailedSkipped")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
 			}
 		},
 		/**
@@ -254,7 +254,7 @@ export default {
 				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入configs数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ImportView.toast.importFailedSkipped")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
 			}
 		},
 		/**
@@ -276,7 +276,7 @@ export default {
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入apiKey数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ImportView.toast.importFailedSkipped")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
 			}
 		}
 	}
@@ -285,8 +285,8 @@ export default {
 
 <template>
 	<div class="item">
-		{{ t("views.ImportView.selectImportedConfiguration") }}
-		<Button @click="handleImport">{{ t("views.ImportView.import") }}</Button>
+		{{ t("views.OptionsView.ImportView.selectImportedConfiguration") }}
+		<Button @click="handleImport">{{ t("views.OptionsView.ImportView.import") }}</Button>
 		<input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" accept=".json"/>
 	</div>
 	<div class="import" v-if="hasDataToImport">
@@ -295,14 +295,14 @@ export default {
 		<!--	<label class="option-item" v-if="singleSelection.optional.includes('chats')">-->
 		<!--		<input type="checkbox" v-model="singleSelection.selected" value="chats"/>-->
 		<!--		<span class="custom-checkbox"></span>-->
-		<!--		<span>{{ t("views.ImportView.chats") }}</span>-->
+		<!--		<span>{{ t("views.OptionsView.ImportView.chats") }}</span>-->
 		<!--	</label>-->
 		<!--</div>-->
 		<div class="option-group" v-if="chats.options.length > 0">
 			<label class="option-item">
 				<input type="checkbox" v-model="chats.selectAll" @change="toggleAll('chats')"/>
 				<span class="custom-checkbox"></span>
-				<span>{{ t("views.ImportView.selectAll", {item: t("views.ImportView.chats")}) }}</span>
+				<span>{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.chats")}) }}</span>
 			</label>
 			<div class="sub-options" v-if="chats.options.length">
 				<label
@@ -319,7 +319,7 @@ export default {
 			<label class="option-item">
 				<input type="checkbox" v-model="configs.selectAll" @change="toggleAll('configs')"/>
 				<span class="custom-checkbox"></span>
-				<span>{{ t("views.ImportView.selectAll", {item: t("views.ImportView.configs")}) }}</span>
+				<span>{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.configs")}) }}</span>
 			</label>
 			<div class="sub-options" v-if="configs.options.length">
 				<label
@@ -336,7 +336,7 @@ export default {
 			<label class="option-item">
 				<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAll('apiKeys')"/>
 				<span class="custom-checkbox"></span>
-				<span>{{ t("views.ImportView.selectAll", {item: t("views.ImportView.apiKeys")}) }}</span>
+				<span>{{ t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.apiKeys")}) }}</span>
 			</label>
 			<div class="sub-options" v-if="apiKeys.options.length">
 				<label
@@ -351,8 +351,8 @@ export default {
 		</div>
 	</div>
 	<div class="item" v-if="hasDataToImport">
-		{{ t("views.ImportView.importTip") }}
-		<Button @click="confirmImport">{{ t("views.ImportView.confirmImport") }}</Button>
+		{{ t("views.OptionsView.ImportView.importTip") }}
+		<Button @click="confirmImport">{{ t("views.OptionsView.ImportView.confirmImport") }}</Button>
 	</div>
 </template>
 

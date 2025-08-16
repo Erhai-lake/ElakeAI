@@ -202,7 +202,7 @@ export default {
 				<p class="title" :title="chatItem.title" :aria-label="chatItem.title">{{ chatItem.title }}</p>
 				<div class="bottom">
 					<p aria-hidden="true">
-						{{ t("components.Sidebar.numberOfConversations", {num: chatItem.length}) }}
+						{{ chatItem.length }}
 					</p>
 					<p :aria-label="formatTimestamp(chatItem.timestamp)">
 						{{ formatTimestamp(chatItem.timestamp) }}
@@ -218,13 +218,14 @@ export default {
 			</div>
 		</div>
 		<div v-if="!sidebarStatus"></div>
-		<div
-			class="sidebar-preset"
-			:title="t('components.Sidebar.function.preset')"
-			:aria-label="t('components.Sidebar.function.preset')">
-			<SVGIcon name="#icon-preset" size="2em"/>
-			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.preset") }}</p>
-		</div>
+		<router-link
+			to="/mask"
+			class="sidebar-mask"
+			:title="t('components.Sidebar.function.mask')"
+			:aria-label="t('components.Sidebar.function.mask')">
+			<SVGIcon name="#icon-mask" size="2em"/>
+			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.mask") }}</p>
+		</router-link>
 		<router-link
 			to="/options"
 			class="sidebar-setup"
@@ -268,7 +269,7 @@ export default {
 	}
 }
 
-.sidebar-preset, .sidebar-setup {
+.sidebar-mask, .sidebar-setup {
 	border-top: 1px solid var(--border-color);
 	display: grid;
 	justify-content: center;
@@ -290,7 +291,7 @@ export default {
 		grid-template-columns: 48px 1fr repeat(2, 32px);
 	}
 
-	.sidebar-preset, .sidebar-setup {
+	.sidebar-mask, .sidebar-setup {
 		padding: 0 8px;
 		grid-template-columns: 48px 1fr;
 		grid-template-rows: 64px;
@@ -307,7 +308,7 @@ export default {
 		gap: 32px;
 	}
 
-	.sidebar-preset, .sidebar-setup {
+	.sidebar-mask, .sidebar-setup {
 		grid-template-rows: 64px;
 	}
 }
