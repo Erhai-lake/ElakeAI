@@ -62,7 +62,7 @@ export default {
 				{
 					code: "System",
 					title: "i18n:components.LanguageSelect.system",
-					images: ""
+					images: "https://openmoji.org/data/color/svg/2699.svg"
 				}
 			]
 			const I18N = i18nRegistry.getAll()

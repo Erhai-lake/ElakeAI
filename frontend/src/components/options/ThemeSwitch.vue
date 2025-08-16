@@ -14,17 +14,17 @@ export default defineComponent({
 				{
 					code: "System",
 					title: "i18n:components.ThemeSwitch.system",
-					images: ""
+					images: "https://openmoji.org/data/color/svg/2699.svg"
 				},
 				{
 					code: "Light",
 					title: "i18n:components.ThemeSwitch.light",
-					images: ""
+					images: "https://openmoji.org/data/color/svg/1F31E.svg"
 				},
 				{
 					code: "Dark",
 					title: "i18n:components.ThemeSwitch.dark",
-					images: ""
+					images: "https://openmoji.org/data/color/svg/1F319.svg"
 				}
 			],
 			selectedTheme: null,
