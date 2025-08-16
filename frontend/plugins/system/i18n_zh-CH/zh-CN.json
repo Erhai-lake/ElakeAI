@@ -265,9 +265,15 @@
 			}
 		},
 		"BackgroundImage": {
+			"toast": {
+				"getBackgroundImageError": "获取背景图片配置失败",
+				"applyBackgroundImageSuccess": "应用背景图片配置成功",
+				"applyBackgroundImageError": "应用背景图片配置失败"
+			},
 			"backgroundImageURL": "背景图片URL",
 			"backgroundImageOpacity": "背景图片透明度",
-			"backgroundImageMask": "背景图片遮罩"
+			"backgroundImageMask": "背景图片遮罩",
+			"save": "保存"
 		}
 	},
 	"views": {

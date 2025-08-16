@@ -3,10 +3,11 @@ import ThemeSelect from "@/components/options/ThemeSwitch.vue"
 import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import BackgroundImage from "@/components/options/BackgroundImage.vue"
 
 export default {
 	name: "PersonalizationView",
-	components: {LanguageSelect, ThemeSelect, ChatThemesSelect},
+	components: {BackgroundImage, LanguageSelect, ThemeSelect, ChatThemesSelect},
 	methods: {
 		/**
 		 * 翻译
@@ -33,5 +34,9 @@ export default {
 	<div class="item">
 		{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
 		<ChatThemesSelect/>
+	</div>
+	<div class="item">
+		{{ t("views.OptionsView.PersonalizationView.backgroundImage") }}
+		<BackgroundImage/>
 	</div>
 </template>

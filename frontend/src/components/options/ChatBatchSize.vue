@@ -1,5 +1,5 @@
 <script>
-import InputText from "@/components/InputText.vue"
+import InputNumber from "@/components/input/InputNumber.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
@@ -7,21 +7,21 @@ import {publicRegistry} from "@/services/plugin/api/PublicClass"
 export default {
 	name: "ChatBatchSize",
 	inject: ["$DB", "$log"],
-	components: {InputText},
+	components: {InputNumber},
 	data() {
 		return {
 			name: "ChatsView",
-			chatBatchSize: "20"
+			chatBatchSize: 20
 		}
 	},
 	async created() {
 		try {
 			const CHAT_BATCH_SIZE = await this.$DB.configs.get("chatBatchSize")
-			this.chatBatchSize = CHAT_BATCH_SIZE.value || "20"
+			this.chatBatchSize = CHAT_BATCH_SIZE.value || 20
 		} catch (error) {
 			this.$log.error(`[${this.name}] 读取聊天批大小失败, 使用默认值 20`, error)
 			toastRegistry.error(`[${this.name}] ${this.t("components.ChatBatchSize.toast.chatBatchSizeError")}`)
-			this.chatBatchSize = "20"
+			this.chatBatchSize = 20
 		}
 	},
 	methods: {
@@ -42,10 +42,8 @@ export default {
 			const CHAT_BATCH_SIZE = await this.$DB.configs.get("chatBatchSize")
 			// 检查输入值是否与当前值相同
 			if (CHAT_BATCH_SIZE.value === value) return
-			// 将输入值转换为整数
-			const BATCH_SIZE = parseInt(value, 10)
 			// 检查转换后的值是否为有效的整数且大于 0
-			if (isNaN(BATCH_SIZE) || BATCH_SIZE <= 0) {
+			if (isNaN(value) || value <= 0) {
 				this.$log.error(`[${this.name}] 输入的聊天批大小无效, 输入值: ${value}`)
 				toastRegistry.error(`[${this.name}] ${this.t("components.ChatBatchSize.toast.invalidChatBatchSize")}`)
 				return
@@ -63,5 +61,5 @@ export default {
 </script>
 
 <template>
-	<InputText v-model="chatBatchSize" @input="saveChatBatchSize"/>
+	<InputNumber v-model="chatBatchSize" @input="saveChatBatchSize" :min="1"/>
 </template>

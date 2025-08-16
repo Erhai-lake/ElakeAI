@@ -4,8 +4,8 @@ import {ExportList, fetchSvgElementFromUrl} from "@/components/chat/renderer/Exp
 import Tabs from "@/components/Tabs.vue"
 import TabsTab from "@/components/TabsTab.vue"
 import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
-import Button from "@/components/Button.vue"
-import Selector from "@/components/Selector.vue"
+import Button from "@/components/input/Button.vue"
+import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import SVGIcon from "@/components/SVGIcon.vue"
 

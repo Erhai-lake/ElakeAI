@@ -240,7 +240,7 @@ export default {
 				let batchSize = 20
 				try {
 					const CHAT_BATCH_SIZE = await this.$DB.configs.get("chatBatchSize")
-					batchSize = parseInt(CHAT_BATCH_SIZE.value, 10) || 20
+					batchSize = CHAT_BATCH_SIZE.value || 20
 					this.$log.info(`[${this.name}] 聊天批大小设置为${batchSize}`)
 				} catch (error) {
 					this.$log.error(`[${this.name}] 读取聊天批大小失败, 使用默认值 20`, error)

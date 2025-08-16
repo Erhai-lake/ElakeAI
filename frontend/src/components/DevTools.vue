@@ -9,18 +9,20 @@ import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import Plugins from "@/components/options/Plugins.vue"
 import router from "@/router"
-import Button from "@/components/Button.vue"
+import Button from "@/components/input/Button.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
-import InputText from "@/components/InputText.vue"
+import InputText from "@/components/input/InputText.vue"
 import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
 import ChatBatchSize from "@/components/options/ChatBatchSize.vue"
+import BackgroundImage from "@/components/options/BackgroundImage.vue"
 
 export default {
 	name: "DevTools",
 	inject: ["$DB", "$log"],
 	components: {
+		BackgroundImage,
 		ChatBatchSize,
 		ChatThemesSelect,
 		InputText,
@@ -296,6 +298,10 @@ export default {
 			<div class="item">
 				{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
 				<ChatThemesSelect/>
+			</div>
+			<div class="item">
+				{{ t("views.OptionsView.PersonalizationView.backgroundImage") }}
+				<BackgroundImage/>
 			</div>
 			<ChatAIKey/>
 			<div class="item">

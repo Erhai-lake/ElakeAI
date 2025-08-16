@@ -1,17 +1,16 @@
 <script>
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
-import Button from "@/components/Button.vue"
-import Selector from "@/components/Selector.vue"
+import Button from "@/components/input/Button.vue"
+import Selector from "@/components/input/Selector.vue"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
-import InputText from "@/components/InputText.vue"
-import InputCheckbox from "@/components/InputCheckbox.vue"
+import InputText from "@/components/input/InputText.vue"
 
 export default {
 	name: "ChatAIKey",
-	components: {InputCheckbox, InputText, Selector, Button, FoldingPanel},
+	components: {InputText, Selector, Button, FoldingPanel},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
@@ -535,7 +534,12 @@ export default {
 							<thead>
 							<tr>
 								<th>
-									<InputCheckbox :checked="isAllSelected" @change="toggleAllSelection"/>
+									<label>
+										<input type="checkbox"
+											   :checked="isAllSelected"
+											   @change="toggleAllSelection">
+										<span class="custom-checkbox"></span>
+									</label>
 								</th>
 								<th>{{ t("components.ChatAIKey.form.enable") }}</th>
 								<th>{{ t("components.ChatAIKey.form.key") }}</th>
@@ -551,10 +555,22 @@ export default {
 								@click="toggleRowSelection(keyItem.key)"
 								:class="{ 'selected-row': operationSelection.includes(keyItem.key) }">
 								<td @click.stop>
-									<InputCheckbox :value="keyItem.key" v-model="operationSelection" />
+									<label>
+										<input type="checkbox"
+											   :value="keyItem.key"
+											   v-model="operationSelection"
+											   @click.stop>
+										<span class="custom-checkbox"></span>
+									</label>
 								</td>
 								<td>
-									<InputCheckbox :checked="keyItem.enabled" @change="toggleKeyEnable(keyItem)"/>
+									<label>
+										<input
+											type="checkbox"
+											:checked="keyItem.enabled"
+											@change="toggleKeyEnable(keyItem)">
+										<span class="custom-checkbox"></span>
+									</label>
 								</td>
 								<td :title="keyItem.value">{{ maskKey(keyItem.value) }}</td>
 								<td :title="keyItem.remark">{{ keyItem.remark }}</td>
@@ -640,7 +656,14 @@ export default {
 				cursor: pointer;
 
 				&:hover {
-					background-color: var(--Active-Background-Color);
+					color: var(--text-color-anti);
+					background-color: var(--background-color-anti);
+
+					.custom-checkbox {
+						&::after {
+							background-color: var(--background-color);
+						}
+					}
 				}
 			}
 
@@ -670,9 +693,55 @@ export default {
 			}
 
 			.selected-row {
-				background-color: var(--Active-Background-Color);
+				color: var(--text-color);
+				background-color: var(--active-background-color);
+
+				&:hover {
+					color: var(--text-color);
+					background-color: var(--active-background-color);
+
+					.custom-checkbox {
+						&::after {
+							background-color: var(--background-color-anti);
+						}
+					}
+				}
 			}
 		}
+	}
+}
+
+input[type="checkbox"] {
+	display: none;
+
+	&:checked + .custom-checkbox::after {
+		opacity: 1;
+
+	}
+}
+
+.custom-checkbox {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	box-sizing: border-box;
+	vertical-align: middle;
+	border: 2px solid var(--border-color);
+	border-radius: 4px;
+	position: relative;
+	cursor: pointer;
+
+	&::after {
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 10px;
+		height: 10px;
+		background-color: var(--background-color-anti);
+		border-radius: 2px;
+		opacity: 0;
 	}
 }
 </style>

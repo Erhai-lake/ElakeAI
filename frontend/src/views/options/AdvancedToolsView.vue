@@ -1,5 +1,5 @@
 <script>
-import Button from "@/components/Button.vue"
+import Button from "@/components/input/Button.vue"
 import HazardousOperations from "@/components/options/HazardousOperations.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import DevToolsSuspensionWindow from "@/components/options/DevToolsSuspensionWindow.vue"

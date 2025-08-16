@@ -79,7 +79,7 @@ export default {
 		}
 
 		tr:hover {
-			background-color: var(--Active-Background-Color);
+			background-color: var(--active-background-color);
 		}
 	}
 

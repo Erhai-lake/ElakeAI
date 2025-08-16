@@ -1,7 +1,7 @@
 <script>
 import Sidebar from "@/components/Sidebar.vue"
 import DevTools from "@/components/DevTools.vue"
-import Button from "@/components/Button.vue"
+import Button from "@/components/input/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
@@ -24,6 +24,7 @@ export default {
 				loadedCount: 0,
 				totalCount: 0
 			},
+			backgroundImage: null,
 			isDevToolsSuspensionWindow: false,
 			buttonPosition: {top: 10, left: window.innerWidth - 130},
 			dragging: false,
@@ -192,6 +193,10 @@ export default {
 					i18nRegistry.locale(LANGUAGE)
 					info.Language = LANGUAGE
 				}
+				// 应用背景图片
+				const BACKGROUND_IMAGE_DATA = await Dexie.configs.get("backgroundImage")
+				this.backgroundImage = BACKGROUND_IMAGE_DATA ? BACKGROUND_IMAGE_DATA.value : null
+				info.backgroundImage = this.backgroundImage
 				// DevTools悬浮窗
 				const DEV_TOOLS_SUSPENSION_WINDOW_DATA = await Dexie.configs.get("devToolsSuspensionWindow")
 				this.isDevToolsSuspensionWindow = DEV_TOOLS_SUSPENSION_WINDOW_DATA ? DEV_TOOLS_SUSPENSION_WINDOW_DATA.value : false
@@ -351,7 +356,12 @@ export default {
 			</div>
 		</template>
 	</Loading>
-	<div class="images"></div>
+	<div
+		class="images"
+		v-if="backgroundImage ? backgroundImage.enabled : false"
+		:style="{ backgroundImage: `url(${backgroundImage.url})`, opacity: backgroundImage.opacity / 100 }">
+		<div class="images-mask" :style="{ opacity: backgroundImage.mask / 100 }"></div>
+	</div>
 </template>
 
 <style scoped lang="less">
@@ -405,8 +415,16 @@ export default {
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-	background-image: url("https://www.loliapi.com/acg");
-	opacity: 0.2;
 	z-index: 1;
+
+	.images-mask {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: #000;
+		pointer-events: none;
+	}
 }
 </style>

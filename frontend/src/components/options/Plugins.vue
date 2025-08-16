@@ -4,12 +4,11 @@ import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
-import InputCheckbox from "@/components/InputCheckbox.vue"
 
 export default {
 	name: "PluginsView",
 	inject: ["$log"],
-	components: {InputCheckbox, FoldingPanel},
+	components: {FoldingPanel},
 	data() {
 		return {
 			name: "PluginsView",
@@ -195,7 +194,12 @@ export default {
 					<thead>
 					<tr>
 						<th>
-							<InputCheckbox :checked="isAllSelectedSystem" @change="toggleAllSelectionSystem"/>
+							<label>
+								<input type="checkbox"
+									   :checked="isAllSelectedSystem"
+									   @change="toggleAllSelectionSystem">
+								<span class="custom-checkbox"></span>
+							</label>
 						</th>
 						<th>{{ t("views.PluginsView.info.enabled") }}</th>
 						<th>{{ t("views.PluginsView.info.name") }}</th>
@@ -215,17 +219,24 @@ export default {
 							'disabled-row': plugin.disabled
 						}">
 						<td>
-							<InputCheckbox
-								:value="plugin.uuid"
-								v-model="system.operationSelection"
-								:disabled="plugin.disabled"
-								@click.stop/>
+							<label>
+								<input type="checkbox"
+									   :value="plugin.uuid"
+									   v-model="system.operationSelection"
+									   :disabled="plugin.disabled"
+									   @click.stop>
+								<span class="custom-checkbox"></span>
+							</label>
 						</td>
 						<td>
-							<InputCheckbox
-								:checked="plugin.enabled"
-								:disabled="plugin.disabled"
-								@change="togglePluginEnable(plugin)"/>
+							<label>
+								<input
+									type="checkbox"
+									:checked="plugin.enabled"
+									:disabled="plugin.disabled"
+									@change="togglePluginEnable(plugin)">
+								<span class="custom-checkbox"></span>
+							</label>
 						</td>
 						<td :title="plugin.name">{{ plugin.name }}</td>
 						<td :title="plugin.author">{{ plugin.author }}</td>
@@ -251,8 +262,7 @@ export default {
 				<button :class="{ active: thirdParty.activeTab === 'all' }" @click="thirdParty.activeTab = 'all'">
 					{{ t("views.PluginsView.type.all") }}
 				</button>
-				<button :class="{ active: thirdParty.activeTab === 'platform' }"
-						@click="thirdParty.activeTab = 'platform'">
+				<button :class="{ active: thirdParty.activeTab === 'platform' }" @click="thirdParty.activeTab = 'platform'">
 					{{ t("views.PluginsView.type.platform") }}
 				</button>
 				<button :class="{ active: thirdParty.activeTab === 'i18n' }" @click="thirdParty.activeTab = 'i18n'">
@@ -265,7 +275,12 @@ export default {
 					<thead>
 					<tr>
 						<th>
-							<InputCheckbox :checked="isAllSelectedThirdParty" @change="toggleAllSelectionThirdParty"/>
+							<label>
+								<input type="checkbox"
+									   :checked="isAllSelectedThirdParty"
+									   @change="toggleAllSelectionThirdParty">
+								<span class="custom-checkbox"></span>
+							</label>
 						</th>
 						<th>{{ t("views.PluginsView.info.enabled") }}</th>
 						<th>{{ t("views.PluginsView.info.name") }}</th>
@@ -285,17 +300,24 @@ export default {
 							'disabled-row': plugin.disabled
 						}">
 						<td>
-							<InputCheckbox
-								:value="plugin.uuid"
-								v-model="thirdParty.operationSelection"
-								:disabled="plugin.disabled"
-								@click.stop/>
+							<label>
+								<input type="checkbox"
+									   :value="plugin.uuid"
+									   v-model="thirdParty.operationSelection"
+									   :disabled="plugin.disabled"
+									   @click.stop>
+								<span class="custom-checkbox"></span>
+							</label>
 						</td>
 						<td>
-							<InputCheckbox
-								:checked="plugin.enabled"
-								:disabled="plugin.disabled"
-								@change="togglePluginEnable(plugin)"/>
+							<label>
+								<input
+									type="checkbox"
+									:checked="plugin.enabled"
+									:disabled="plugin.disabled"
+									@change="togglePluginEnable(plugin)">
+								<span class="custom-checkbox"></span>
+							</label>
 						</td>
 						<td :title="plugin.name">{{ plugin.name }}</td>
 						<td :title="plugin.author">{{ plugin.author }}</td>
@@ -351,7 +373,14 @@ button {
 		cursor: pointer;
 
 		&:hover {
-			background-color: var(--Active-Background-Color);
+			color: var(--text-color-anti);
+			background-color: var(--background-color-anti);
+
+			.custom-checkbox {
+				&::after {
+					background-color: var(--background-color);
+				}
+			}
 		}
 	}
 
@@ -382,7 +411,18 @@ button {
 
 	.selected-row {
 		color: var(--text-color);
-		background-color: var(--Active-Background-Color);
+		background-color: var(--active-background-color);
+
+		&:hover {
+			color: var(--text-color);
+			background-color: var(--active-background-color);
+
+			.custom-checkbox {
+				&::after {
+					background-color: var(--background-color-anti);
+				}
+			}
+		}
 	}
 
 	.disabled-row {
@@ -394,6 +434,40 @@ button {
 			color: var(--text-color);
 			background-color: transparent;
 		}
+	}
+}
+
+input[type="checkbox"] {
+	display: none;
+
+	&:checked + .custom-checkbox::after {
+		opacity: 1;
+
+	}
+}
+
+.custom-checkbox {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	box-sizing: border-box;
+	vertical-align: middle;
+	border: 2px solid var(--border-color);
+	border-radius: 4px;
+	position: relative;
+	cursor: pointer;
+
+	&::after {
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 10px;
+		height: 10px;
+		background-color: var(--background-color-anti);
+		border-radius: 2px;
+		opacity: 0;
 	}
 }
 </style>

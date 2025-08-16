@@ -1,6 +1,6 @@
 <script>
-import Selector from "@/components/Selector.vue"
-import Button from "@/components/Button.vue"
+import Selector from "@/components/input/Selector.vue"
+import Button from "@/components/input/Button.vue"
 import EventBus from "@/services/EventBus"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"

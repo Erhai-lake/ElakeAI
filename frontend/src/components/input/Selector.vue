@@ -250,11 +250,11 @@ export default {
 	}
 
 	.active {
-		background-color: var(--Active-Background-Color-anti);
+		background-color: var(--active-background-color-anti);
 		color: #292A2DFF;
 
 		&:hover {
-			background-color: var(--Active-Background-Color-anti);
+			background-color: var(--active-background-color-anti);
 			color: #292A2DFF;
 		}
 	}

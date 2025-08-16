@@ -14,11 +14,11 @@ export default {
 	emits: ["update:modelValue", "input"],
 	methods: {
 		onInput(event) {
-			const value = event.target.value
+			const VALUE = event.target.value
 			// v-model
-			this.$emit("update:modelValue", value)
+			this.$emit("update:modelValue", VALUE)
 			// 回调
-			this.$emit("input", value)
+			this.$emit("input", VALUE)
 		}
 	}
 }

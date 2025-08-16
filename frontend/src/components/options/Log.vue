@@ -1,8 +1,8 @@
 <script>
-import Button from "@/components/Button.vue"
+import Button from "@/components/input/Button.vue"
 import EventBus from "@/services/EventBus"
 import {nextTick} from "vue"
-import Selector from "@/components/Selector.vue"
+import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 

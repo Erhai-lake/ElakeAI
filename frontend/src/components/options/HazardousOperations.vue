@@ -1,5 +1,5 @@
 <script>
-import Button from "@/components/Button.vue"
+import Button from "@/components/input/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"

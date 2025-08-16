@@ -2,7 +2,7 @@
 import {defineComponent, ref} from "vue"
 import EventBus from "@/services/EventBus"
 import SVGIcon from "@/components/SVGIcon.vue"
-import Selector from "@/components/Selector.vue"
+import Selector from "@/components/input/Selector.vue"
 import {useRoute} from "vue-router"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"

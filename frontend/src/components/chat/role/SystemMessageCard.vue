@@ -1,5 +1,5 @@
 <script>
-import Button from "@/components/Button.vue"
+import Button from "@/components/input/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {encode} from "gpt-tokenizer"
@@ -204,8 +204,8 @@ export default {
 	padding: 16px 20px;
 	border-radius: 12px;
 	border: 1px solid transparent;
-	background-color: var(--chat-default-background-color);
-	color: var(--chat-default-text-color);
+	background-color: var(--chat-system-background-color);
+	color: var(--chat-system-text-color);
 
 	.message-content {
 		font-size: 16px;

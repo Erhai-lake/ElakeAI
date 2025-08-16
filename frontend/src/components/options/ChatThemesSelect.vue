@@ -1,5 +1,5 @@
 <script>
-import Selector from "@/components/Selector.vue"
+import Selector from "@/components/input/Selector.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 

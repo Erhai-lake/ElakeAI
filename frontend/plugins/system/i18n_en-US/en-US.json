@@ -265,9 +265,15 @@
 			}
 		},
 		"BackgroundImage": {
+			"toast": {
+				"getBackgroundImageError": "Failed to get background image configuration",
+				"applyBackgroundImageSuccess": "Background image configuration applied successfully",
+				"applyBackgroundImageError": "Failed to apply background image configuration"
+			},
 			"backgroundImageURL": "Background image URL",
 			"backgroundImageOpacity": "Background image opacity",
-			"backgroundImageMask": "Background image mask"
+			"backgroundImageMask": "Background image mask",
+			"save": "Save"
 		}
 	},
 	"views": {
