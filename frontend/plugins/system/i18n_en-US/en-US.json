@@ -250,6 +250,19 @@
 			},
 			"card": "Card",
 			"chatBubble": "Chat bubble"
+		},
+		"DevToolsSuspensionWindow": {
+			"toast": {
+				"getDevToolsSuspensionWindowError": "Failed to get Dev Tools suspension window settings",
+				"saveDevToolsSuspensionWindowError": "Failed to save Dev Tools suspension window settings"
+			}
+		},
+		"ChatBatchSize": {
+			"toast": {
+				"invalidChatBatchSize": "Invalid chat batch size",
+				"chatBatchSizeError": "Chat batch size setting error",
+				"chatBatchSizeSuccess": "Chat batch size setting successful"
+			}
 		}
 	},
 	"views": {
@@ -268,7 +281,6 @@
 			"aiReasoning5": "Providing home page link",
 			"aiMessage5": "🚀 [Click here to return to the Home Page](/)"
 		},
-
 		"ChatView": {
 			"toast": {
 				"chatBatchSizeError": "Chat batch size setting error",
@@ -301,11 +313,6 @@
 				"chatThemes": "Chat Themes"
 			},
 			"ChatsView": {
-				"toast": {
-					"invalidChatBatchSize": "Invalid chat batch size",
-					"chatBatchSizeError": "Chat batch size setting error",
-					"chatBatchSizeSuccess": "Chat batch size setting successful"
-				},
 				"defaultChat": "Default chat",
 				"chatBatchSize": "Single batch quantity when loading chat record"
 			},
@@ -342,10 +349,6 @@
 				"export": "Export"
 			},
 			"AdvancedToolsView": {
-				"toast": {
-					"getDevToolsSuspensionWindowError": "Failed to get Dev Tools suspension window settings",
-					"saveDevToolsSuspensionWindowError": "Failed to save Dev Tools suspension window settings"
-				},
 				"hazardousOperations": "Hazardous operations"
 			},
 			"AboutView": {

@@ -250,6 +250,19 @@
 			},
 			"card": "卡片",
 			"chatBubble": "聊天气泡"
+		},
+		"DevToolsSuspensionWindow": {
+			"toast": {
+				"getDevToolsSuspensionWindowError": "获取Dev Tools悬浮窗设置失败",
+				"saveDevToolsSuspensionWindowError": "保存Dev Tools悬浮窗设置失败"
+			}
+		},
+		"ChatBatchSize": {
+			"toast": {
+				"invalidChatBatchSize": "无效的聊天批大小",
+				"chatBatchSizeError": "聊天批大小设置错误",
+				"chatBatchSizeSuccess": "聊天批大小设置成功"
+			}
 		}
 	},
 	"views": {
@@ -300,11 +313,6 @@
 				"chatThemes": "对话主题"
 			},
 			"ChatsView": {
-				"toast": {
-					"invalidChatBatchSize": "无效的聊天批大小",
-					"chatBatchSizeError": "聊天批大小设置错误",
-					"chatBatchSizeSuccess": "聊天批大小设置成功"
-				},
 				"defaultChat": "默认对话",
 				"chatBatchSize": "加载聊天记录时的单批数量"
 			},
@@ -341,10 +349,6 @@
 				"export": "导出"
 			},
 			"AdvancedToolsView": {
-				"toast": {
-					"getDevToolsSuspensionWindowError": "获取Dev Tools悬浮窗设置失败",
-					"saveDevToolsSuspensionWindowError": "保存Dev Tools悬浮窗设置失败"
-				},
 				"hazardousOperations": "危险操作"
 			},
 			"AboutView": {

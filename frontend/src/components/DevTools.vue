@@ -15,11 +15,13 @@ import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import InputText from "@/components/InputText.vue"
 import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
+import ChatBatchSize from "@/components/options/ChatBatchSize.vue"
 
 export default {
 	name: "DevTools",
 	inject: ["$DB", "$log"],
 	components: {
+		ChatBatchSize,
 		ChatThemesSelect,
 		InputText,
 		FoldingPanel,
@@ -291,14 +293,18 @@ export default {
 				{{ t("views.OptionsView.PersonalizationView.language") }}
 				<LanguageSelect/>
 			</div>
+			<div class="item">
+				{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
+				<ChatThemesSelect/>
+			</div>
 			<ChatAIKey/>
 			<div class="item">
 				{{ t("views.OptionsView.ChatsView.defaultChat") }}
 				<DefaultChatSettings/>
 			</div>
 			<div class="item">
-				{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
-				<ChatThemesSelect/>
+				{{ t("views.OptionsView.ChatsView.chatBatchSize") }}
+				<ChatBatchSize/>
 			</div>
 		</TabsTab>
 		<TabsTab name="database">
