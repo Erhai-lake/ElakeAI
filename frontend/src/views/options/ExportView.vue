@@ -239,14 +239,14 @@ export default {
 		<!--	<label class="option-item" v-if="singleSelection.optional.includes('chats')">-->
 		<!--		<input type="checkbox" v-model="singleSelection.selected" value="chats"/>-->
 		<!--		<span class="custom-checkbox"></span>-->
-		<!--		<span>{{ t("views.ImportView.chats") }}</span>-->
+		<!--		<span>{{ t("views.OptionsView.ExportView.chats") }}</span>-->
 		<!--	</label>-->
 		<!--</div>-->
 		<div class="option-group" v-if="chats.options.length > 0">
 			<label class="option-item">
 				<input type="checkbox" v-model="chats.selectAll" @change="toggleAll('chats')"/>
 				<span class="custom-checkbox"></span>
-				<span>{{ t("views.ImportView.selectAll", {item: t("views.ImportView.chats")}) }}</span>
+				<span>{{ t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.chats")}) }}</span>
 			</label>
 			<div class="sub-options" v-if="chats.options.length">
 				<label
@@ -263,7 +263,7 @@ export default {
 			<label class="option-item">
 				<input type="checkbox" v-model="configs.selectAll" @change="toggleAll('configs')"/>
 				<span class="custom-checkbox"></span>
-				<span>{{ t("views.ImportView.selectAll", {item: t("views.ImportView.configs")}) }}</span>
+				<span>{{ t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.configs")}) }}</span>
 			</label>
 			<div class="sub-options" v-if="configs.options.length">
 				<label
@@ -280,7 +280,7 @@ export default {
 			<label class="option-item">
 				<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAll('apiKeys')"/>
 				<span class="custom-checkbox"></span>
-				<span>{{ t("views.ImportView.selectAll", {item: t("views.ImportView.apiKeys")}) }}</span>
+				<span>{{ t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.apiKeys")}) }}</span>
 			</label>
 			<div class="sub-options" v-if="apiKeys.options.length">
 				<label
