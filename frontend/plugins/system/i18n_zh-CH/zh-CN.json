@@ -375,9 +375,14 @@
 				"hazardousOperations": "危险操作"
 			},
 			"AboutView": {
+				"view": "查看",
 				"aboutApp": "关于 ElakeAI",
 				"githubRepo": "GitHub仓库",
-				"contactSupport": "联系支持"
+				"contactSupport": "联系支持",
+				"openSourceDeclaration": "开放源代码声明"
+			},
+			"OpenSourceDeclarationView": {
+				"view": "查看"
 			},
 			"OptionsNotFoundView": "这里什么都没有, 返回吧~",
 			"personalization": "个性化",

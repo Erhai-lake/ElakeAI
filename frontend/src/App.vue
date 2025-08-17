@@ -186,7 +186,6 @@ export default {
 		 * 配置初始化
 		 */
 		async configInitialization() {
-			let info = {}
 			try {
 				// 应用主题
 				const THEME_DATA = await Dexie.configs.get("theme")
@@ -194,10 +193,8 @@ export default {
 				if (THEME === "System") {
 					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
 					document.documentElement.setAttribute("data-theme", SYSTEM_THEME)
-					info.Theme = SYSTEM_THEME
 				} else {
 					document.documentElement.setAttribute("data-theme", THEME)
-					info.Theme = THEME
 				}
 				// 应用语言
 				const LANGUAGE_DATA = await Dexie.configs.get("language")
@@ -205,20 +202,16 @@ export default {
 				if (LANGUAGE === "System") {
 					const SYSTEM_LANG = window.navigator.language || "zh-CN"
 					i18nRegistry.locale(SYSTEM_LANG)
-					info.Language = SYSTEM_LANG
 				} else {
 					i18nRegistry.locale(LANGUAGE)
-					info.Language = LANGUAGE
 				}
 				// 应用背景图片
 				const BACKGROUND_IMAGE_DATA = await Dexie.configs.get("backgroundImage")
 				this.backgroundImage = BACKGROUND_IMAGE_DATA ? BACKGROUND_IMAGE_DATA.value : null
-				info.backgroundImage = this.backgroundImage
 				// DevTools悬浮窗
 				const DEV_TOOLS_SUSPENSION_WINDOW_DATA = await Dexie.configs.get("devToolsSuspensionWindow")
 				this.isDevToolsSuspensionWindow = DEV_TOOLS_SUSPENSION_WINDOW_DATA ? DEV_TOOLS_SUSPENSION_WINDOW_DATA.value : false
-				info.isDevToolsSuspensionWindow = this.isDevToolsSuspensionWindow
-				Logger.info(`[${this.name}] 初始化配置`, info)
+				Logger.info(`[${this.name}] 初始化配置`)
 			} catch (error) {
 				Logger.error(`[${this.name}] 配置初始化失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("app.configInitializationError")}`)

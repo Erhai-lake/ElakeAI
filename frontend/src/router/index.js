@@ -58,9 +58,14 @@ const routes = [
 				component: () => import("@/views/options/AboutView.vue")
 			},
 			{
+				path: "openSourceDeclaration",
+				name: "OptionsOpenSourceDeclaration",
+				component: () => import("@/views/options/OpenSourceDeclarationView.vue")
+			},
+			{
 				path: ":pathMatch(.*)*",
 				name: "OptionsNotFound",
-				component: () => import("@/views/options/OptionsNotFoundView.vue")
+				component: () => import("@/views/NotFoundView.vue")
 			}
 		]
 	},

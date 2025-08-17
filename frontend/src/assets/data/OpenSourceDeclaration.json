@@ -1,0 +1,177 @@
+[
+	{
+		"category": "前端框架与构建",
+		"name": "Vue 3",
+		"license": "MIT",
+		"description": "渐进式 JavaScript 框架",
+		"url": "https://github.com/vuejs/core"
+	},
+	{
+		"category": "前端框架与构建",
+		"name": "Vue Router",
+		"license": "MIT",
+		"description": "Vue 官方路由",
+		"url": "https://github.com/vuejs/router"
+	},
+	{
+		"category": "前端框架与构建",
+		"name": "Vue I18n",
+		"license": "MIT",
+		"description": "国际化解决方案",
+		"url": "https://github.com/intlify/vue-i18n-next"
+	},
+	{
+		"category": "前端框架与构建",
+		"name": "Vite",
+		"license": "MIT",
+		"description": "前端构建工具",
+		"url": "https://github.com/vitejs/vite"
+	},
+	{
+		"category": "前端框架与构建",
+		"name": "@vitejs/plugin-vue",
+		"license": "MIT",
+		"description": "Vite 的 Vue 插件",
+		"url": "https://github.com/vitejs/vite-plugin-vue"
+	},
+	{
+		"category": "前端框架与构建",
+		"name": "@tailwindcss/vite",
+		"license": "MIT",
+		"description": "TailwindCSS Vite 插件",
+		"url": "https://github.com/tailwindlabs/tailwindcss"
+	},
+	{
+		"category": "前端框架与构建",
+		"name": "Less",
+		"license": "Apache-2.0",
+		"description": "CSS 预处理器",
+		"url": "https://github.com/less/less.js"
+	},
+	{
+		"category": "前端框架与构建",
+		"name": "less-loader",
+		"license": "MIT",
+		"description": "Webpack/Vite 中的 Less 支持",
+		"url": "https://github.com/webpack-contrib/less-loader"
+	},
+	{
+		"category": "UI 与交互",
+		"name": "Vue Toast Notification",
+		"license": "MIT",
+		"description": "Toast 提示组件",
+		"url": "https://github.com/ankurk91/vue-toast-notification"
+	},
+	{
+		"category": "UI 与交互",
+		"name": "@panzoom/panzoom",
+		"license": "MIT",
+		"description": "平移缩放交互",
+		"url": "https://github.com/timmywil/panzoom"
+	},
+	{
+		"category": "数据与工具",
+		"name": "Axios",
+		"license": "MIT",
+		"description": "HTTP 客户端",
+		"url": "https://github.com/axios/axios"
+	},
+	{
+		"category": "数据与工具",
+		"name": "Dexie.js",
+		"license": "Apache-2.0",
+		"description": "IndexedDB 封装库",
+		"url": "https://github.com/dexie/Dexie.js"
+	},
+	{
+		"category": "数据与工具",
+		"name": "gpt-tokenizer",
+		"license": "MIT",
+		"description": "GPT 模型分词工具",
+		"url": "https://github.com/niieani/gpt-tokenizer"
+	},
+	{
+		"category": "Markdown",
+		"name": "markdown-it",
+		"license": "MIT",
+		"description": "Markdown 解析器",
+		"url": "https://github.com/markdown-it/markdown-it"
+	},
+	{
+		"category": "Markdown",
+		"name": "markdown-it-emoji",
+		"license": "MIT",
+		"description": "Emoji 插件",
+		"url": "https://github.com/markdown-it/markdown-it-emoji"
+	},
+	{
+		"category": "Markdown",
+		"name": "markdown-it-task-lists",
+		"license": "ISC",
+		"description": "任务列表插件",
+		"url": "https://github.com/revin/markdown-it-task-lists"
+	},
+	{
+		"category": "Markdown",
+		"name": "@iktakahiro/markdown-it-katex",
+		"license": "MIT",
+		"description": "KaTeX 数学公式插件",
+		"url": "https://github.com/iktakahiro/markdown-it-katex"
+	},
+	{
+		"category": "Markdown",
+		"name": "markdown-it-mathjax3",
+		"license": "MIT",
+		"description": "MathJax3 数学公式插件",
+		"url": "https://github.com/tani/markdown-it-mathjax3"
+	},
+	{
+		"category": "Markdown",
+		"name": "@mdit/plugin-img-lazyload",
+		"license": "MIT",
+		"description": "Markdown 图片懒加载",
+		"url": "https://github.com/mdit-plugins/mdit-plugins"
+	},
+	{
+		"category": "图表与可视化",
+		"name": "Mermaid",
+		"license": "MIT",
+		"description": "图表绘制工具",
+		"url": "https://github.com/mermaid-js/mermaid"
+	},
+	{
+		"category": "图表与可视化",
+		"name": "flowchart.js",
+		"license": "MIT",
+		"description": "流程图绘制工具",
+		"url": "https://github.com/adrai/flowchart.js"
+	},
+	{
+		"category": "图表与可视化",
+		"name": "PlantUML Encoder",
+		"license": "MIT",
+		"description": "PlantUML 编码工具",
+		"url": "https://github.com/markushedvall/plantuml-encoder"
+	},
+	{
+		"category": "文本与高亮",
+		"name": "Highlight.js",
+		"license": "BSD-3-Clause",
+		"description": "代码语法高亮",
+		"url": "https://github.com/highlightjs/highlight.js"
+	},
+	{
+		"category": "文本与高亮",
+		"name": "KaTeX",
+		"license": "MIT",
+		"description": "数学公式排版引擎",
+		"url": "https://github.com/KaTeX/KaTeX"
+	},
+	{
+		"category": "文件导出",
+		"name": "jsPDF",
+		"license": "MIT",
+		"description": "PDF 生成工具",
+		"url": "https://github.com/parallax/jsPDF"
+	}
+]

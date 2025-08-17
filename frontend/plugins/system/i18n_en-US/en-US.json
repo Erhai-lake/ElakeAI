@@ -375,9 +375,14 @@
 				"hazardousOperations": "Hazardous operations"
 			},
 			"AboutView": {
+				"view": "View",
 				"aboutApp": "About ElakeAI",
 				"githubRepo": "GitHub repository",
-				"contactSupport": "Contact support"
+				"contactSupport": "Contact support",
+				"openSourceDeclaration": "Open Source Declaration"
+			},
+			"OpenSourceDeclarationView": {
+				"view": "View"
 			},
 			"OptionsNotFoundView": "Nothing here, please go back~",
 			"personalization": "Personalization",
