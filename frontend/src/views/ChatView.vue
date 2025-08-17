@@ -511,7 +511,7 @@ export default {
 				<!-- 下一条按钮 -->
 				<button
 					:title="t('views.ChatView.functionalControls.scrollToDownMessages')"
-					@click="scrollToUpAndDownMessages('Down')"
+					@click="scrollToUpAndDownMessages('down')"
 					:disabled="data.data.length === 0">
 					<SVGIcon name="#icon-downArrow" size="2em"/>
 				</button>
