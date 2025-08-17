@@ -425,10 +425,10 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	gap: 10px;
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid var(--border-color);
 	white-space: nowrap;
-	gap: 10px;
 }
 
 .router-list, .database-list {

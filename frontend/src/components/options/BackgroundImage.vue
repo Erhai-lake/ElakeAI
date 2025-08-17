@@ -8,7 +8,7 @@ import EventBus from "@/services/EventBus"
 
 export default {
 	name: "BackgroundImage",
-	inject:["$DB", "$log"],
+	inject: ["$DB", "$log"],
 	components: {Button, InputText, InputNumber},
 	data() {
 		return {
@@ -18,6 +18,22 @@ export default {
 				url: "https://www.loliapi.com/acg",
 				opacity: 50,
 				mask: 30
+			}
+		}
+	},
+	computed: {
+		displayUrl: {
+			get() {
+				const URL = this.backgroundImage.url
+				if (!URL) return ""
+				// 如果是 Base64, 用占z位文本代替
+				return URL.startsWith("data:image/") ? this.t("components.BackgroundImage.base64Placeholder") : URL
+			},
+			set(val) {
+				// 如果用户输入的不是占位符, 直接写入
+				if (!val.startsWith(this.t("components.BackgroundImage.base64Placeholder"))) {
+					this.backgroundImage.url = val
+				}
 			}
 		}
 	},
@@ -38,13 +54,37 @@ export default {
 		 * 读取
 		 */
 		async read() {
-			try{
+			try {
 				const BACKGROUND_IMAGE_DATA = await this.$DB.configs.get("backgroundImage")
 				this.backgroundImage = BACKGROUND_IMAGE_DATA ? BACKGROUND_IMAGE_DATA.value : this.backgroundImage
 			} catch (error) {
 				this.$log.error(`[${this.name}] 背景图片配置获取失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.BackgroundImage.toast.getBackgroundImageError")}`)
 			}
+		},
+		/**
+		 * 上传
+		 */
+		async upload() {
+			this.$refs.fileInput.click()
+		},
+		/**
+		 * 处理文件选择
+		 */
+		handleFileChange(event) {
+			const FILE = event.target.files[0]
+			if (!FILE) return
+			const READER = new FileReader()
+			READER.onload = (readerEvent) => {
+				this.backgroundImage.url = readerEvent.target.result
+				toastRegistry.success(`[${this.name}] ${this.t("components.BackgroundImage.toast.uploadSuccess")}`)
+			}
+			READER.onerror = (readerEvent) => {
+				this.$log.error(`[${this.name}] 图片读取失败`, readerEvent)
+				toastRegistry.error(`[${this.name}] ${this.t("components.BackgroundImage.toast.uploadError")}`)
+			}
+			READER.readAsDataURL(FILE)
+			event.target.value = ""
 		},
 		/**
 		 * 应用
@@ -75,20 +115,22 @@ export default {
 			<input type="checkbox" v-model="backgroundImage.enabled"/>
 			<span class="custom-checkbox"></span>
 		</label>
+		<input type="file" ref="fileInput" style="display: none;" accept="image/*" @change="handleFileChange">
+		<Button @click="upload">{{ t('components.BackgroundImage.upload') }}</Button>
 		<InputText
-			class="input"
+			class="text"
 			:placeholder="t('components.BackgroundImage.backgroundImageURL')"
 			:title="t('components.BackgroundImage.backgroundImageURL')"
-			v-model="backgroundImage.url"/>
+			v-model="displayUrl"/>
 		<InputNumber
-			class="input"
+			class="number"
 			:min="0"
 			:max="100"
 			:placeholder="t('components.BackgroundImage.backgroundImageOpacity')"
 			:title="t('components.BackgroundImage.backgroundImageOpacity')"
 			v-model="backgroundImage.opacity"/>
 		<InputNumber
-			class="input"
+			class="number"
 			:min="0"
 			:max="100"
 			:placeholder="t('components.BackgroundImage.backgroundImageMask')"
@@ -104,8 +146,12 @@ export default {
 	gap: 10px;
 }
 
-.input {
+.text {
 	width: 250px;
+}
+
+.number {
+	width: 100px;
 }
 
 input[type="checkbox"] {

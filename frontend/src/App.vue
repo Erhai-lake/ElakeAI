@@ -37,6 +37,23 @@ export default {
 			startHeight: 0
 		}
 	},
+	computed: {
+		backgroundStyle() {
+			if (!this.backgroundImage || !this.backgroundImage.url) return {}
+			const URL = this.backgroundImage.url.trim()
+			// 判断是不是 base64
+			const IS_BASE64 = URL.startsWith("data:image/")
+			return {
+				backgroundImage: IS_BASE64 ? `url(${URL})` : `url("${URL}")`,
+				opacity: this.backgroundImage.opacity / 100
+			}
+		},
+		maskStyle() {
+			return {
+				opacity: this.backgroundImage.mask / 100
+			}
+		}
+	},
 	beforeUnmount() {
 		EventBus.off("[update] pluginProgress")
 		EventBus.off("[update] devToolsSuspensionWindowUpdate", this.devToolsSuspensionWindow)
@@ -356,11 +373,8 @@ export default {
 			</div>
 		</template>
 	</Loading>
-	<div
-		class="images"
-		v-if="backgroundImage ? backgroundImage.enabled : false"
-		:style="{ backgroundImage: `url(${backgroundImage.url})`, opacity: backgroundImage.opacity / 100 }">
-		<div class="images-mask" :style="{ opacity: backgroundImage.mask / 100 }"></div>
+	<div class="images" v-if="backgroundImage?.enabled" :style="backgroundStyle">
+		<div class="images-mask" :style="maskStyle"></div>
 	</div>
 </template>
 

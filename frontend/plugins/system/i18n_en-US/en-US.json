@@ -270,12 +270,16 @@
 		"BackgroundImage": {
 			"toast": {
 				"getBackgroundImageError": "Failed to get background image configuration",
+				"uploadSuccess": "Background image uploaded successfully",
+				"uploadError": "Failed to upload background image",
 				"applyBackgroundImageSuccess": "Background image configuration applied successfully",
 				"applyBackgroundImageError": "Failed to apply background image configuration"
 			},
-			"backgroundImageURL": "Background image URL",
-			"backgroundImageOpacity": "Background image opacity",
-			"backgroundImageMask": "Background image mask",
+			"upload": "Upload",
+			"base64Placeholder": "Base64 Picture Uploaded",
+			"backgroundImageURL": "Image URL/Base64",
+			"backgroundImageOpacity": "Opacity",
+			"backgroundImageMask": "Mask",
 			"save": "Save"
 		}
 	},

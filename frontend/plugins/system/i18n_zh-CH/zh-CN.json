@@ -270,12 +270,16 @@
 		"BackgroundImage": {
 			"toast": {
 				"getBackgroundImageError": "获取背景图片配置失败",
+				"uploadSuccess": "上传背景图片成功",
+				"uploadError": "上传背景图片失败",
 				"applyBackgroundImageSuccess": "应用背景图片配置成功",
 				"applyBackgroundImageError": "应用背景图片配置失败"
 			},
-			"backgroundImageURL": "背景图片URL",
-			"backgroundImageOpacity": "背景图片透明度",
-			"backgroundImageMask": "背景图片遮罩",
+			"upload": "上传",
+			"base64Placeholder": "已上传Base64图片",
+			"backgroundImageURL": "图片URL/Base64",
+			"backgroundImageOpacity": "透明度",
+			"backgroundImageMask": "遮罩",
 			"save": "保存"
 		}
 	},
