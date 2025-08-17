@@ -6,12 +6,12 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
-	name: "PluginsView",
+	name: "Plugins",
 	inject: ["$log"],
 	components: {FoldingPanel},
 	data() {
 		return {
-			name: "PluginsView",
+			name: "Plugins",
 			isWails: !!window.go,
 			system: {
 				activeTab: "all",
@@ -152,18 +152,18 @@ export default {
 		async togglePluginEnable(plugin) {
 			if (plugin.disabled) {
 				this.$log.warn(`[${this.name}] 标记为 disabled 的插件被禁止启用! ${plugin.name}`)
-				toastRegistry.warning(`[${this.name}] ${this.t("views.PluginsView.toast.disabledTip")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.Plugins.toast.disabledTip")}`)
 				return
 			}
 			try {
 				const NEW_STATUS = !plugin.enabled
 				await updatePluginEnabled(plugin.uuid, NEW_STATUS)
-				toastRegistry.success(`[${this.name}] ${this.t(`views.PluginsView.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
+				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.Plugins.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
 				await initEnabledPlugins()
 				await this.loadPlugInList()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败 ${plugin.name}`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.PluginsView.toast.statusUpdateError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Plugins.toast.statusUpdateError")}`)
 			}
 		}
 	}
@@ -174,21 +174,21 @@ export default {
 	<div class="plugins-view">
 		<FoldingPanel :Height="600" :is="true">
 			<template #Title>
-				{{ t("views.PluginsView.systemPlugins") }}
+				{{ t("components.Options.Plugins.systemPlugins") }}
 			</template>
 			<template #Content>
 				<div class="header"></div>
 				<button :class="{ active: system.activeTab === 'all' }" @click="system.activeTab = 'all'">
-					{{ t("views.PluginsView.type.all") }}
+					{{ t("components.Options.Plugins.type.all") }}
 				</button>
 				<button :class="{ active: system.activeTab === 'platform' }" @click="system.activeTab = 'platform'">
-					{{ t("views.PluginsView.type.platform") }}
+					{{ t("components.Options.Plugins.type.platform") }}
 				</button>
 				<button :class="{ active: system.activeTab === 'i18n' }" @click="system.activeTab = 'i18n'">
-					{{ t("views.PluginsView.type.i18n") }}
+					{{ t("components.Options.Plugins.type.i18n") }}
 				</button>
 				<button :class="{ active: system.activeTab === 'other' }" @click="system.activeTab = 'other'">
-					{{ t("views.PluginsView.type.other") }}
+					{{ t("components.Options.Plugins.type.other") }}
 				</button>
 				<table class="list">
 					<thead>
@@ -201,18 +201,18 @@ export default {
 								<span class="custom-checkbox"></span>
 							</label>
 						</th>
-						<th>{{ t("views.PluginsView.info.enabled") }}</th>
-						<th>{{ t("views.PluginsView.info.name") }}</th>
-						<th>{{ t("views.PluginsView.info.author") }}</th>
-						<th>{{ t("views.PluginsView.info.description") }}</th>
-						<th>{{ t("views.PluginsView.info.version") }}</th>
+						<th>{{ t("components.Options.Plugins.info.enabled") }}</th>
+						<th>{{ t("components.Options.Plugins.info.name") }}</th>
+						<th>{{ t("components.Options.Plugins.info.author") }}</th>
+						<th>{{ t("components.Options.Plugins.info.description") }}</th>
+						<th>{{ t("components.Options.Plugins.info.version") }}</th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr
 						v-for="plugin in system.plugins"
 						:key="plugin.uuid"
-						:title="plugin.disabled ? t('views.PluginsView.toast.disabledTip') : ''"
+						:title="plugin.disabled ? t('components.Options.Plugins.toast.disabledTip') : ''"
 						@click="!plugin.disabled && toggleRowSelectionSystem(plugin.uuid)"
 						:class="{
 							'selected-row': system.operationSelection.includes(plugin.uuid),
@@ -244,7 +244,7 @@ export default {
 						<td :title="plugin.version">{{ plugin.version }}</td>
 					</tr>
 					<tr v-if="(system.plugins || []).length === 0">
-						<td colspan="6" class="empty-tip">{{ t("views.PluginsView.noPlugins") }}</td>
+						<td colspan="6" class="empty-tip">{{ t("components.Options.Plugins.noPlugins") }}</td>
 					</tr>
 					</tbody>
 				</table>
@@ -252,24 +252,24 @@ export default {
 		</FoldingPanel>
 		<FoldingPanel :Height="600">
 			<template #Title>
-				{{ t("views.PluginsView.thirdPartyPlugins") }}
+				{{ t("components.Options.Plugins.thirdPartyPlugins") }}
 				<span style="margin-left: 20px;color: #F44336;">
-					({{ t("views.PluginsView.thirdPartyPluginsTip") }})
+					({{ t("components.Options.Plugins.thirdPartyPluginsTip") }})
 				</span>
 			</template>
 			<template #Content>
 				<div class="header"></div>
 				<button :class="{ active: thirdParty.activeTab === 'all' }" @click="thirdParty.activeTab = 'all'">
-					{{ t("views.PluginsView.type.all") }}
+					{{ t("components.Options.Plugins.type.all") }}
 				</button>
 				<button :class="{ active: thirdParty.activeTab === 'platform' }" @click="thirdParty.activeTab = 'platform'">
-					{{ t("views.PluginsView.type.platform") }}
+					{{ t("components.Options.Plugins.type.platform") }}
 				</button>
 				<button :class="{ active: thirdParty.activeTab === 'i18n' }" @click="thirdParty.activeTab = 'i18n'">
-					{{ t("views.PluginsView.type.i18n") }}
+					{{ t("components.Options.Plugins.type.i18n") }}
 				</button>
 				<button :class="{ active: thirdParty.activeTab === 'other' }" @click="thirdParty.activeTab = 'other'">
-					{{ t("views.PluginsView.type.other") }}
+					{{ t("components.Options.Plugins.type.other") }}
 				</button>
 				<table class="list">
 					<thead>
@@ -282,18 +282,18 @@ export default {
 								<span class="custom-checkbox"></span>
 							</label>
 						</th>
-						<th>{{ t("views.PluginsView.info.enabled") }}</th>
-						<th>{{ t("views.PluginsView.info.name") }}</th>
-						<th>{{ t("views.PluginsView.info.author") }}</th>
-						<th>{{ t("views.PluginsView.info.description") }}</th>
-						<th>{{ t("views.PluginsView.info.version") }}</th>
+						<th>{{ t("components.Options.Plugins.info.enabled") }}</th>
+						<th>{{ t("components.Options.Plugins.info.name") }}</th>
+						<th>{{ t("components.Options.Plugins.info.author") }}</th>
+						<th>{{ t("components.Options.Plugins.info.description") }}</th>
+						<th>{{ t("components.Options.Plugins.info.version") }}</th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr
 						v-for="plugin in thirdParty.plugins"
 						:key="plugin.uuid"
-						:title="plugin.disabled ? t('views.PluginsView.toast.disabledTip') : ''"
+						:title="plugin.disabled ? t('components.Options.Plugins.toast.disabledTip') : ''"
 						@click="!plugin.disabled && toggleRowSelectionThirdParty(plugin.uuid)"
 						:class="{
 							'selected-row': thirdParty.operationSelection.includes(plugin.uuid),
@@ -325,10 +325,10 @@ export default {
 						<td :title="plugin.version">{{ plugin.version }}</td>
 					</tr>
 					<tr v-if="!isWails">
-						<td colspan="6">{{ t("views.PluginsView.envProhibition") }}</td>
+						<td colspan="6">{{ t("components.Options.Plugins.envProhibition") }}</td>
 					</tr>
 					<tr v-if="(thirdParty.plugins || []).length === 0 && isWails">
-						<td colspan="6">{{ t("views.PluginsView.noPlugins") }}</td>
+						<td colspan="6">{{ t("components.Options.Plugins.noPlugins") }}</td>
 					</tr>
 					</tbody>
 				</table>

@@ -138,7 +138,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载Key池失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.loadKeyPoolError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.loadKeyPoolError")}`)
 			}
 		},
 		/**
@@ -158,7 +158,7 @@ export default {
 				return RESPONSE.data
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取Key余额失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.errorObtainingKeyBalance")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.errorObtainingKeyBalance")}`)
 			}
 		},
 		/**
@@ -168,13 +168,13 @@ export default {
 			// 禁止key空
 			if (!this.newKey.value) {
 				this.$log.warn(`[${this.name}] 新建Key时Key为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.keyNull")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.keyNull")}`)
 				return
 			}
 			// 禁止备注为空
 			if (!this.newKey.remark) {
 				this.$log.warn(`[${this.name}] 新建Key时备注为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.remarkNull")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkNull")}`)
 				return
 			}
 			// url空则使用默认url
@@ -184,7 +184,7 @@ export default {
 			// 校验url
 			if (!this.isValidUrl(this.newKey.url)) {
 				this.$log.warn(`[${this.name}] 新建Key时URL校验失败`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.invalidUrl")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.invalidUrl")}`)
 				return
 			}
 			// 删除Url末尾的/
@@ -200,7 +200,7 @@ export default {
 					.first()
 				if (IS_REMARK_EXIST) {
 					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
-					toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.remarkDuplicate")}`)
+					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
 					return
 				}
 				const NEW_KEY_ID = crypto.randomUUID()
@@ -216,11 +216,11 @@ export default {
 				// 重置表单
 				this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
 				this.status.addFormStatus = false
-				toastRegistry.success(this.t("components.ChatAIKey.toast.addKeySuccess"))
+				toastRegistry.success(this.t("components.Options.ChatAIKey.toast.addKeySuccess"))
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 添加Key失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.addKeyError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.addKeyError")}`)
 			}
 		},
 		/**
@@ -241,17 +241,17 @@ export default {
 			// 禁止空删除
 			if (!this.operationSelection || this.operationSelection.length === 0) {
 				this.$log.warn(`[${this.name}] 删除Key时未选中任何Key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.selectKeysOperate")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
 				return
 			}
 			try {
 				await this.$DB.apiKeys.bulkDelete(this.operationSelection)
 				this.operationSelection = []
-				toastRegistry.success(`[${this.name}] ${this.t("components.ChatAIKey.toast.removeKeySuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.removeKeySuccess")}`)
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 移除Keys失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.removeKeysError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.removeKeysError")}`)
 			}
 		},
 		/**
@@ -262,13 +262,13 @@ export default {
 			// 禁止空编辑
 			if (!this.operationSelection || this.operationSelection.length === 0) {
 				this.$log.warn(`[${this.name}] 编辑Key时未选中任何Key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.selectKeysOperate")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
 				return
 			}
 			// 禁止多选编辑
 			if (this.operationSelection.length > 1) {
 				this.$log.warn(`[${this.name}] 编辑Key时选中了过多的key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.selectAKey")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectAKey")}`)
 				return
 			}
 			try {
@@ -283,7 +283,7 @@ export default {
 				this.status.editFormStatus = !this.status.editFormStatus
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取Key失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.getKeyError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.getKeyError")}`)
 			}
 		},
 		/**
@@ -294,13 +294,13 @@ export default {
 			// 禁止空编辑
 			if (!this.editKey.value) {
 				this.$log.warn(`[${this.name}] 编辑Key时选Key为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.keyNull")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.keyNull")}`)
 				return
 			}
 			// 禁止备注为空
 			if (!this.editKey.remark) {
 				this.$log.warn(`[${this.name}] 编辑Key时备注为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.remarkNull")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkNull")}`)
 				return
 			}
 			// url空则使用默认url
@@ -310,7 +310,7 @@ export default {
 			// 校验url
 			if (!this.isValidUrl(this.editKey.url)) {
 				this.$log.warn(`[${this.name}] 删除Key时URL校验失败`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.invalidUrl")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.invalidUrl")}`)
 				return
 			}
 			// 删除Url末尾的/
@@ -326,7 +326,7 @@ export default {
 					.first()
 				if (IS_REMARK_EXIST) {
 					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
-					toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.remarkDuplicate")}`)
+					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
 					return
 				}
 				// 写入数据库
@@ -344,11 +344,11 @@ export default {
 					enabled: true
 				}
 				this.status.editFormStatus = false
-				toastRegistry.success(`[${this.name}] ${this.t("components.ChatAIKey.toast.editKeySuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.editKeySuccess")}`)
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 编辑Key失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.editKeyError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.editKeyError")}`)
 			}
 		},
 		/**
@@ -378,11 +378,11 @@ export default {
 				} else {
 					keyItem.balance = "NULL"
 				}
-				toastRegistry.success(`[${this.name}] ${this.t(`components.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
+				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.statusUpdateError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.statusUpdateError")}`)
 			}
 		},
 		/**
@@ -393,7 +393,7 @@ export default {
 		async batchToggleEnable(status) {
 			if (!this.operationSelection || this.operationSelection.length === 0) {
 				this.$log.warn(`[${this.name}] 切换Key启用状态时未选中任何key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.ChatAIKey.toast.selectKeysOperate")}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
 				return
 			}
 			try {
@@ -402,11 +402,11 @@ export default {
 					changes: {enabled: status}
 				}))
 				await this.$DB.apiKeys.bulkUpdate(UPDATES)
-				toastRegistry.success(`[${this.name}] ${this.t(`components.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
+				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatAIKey.toast.statusUpdateError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.statusUpdateError")}`)
 			}
 		},
 		/**
@@ -438,7 +438,7 @@ export default {
 <template>
 	<FoldingPanel :Height="500">
 		<template #Title>
-			{{ t("components.ChatAIKey.title") }}
+			{{ t("components.Options.ChatAIKey.title") }}
 		</template>
 		<template #Content>
 			<div class="chat-ai-key">
@@ -451,79 +451,79 @@ export default {
 						@update:selectorSelected="updateSelectedModel"/>
 					<!-- 新增按钮 -->
 					<Button @click="status.addFormStatus = !status.addFormStatus">
-						{{ t("components.ChatAIKey.operationButton.add") }}
+						{{ t("components.Options.ChatAIKey.operationButton.add") }}
 					</Button>
 					<!-- 编辑选中 -->
 					<Button @click="toggleEditSelected">
-						{{ t("components.ChatAIKey.operationButton.edit") }}
+						{{ t("components.Options.ChatAIKey.operationButton.edit") }}
 					</Button>
 					<!-- 移除选中 -->
 					<Button @click="removeSelectedKeys">
-						{{ t("components.ChatAIKey.operationButton.remove", operationSelection.length) }}
+						{{ t("components.Options.ChatAIKey.operationButton.remove", operationSelection.length) }}
 					</Button>
 					<!-- 启用选中 -->
 					<Button @click="batchToggleEnable(true)">
-						{{ t("components.ChatAIKey.operationButton.enable", operationSelection.length) }}
+						{{ t("components.Options.ChatAIKey.operationButton.enable", operationSelection.length) }}
 					</Button>
 					<!-- 禁用选中 -->
 					<Button @click="batchToggleEnable(false)">
-						{{ t("components.ChatAIKey.operationButton.disable", operationSelection.length) }}
+						{{ t("components.Options.ChatAIKey.operationButton.disable", operationSelection.length) }}
 					</Button>
 					<div/>
 				</div>
 				<!-- 新增表单 -->
 				<div v-if="status.addFormStatus" class="add-form">
-					<h3>{{ t("components.ChatAIKey.operationButton.add") }}</h3>
+					<h3>{{ t("components.Options.ChatAIKey.operationButton.add") }}</h3>
 					<div class="form-group">
-						<label>{{ t("components.ChatAIKey.form.key") }}</label>
+						<label>{{ t("components.Options.ChatAIKey.form.key") }}</label>
 						<InputText
 							v-model="newKey.value"
-							:placeholder="t('components.ChatAIKey.form.pleaseEnterKey')"/>
+							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKey')"/>
 					</div>
 					<div class="form-group">
-						<label>{{ t("components.ChatAIKey.form.remarks") }}</label>
+						<label>{{ t("components.Options.ChatAIKey.form.remarks") }}</label>
 						<InputText
 							v-model="newKey.remark"
-							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
+							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
 					</div>
 					<div class="form-group">
-						<label>{{ t("components.ChatAIKey.form.url") }}</label>
+						<label>{{ t("components.Options.ChatAIKey.form.url") }}</label>
 						<InputText
 							v-model="newKey.url"
-							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyUrl')"/>
+							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyUrl')"/>
 					</div>
 					<div class="form-actions">
-						<Button @click="addNewKey">{{ t("components.ChatAIKey.form.save") }}</Button>
+						<Button @click="addNewKey">{{ t("components.Options.ChatAIKey.form.save") }}</Button>
 						<Button @click="status.addFormStatus = false">
-							{{ t("components.ChatAIKey.form.cancel") }}
+							{{ t("components.Options.ChatAIKey.form.cancel") }}
 						</Button>
 					</div>
 				</div>
 				<!-- 编辑表单 -->
 				<div v-if="status.editFormStatus" class="add-form">
-					<h3>{{ t("components.ChatAIKey.operationButton.edit") }}</h3>
+					<h3>{{ t("components.Options.ChatAIKey.operationButton.edit") }}</h3>
 					<div class="form-group">
-						<label>{{ t("components.ChatAIKey.form.key") }}</label>
+						<label>{{ t("components.Options.ChatAIKey.form.key") }}</label>
 						<InputText
 							v-model="editKey.value"
-							:placeholder="t('components.ChatAIKey.form.pleaseEnterKey')"/>
+							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKey')"/>
 					</div>
 					<div class="form-group">
-						<label>{{ t("components.ChatAIKey.form.remarks") }}</label>
+						<label>{{ t("components.Options.ChatAIKey.form.remarks") }}</label>
 						<InputText
 							v-model="editKey.remark"
-							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
+							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
 					</div>
 					<div class="form-group">
-						<label>{{ t("components.ChatAIKey.form.url") }}</label>
+						<label>{{ t("components.Options.ChatAIKey.form.url") }}</label>
 						<InputText
 							v-model="editKey.url"
-							:placeholder="t('components.ChatAIKey.form.pleaseEnterKeyUrl')"/>
+							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyUrl')"/>
 					</div>
 					<div class="form-actions">
-						<Button @click="editSelectedKeys">{{ t("components.ChatAIKey.form.save") }}</Button>
+						<Button @click="editSelectedKeys">{{ t("components.Options.ChatAIKey.form.save") }}</Button>
 						<Button @click="status.editFormStatus = false">
-							{{ t("components.ChatAIKey.form.cancel") }}
+							{{ t("components.Options.ChatAIKey.form.cancel") }}
 						</Button>
 					</div>
 				</div>
@@ -541,11 +541,11 @@ export default {
 										<span class="custom-checkbox"></span>
 									</label>
 								</th>
-								<th>{{ t("components.ChatAIKey.form.enable") }}</th>
-								<th>{{ t("components.ChatAIKey.form.key") }}</th>
-								<th>{{ t("components.ChatAIKey.form.remarks") }}</th>
-								<th>{{ t("components.ChatAIKey.form.url") }}</th>
-								<th>{{ t("components.ChatAIKey.form.balance") }}</th>
+								<th>{{ t("components.Options.ChatAIKey.form.enable") }}</th>
+								<th>{{ t("components.Options.ChatAIKey.form.key") }}</th>
+								<th>{{ t("components.Options.ChatAIKey.form.remarks") }}</th>
+								<th>{{ t("components.Options.ChatAIKey.form.url") }}</th>
+								<th>{{ t("components.Options.ChatAIKey.form.balance") }}</th>
 							</tr>
 							</thead>
 							<tbody>
@@ -578,7 +578,7 @@ export default {
 								<td :title="keyItem.balance">{{ keyItem.balance }}</td>
 							</tr>
 							<tr v-if="(keyPools || []).length === 0">
-								<td colspan="6" class="empty-tip">{{ t("components.ChatAIKey.addTip") }}</td>
+								<td colspan="6" class="empty-tip">{{ t("components.Options.ChatAIKey.addTip") }}</td>
 							</tr>
 							</tbody>
 						</table>

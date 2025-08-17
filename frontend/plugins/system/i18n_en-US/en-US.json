@@ -24,6 +24,188 @@
 		"requestFailed": "Request failed"
 	},
 	"components": {
+		"Options": {
+			"BackgroundImage": {
+				"toast": {
+					"getBackgroundImageError": "Failed to get background image configuration",
+					"uploadSuccess": "Background image uploaded successfully",
+					"uploadError": "Failed to upload background image",
+					"applyBackgroundImageSuccess": "Background image configuration applied successfully",
+					"applyBackgroundImageError": "Failed to apply background image configuration"
+				},
+				"upload": "Upload",
+				"base64Placeholder": "Base64 Picture Uploaded",
+				"backgroundImageURL": "Image URL/Base64",
+				"backgroundImageOpacity": "Opacity",
+				"backgroundImageMask": "Mask"
+			},
+			"ChatAIKey": {
+				"title": "API Key Pool",
+				"operationButton": {
+					"add": "Add",
+					"remove": "Remove {count} keys",
+					"edit": "Edit",
+					"enable": "Enable {count} keys",
+					"disable": "Disable {count} keys"
+				},
+				"toast": {
+					"loadKeyPoolError": "Failed to load key pool",
+					"errorObtainingKeyBalance": "Failed to get key balance",
+					"keyNull": "Key cannot be empty",
+					"remarkNull": "Remark cannot be empty",
+					"invalidUrl": "Invalid URL",
+					"addKeySuccess": "Key added successfully",
+					"addKeyError": "Failed to add key",
+					"selectKeysOperate": "Please select keys to operate on",
+					"removeKeySuccess": "Key removed successfully",
+					"removeKeysError": "Failed to remove keys",
+					"selectAKey": "You can only select one key at a time",
+					"getKeyError": "Failed to get key",
+					"editKeySuccess": "Key edited successfully",
+					"editKeyError": "Failed to edit key",
+					"enableSuccess": "Key enabled successfully",
+					"disableSuccess": "Key disabled successfully",
+					"batchEnableSuccess": "Batch enable successful",
+					"batchDisableSuccess": "Batch disable successful",
+					"statusUpdateError": "Failed to update status",
+					"remarkDuplicate": "Remark is duplicated"
+				},
+				"form": {
+					"enable": "Enable",
+					"key": "Key",
+					"pleaseEnterKey": "Please enter key",
+					"remarks": "Remarks",
+					"pleaseEnterKeyRemarks": "Please enter key remarks",
+					"url": "URL",
+					"pleaseEnterKeyUrl": "Please enter API mirror site URL (default is official)",
+					"save": "Save",
+					"cancel": "Cancel",
+					"balance": "Balance"
+				},
+				"addTip": "Click above to add a key"
+			},
+			"ChatBatchSize": {
+				"toast": {
+					"invalidChatBatchSize": "Invalid chat batch size",
+					"chatBatchSizeError": "Chat batch size setting error",
+					"chatBatchSizeSuccess": "Chat batch size setting successful"
+				}
+			},
+			"ChatThemesSelect": {
+				"toast": {
+					"getChatThemeError": "Failed to get chat theme",
+					"applicationChatThemeError": "Failed to apply chat theme"
+				},
+				"card": "Card",
+				"chatBubble": "Chat bubble"
+			},
+			"DefaultChatSettings": {
+				"toast": {
+					"getDefaultSettingsError": "Failed to get default settings",
+					"loadKeyPoolError": "Failed to load key pool",
+					"loadModelError": "Failed to load model",
+					"saveSettingsSuccess": "Settings saved successfully",
+					"saveSettingsError": "Failed to save settings"
+				},
+				"saveSettings": "Save settings"
+			},
+			"DevToolsSuspensionWindow": {
+				"toast": {
+					"getDevToolsSuspensionWindowError": "Failed to get Dev Tools suspension window settings",
+					"saveDevToolsSuspensionWindowError": "Failed to save Dev Tools suspension window settings"
+				}
+			},
+			"HazardousOperations": {
+				"toast": {
+					"operationSuccess": "Operation successful",
+					"operationFailed": "Operation failed"
+				},
+				"confirmOperationTip": "Are you sure you want to perform this operation? This action cannot be undone!",
+				"clearChat": "Clear all chats",
+				"clearApiKey": "Clear all API Keys",
+				"clearConfig": "Clear all settings",
+				"clearLog": "Clear all logs"
+			},
+			"LanguageSelect": {
+				"toast": {
+					"getLanguageError": "Failed to get language",
+					"applicationLanguageError": "Failed to apply language"
+				},
+				"system": "System"
+			},
+			"Log": {
+				"toast": {
+					"getLogSuspensionWindowError": "Failed to get log floating window status",
+					"saveLogSuspensionWindowError": "Failed to save log floating window status",
+					"loadError": "Failed to load logs",
+					"clearError": "Failed to clear logs",
+					"exportSuccess": "Logs exported successfully",
+					"exportError": "Failed to export logs"
+				},
+				"function": {
+					"load": "Load logs",
+					"clear": "Clear logs",
+					"export": "Export logs",
+					"keepScrollToBottom": "Keep scroll to bottom {is}"
+				},
+				"count": "Total {count} {level} logs",
+				"empty": "No logs"
+			},
+			"ThemeSwitch": {
+				"toast": {
+					"getThemeError": "Failed to get theme",
+					"applicationThemeError": "Failed to apply theme"
+				},
+				"light": "Light",
+				"dark": "Dark",
+				"system": "System"
+			},
+			"Plugins": {
+				"toast": {
+					"disabledTip": "Plugins marked as disabled cannot be enabled!",
+					"enableSuccess": "Plugin enabled successfully",
+					"disableSuccess": "Plugin disabled successfully",
+					"statusUpdateError": "Failed to update status"
+				},
+				"type": {
+					"all": "All",
+					"other": "Other",
+					"platform": "Platform",
+					"i18n": "Language pack"
+				},
+				"info": {
+					"enabled": "Enabled",
+					"name": "Name",
+					"author": "Author",
+					"description": "Description",
+					"version": "Version"
+				},
+				"systemPlugins": "System plugins",
+				"thirdPartyPlugins": "Third-party plugins",
+				"noPlugins": "No plugins",
+				"thirdPartyPluginsTip": "Third-party plugins may pose security risks. Please use with caution!",
+				"envProhibition": "Third-party plugins are not allowed in browser environments"
+			}
+		},
+		"Role": {
+			"SystemMessageCard": {
+				"systemPrompt": "System prompt"
+			},
+			"AssistantMessageCard": {
+				"toast": {
+					"getChatThemeError": "Failed to get chat theme"
+				},
+				"reasoning": "Reasoning",
+				"thinking": "Thinking..."
+			},
+			"UserMessageCard": {
+				"toast": {
+					"getChatThemeError": "Failed to get chat theme"
+				},
+				"earthOnline": "Earth Online",
+				"players": "Players"
+			}
+		},
 		"AIInput": {
 			"inputTip": "Please enter your question",
 			"newChat": "New chat",
@@ -45,61 +227,6 @@
 				"picture": "Picture",
 				"file": "File"
 			}
-		},
-		"ChatAIKey": {
-			"title": "API Key Pool",
-			"operationButton": {
-				"add": "Add",
-				"remove": "Remove {count} keys",
-				"edit": "Edit",
-				"enable": "Enable {count} keys",
-				"disable": "Disable {count} keys"
-			},
-			"toast": {
-				"loadKeyPoolError": "Failed to load key pool",
-				"errorObtainingKeyBalance": "Failed to get key balance",
-				"keyNull": "Key cannot be empty",
-				"remarkNull": "Remark cannot be empty",
-				"invalidUrl": "Invalid URL",
-				"addKeySuccess": "Key added successfully",
-				"addKeyError": "Failed to add key",
-				"selectKeysOperate": "Please select keys to operate on",
-				"removeKeySuccess": "Key removed successfully",
-				"removeKeysError": "Failed to remove keys",
-				"selectAKey": "You can only select one key at a time",
-				"getKeyError": "Failed to get key",
-				"editKeySuccess": "Key edited successfully",
-				"editKeyError": "Failed to edit key",
-				"enableSuccess": "Key enabled successfully",
-				"disableSuccess": "Key disabled successfully",
-				"batchEnableSuccess": "Batch enable successful",
-				"batchDisableSuccess": "Batch disable successful",
-				"statusUpdateError": "Failed to update status",
-				"remarkDuplicate": "Remark is duplicated"
-			},
-			"form": {
-				"enable": "Enable",
-				"key": "Key",
-				"pleaseEnterKey": "Please enter key",
-				"remarks": "Remarks",
-				"pleaseEnterKeyRemarks": "Please enter key remarks",
-				"url": "URL",
-				"pleaseEnterKeyUrl": "Please enter API mirror site URL (default is official)",
-				"save": "Save",
-				"cancel": "Cancel",
-				"balance": "Balance"
-			},
-			"addTip": "Click above to add a key"
-		},
-		"DefaultChatSettings": {
-			"toast": {
-				"getDefaultSettingsError": "Failed to get default settings",
-				"loadKeyPoolError": "Failed to load key pool",
-				"loadModelError": "Failed to load model",
-				"saveSettingsSuccess": "Settings saved successfully",
-				"saveSettingsError": "Failed to save settings"
-			},
-			"saveSettings": "Save settings"
 		},
 		"Selector": {
 			"loading": "Loading..."
@@ -125,22 +252,6 @@
 			"openChat": "Open chat",
 			"deleteChat": "Delete chat"
 		},
-		"LanguageSelect": {
-			"toast": {
-				"getLanguageError": "Failed to get language",
-				"applicationLanguageError": "Failed to apply language"
-			},
-			"system": "System"
-		},
-		"ThemeSwitch": {
-			"toast": {
-				"getThemeError": "Failed to get theme",
-				"applicationThemeError": "Failed to apply theme"
-			},
-			"light": "Light",
-			"dark": "Dark",
-			"system": "System"
-		},
 		"MessageCard": {
 			"editMessage": "Edit message",
 			"removeMessage": "Remove message",
@@ -150,57 +261,11 @@
 			"error": "Failed",
 			"loading": "Loading..."
 		},
-		"SystemMessageCard": {
-			"systemPrompt": "System prompt"
-		},
-		"UserMessageCard": {
-			"toast": {
-				"getChatThemeError": "Failed to get chat theme"
-			},
-			"earthOnline": "Earth Online",
-			"players": "Players"
-		},
-		"AssistantMessageCard": {
-			"toast": {
-				"getChatThemeError": "Failed to get chat theme"
-			},
-			"reasoning": "Reasoning",
-			"thinking": "Thinking..."
-		},
 		"CodeBlockRenderer": {
 			"copy": "Copy",
 			"copied": "Copied",
 			"failed": "Failed",
 			"notSupported": "Unsupported language"
-		},
-		"Log": {
-			"toast": {
-				"getLogSuspensionWindowError": "Failed to get log floating window status",
-				"saveLogSuspensionWindowError": "Failed to save log floating window status",
-				"loadError": "Failed to load logs",
-				"clearError": "Failed to clear logs",
-				"exportSuccess": "Logs exported successfully",
-				"exportError": "Failed to export logs"
-			},
-			"function": {
-				"load": "Load logs",
-				"clear": "Clear logs",
-				"export": "Export logs",
-				"keepScrollToBottom": "Keep scroll to bottom {is}"
-			},
-			"count": "Total {count} {level} logs",
-			"empty": "No logs"
-		},
-		"HazardousOperations": {
-			"toast": {
-				"operationSuccess": "Operation successful",
-				"operationFailed": "Operation failed"
-			},
-			"confirmOperationTip": "Are you sure you want to perform this operation? This action cannot be undone!",
-			"clearChat": "Clear all chats",
-			"clearApiKey": "Clear all API Keys",
-			"clearConfig": "Clear all settings",
-			"clearLog": "Clear all logs"
 		},
 		"MermaidRenderer": {
 			"preview": "Preview",
@@ -245,41 +310,6 @@
 			"delete": "Delete",
 			"plugins": "Plugins",
 			"log": "Log"
-		},
-		"ChatThemesSelect": {
-			"toast": {
-				"getChatThemeError": "Failed to get chat theme",
-				"applicationChatThemeError": "Failed to apply chat theme"
-			},
-			"card": "Card",
-			"chatBubble": "Chat bubble"
-		},
-		"DevToolsSuspensionWindow": {
-			"toast": {
-				"getDevToolsSuspensionWindowError": "Failed to get Dev Tools suspension window settings",
-				"saveDevToolsSuspensionWindowError": "Failed to save Dev Tools suspension window settings"
-			}
-		},
-		"ChatBatchSize": {
-			"toast": {
-				"invalidChatBatchSize": "Invalid chat batch size",
-				"chatBatchSizeError": "Chat batch size setting error",
-				"chatBatchSizeSuccess": "Chat batch size setting successful"
-			}
-		},
-		"BackgroundImage": {
-			"toast": {
-				"getBackgroundImageError": "Failed to get background image configuration",
-				"uploadSuccess": "Background image uploaded successfully",
-				"uploadError": "Failed to upload background image",
-				"applyBackgroundImageSuccess": "Background image configuration applied successfully",
-				"applyBackgroundImageError": "Failed to apply background image configuration"
-			},
-			"upload": "Upload",
-			"base64Placeholder": "Base64 Picture Uploaded",
-			"backgroundImageURL": "Image URL/Base64",
-			"backgroundImageOpacity": "Opacity",
-			"backgroundImageMask": "Mask"
 		}
 	},
 	"views": {
@@ -391,32 +421,6 @@
 			"plugins": "Plugins",
 			"advancedTools": "Advanced tools",
 			"about": "About"
-		},
-		"PluginsView": {
-			"toast": {
-				"disabledTip": "Plugins marked as disabled cannot be enabled!",
-				"enableSuccess": "Plugin enabled successfully",
-				"disableSuccess": "Plugin disabled successfully",
-				"statusUpdateError": "Failed to update status"
-			},
-			"type": {
-				"all": "All",
-				"other": "Other",
-				"platform": "Platform",
-				"i18n": "Language pack"
-			},
-			"info": {
-				"enabled": "Enabled",
-				"name": "Name",
-				"author": "Author",
-				"description": "Description",
-				"version": "Version"
-			},
-			"systemPlugins": "System plugins",
-			"thirdPartyPlugins": "Third-party plugins",
-			"noPlugins": "No plugins",
-			"thirdPartyPluginsTip": "Third-party plugins may pose security risks. Please use with caution!",
-			"envProhibition": "Third-party plugins are not allowed in browser environments"
 		}
 	}
 }

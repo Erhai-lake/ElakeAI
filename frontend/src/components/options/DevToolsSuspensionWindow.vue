@@ -20,7 +20,7 @@ export default {
 			this.isDevToolsSuspensionWindow = DEV_TOOLS_SUSPENSION_WINDOW_DATA ? DEV_TOOLS_SUSPENSION_WINDOW_DATA.value : false
 		} catch (error) {
 			this.$log.error(`[${this.name}] Dev Tools悬浮窗设置获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.DevToolsSuspensionWindow.toast.getDevToolsSuspensionWindowError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Options.DevToolsSuspensionWindow.toast.getDevToolsSuspensionWindowError")}`)
 		}
 	},
 	methods: {
@@ -47,7 +47,7 @@ export default {
 				this.isDevToolsSuspensionWindow = !this.isDevToolsSuspensionWindow
 			} catch (error) {
 				this.$log.error(`[${this.name}] 悬浮窗设置保存失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.DevToolsSuspensionWindow.toast.saveDevToolsSuspensionWindowError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.DevToolsSuspensionWindow.toast.saveDevToolsSuspensionWindowError")}`)
 			}
 		}
 	}

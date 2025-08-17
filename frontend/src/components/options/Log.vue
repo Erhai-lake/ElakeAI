@@ -74,7 +74,7 @@ export default {
 				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载日志失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.loadError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Log.toast.loadError")}`)
 			}
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
@@ -95,7 +95,7 @@ export default {
 				EventBus.emit("[update] logUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 清空日志失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.clearError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Log.toast.clearError")}`)
 			}
 			if (this.keepScrollToBottom) this.scrollToBottom()
 		},
@@ -161,10 +161,10 @@ export default {
 					document.body.removeChild(DOWNLOAD_LINK)
 					URL.revokeObjectURL(DOWNLOAD_URL)
 				}, 100)
-				toastRegistry.success(`[${this.name}] ${this.t("components.Log.toast.exportSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.Log.toast.exportSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导出日志失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Log.toast.exportError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Log.toast.exportError")}`)
 			}
 		}
 	}
@@ -181,14 +181,14 @@ export default {
 				:selectorList="levelList"
 				:selectorSelected="levelSelector || {}"
 				@update:selectorSelected="updateSelectedLevel"/>
-			<Button @click="loadLogs">🔄 {{ t("components.Log.function.load") }}</Button>
-			<Button @click="clearLogs">🗑️ {{ t("components.Log.function.clear") }}</Button>
-			<Button @click="exportLogs">📤 {{ t("components.Log.function.export") }}</Button>
+			<Button @click="loadLogs">🔄 {{ t("components.Options.Log.function.load") }}</Button>
+			<Button @click="clearLogs">🗑️ {{ t("components.Options.Log.function.clear") }}</Button>
+			<Button @click="exportLogs">📤 {{ t("components.Options.Log.function.export") }}</Button>
 			<Button @click="keepScrollToBottom">
-				{{ t("components.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
+				{{ t("components.Options.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
 			</Button>
 			<span class="log-count">{{
-					t("components.Log.count", {count: logs.length, level: levelSelector.label})
+					t("components.Options.Log.count", {count: logs.length, level: levelSelector.label})
 				}}</span>
 		</div>
 		<div ref="logList" class="log-list">
@@ -198,7 +198,7 @@ export default {
 				<span class="log-component">[{{ log.component || "Global" }}]</span>
 				<span class="log-message">{{ log.message || "NULL" }}</span>
 			</div>
-			<div v-if="logs.length === 0" class="empty-tip">{{ t("components.Log.empty") }}</div>
+			<div v-if="logs.length === 0" class="empty-tip">{{ t("components.Options.Log.empty") }}</div>
 		</div>
 	</div>
 </template>

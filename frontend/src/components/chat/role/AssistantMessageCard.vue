@@ -49,7 +49,7 @@ export default {
 			parsedBlocks: [],
 			reasoningHtml: "",
 			isReasoningExpanded: false,
-			reasoning: this.t("components.AssistantMessageCard.reasoning"),
+			reasoning: this.t("components.Role.AssistantMessageCard.reasoning"),
 			editingContent: {
 				show: false,
 				value: ""
@@ -60,14 +60,14 @@ export default {
 		"message.message.reasoning"(newVal, oldVal) {
 			if (newVal && newVal !== oldVal) {
 				this.isReasoningExpanded = true
-				this.reasoning = this.t("components.AssistantMessageCard.thinking")
+				this.reasoning = this.t("components.Role.AssistantMessageCard.thinking")
 				this.parseReasoning()
 			}
 		},
 		"message.message.content"(newVal, oldVal) {
 			if (newVal !== oldVal) {
 				this.isReasoningExpanded = false
-				this.reasoning = this.t("components.AssistantMessageCard.reasoning")
+				this.reasoning = this.t("components.Role.AssistantMessageCard.reasoning")
 				const HAS_UNCLOSED_MERMAID = /```(mermaid|flow)[\s\S]*$/.test(newVal) && !/```(mermaid|flow)[\s\S]*```/.test(newVal)
 				if (!HAS_UNCLOSED_MERMAID) {
 					this.parseContent()
@@ -84,7 +84,7 @@ export default {
 			this.chatTheme = CHAT_THEME_DATA ? CHAT_THEME_DATA.value : "card"
 		} catch (error) {
 			this.$log.error(`[${this.name}] 对话主题获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.AssistantMessageCard.toast.getChatThemeError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Role.AssistantMessageCard.toast.getChatThemeError")}`)
 		}
 	},
 	methods: {

@@ -131,7 +131,7 @@ export default {
 			} catch (error) {
 				this.keyPools.list = []
 				this.$log.error(`[${this.name}] 加载Key池失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.DefaultChatSettings.toast.loadKeyPoolError")}`)
 			}
 		},
 		/**
@@ -197,7 +197,7 @@ export default {
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载Key池失败`, error)
-					toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadKeyPoolError")}`)
+					toastRegistry.error(`[${this.name}] ${this.t("components.Options.DefaultChatSettings.toast.loadKeyPoolError")}`)
 				}
 			} finally {
 				this.loading.keys = false
@@ -228,7 +228,7 @@ export default {
 			} catch (error) {
 				if (!requestContext.cancelled) {
 					this.$log.error(`[${this.name}] 加载模型失败`, error)
-					toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.loadModelError")}`)
+					toastRegistry.error(`[${this.name}] ${this.t("components.Options.DefaultChatSettings.toast.loadModelError")}`)
 				}
 			} finally {
 				this.loading.models = false
@@ -307,7 +307,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.getDefaultSettingsError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.DefaultChatSettings.toast.getDefaultSettingsError")}`)
 			}
 		},
 		/**
@@ -326,10 +326,10 @@ export default {
 						model: this.model.selected.title
 					}
 				})
-				toastRegistry.success(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.DefaultChatSettings.toast.saveSettingsSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存设置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.DefaultChatSettings.toast.saveSettingsError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.DefaultChatSettings.toast.saveSettingsError")}`)
 			}
 		}
 	}
@@ -360,7 +360,7 @@ export default {
 			@update:selectorSelected="updateSelectedModel"/>
 		<!-- 保存按钮 -->
 		<Button v-if="save" @click="saveDefaultChatSettings">
-			{{ t("components.DefaultChatSettings.saveSettings") }}
+			{{ t("components.Options.DefaultChatSettings.saveSettings") }}
 		</Button>
 	</div>
 </template>

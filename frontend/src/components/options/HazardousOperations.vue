@@ -27,56 +27,56 @@ export default {
 		 * 清除所有聊天记录
 		 */
 		async clearChat() {
-			if (!confirm(this.t("components.HazardousOperations.confirmOperationTip"))) return
+			if (!confirm(this.t("components.Options.HazardousOperations.confirmOperationTip"))) return
 			try {
 				await this.$DB.chats.clear()
-				toastRegistry.success(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationSuccess")}`)
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationFailed")}`)
 			}
 		},
 		/**
 		 * 清除所有API Key
 		 */
 		async clearApiKey() {
-			if (!confirm(this.t("components.HazardousOperations.confirmOperationTip"))) return
+			if (!confirm(this.t("components.Options.HazardousOperations.confirmOperationTip"))) return
 			try {
 				await this.$DB.apiKeys.clear()
-				toastRegistry.success(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationSuccess")}`)
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationFailed")}`)
 			}
 		},
 		/**
 		 * 清除所有配置项
 		 */
 		async clearConfigs() {
-			if (!confirm(this.t("components.HazardousOperations.confirmOperationTip"))) return
+			if (!confirm(this.t("components.Options.HazardousOperations.confirmOperationTip"))) return
 			try {
 				await this.$DB.configs.clear()
-				toastRegistry.success(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationSuccess")}`)
 				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationFailed")}`)
 			}
 		},
 		/**
 		 * 清除所有日志
 		 */
 		async clearLog() {
-			if (!confirm(this.t("components.HazardousOperations.confirmOperationTip"))) return
+			if (!confirm(this.t("components.Options.HazardousOperations.confirmOperationTip"))) return
 			try {
 				await this.$DB.logs.clear()
-				toastRegistry.success(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationSuccess")}`)
 				EventBus.emit("[update] logUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 操作失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.HazardousOperations.toast.operationFailed")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationFailed")}`)
 			}
 		}
 	}
@@ -85,10 +85,10 @@ export default {
 
 <template>
 	<div class="hazardous-operation">
-		<Button @click="clearChat">{{ t("components.HazardousOperations.clearChat") }}</Button>
-		<Button @click="clearApiKey">{{ t("components.HazardousOperations.clearApiKey") }}</Button>
-		<Button @click="clearConfigs">{{ t("components.HazardousOperations.clearConfig") }}</Button>
-		<Button @click="clearLog">{{ t("components.HazardousOperations.clearLog") }}</Button>
+		<Button @click="clearChat">{{ t("components.Options.HazardousOperations.clearChat") }}</Button>
+		<Button @click="clearApiKey">{{ t("components.Options.HazardousOperations.clearApiKey") }}</Button>
+		<Button @click="clearConfigs">{{ t("components.Options.HazardousOperations.clearConfig") }}</Button>
+		<Button @click="clearLog">{{ t("components.Options.HazardousOperations.clearLog") }}</Button>
 	</div>
 </template>
 

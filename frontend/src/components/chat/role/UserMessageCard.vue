@@ -37,7 +37,7 @@ export default {
 			this.chatTheme = CHAT_THEME_DATA ? CHAT_THEME_DATA.value : "card"
 		} catch (error) {
 			this.$log.error(`[${this.name}] 对话主题获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.UserMessageCard.toast.getChatThemeError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Role.UserMessageCard.toast.getChatThemeError")}`)
 		}
 	},
 	methods: {
@@ -192,9 +192,9 @@ export default {
 						message.status === "error" ? t("components.MessageCard.error") : message.status === "loading" ? t("components.MessageCard.loading") : t("components.MessageCard.done")
 					}}
 					-
-					[{{ t("components.UserMessageCard.earthOnline") }}]
+					[{{ t("components.Role.UserMessageCard.earthOnline") }}]
 					-
-					[{{ t("components.UserMessageCard.players") }}]
+					[{{ t("components.Role.UserMessageCard.players") }}]
 					-
 					{{ formatTimestamp() }}
 				</div>

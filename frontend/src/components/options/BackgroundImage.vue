@@ -28,11 +28,11 @@ export default {
 				const URL = this.backgroundImage.url
 				if (!URL) return ""
 				// 如果是 Base64, 用占z位文本代替
-				return URL.startsWith("data:image/") ? this.t("components.BackgroundImage.base64Placeholder") : URL
+				return URL.startsWith("data:image/") ? this.t("components.Options.BackgroundImage.base64Placeholder") : URL
 			},
 			set(val) {
 				// 如果用户输入的不是占位符, 直接写入
-				if (!val.startsWith(this.t("components.BackgroundImage.base64Placeholder"))) {
+				if (!val.startsWith(this.t("components.Options.BackgroundImage.base64Placeholder"))) {
 					this.backgroundImage.url = val
 				}
 			}
@@ -60,7 +60,7 @@ export default {
 				this.backgroundImage = BACKGROUND_IMAGE_DATA ? BACKGROUND_IMAGE_DATA.value : this.backgroundImage
 			} catch (error) {
 				this.$log.error(`[${this.name}] 背景图片配置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.BackgroundImage.toast.getBackgroundImageError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.getBackgroundImageError")}`)
 			}
 		},
 		/**
@@ -78,11 +78,11 @@ export default {
 			const READER = new FileReader()
 			READER.onload = (readerEvent) => {
 				this.backgroundImage.url = readerEvent.target.result
-				toastRegistry.success(`[${this.name}] ${this.t("components.BackgroundImage.toast.uploadSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.uploadSuccess")}`)
 			}
 			READER.onerror = (readerEvent) => {
 				this.$log.error(`[${this.name}] 图片读取失败`, readerEvent)
-				toastRegistry.error(`[${this.name}] ${this.t("components.BackgroundImage.toast.uploadError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.uploadError")}`)
 			}
 			READER.readAsDataURL(FILE)
 			event.target.value = ""
@@ -98,13 +98,13 @@ export default {
 					value: JSON.parse(JSON.stringify(this.backgroundImage))
 				})
 				EventBus.emit("[function] configInitialization")
-				toastRegistry.success(`[${this.name}] ${this.t("components.BackgroundImage.toast.applyBackgroundImageSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.applyBackgroundImageSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 背景图片配置应用失败`, {
 					backgroundImage: this.backgroundImage,
 					error
 				})
-				toastRegistry.error(`[${this.name}] ${this.t("components.BackgroundImage.toast.applyBackgroundImageError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.applyBackgroundImageError")}`)
 			}
 		}, 500),
 	}
@@ -119,12 +119,12 @@ export default {
 		</label>
 		<input type="file" ref="fileInput" style="display: none;" accept="image/*" @change="handleFileChange">
 		<Button @click="upload" :disabled="!backgroundImage.enabled">
-			{{t('components.BackgroundImage.upload') }}
+			{{t('components.Options.BackgroundImage.upload') }}
 		</Button>
 		<InputText
 			class="text"
-			:placeholder="t('components.BackgroundImage.backgroundImageURL')"
-			:title="t('components.BackgroundImage.backgroundImageURL')"
+			:placeholder="t('components.Options.BackgroundImage.backgroundImageURL')"
+			:title="t('components.Options.BackgroundImage.backgroundImageURL')"
 			:disabled="!backgroundImage.enabled"
 			v-model="displayUrl"
 			@input="apply"/>
@@ -132,8 +132,8 @@ export default {
 			class="number"
 			:min="0"
 			:max="100"
-			:placeholder="t('components.BackgroundImage.backgroundImageOpacity')"
-			:title="t('components.BackgroundImage.backgroundImageOpacity')"
+			:placeholder="t('components.Options.BackgroundImage.backgroundImageOpacity')"
+			:title="t('components.Options.BackgroundImage.backgroundImageOpacity')"
 			:disabled="!backgroundImage.enabled"
 			v-model="backgroundImage.opacity"
 			@input="apply"/>
@@ -141,8 +141,8 @@ export default {
 			class="number"
 			:min="0"
 			:max="100"
-			:placeholder="t('components.BackgroundImage.backgroundImageMask')"
-			:title="t('components.BackgroundImage.backgroundImageMask')"
+			:placeholder="t('components.Options.BackgroundImage.backgroundImageMask')"
+			:title="t('components.Options.BackgroundImage.backgroundImageMask')"
 			:disabled="!backgroundImage.enabled"
 			v-model="backgroundImage.mask"
 			@input="apply"/>

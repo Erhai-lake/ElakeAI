@@ -13,17 +13,17 @@ export default defineComponent({
 			theme: [
 				{
 					code: "System",
-					title: "i18n:components.ThemeSwitch.system",
+					title: "i18n:components.Options.ThemeSwitch.system",
 					images: "https://openmoji.org/data/color/svg/2699.svg"
 				},
 				{
 					code: "Light",
-					title: "i18n:components.ThemeSwitch.light",
+					title: "i18n:components.Options.ThemeSwitch.light",
 					images: "https://openmoji.org/data/color/svg/1F31E.svg"
 				},
 				{
 					code: "Dark",
-					title: "i18n:components.ThemeSwitch.dark",
+					title: "i18n:components.Options.ThemeSwitch.dark",
 					images: "https://openmoji.org/data/color/svg/1F319.svg"
 				}
 			],
@@ -48,7 +48,7 @@ export default defineComponent({
 			}
 		} catch (error) {
 			this.$log.error(`[${this.name}] 主题获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.getThemeError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Options.ThemeSwitch.toast.getThemeError")}`)
 		}
 	},
 	methods: {
@@ -87,7 +87,7 @@ export default defineComponent({
 				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 主题应用失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ThemeSwitch.toast.applicationThemeError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ThemeSwitch.toast.applicationThemeError")}`)
 			}
 		}
 	}

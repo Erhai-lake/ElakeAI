@@ -13,11 +13,11 @@ export default {
 			chatThemes: [
 				{
 					item: "card",
-					title: "i18n:components.ChatThemesSelect.card"
+					title: "i18n:components.Options.ChatThemesSelect.card"
 				},
 				{
 					item: "chatBubble",
-					title: "i18n:components.ChatThemesSelect.chatBubble"
+					title: "i18n:components.Options.ChatThemesSelect.chatBubble"
 				}
 			],
 			selectedChatThemes: null
@@ -40,7 +40,7 @@ export default {
 			}
 		} catch (error) {
 			this.$log.error(`[${this.name}] 对话主题获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.ChatThemesSelect.toast.getChatThemeError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatThemesSelect.toast.getChatThemeError")}`)
 		}
 	},
 	methods: {
@@ -70,7 +70,7 @@ export default {
 				await this.$DB.configs.put({item: "chatTheme", value: chatTheme.item})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 对话主题应用失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatThemesSelect.toast.applicationChatThemeError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatThemesSelect.toast.applicationChatThemeError")}`)
 			}
 		}
 	}

@@ -34,7 +34,7 @@ export default {
 			}
 		} catch (error) {
 			this.$log.error(`[${this.name}] 语言获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.getLanguageError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Options.LanguageSelect.toast.getLanguageError")}`)
 		}
 	},
 	methods: {
@@ -61,7 +61,7 @@ export default {
 			this.languages = [
 				{
 					code: "System",
-					title: "i18n:components.LanguageSelect.system",
+					title: "i18n:components.Options.LanguageSelect.system",
 					images: "https://openmoji.org/data/color/svg/2699.svg"
 				}
 			]
@@ -102,7 +102,7 @@ export default {
 				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 语言应用失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.LanguageSelect.toast.applicationLanguageError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LanguageSelect.toast.applicationLanguageError")}`)
 			}
 		}
 	}

@@ -178,7 +178,7 @@ export default {
 						message.status === "error" ? t("components.MessageCard.error") : message.status === "loading" ? t("components.MessageCard.loading") : t("components.MessageCard.done")
 					}}
 					-
-					{{ t("components.SystemMessageCard.systemPrompt") }}
+					{{ t("components.Role.SystemMessageCard.systemPrompt") }}
 					-
 					{{ formatTimestamp() }}
 				</div>

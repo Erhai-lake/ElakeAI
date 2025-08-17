@@ -20,7 +20,7 @@ export default {
 			this.chatBatchSize = CHAT_BATCH_SIZE.value || 20
 		} catch (error) {
 			this.$log.error(`[${this.name}] 读取聊天批大小失败, 使用默认值 20`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.ChatBatchSize.toast.chatBatchSizeError")}`)
+			toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatBatchSize.toast.chatBatchSizeError")}`)
 			this.chatBatchSize = 20
 		}
 	},
@@ -45,15 +45,15 @@ export default {
 			// 检查转换后的值是否为有效的整数且大于 0
 			if (isNaN(value) || value <= 0) {
 				this.$log.error(`[${this.name}] 输入的聊天批大小无效, 输入值: ${value}`)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatBatchSize.toast.invalidChatBatchSize")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatBatchSize.toast.invalidChatBatchSize")}`)
 				return
 			}
 			try {
 				await this.$DB.configs.put({item: "chatBatchSize", value: value})
-				toastRegistry.success(`[${this.name}] ${this.t("components.ChatBatchSize.toast.chatBatchSizeSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.ChatBatchSize.toast.chatBatchSizeSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存聊天批大小失败, 输入值: ${value}`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.ChatBatchSize.toast.chatBatchSizeError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatBatchSize.toast.chatBatchSizeError")}`)
 			}
 		}, 500)
 	}

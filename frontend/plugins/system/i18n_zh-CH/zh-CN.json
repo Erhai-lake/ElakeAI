@@ -24,6 +24,188 @@
 		"requestFailed": "请求失败"
 	},
 	"components": {
+		"Options": {
+			"BackgroundImage": {
+				"toast": {
+					"getBackgroundImageError": "获取背景图片配置失败",
+					"uploadSuccess": "上传背景图片成功",
+					"uploadError": "上传背景图片失败",
+					"applyBackgroundImageSuccess": "应用背景图片配置成功",
+					"applyBackgroundImageError": "应用背景图片配置失败"
+				},
+				"upload": "上传",
+				"base64Placeholder": "已上传Base64图片",
+				"backgroundImageURL": "图片URL/Base64",
+				"backgroundImageOpacity": "透明度",
+				"backgroundImageMask": "遮罩"
+			},
+			"ChatAIKey": {
+				"title": "API Key池",
+				"operationButton": {
+					"add": "添加",
+					"remove": "移除{count}个Key",
+					"edit": "编辑",
+					"enable": "启用{count}个Key",
+					"disable": "禁用{count}个Key"
+				},
+				"toast": {
+					"loadKeyPoolError": "加载Key池失败",
+					"errorObtainingKeyBalance": "获取Key余额失败",
+					"keyNull": "Key不能为空",
+					"remarkNull": "备注不能为空",
+					"invalidUrl": "无效的URL",
+					"addKeySuccess": "添加Key成功",
+					"addKeyError": "添加Key失败",
+					"selectKeysOperate": "请选择要操作的Key",
+					"removeKeySuccess": "移除Key成功",
+					"removeKeysError": "移除Keys失败",
+					"selectAKey": "您只能同时选择一个Key",
+					"getKeyError": "获取Key失败",
+					"editKeySuccess": "编辑Key成功",
+					"editKeyError": "编辑Key失败",
+					"enableSuccess": "启用Key成功",
+					"disableSuccess": "禁用Key成功",
+					"batchEnableSuccess": "批量启用Key成功",
+					"batchDisableSuccess": "批量禁用Key成功",
+					"statusUpdateError": "状态更新失败",
+					"remarkDuplicate": "备注重复"
+				},
+				"form": {
+					"enable": "启用",
+					"key": "Key",
+					"pleaseEnterKey": "请输入Key",
+					"remarks": "备注",
+					"pleaseEnterKeyRemarks": "请输入Key备注",
+					"url": "URL",
+					"pleaseEnterKeyUrl": "请输入API镜像站URL(默认为官方)",
+					"save": "保存",
+					"cancel": "取消",
+					"balance": "余额"
+				},
+				"addTip": "请点击上方添加Key"
+			},
+			"ChatBatchSize": {
+				"toast": {
+					"invalidChatBatchSize": "无效的聊天批大小",
+					"chatBatchSizeError": "聊天批大小设置错误",
+					"chatBatchSizeSuccess": "聊天批大小设置成功"
+				}
+			},
+			"ChatThemesSelect": {
+				"toast": {
+					"getChatThemeError": "获取对话主题失败",
+					"applicationChatThemeError": "应用对话主题失败"
+				},
+				"card": "卡片",
+				"chatBubble": "聊天气泡"
+			},
+			"DefaultChatSettings": {
+				"toast": {
+					"getDefaultSettingsError": "获取默认设置失败",
+					"loadKeyPoolError": "加载Key池失败",
+					"loadModelError": "加载模型失败",
+					"saveSettingsSuccess": "保存设置成功",
+					"saveSettingsError": "保存设置失败"
+				},
+				"saveSettings": "保存设置"
+			},
+			"DevToolsSuspensionWindow": {
+				"toast": {
+					"getDevToolsSuspensionWindowError": "获取Dev Tools悬浮窗设置失败",
+					"saveDevToolsSuspensionWindowError": "保存Dev Tools悬浮窗设置失败"
+				}
+			},
+			"HazardousOperations": {
+				"toast": {
+					"operationSuccess": "操作成功",
+					"operationFailed": "操作失败"
+				},
+				"confirmOperationTip": "确认执行此操作? 此操作将不可撤销!",
+				"clearChat": "清空所有对话",
+				"clearApiKey": "清空所有API Key",
+				"clearConfig": "清空所有设置",
+				"clearLog": "清空所有日志"
+			},
+			"LanguageSelect": {
+				"toast": {
+					"getLanguageError": "获取语言失败",
+					"applicationLanguageError": "应用语言失败"
+				},
+				"system": "系统"
+			},
+			"Log": {
+				"toast": {
+					"getLogSuspensionWindowError": "获取日志悬浮窗状态失败",
+					"saveLogSuspensionWindowError": "保存日志悬浮窗状态失败",
+					"loadError": "加载日志失败",
+					"clearError": "清空日志失败",
+					"exportSuccess": "导出日志成功",
+					"exportError": "导出日志失败"
+				},
+				"function": {
+					"load": "加载日志",
+					"clear": "清空日志",
+					"export": "导出日志",
+					"keepScrollToBottom": "保持滚动到底部 {is}"
+				},
+				"count": "共 {count} 条 {level} 日志",
+				"empty": "暂无日志"
+			},
+			"ThemeSwitch": {
+				"toast": {
+					"getThemeError": "获取主题失败",
+					"applicationThemeError": "应用主题失败"
+				},
+				"light": "白昼",
+				"dark": "深夜",
+				"system": "系统"
+			},
+			"Plugins": {
+				"toast": {
+					"disabledTip": "标记为 disabled 的插件被禁止启用!",
+					"enableSuccess": "启用插件成功",
+					"disableSuccess": "禁用插件成功",
+					"statusUpdateError": "状态更新失败"
+				},
+				"type": {
+					"all": "全部",
+					"other": "其他",
+					"platform": "平台",
+					"i18n": "语言包"
+				},
+				"info": {
+					"enabled": "启用",
+					"name": "名称",
+					"author": "作者",
+					"description": "描述",
+					"version": "版本"
+				},
+				"systemPlugins": "系统插件",
+				"thirdPartyPlugins": "第三方插件",
+				"noPlugins": "暂无插件",
+				"thirdPartyPluginsTip": "第三方插件可能存在安全风险, 请谨慎使用!",
+				"envProhibition": "第三方插件禁止在浏览器环境使用"
+			}
+		},
+		"Role": {
+			"SystemMessageCard": {
+				"systemPrompt": "系统提示词"
+			},
+			"AssistantMessageCard": {
+				"toast": {
+					"getChatThemeError": "获取对话主题失败"
+				},
+				"reasoning": "推理",
+				"thinking": "思考中..."
+			},
+			"UserMessageCard": {
+				"toast": {
+					"getChatThemeError": "获取对话主题失败"
+				},
+				"earthOnline": "地球Online",
+				"players": "玩家"
+			}
+		},
 		"AIInput": {
 			"inputTip": "请输入您的问题",
 			"newChat": "新建对话",
@@ -45,61 +227,6 @@
 				"picture": "照片",
 				"file": "文件"
 			}
-		},
-		"ChatAIKey": {
-			"title": "API Key池",
-			"operationButton": {
-				"add": "添加",
-				"remove": "移除{count}个Key",
-				"edit": "编辑",
-				"enable": "启用{count}个Key",
-				"disable": "禁用{count}个Key"
-			},
-			"toast": {
-				"loadKeyPoolError": "加载Key池失败",
-				"errorObtainingKeyBalance": "获取Key余额失败",
-				"keyNull": "Key不能为空",
-				"remarkNull": "备注不能为空",
-				"invalidUrl": "无效的URL",
-				"addKeySuccess": "添加Key成功",
-				"addKeyError": "添加Key失败",
-				"selectKeysOperate": "请选择要操作的Key",
-				"removeKeySuccess": "移除Key成功",
-				"removeKeysError": "移除Keys失败",
-				"selectAKey": "您只能同时选择一个Key",
-				"getKeyError": "获取Key失败",
-				"editKeySuccess": "编辑Key成功",
-				"editKeyError": "编辑Key失败",
-				"enableSuccess": "启用Key成功",
-				"disableSuccess": "禁用Key成功",
-				"batchEnableSuccess": "批量启用Key成功",
-				"batchDisableSuccess": "批量禁用Key成功",
-				"statusUpdateError": "状态更新失败",
-				"remarkDuplicate": "备注重复"
-			},
-			"form": {
-				"enable": "启用",
-				"key": "Key",
-				"pleaseEnterKey": "请输入Key",
-				"remarks": "备注",
-				"pleaseEnterKeyRemarks": "请输入Key备注",
-				"url": "URL",
-				"pleaseEnterKeyUrl": "请输入API镜像站URL(默认为官方)",
-				"save": "保存",
-				"cancel": "取消",
-				"balance": "余额"
-			},
-			"addTip": "请点击上方添加Key"
-		},
-		"DefaultChatSettings": {
-			"toast": {
-				"getDefaultSettingsError": "获取默认设置失败",
-				"loadKeyPoolError": "加载Key池失败",
-				"loadModelError": "加载模型失败",
-				"saveSettingsSuccess": "保存设置成功",
-				"saveSettingsError": "保存设置失败"
-			},
-			"saveSettings": "保存设置"
 		},
 		"Selector": {
 			"loading": "加载中..."
@@ -125,22 +252,6 @@
 			"openChat": "打开对话",
 			"deleteChat": "删除对话"
 		},
-		"LanguageSelect": {
-			"toast": {
-				"getLanguageError": "获取语言失败",
-				"applicationLanguageError": "应用语言失败"
-			},
-			"system": "系统"
-		},
-		"ThemeSwitch": {
-			"toast": {
-				"getThemeError": "获取主题失败",
-				"applicationThemeError": "应用主题失败"
-			},
-			"light": "白昼",
-			"dark": "深夜",
-			"system": "系统"
-		},
 		"MessageCard": {
 			"editMessage": "编辑消息",
 			"removeMessage": "移除消息",
@@ -150,57 +261,11 @@
 			"error": "生成失败",
 			"loading": "生成中..."
 		},
-		"SystemMessageCard": {
-			"systemPrompt": "系统提示词"
-		},
-		"UserMessageCard": {
-			"toast": {
-				"getChatThemeError": "获取对话主题失败"
-			},
-			"earthOnline": "地球Online",
-			"players": "玩家"
-		},
-		"AssistantMessageCard": {
-			"toast": {
-				"getChatThemeError": "获取对话主题失败"
-			},
-			"reasoning": "推理",
-			"thinking": "思考中..."
-		},
 		"CodeBlockRenderer": {
 			"copy": "复制",
 			"copied": "已复制",
 			"failed": "失败",
 			"notSupported": "不支持的语言"
-		},
-		"Log": {
-			"toast": {
-				"getLogSuspensionWindowError": "获取日志悬浮窗状态失败",
-				"saveLogSuspensionWindowError": "保存日志悬浮窗状态失败",
-				"loadError": "加载日志失败",
-				"clearError": "清空日志失败",
-				"exportSuccess": "导出日志成功",
-				"exportError": "导出日志失败"
-			},
-			"function": {
-				"load": "加载日志",
-				"clear": "清空日志",
-				"export": "导出日志",
-				"keepScrollToBottom": "保持滚动到底部 {is}"
-			},
-			"count": "共 {count} 条 {level} 日志",
-			"empty": "暂无日志"
-		},
-		"HazardousOperations": {
-			"toast": {
-				"operationSuccess": "操作成功",
-				"operationFailed": "操作失败"
-			},
-			"confirmOperationTip": "确认执行此操作? 此操作将不可撤销!",
-			"clearChat": "清空所有对话",
-			"clearApiKey": "清空所有API Key",
-			"clearConfig": "清空所有设置",
-			"clearLog": "清空所有日志"
 		},
 		"MermaidRenderer": {
 			"preview": "预览",
@@ -245,41 +310,6 @@
 			"delete": "删除",
 			"plugins": "插件",
 			"log": "日志"
-		},
-		"ChatThemesSelect": {
-			"toast": {
-				"getChatThemeError": "获取对话主题失败",
-				"applicationChatThemeError": "应用对话主题失败"
-			},
-			"card": "卡片",
-			"chatBubble": "聊天气泡"
-		},
-		"DevToolsSuspensionWindow": {
-			"toast": {
-				"getDevToolsSuspensionWindowError": "获取Dev Tools悬浮窗设置失败",
-				"saveDevToolsSuspensionWindowError": "保存Dev Tools悬浮窗设置失败"
-			}
-		},
-		"ChatBatchSize": {
-			"toast": {
-				"invalidChatBatchSize": "无效的聊天批大小",
-				"chatBatchSizeError": "聊天批大小设置错误",
-				"chatBatchSizeSuccess": "聊天批大小设置成功"
-			}
-		},
-		"BackgroundImage": {
-			"toast": {
-				"getBackgroundImageError": "获取背景图片配置失败",
-				"uploadSuccess": "上传背景图片成功",
-				"uploadError": "上传背景图片失败",
-				"applyBackgroundImageSuccess": "应用背景图片配置成功",
-				"applyBackgroundImageError": "应用背景图片配置失败"
-			},
-			"upload": "上传",
-			"base64Placeholder": "已上传Base64图片",
-			"backgroundImageURL": "图片URL/Base64",
-			"backgroundImageOpacity": "透明度",
-			"backgroundImageMask": "遮罩"
 		}
 	},
 	"views": {
@@ -391,32 +421,6 @@
 			"plugins": "插件",
 			"advancedTools": "高级工具",
 			"about": "关于"
-		},
-		"PluginsView": {
-			"toast": {
-				"disabledTip": "标记为 disabled 的插件被禁止启用!",
-				"enableSuccess": "启用插件成功",
-				"disableSuccess": "禁用插件成功",
-				"statusUpdateError": "状态更新失败"
-			},
-			"type": {
-				"all": "全部",
-				"other": "其他",
-				"platform": "平台",
-				"i18n": "语言包"
-			},
-			"info": {
-				"enabled": "启用",
-				"name": "名称",
-				"author": "作者",
-				"description": "描述",
-				"version": "版本"
-			},
-			"systemPlugins": "系统插件",
-			"thirdPartyPlugins": "第三方插件",
-			"noPlugins": "暂无插件",
-			"thirdPartyPluginsTip": "第三方插件可能存在安全风险, 请谨慎使用!",
-			"envProhibition": "第三方插件禁止在浏览器环境使用"
 		}
 	}
 }
