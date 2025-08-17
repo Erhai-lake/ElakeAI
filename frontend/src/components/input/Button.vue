@@ -30,5 +30,12 @@ button {
 	&:active {
 		background-color: var(--button-active-background-color);
 	}
+
+	&:disabled {
+		background-color: var(--disabled-background-color);
+		color: var(--disabled-text-color);
+		border-color: var(--border-color);
+		cursor: not-allowed;
+	}
 }
 </style>

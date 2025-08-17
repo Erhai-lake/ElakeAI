@@ -279,8 +279,7 @@
 			"base64Placeholder": "已上传Base64图片",
 			"backgroundImageURL": "图片URL/Base64",
 			"backgroundImageOpacity": "透明度",
-			"backgroundImageMask": "遮罩",
-			"save": "保存"
+			"backgroundImageMask": "遮罩"
 		}
 	},
 	"views": {

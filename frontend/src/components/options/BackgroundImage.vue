@@ -5,6 +5,7 @@ import Button from "@/components/input/Button.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
+import {publicRegistry} from "@/services/plugin/api/PublicClass"
 
 export default {
 	name: "BackgroundImage",
@@ -85,11 +86,12 @@ export default {
 			}
 			READER.readAsDataURL(FILE)
 			event.target.value = ""
+			this.apply()
 		},
 		/**
 		 * 应用
 		 */
-		async apply() {
+		apply: publicRegistry.debounce(async function (value) {
 			try {
 				await this.$DB.configs.put({
 					item: "backgroundImage",
@@ -104,7 +106,7 @@ export default {
 				})
 				toastRegistry.error(`[${this.name}] ${this.t("components.BackgroundImage.toast.applyBackgroundImageError")}`)
 			}
-		}
+		}, 500),
 	}
 }
 </script>
@@ -112,31 +114,38 @@ export default {
 <template>
 	<div class="background-image">
 		<label class="switch">
-			<input type="checkbox" v-model="backgroundImage.enabled"/>
+			<input type="checkbox" v-model="backgroundImage.enabled" @change="apply"/>
 			<span class="custom-checkbox"></span>
 		</label>
 		<input type="file" ref="fileInput" style="display: none;" accept="image/*" @change="handleFileChange">
-		<Button @click="upload">{{ t('components.BackgroundImage.upload') }}</Button>
+		<Button @click="upload" :disabled="!backgroundImage.enabled">
+			{{t('components.BackgroundImage.upload') }}
+		</Button>
 		<InputText
 			class="text"
 			:placeholder="t('components.BackgroundImage.backgroundImageURL')"
 			:title="t('components.BackgroundImage.backgroundImageURL')"
-			v-model="displayUrl"/>
+			:disabled="!backgroundImage.enabled"
+			v-model="displayUrl"
+			@input="apply"/>
 		<InputNumber
 			class="number"
 			:min="0"
 			:max="100"
 			:placeholder="t('components.BackgroundImage.backgroundImageOpacity')"
 			:title="t('components.BackgroundImage.backgroundImageOpacity')"
-			v-model="backgroundImage.opacity"/>
+			:disabled="!backgroundImage.enabled"
+			v-model="backgroundImage.opacity"
+			@input="apply"/>
 		<InputNumber
 			class="number"
 			:min="0"
 			:max="100"
 			:placeholder="t('components.BackgroundImage.backgroundImageMask')"
 			:title="t('components.BackgroundImage.backgroundImageMask')"
-			v-model="backgroundImage.mask"/>
-		<Button @click="apply">{{ t('components.BackgroundImage.save') }}</Button>
+			:disabled="!backgroundImage.enabled"
+			v-model="backgroundImage.mask"
+			@input="apply"/>
 	</div>
 </template>
 

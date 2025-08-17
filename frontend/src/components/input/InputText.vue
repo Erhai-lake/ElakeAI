@@ -45,5 +45,12 @@ input {
 		border-color: var(--button-hover-background-color);
 		box-shadow: 0 0 4px var(--button-hover-background-color);
 	}
+
+	&:disabled {
+		background-color: var(--disabled-background-color);
+		color: var(--disabled-text-color);
+		border-color: var(--border-color);
+		cursor: not-allowed;
+	}
 }
 </style>

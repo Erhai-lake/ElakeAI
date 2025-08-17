@@ -279,8 +279,7 @@
 			"base64Placeholder": "Base64 Picture Uploaded",
 			"backgroundImageURL": "Image URL/Base64",
 			"backgroundImageOpacity": "Opacity",
-			"backgroundImageMask": "Mask",
-			"save": "Save"
+			"backgroundImageMask": "Mask"
 		}
 	},
 	"views": {
