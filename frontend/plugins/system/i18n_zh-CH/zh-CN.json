@@ -213,11 +213,13 @@
 				"getDefaultSettingsError": "获取默认设置失败",
 				"sendMessageError": "发送消息失败",
 				"createNewChatError": "创建新对话失败",
-				"stopError": "停止消息失败"
+				"stopError": "停止消息失败",
+				"noChatKey": "未选择对话"
 			},
 			"function": {
 				"appendix": "附录",
 				"webSearch": "联网搜索",
+				"setup": "设置",
 				"send": "发送",
 				"stop": "停止"
 			},
@@ -421,6 +423,21 @@
 			"plugins": "插件",
 			"advancedTools": "高级工具",
 			"about": "关于"
+		},
+		"ChatSetup": {
+			"toast": {
+				"getError": "获取聊天配置失败",
+				"saveSuccess": "保存聊天配置成功",
+				"saveError": "保存聊天配置失败"
+			},
+			"chatSetup": "聊天配置",
+			"temperature": "温度",
+			"top_p": "核采样",
+			"max_tokens": "单次回复限制",
+			"presence_penalty": "话题新鲜度",
+			"frequency_penalty": "频率惩罚度",
+			"save": "保存",
+			"close": "关闭"
 		}
 	}
 }

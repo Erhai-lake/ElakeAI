@@ -8,12 +8,14 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
+import Button from "@/components/input/Button.vue"
 import {markRaw} from "vue"
+import ChatSetup from "@/views/options/ChatSetup.vue"
 
 export default {
 	name: "ChatView",
 	inject: ["$DB", "$log"],
-	components: {SVGIcon, RightClickMenu, Loading, TopTitle, AIInput},
+	components: {ChatSetup, Button, SVGIcon, RightClickMenu, Loading, TopTitle, AIInput},
 	data() {
 		return {
 			name: "ChatView",
@@ -34,13 +36,15 @@ export default {
 				timestamp: null,
 				data: [],
 			},
-			showInputBox: true
+			showInputBox: true,
+			showSetup: false
 		}
 	},
 	watch: {
 		"route.params.key"(newKey) {
 			this.initChatView(newKey)
 			this.checkLastMessage()
+			this.showSetup = false
 		}
 	},
 	beforeUnmount() {
@@ -49,6 +53,7 @@ export default {
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 		EventBus.off("[function] removeMessage", this.removeMessage)
 		EventBus.off("[function] editMessage", this.editMessage)
+		EventBus.off("[function] showSetup", this.setup)
 	},
 	async created() {
 		EventBus.on("[stream] userMessage", this.userMessage)
@@ -56,6 +61,7 @@ export default {
 		EventBus.on("[stream] streamComplete", this.streamComplete)
 		EventBus.on("[function] removeMessage", this.removeMessage)
 		EventBus.on("[function] editMessage", this.editMessage)
+		EventBus.on("[function] showSetup", this.setup)
 		await this.roleToComponent()
 		await this.initChatView()
 	},
@@ -352,7 +358,7 @@ export default {
 		async streamComplete(message) {
 			if (message.chatKey !== this.data.key) return
 			// 判断错误
-			if(message.status === "error") {
+			if (message.status === "error") {
 				this.data.data[this.data.data.length - 2] = {
 					...this.data.data[this.data.data.length - 2],
 					status: "error"
@@ -454,6 +460,12 @@ export default {
 				this.$log.error(`[${this.name}] 消息移除错误`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.removeMessageError")}`)
 			}
+		},
+		/**
+		 * 显示设置
+		 */
+		setup(status) {
+			this.showSetup = status
 		}
 	}
 }
@@ -463,6 +475,7 @@ export default {
 	<Loading
 		:loading="isLoading"
 		:text="t('views.ChatView.loading', {loadedMessages: loadedMessages, totalMessages: totalMessages})">
+		<ChatSetup v-model="showSetup" :chatKey="data.key"/>
 		<div class="chat-view">
 			<!-- 顶部标题 -->
 			<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
@@ -554,7 +567,7 @@ export default {
 	overflow: hidden auto;
 }
 
-.message{
+.message {
 	border-radius: 12px;
 	display: flex;
 	flex-direction: column;
@@ -597,6 +610,7 @@ export default {
 	z-index: 3;
 
 	button {
+		padding: 3px;
 		margin: 10px 0;
 		color: var(--text-color);
 		background-color: var(--background-color);

@@ -290,6 +290,16 @@ export default defineComponent({
 				textarea.selectionEnd = cursorPos + 1 + indent.length
 				textarea.focus()
 			})
+		},
+		/**
+		 * 显示设置
+		 */
+		showSetup() {
+			if (this.route.params.key) {
+				EventBus.emit("[function] showSetup", true)
+			} else {
+				toastRegistry.warning(this.t("components.AIInput.toast.noChatKey"))
+			}
 		}
 	}
 })
@@ -330,6 +340,10 @@ export default defineComponent({
 			<input id="Search" type="checkbox" v-model="enableWebSearch"/>
 			<label for="Search" :title="t('components.AIInput.function.webSearch')">
 				<SVGIcon name="#icon-webSearch" size="2em"/>
+			</label>
+			<!--设置-->
+			<label :title="t('components.AIInput.function.setup')" @click="showSetup">
+				<SVGIcon name="#icon-setup" size="2em"/>
 			</label>
 			<DefaultChatSettings
 				:save="false"
@@ -375,6 +389,14 @@ export default defineComponent({
 	.AIInput {
 		width: 100% !important;
 	}
+}
+
+.setup {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
 
 .AIInput {
@@ -425,7 +447,7 @@ export default defineComponent({
 	}
 }
 
-#Appendix, #Camera, #Photos, #Files, #Search {
+#Appendix, #Camera, #Photos, #Files, #Search, #Setup {
 	display: none;
 }
 

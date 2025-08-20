@@ -70,14 +70,14 @@ const routes = [
 		]
 	},
 	{
+		path: "/mask",
+		name: "Mask",
+		component: () => import("@/views/MaskView.vue")
+	},
+	{
 		path: "/:pathMatch(.*)*",
 		name: "NotFound",
 		component: () => import("@/views/NotFoundView.vue")
-	},
-	{
-		path: "/test",
-		name: "Test",
-		component: () => import("@/views/test.vue")
 	}
 ]
 

@@ -213,11 +213,13 @@
 				"getDefaultSettingsError": "Failed to get default settings",
 				"sendMessageError": "Failed to send message",
 				"createNewChatError": "Failed to create new chat",
-				"stopError": "Failed to stop message"
+				"stopError": "Failed to stop message",
+				"noChatKey": "No chat key selected"
 			},
 			"function": {
 				"appendix": "Appendix",
 				"webSearch": "Web search",
+				"setup": "Setup",
 				"send": "Send",
 				"stop": "Stop"
 			},
@@ -421,6 +423,21 @@
 			"plugins": "Plugins",
 			"advancedTools": "Advanced tools",
 			"about": "About"
+		},
+		"ChatSetup": {
+			"toast": {
+				"getError": "Failed to get chat configuration",
+				"saveSuccess": "Chat configuration saved successfully",
+				"saveError": "Failed to save chat configuration"
+			},
+			"chatSetup": "Chat Config",
+			"temperature": "Temperature",
+			"top_p": "Top P",
+			"max_tokens": "Max Tokens",
+			"presence_penalty": "Presence Penalty",
+			"frequency_penalty": "Frequency Penalty",
+			"save": "Save",
+			"close": "Close"
 		}
 	}
 }
