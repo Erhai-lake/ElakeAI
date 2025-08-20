@@ -116,7 +116,7 @@ class DeepSeek {
 		try {
 			const API_KEY_DATA = await DEXIE.apiKeys.get(params.apiKey)
 			// 保存用户消息并获取完整历史
-			const { messages: MESSAGES } = await streamChatHandler.prepare({
+			const {messages: MESSAGES} = await streamChatHandler.prepare({
 				chatKey: params.chatKey,
 				content: params.content,
 				userDialogueId: params.userDialogueId,
@@ -124,6 +124,8 @@ class DeepSeek {
 				model: params.model,
 				dialogueId: params.dialogueId
 			})
+			// 获取聊天配置
+			const CONFIGS = await DEXIE.chats.get(params.chatKey)
 			const RESPONSE = await fetch(`${API_KEY_DATA.url}/chat/completions`, {
 				method: "POST",
 				headers: {
@@ -133,6 +135,7 @@ class DeepSeek {
 				body: JSON.stringify({
 					model: params.model,
 					messages: MESSAGES,
+					...CONFIGS.configs,
 					stream: true
 				}),
 				signal: streamChatHandler.abortController.signal

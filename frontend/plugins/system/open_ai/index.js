@@ -110,6 +110,8 @@ class OpenAI {
 				model: params.model,
 				dialogueId: params.dialogueId
 			})
+			// 获取聊天配置
+			const CONFIGS = await DEXIE.chats.get(params.chatKey)
 			const RESPONSE = await fetch(`${API_KEY_DATA.url}/v1/chat/completions`, {
 				method: "POST",
 				headers: {
@@ -119,6 +121,7 @@ class OpenAI {
 				body: JSON.stringify({
 					model: params.model,
 					messages: MESSAGES,
+					...CONFIGS.configs,
 					stream: true
 				}),
 				signal: streamChatHandler.abortController.signal
