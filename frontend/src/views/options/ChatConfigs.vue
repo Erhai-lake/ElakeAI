@@ -127,9 +127,10 @@ export default {
 					<p>{{ t("views.ChatConfigs.frequency_penalty") }} [<em>frequency_penalty</em>]</p>
 					<InputNumber v-model="configs.frequency_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
 				</div>
-				<div class="item">
-					<Button @click="save">{{ t("views.ChatConfigs.save") }}</Button>
+				<div class="but">
 					<Button @click="close">{{ t("views.ChatConfigs.close") }}</Button>
+					<Button @click="save">{{ t("views.ChatConfigs.save") }}</Button>
+					<Button @click="loadGlobalConfig">{{ t("views.ChatConfigs.global") }}</Button>
 				</div>
 			</div>
 		</div>
@@ -192,5 +193,11 @@ export default {
 h2{
 	margin-bottom: 20px;
 	text-align: center;
+}
+
+.but{
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 10px;
 }
 </style>

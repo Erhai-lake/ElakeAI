@@ -450,8 +450,9 @@
 			"max_tokens": "Max Tokens",
 			"presence_penalty": "Presence Penalty",
 			"frequency_penalty": "Frequency Penalty",
+			"close": "Close",
 			"save": "Save",
-			"close": "Close"
+			"global": "Reset global"
 		}
 	}
 }
