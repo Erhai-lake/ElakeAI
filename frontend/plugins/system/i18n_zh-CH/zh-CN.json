@@ -430,7 +430,7 @@
 				"saveSuccess": "保存聊天配置成功",
 				"saveError": "保存聊天配置失败"
 			},
-			"chatSetup": "聊天配置",
+			"chatSetup": "当前聊天配置",
 			"temperature": "温度",
 			"top_p": "核采样",
 			"max_tokens": "单次回复限制",

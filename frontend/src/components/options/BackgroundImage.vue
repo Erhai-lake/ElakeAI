@@ -130,18 +130,18 @@ export default {
 			@input="apply"/>
 		<InputNumber
 			class="number"
+			mode="slider"
 			:min="0"
 			:max="100"
-			:placeholder="t('components.Options.BackgroundImage.backgroundImageOpacity')"
 			:title="t('components.Options.BackgroundImage.backgroundImageOpacity')"
 			:disabled="!backgroundImage.enabled"
 			v-model="backgroundImage.opacity"
 			@input="apply"/>
 		<InputNumber
 			class="number"
+			mode="slider"
 			:min="0"
 			:max="100"
-			:placeholder="t('components.Options.BackgroundImage.backgroundImageMask')"
 			:title="t('components.Options.BackgroundImage.backgroundImageMask')"
 			:disabled="!backgroundImage.enabled"
 			v-model="backgroundImage.mask"
@@ -160,7 +160,7 @@ export default {
 }
 
 .number {
-	width: 100px;
+	width: 200px;
 }
 
 input[type="checkbox"] {

@@ -2,7 +2,7 @@
 import Button from "@/components/input/Button.vue"
 import InputNumber from "@/components/input/InputNumber.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
-import {i18nRegistry} from "@/services/plugin/api/I18nClass";
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
 	name: "ChatSetup",
@@ -109,11 +109,11 @@ export default {
 				<h2>{{ t("views.ChatSetup.chatSetup") }}</h2>
 				<div class="item">
 					<p>{{ t("views.ChatSetup.temperature") }} [<em>temperature</em>]</p>
-					<InputNumber v-model="configs.temperature" :min="0.1" :max="2"/>
+					<InputNumber v-model="configs.temperature" mode="slider" :min="0.1" :max="2" :step="0.1"/>
 				</div>
 				<div class="item">
 					<p>{{ t("views.ChatSetup.top_p") }} [<em>top_p</em>]</p>
-					<InputNumber v-model="configs.top_p" :min="0.1" :max="1"/>
+					<InputNumber v-model="configs.top_p" mode="slider" :min="0.1" :max="1" :step="0.1"/>
 				</div>
 				<div class="item">
 					<p>{{ t("views.ChatSetup.max_tokens") }} [<em>max_tokens</em>]</p>
@@ -121,11 +121,11 @@ export default {
 				</div>
 				<div class="item">
 					<p>{{ t("views.ChatSetup.presence_penalty") }} [<em>presence_penalty</em>]</p>
-					<InputNumber v-model="configs.presence_penalty" :min="-2" :max="2"/>
+					<InputNumber v-model="configs.presence_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
 				</div>
 				<div class="item">
 					<p>{{ t("views.ChatSetup.frequency_penalty") }} [<em>frequency_penalty</em>]</p>
-					<InputNumber v-model="configs.frequency_penalty" :min="-2" :max="2"/>
+					<InputNumber v-model="configs.frequency_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
 				</div>
 				<div class="item">
 					<Button @click="save" class="but">{{ t("views.ChatSetup.save") }}</Button>
@@ -180,10 +180,10 @@ export default {
 
 .item {
 	padding: 10px;
-	display: flex;
+	display: grid;
+	grid-template-columns: 1fr 200px;
+	gap: 10px;
 	align-items: center;
-	justify-content: space-between;
-	gap: 20px;
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid var(--border-color);
 	white-space: nowrap;

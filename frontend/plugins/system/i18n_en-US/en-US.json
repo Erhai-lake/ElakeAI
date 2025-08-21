@@ -430,7 +430,7 @@
 				"saveSuccess": "Chat configuration saved successfully",
 				"saveError": "Failed to save chat configuration"
 			},
-			"chatSetup": "Chat Config",
+			"chatSetup": "Current Chat Config",
 			"temperature": "Temperature",
 			"top_p": "Top P",
 			"max_tokens": "Max Tokens",
