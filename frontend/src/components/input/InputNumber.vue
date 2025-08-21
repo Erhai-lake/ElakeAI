@@ -129,6 +129,7 @@ export default {
 //输入框模式
 input[type="number"] {
 	padding: 10px 12px;
+	box-sizing: border-box;
 	background-color: var(--background-color);
 	color: var(--text-color);
 	border: 1px solid #909399FF;

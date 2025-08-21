@@ -185,6 +185,18 @@
 				"noPlugins": "暂无插件",
 				"thirdPartyPluginsTip": "第三方插件可能存在安全风险, 请谨慎使用!",
 				"envProhibition": "第三方插件禁止在浏览器环境使用"
+			},
+			"GlobalChatConfigs": {
+				"toast": {
+					"getError": "获取全局聊天配置失败",
+					"saveSuccess": "保存全局聊天配置成功",
+					"saveError": "保存全局聊天配置失败"
+				},
+				"temperature": "温度",
+				"top_p": "核采样",
+				"max_tokens": "单次回复限制",
+				"presence_penalty": "话题新鲜度",
+				"frequency_penalty": "频率惩罚度"
 			}
 		},
 		"Role": {
@@ -210,6 +222,7 @@
 			"inputTip": "请输入您的问题",
 			"newChat": "新建对话",
 			"toast": {
+				"getGlobalConfigError": "获取全局配置失败",
 				"getDefaultSettingsError": "获取默认设置失败",
 				"sendMessageError": "发送消息失败",
 				"createNewChatError": "创建新对话失败",
@@ -424,8 +437,9 @@
 			"advancedTools": "高级工具",
 			"about": "关于"
 		},
-		"ChatSetup": {
+		"ChatConfigs": {
 			"toast": {
+				"getGlobalConfigError": "获取全局配置失败",
 				"getError": "获取聊天配置失败",
 				"saveSuccess": "保存聊天配置成功",
 				"saveError": "保存聊天配置失败"

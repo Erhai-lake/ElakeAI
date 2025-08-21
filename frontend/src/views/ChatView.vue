@@ -10,12 +10,12 @@ import RightClickMenu from "@/components/RightClickMenu.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
 import Button from "@/components/input/Button.vue"
 import {markRaw} from "vue"
-import ChatSetup from "@/views/options/ChatSetup.vue"
+import ChatConfigs from "@/views/options/ChatConfigs.vue"
 
 export default {
 	name: "ChatView",
 	inject: ["$DB", "$log"],
-	components: {ChatSetup, Button, SVGIcon, RightClickMenu, Loading, TopTitle, AIInput},
+	components: {ChatConfigs, Button, SVGIcon, RightClickMenu, Loading, TopTitle, AIInput},
 	data() {
 		return {
 			name: "ChatView",
@@ -475,7 +475,7 @@ export default {
 	<Loading
 		:loading="isLoading"
 		:text="t('views.ChatView.loading', {loadedMessages: loadedMessages, totalMessages: totalMessages})">
-		<ChatSetup v-model="showSetup" :chatKey="data.key"/>
+		<ChatConfigs v-model="showSetup" :chatKey="data.key"/>
 		<div class="chat-view">
 			<!-- 顶部标题 -->
 			<TopTitle :chatTitle="data.title" :chatKey="data.key"/>

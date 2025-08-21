@@ -192,6 +192,20 @@ export default defineComponent({
 			}
 		},
 		/**
+		 * 加载全局配置
+		 */
+		async loadGlobalConfig() {
+			try {
+				const GLOBAL_CONFIG = await this.$DB.configs.get("chatConfigs")
+				if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
+					return GLOBAL_CONFIG.value
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取全局配置失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.getGlobalConfigError")}`)
+			}
+		},
+		/**
 		 * 新的聊天
 		 */
 		async newChat(content) {
@@ -227,13 +241,7 @@ export default defineComponent({
 							status: "done"
 						}
 					],
-					configs: {
-						temperature: 1,
-						top_p: 1,
-						max_tokens: 2048,
-						presence_penalty: 0,
-						frequency_penalty: 0
-					}
+					configs: await this.loadGlobalConfig()
 				})
 				return NEW_CHAT_KEY
 			} catch (error) {

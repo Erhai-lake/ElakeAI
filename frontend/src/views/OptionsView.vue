@@ -93,6 +93,14 @@ export default {
 </style>
 
 <style>
+.container {
+	padding: 20px;
+	margin-bottom: 20px;
+	border-radius: 10px;
+	background-color: rgba(127, 127, 127, 0.5);
+	border: 1px solid var(--border-color);
+}
+
 .item {
 	padding: 10px;
 	display: flex;

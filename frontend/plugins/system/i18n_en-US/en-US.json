@@ -185,6 +185,18 @@
 				"noPlugins": "No plugins",
 				"thirdPartyPluginsTip": "Third-party plugins may pose security risks. Please use with caution!",
 				"envProhibition": "Third-party plugins are not allowed in browser environments"
+			},
+			"GlobalChatConfigs": {
+				"toast": {
+					"getError": "Failed to get global chat config",
+					"saveSuccess": "Global chat config saved successfully",
+					"saveError": "Failed to save global chat config"
+				},
+				"temperature": "Temperature",
+				"top_p": "Top P",
+				"max_tokens": "Max Tokens",
+				"presence_penalty": "Presence Penalty",
+				"frequency_penalty": "Frequency Penalty"
 			}
 		},
 		"Role": {
@@ -210,6 +222,7 @@
 			"inputTip": "Please enter your question",
 			"newChat": "New chat",
 			"toast": {
+				"getGlobalConfigError": "Failed to get global config",
 				"getDefaultSettingsError": "Failed to get default settings",
 				"sendMessageError": "Failed to send message",
 				"createNewChatError": "Failed to create new chat",
@@ -424,8 +437,9 @@
 			"advancedTools": "Advanced tools",
 			"about": "About"
 		},
-		"ChatSetup": {
+		"ChatConfigs": {
 			"toast": {
+				"getGlobalConfigError": "Failed to get global config",
 				"getError": "Failed to get chat configuration",
 				"saveSuccess": "Chat configuration saved successfully",
 				"saveError": "Failed to save chat configuration"

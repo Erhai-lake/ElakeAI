@@ -5,7 +5,7 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
 export default {
-	name: "ChatSetup",
+	name: "ChatConfigs",
 	inject: ["$DB", "$log"],
 	components: {InputNumber, Button},
 	props: {
@@ -21,7 +21,7 @@ export default {
 	emits: ["update:modelValue"],
 	data() {
 		return {
-			name: "ChatSetup",
+			name: "ChatConfigs",
 			configs: {
 				temperature: 1,
 				frequency_penalty: 0,
@@ -38,9 +38,6 @@ export default {
 			}
 		}
 	},
-	created() {
-		this.init()
-	},
 	methods: {
 		/**
 		 * 翻译
@@ -52,21 +49,24 @@ export default {
 			return i18nRegistry.translate(key, params)
 		},
 		/**
-		 * 初始化
+		 * 加载全局配置
 		 */
-		init() {
-			this.configs = {
-				temperature: 1,
-				top_p: 1,
-				max_tokens: 2048,
-				presence_penalty: 0,
-				frequency_penalty: 0
+		async loadGlobalConfig() {
+			try {
+				const GLOBAL_CONFIG = await this.$DB.configs.get("chatConfigs")
+				if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
+					this.configs = GLOBAL_CONFIG.value
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取全局配置失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
 			}
 		},
 		/**
 		 * 加载聊天配置
 		 */
 		async loadChatConfig() {
+			await this.loadGlobalConfig()
 			try {
 				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
 				if (CHAT_DATA.configs) {
@@ -74,7 +74,7 @@ export default {
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取聊天配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatSetup.toast.getError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
 			}
 		},
 		/**
@@ -86,10 +86,10 @@ export default {
 					configs: JSON.parse(JSON.stringify(this.configs))
 				})
 				this.close()
-				toastRegistry.success(`[${this.name}] ${this.t("views.ChatSetup.toast.saveSuccess")}`)
+				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存聊天配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatSetup.toast.saveError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveError")}`)
 			}
 		},
 		/**
@@ -106,30 +106,30 @@ export default {
 	<transition name="fade">
 		<div class="setup" v-if="modelValue" @click="close">
 			<div class="setup-content" @click.stop>
-				<h2>{{ t("views.ChatSetup.chatSetup") }}</h2>
+				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
 				<div class="item">
-					<p>{{ t("views.ChatSetup.temperature") }} [<em>temperature</em>]</p>
+					<p>{{ t("views.ChatConfigs.temperature") }} [<em>temperature</em>]</p>
 					<InputNumber v-model="configs.temperature" mode="slider" :min="0.1" :max="2" :step="0.1"/>
 				</div>
 				<div class="item">
-					<p>{{ t("views.ChatSetup.top_p") }} [<em>top_p</em>]</p>
+					<p>{{ t("views.ChatConfigs.top_p") }} [<em>top_p</em>]</p>
 					<InputNumber v-model="configs.top_p" mode="slider" :min="0.1" :max="1" :step="0.1"/>
 				</div>
 				<div class="item">
-					<p>{{ t("views.ChatSetup.max_tokens") }} [<em>max_tokens</em>]</p>
+					<p>{{ t("views.ChatConfigs.max_tokens") }} [<em>max_tokens</em>]</p>
 					<InputNumber v-model="configs.max_tokens" :min="1" :max="4096"/>
 				</div>
 				<div class="item">
-					<p>{{ t("views.ChatSetup.presence_penalty") }} [<em>presence_penalty</em>]</p>
+					<p>{{ t("views.ChatConfigs.presence_penalty") }} [<em>presence_penalty</em>]</p>
 					<InputNumber v-model="configs.presence_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
 				</div>
 				<div class="item">
-					<p>{{ t("views.ChatSetup.frequency_penalty") }} [<em>frequency_penalty</em>]</p>
+					<p>{{ t("views.ChatConfigs.frequency_penalty") }} [<em>frequency_penalty</em>]</p>
 					<InputNumber v-model="configs.frequency_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
 				</div>
 				<div class="item">
-					<Button @click="save">{{ t("views.ChatSetup.save") }}</Button>
-					<Button @click="close">{{ t("views.ChatSetup.close") }}</Button>
+					<Button @click="save">{{ t("views.ChatConfigs.save") }}</Button>
+					<Button @click="close">{{ t("views.ChatConfigs.close") }}</Button>
 				</div>
 			</div>
 		</div>
