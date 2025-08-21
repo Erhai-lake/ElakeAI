@@ -104,8 +104,8 @@ export default {
 
 <template>
 	<transition name="fade">
-		<div class="setup" v-if="modelValue">
-			<div class="setup-content">
+		<div class="setup" v-if="modelValue" @click="close">
+			<div class="setup-content" @click.stop>
 				<h2>{{ t("views.ChatSetup.chatSetup") }}</h2>
 				<div class="item">
 					<p>{{ t("views.ChatSetup.temperature") }} [<em>temperature</em>]</p>
@@ -128,8 +128,8 @@ export default {
 					<InputNumber v-model="configs.frequency_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
 				</div>
 				<div class="item">
-					<Button @click="save" class="but">{{ t("views.ChatSetup.save") }}</Button>
-					<Button @click="close" class="but">{{ t("views.ChatSetup.close") }}</Button>
+					<Button @click="save">{{ t("views.ChatSetup.save") }}</Button>
+					<Button @click="close">{{ t("views.ChatSetup.close") }}</Button>
 				</div>
 			</div>
 		</div>
@@ -182,8 +182,8 @@ export default {
 	padding: 10px;
 	display: grid;
 	grid-template-columns: 1fr 200px;
-	gap: 10px;
 	align-items: center;
+	gap: 10px;
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid var(--border-color);
 	white-space: nowrap;
@@ -192,9 +192,5 @@ export default {
 h2{
 	margin-bottom: 20px;
 	text-align: center;
-}
-
-.but {
-	width: 150px;
 }
 </style>
