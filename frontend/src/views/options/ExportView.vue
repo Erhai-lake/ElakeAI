@@ -229,83 +229,99 @@ export default {
 </script>
 
 <template>
-	<div class="item">
-		{{ t("views.OptionsView.ExportView.loadExportData") }}
-		<Button @click="loadExportData">{{ t("views.OptionsView.ExportView.loading") }}</Button>
-	</div>
-	<div class="export" v-if="hasDataToImport">
-		<!--单项例子-->
-		<!--<div class="option-group" v-if="singleSelection.optional.length > 0">-->
-		<!--	<label class="option-item" v-if="singleSelection.optional.includes('chats')">-->
-		<!--		<input type="checkbox" v-model="singleSelection.selected" value="chats"/>-->
-		<!--		<span class="custom-checkbox"></span>-->
-		<!--		<span>{{ t("views.OptionsView.ExportView.chats") }}</span>-->
-		<!--	</label>-->
-		<!--</div>-->
-		<div class="option-group" v-if="chats.options.length > 0">
-			<label class="option-item">
-				<input type="checkbox" v-model="chats.selectAll" @change="toggleAll('chats')"/>
-				<span class="custom-checkbox"></span>
-				<span>{{ t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.chats")}) }}</span>
-			</label>
-			<div class="sub-options" v-if="chats.options.length">
-				<label
-					class="option-item sub-option"
-					v-for="(option, index) in chats.options"
-					:key="'chats-'+index">
-					<input type="checkbox" v-model="chats.selected" :value="option.key"/>
+	<div class="export-view">
+		<div class="item">
+			{{ t("views.OptionsView.ExportView.loadExportData") }}
+			<Button @click="loadExportData">{{ t("views.OptionsView.ExportView.loading") }}</Button>
+		</div>
+		<div class="export" v-if="hasDataToImport">
+			<!--单项例子-->
+			<!--<div class="option-group" v-if="singleSelection.optional.length > 0">-->
+			<!--	<label class="option-item" v-if="singleSelection.optional.includes('chats')">-->
+			<!--		<input type="checkbox" v-model="singleSelection.selected" value="chats"/>-->
+			<!--		<span class="custom-checkbox"></span>-->
+			<!--		<span>{{ t("views.OptionsView.ExportView.chats") }}</span>-->
+			<!--	</label>-->
+			<!--</div>-->
+			<div class="option-group" v-if="chats.options.length > 0">
+				<label class="option-item">
+					<input type="checkbox" v-model="chats.selectAll" @change="toggleAll('chats')"/>
 					<span class="custom-checkbox"></span>
-					<span>[{{ option.key }}] {{ option.title }}</span>
+					<span>{{
+							t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.chats")})
+						}}</span>
 				</label>
+				<div class="sub-options" v-if="chats.options.length">
+					<label
+						class="option-item sub-option"
+						v-for="(option, index) in chats.options"
+						:key="'chats-'+index">
+						<input type="checkbox" v-model="chats.selected" :value="option.key"/>
+						<span class="custom-checkbox"></span>
+						<span>[{{ option.key }}] {{ option.title }}</span>
+					</label>
+				</div>
+			</div>
+			<div class="option-group" v-if="configs.options.length > 0">
+				<label class="option-item">
+					<input type="checkbox" v-model="configs.selectAll" @change="toggleAll('configs')"/>
+					<span class="custom-checkbox"></span>
+					<span>{{
+							t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.configs")})
+						}}</span>
+				</label>
+				<div class="sub-options" v-if="configs.options.length">
+					<label
+						class="option-item sub-option"
+						v-for="(option, index) in configs.options"
+						:key="'configs-'+index">
+						<input type="checkbox" v-model="configs.selected" :value="option.item"/>
+						<span class="custom-checkbox"></span>
+						<span>{{ option.item }}</span>
+					</label>
+				</div>
+			</div>
+			<div class="option-group" v-if="apiKeys.options.length > 0">
+				<label class="option-item">
+					<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAll('apiKeys')"/>
+					<span class="custom-checkbox"></span>
+					<span>{{
+							t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.apiKeys")})
+						}}</span>
+				</label>
+				<div class="sub-options" v-if="apiKeys.options.length">
+					<label
+						class="option-item sub-option"
+						v-for="(option, index) in apiKeys.options"
+						:key="'apiKeys-'+index">
+						<input type="checkbox" v-model="apiKeys.selected" :value="option.key"/>
+						<span class="custom-checkbox"></span>
+						<span>[{{ option.model }}] {{ option.remark }}</span>
+					</label>
+				</div>
 			</div>
 		</div>
-		<div class="option-group" v-if="configs.options.length > 0">
-			<label class="option-item">
-				<input type="checkbox" v-model="configs.selectAll" @change="toggleAll('configs')"/>
-				<span class="custom-checkbox"></span>
-				<span>{{ t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.configs")}) }}</span>
-			</label>
-			<div class="sub-options" v-if="configs.options.length">
-				<label
-					class="option-item sub-option"
-					v-for="(option, index) in configs.options"
-					:key="'configs-'+index">
-					<input type="checkbox" v-model="configs.selected" :value="option.item"/>
-					<span class="custom-checkbox"></span>
-					<span>{{ option.item }}</span>
-				</label>
-			</div>
+		<div class="item" v-if="hasDataToImport">
+			{{ t("views.OptionsView.ExportView.exportTip") }}
+			<Button @click="handleExport">{{ t("views.OptionsView.ExportView.export") }}</Button>
 		</div>
-		<div class="option-group" v-if="apiKeys.options.length > 0">
-			<label class="option-item">
-				<input type="checkbox" v-model="apiKeys.selectAll" @change="toggleAll('apiKeys')"/>
-				<span class="custom-checkbox"></span>
-				<span>{{ t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.apiKeys")}) }}</span>
-			</label>
-			<div class="sub-options" v-if="apiKeys.options.length">
-				<label
-					class="option-item sub-option"
-					v-for="(option, index) in apiKeys.options"
-					:key="'apiKeys-'+index">
-					<input type="checkbox" v-model="apiKeys.selected" :value="option.key"/>
-					<span class="custom-checkbox"></span>
-					<span>[{{ option.model }}] {{ option.remark }}</span>
-				</label>
-			</div>
-		</div>
-	</div>
-	<div class="item" v-if="hasDataToImport">
-		{{ t("views.OptionsView.ExportView.exportTip") }}
-		<Button @click="handleExport">{{ t("views.OptionsView.ExportView.export") }}</Button>
 	</div>
 </template>
 
 <style scoped lang="less">
+.export-view {
+	height: 100%;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	overflow: hidden;
+}
+
 .export {
 	padding: 20px;
 	margin: 20px 0;
 	border: 1px solid var(--border-color);
 	border-radius: 8px;
+	overflow: auto;
 }
 
 .option-group {
