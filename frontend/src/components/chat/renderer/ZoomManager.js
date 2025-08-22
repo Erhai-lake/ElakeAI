@@ -1,12 +1,20 @@
 import panzoom from "@panzoom/panzoom"
 
+/**
+ * 初始化缩放管理器
+ * @param container 容器元素
+ * @returns 缩放实例
+ */
 export function initZoom(container) {
+	// 缩放目标元素
 	const TARGET = container.querySelector(".zoom-target") || container.querySelector("svg:not(.icon), .uml-wrapper")
 	if (!TARGET) return null
+	// 缩放实例
 	const INSTANCE = panzoom(TARGET, {
 		maxScale: Infinity,
 		minScale: 0.1
 	})
+	// 按钮映射
 	const BTN_MAP = {
 		up: ".move-up",
 		down: ".move-down",
@@ -32,13 +40,13 @@ export function initZoom(container) {
 			}
 			// 按下立即执行一次
 			callback()
-
 			// 500ms 后开始重复执行
 			timer = setTimeout(() => {
 				isRepeating = true
 				timer = setInterval(callback, repeatInterval)
 			}, initialDelay)
 		}
+		// 停止
 		const stop = () => {
 			if (timer) {
 				if (isRepeating) {

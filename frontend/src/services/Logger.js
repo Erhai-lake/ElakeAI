@@ -1,6 +1,11 @@
 import EventBus from "@/services/EventBus"
 import DB from "@/services/Dexie"
 
+/**
+ * 日志格式化
+ * @param arg 日志参数
+ * @returns string
+ */
 const formatMessage = (arg) => {
 	if (arg instanceof Error) {
 		return `Error: ${arg.message}\nStack: ${arg.stack}`
@@ -15,6 +20,11 @@ const formatMessage = (arg) => {
 	return String(arg)
 }
 
+/**
+ * 日志存储
+ * @param level 日志级别
+ * @param args 日志参数
+ */
 const storeLog = async (level, ...args) => {
 	try {
 		const MATCH = args[0]?.match?.(/^\[(.*?)](.*)$/) || ["NULL", "NULL"]
@@ -61,6 +71,9 @@ const Logger = {
 
 export default Logger
 
+/**
+ * 日志清理
+ */
 export const setupLogCleanup = async () => {
 	const EXPIRE_MS = 31 * 24 * 60 * 60 * 1000
 	try {

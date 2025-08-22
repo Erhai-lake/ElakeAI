@@ -8,10 +8,12 @@ const LANG_INFO = {
 
 export default {
 	onRegister(ctx) {
+		// 注册语言
 		I18nClass = new ctx.api.I18nClass()
 		I18nClass.registerLang(LANG_INFO, EN_US)
 	},
 	onUnload() {
+		// 卸载语言
 		I18nClass.unregisterLang(LANG_INFO.code, LANG_INFO.source)
 	}
 }

@@ -1,17 +1,21 @@
 import {createRouter, createWebHashHistory} from "vue-router"
 
+// 路由配置
 const routes = [
 	{
+		// 首页
 		path: "/",
 		name: "Home",
 		component: () => import("@/views/HomeView.vue")
 	},
 	{
+		// 聊天
 		path: "/chat/:key",
 		name: "ChatKey",
 		component: () => import("@/views/ChatView.vue")
 	},
 	{
+		// 选项
 		path: "/options",
 		name: "Options",
 		redirect: "/options/personalization",
@@ -70,20 +74,26 @@ const routes = [
 		]
 	},
 	{
+		// 面具
 		path: "/mask",
 		name: "Mask",
 		component: () => import("@/views/MaskView.vue")
 	},
 	{
+		// 404
 		path: "/:pathMatch(.*)*",
 		name: "NotFound",
 		component: () => import("@/views/NotFoundView.vue")
 	}
 ]
 
+// 路由实例
 const router = createRouter({
 	history: createWebHashHistory(),
 	routes
 })
 
+/**
+ * 路由实例
+ */
 export default router

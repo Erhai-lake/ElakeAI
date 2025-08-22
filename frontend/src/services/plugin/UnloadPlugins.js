@@ -1,9 +1,20 @@
+/**
+ * 插件实例
+ */
 const PLUGIN_INSTANCES = new Map()
 
+/**
+ * 注册插件实例
+ * @param uuid 插件uuid
+ * @param mod 插件实例
+ */
 export function registerPluginInstance(uuid, mod) {
 	PLUGIN_INSTANCES.set(uuid, mod)
 }
 
+/**
+ * 卸载插件
+ */
 export async function unloadPlugins() {
 	for (const [uuid, mod] of PLUGIN_INSTANCES.entries()) {
 		try {
