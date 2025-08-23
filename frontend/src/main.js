@@ -1,6 +1,7 @@
 import {createApp} from "vue"
 import App from "@/App.vue"
 import router from "@/router"
+import {InitConfigs} from "@/services/InitConfigs"
 
 // 全局样式
 import "@/assets/styles/theme.less"
@@ -22,6 +23,8 @@ async function bootstrap() {
 			this.$el.querySelectorAll?.("a").forEach(a => a.setAttribute("draggable", "false"))
 		}
 	})
+
+	await InitConfigs()
 
 	APP.mount("#app")
 }
