@@ -18,7 +18,7 @@ export default {
 				enabled: false,
 				url: "https://www.loliapi.com/acg",
 				opacity: 50,
-				mask: 30
+				mask: 50
 			}
 		}
 	},
@@ -91,7 +91,7 @@ export default {
 		/**
 		 * 应用
 		 */
-		apply: publicRegistry.debounce(async function (value) {
+		apply: publicRegistry.debounce(async function () {
 			try {
 				await this.$DB.configs.put({
 					item: "backgroundImage",
