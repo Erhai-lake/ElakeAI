@@ -3,11 +3,12 @@ import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import ChatBatchSize from "@/components/options/ChatBatchSize.vue"
-import GlobalChatConfigs from "@/components/options/GlobalChatConfigs.vue"
+import GlobalChatSettings from "@/components/options/GlobalChatSettings.vue"
+import SystemPrompt from "@/components/options/SystemPrompt.vue"
 
 export default {
 	name: "ChatsView",
-	components: {GlobalChatConfigs, ChatBatchSize, DefaultChatSettings, ChatAIKey},
+	components: {SystemPrompt, GlobalChatSettings, ChatBatchSize, DefaultChatSettings, ChatAIKey},
 	methods: {
 		/**
 		 * 翻译
@@ -35,6 +36,10 @@ export default {
 		</div>
 	</div>
 	<div class="container">
-		<GlobalChatConfigs/>
+		<div class="item">
+			{{ t("views.OptionsView.ChatsView.systemPrompt") }}
+			<SystemPrompt/>
+		</div>
+		<GlobalChatSettings/>
 	</div>
 </template>

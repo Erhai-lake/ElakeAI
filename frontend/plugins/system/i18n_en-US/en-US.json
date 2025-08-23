@@ -197,6 +197,16 @@
 				"max_tokens": "Max Tokens",
 				"presence_penalty": "Presence Penalty",
 				"frequency_penalty": "Frequency Penalty"
+			},
+			"SystemPrompt": {
+				"toast": {
+					"getError": "Failed to get system prompt",
+					"saveSuccess": "System prompt saved successfully",
+					"saveError": "Failed to save system prompt"
+				},
+				"placeholder": "System prompt",
+				"save": "Save",
+				"reset": "Reset"
 			}
 		},
 		"Role": {
@@ -224,6 +234,7 @@
 			"toast": {
 				"getGlobalConfigError": "Failed to get global config",
 				"getDefaultSettingsError": "Failed to get default settings",
+				"getSystemPromptError": "Failed to get system prompt",
 				"sendMessageError": "Failed to send message",
 				"createNewChatError": "Failed to create new chat",
 				"stopError": "Failed to stop message",
@@ -377,7 +388,8 @@
 			},
 			"ChatsView": {
 				"defaultChat": "Default chat",
-				"chatBatchSize": "Single batch quantity when loading chat record"
+				"chatBatchSize": "Single batch quantity when loading chat record",
+				"systemPrompt": "System Prompt"
 			},
 			"ImportView": {
 				"toast": {

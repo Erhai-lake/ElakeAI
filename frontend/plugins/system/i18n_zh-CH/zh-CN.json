@@ -197,6 +197,16 @@
 				"max_tokens": "单次回复限制",
 				"presence_penalty": "话题新鲜度",
 				"frequency_penalty": "频率惩罚度"
+			},
+			"SystemPrompt": {
+				"toast": {
+					"getError": "获取系统提示词失败",
+					"saveSuccess": "保存系统提示词成功",
+					"saveError": "保存系统提示词失败"
+				},
+				"placeholder": "请输入系统提示词",
+				"save": "保存",
+				"reset": "重置"
 			}
 		},
 		"Role": {
@@ -224,6 +234,7 @@
 			"toast": {
 				"getGlobalConfigError": "获取全局配置失败",
 				"getDefaultSettingsError": "获取默认设置失败",
+				"getSystemPromptError": "获取系统提示词失败",
 				"sendMessageError": "发送消息失败",
 				"createNewChatError": "创建新对话失败",
 				"stopError": "停止消息失败",
@@ -377,7 +388,8 @@
 			},
 			"ChatsView": {
 				"defaultChat": "默认对话",
-				"chatBatchSize": "加载聊天记录时的单批数量"
+				"chatBatchSize": "加载聊天记录时的单批数量",
+				"systemPrompt": "系统提示词"
 			},
 			"ImportView": {
 				"toast": {
