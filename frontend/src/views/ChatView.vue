@@ -576,7 +576,7 @@ export default {
 .input-area {
 	position: absolute;
 	left: 50%;
-	bottom: 40px;
+	bottom: 50px;
 	transform: translateX(-50%);
 	width: 100%;
 	max-width: 773px;
