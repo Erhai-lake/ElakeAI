@@ -104,8 +104,8 @@ export default {
 
 <template>
 	<transition name="fade">
-		<div class="setup" v-if="modelValue" @click="close">
-			<div class="setup-content" @click.stop>
+		<div class="chat-configs" v-if="modelValue" @click="close">
+			<div class="chat-configs-content" @click.stop>
 				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
 				<div class="item">
 					<p>{{ t("views.ChatConfigs.temperature") }} [<em>temperature</em>]</p>
@@ -153,7 +153,7 @@ export default {
 	opacity: 1;
 }
 
-.setup {
+.chat-configs {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -165,7 +165,7 @@ export default {
 	justify-content: center;
 	z-index: 4;
 
-	.setup-content {
+	.chat-configs-content {
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -190,15 +190,15 @@ export default {
 	white-space: nowrap;
 }
 
-h2{
+h2 {
 	margin-bottom: 20px;
 	text-align: center;
 }
 
-.but{
+.but {
 	padding: 10px;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
-	gap: 10px;
+	gap: 20px;
 }
 </style>
