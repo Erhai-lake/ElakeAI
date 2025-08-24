@@ -51,13 +51,6 @@ export default {
 			return i18nRegistry.translate(key, params)
 		},
 		/**
-		 * 格式化信息
-		 * @returns {String} - 格式化后的信息
-		 */
-		formattingMessage() {
-			return this.message.message.content.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")
-		},
-		/**
 		 * 格式化时间戳
 		 * @returns {string} 格式化后的时间字符串
 		 */
@@ -163,7 +156,7 @@ export default {
 		:class="['user-message-card', currentMessageId === message.id ? 'current' : '', chatTheme]"
 		@contextmenu.prevent="onRightClick($event, message)">
 		<div class="message-content">
-			<div v-if="!editingContent.show" v-html="formattingMessage()"></div>
+			<div v-if="!editingContent.show" v-text="message.message.content"></div>
 			<textarea
 				v-else
 				spellcheck="false"

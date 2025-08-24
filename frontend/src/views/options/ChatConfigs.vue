@@ -107,25 +107,54 @@ export default {
 		<div class="chat-configs" v-if="modelValue" @click="close">
 			<div class="chat-configs-content" @click.stop>
 				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
-				<div class="item">
-					<p>{{ t("views.ChatConfigs.temperature") }} [<em>temperature</em>]</p>
-					<InputNumber v-model="configs.temperature" mode="slider" :min="0.1" :max="2" :step="0.1"/>
-				</div>
-				<div class="item">
-					<p>{{ t("views.ChatConfigs.top_p") }} [<em>top_p</em>]</p>
-					<InputNumber v-model="configs.top_p" mode="slider" :min="0.1" :max="1" :step="0.1"/>
-				</div>
-				<div class="item">
-					<p>{{ t("views.ChatConfigs.max_tokens") }} [<em>max_tokens</em>]</p>
-					<InputNumber v-model="configs.max_tokens" :min="1" :max="4096"/>
-				</div>
-				<div class="item">
-					<p>{{ t("views.ChatConfigs.presence_penalty") }} [<em>presence_penalty</em>]</p>
-					<InputNumber v-model="configs.presence_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
-				</div>
-				<div class="item">
-					<p>{{ t("views.ChatConfigs.frequency_penalty") }} [<em>frequency_penalty</em>]</p>
-					<InputNumber v-model="configs.frequency_penalty" mode="slider" :min="-2" :max="2" :step="0.1"/>
+				<div class="chat-configs-content-container">
+					<div class="container">
+						<div class="item">
+							<p>{{ t("views.ChatConfigs.temperature") }} [<em>temperature</em>]</p>
+							<InputNumber
+								v-model="configs.temperature"
+								mode="slider"
+								:min="0.1"
+								:max="2"
+								:step="0.1"/>
+						</div>
+						<div class="item">
+							<p>{{ t("views.ChatConfigs.top_p") }} [<em>top_p</em>]</p>
+							<InputNumber
+								v-model="configs.top_p"
+								mode="slider"
+								:min="0.1"
+								:max="1"
+								:step="0.1"/>
+						</div>
+						<div class="item">
+							<p>{{ t("views.ChatConfigs.max_tokens") }} [<em>max_tokens</em>]</p>
+							<InputNumber
+								v-model="configs.max_tokens"
+								:min="1"
+								:max="4096"/>
+						</div>
+						<div class="item">
+							<p>{{ t("views.ChatConfigs.presence_penalty") }} [<em>presence_penalty</em>]</p>
+							<InputNumber
+								v-model="configs.presence_penalty"
+								mode="slider"
+								:min="-2"
+								:max="2"
+								:step="0.1"/>
+						</div>
+						<div class="item">
+							<p>{{ t("views.ChatConfigs.frequency_penalty") }} [<em>frequency_penalty</em>]</p>
+							<InputNumber
+								v-model="configs.frequency_penalty"
+								mode="slider"
+								:min="-2"
+								:max="2"
+								:step="0.1"/>
+						</div>
+					</div>
+					<div class="container">
+					</div>
 				</div>
 				<div class="but">
 					<Button @click="close">{{ t("views.ChatConfigs.close") }}</Button>
@@ -164,19 +193,36 @@ export default {
 	align-items: center;
 	justify-content: center;
 	z-index: 4;
+}
 
-	.chat-configs-content {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background-color: var(--background-color);
-		padding: 20px;
-		border-radius: 12px;
-		display: flex;
-		flex-direction: column;
-		z-index: 5;
+.chat-configs-content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	height: 500px;
+	transform: translate(-50%, -50%);
+	background-color: var(--background-color);
+	padding: 20px;
+	border-radius: 12px;
+	display: grid;
+	grid-template-rows: 50px 1fr 50px;
+	z-index: 5;
+
+	h2 {
+		text-align: center;
 	}
+
+	.chat-configs-content-container {
+		overflow: auto;
+	}
+}
+
+.container {
+	padding: 20px;
+	margin-bottom: 20px;
+	border-radius: 10px;
+	background-color: rgba(127, 127, 127, 0.5);
+	border: 1px solid var(--border-color);
 }
 
 .item {
@@ -184,15 +230,10 @@ export default {
 	display: grid;
 	grid-template-columns: 1fr 200px;
 	align-items: center;
-	gap: 10px;
+	gap: 150px;
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid var(--border-color);
 	white-space: nowrap;
-}
-
-h2 {
-	margin-bottom: 20px;
-	text-align: center;
 }
 
 .but {
