@@ -16,10 +16,10 @@ const loadPluginsInBrowser = async () => {
 			// 计算插件目录路径
 			const FOLDER_PATH = jsonPath.replace("/plugin.json", "")
 			// 入口文件路径(支持相对路径)
-			const ENTRY_FILE_NAME = META.entry || "index.js";
+			const ENTRY_FILE_NAME = META.entry || "index.js"
 			const ENTRY_PATH = `${FOLDER_PATH}/${ENTRY_FILE_NAME}`
 			// 直接按路径动态 import (必须和 import.meta.glob 配合)
-			const IMPORTER = import.meta.glob("../../../plugins/system/**", { eager: false })
+			const IMPORTER = import.meta.glob("../../../plugins/system/**", {eager: false})
 			if (!IMPORTER[ENTRY_PATH]) {
 				console.warn(`[PluginManager] 插件 ${META.name || META.uuid} 缺少入口文件: ${ENTRY_FILE_NAME}`)
 				continue
@@ -42,9 +42,23 @@ const loadPluginsInBrowser = async () => {
  * @returns {Promise<Array>} - 返回插件信息数组
  */
 const loadPluginsInWails = async () => {
-	// const {ipcRenderer} = window.require("electron")
-	// return await ipcRenderer.invoke("get-all-plugins")
-	return []
+	const PLUGINS = await window.go.main.App.LoadPlugins()
+	const RESULTS = []
+	for (const PLUGIN of PLUGINS) {
+		try {
+			// 在 dev 模式, Vite 会从 frontend/plugins 里加载
+			// 在 build 模式, 请求 /plugins/**, 走的是静态资源目录
+			const URL = "/" + PLUGIN.entry.replace(/\\/g, "/")
+			const ENTRY = await import(/* @vite-ignore */ URL)
+			RESULTS.push({
+				...PLUGIN,
+				entry: ENTRY.default || ENTRY
+			})
+		} catch (error) {
+			console.error(`[PluginManager] 插件 ${PLUGIN.name} 加载失败:`, error)
+		}
+	}
+	return RESULTS
 }
 
 /**
@@ -54,8 +68,7 @@ const loadPluginsInWails = async () => {
 const scanAllPlugins = async () => {
 	if (_cachedPlugins) return _cachedPlugins
 	if (window.go) {
-		// _cachedPlugins = await loadPluginsInWails()
-		_cachedPlugins = loadPluginsInBrowser()
+		_cachedPlugins = await loadPluginsInWails()
 	} else {
 		try {
 			_cachedPlugins = loadPluginsInBrowser()

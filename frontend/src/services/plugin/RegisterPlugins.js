@@ -16,8 +16,8 @@ import EventBus from "@/services/EventBus"
  * @param ctx - 插件上下文
  */
 const onInstall = async (plugin, mod, ctx) => {
-	if (typeof mod.default.onInstall === "function") {
-		await mod.default.onInstall(ctx)
+	if (typeof mod.onInstall === "function") {
+		await mod.onInstall(ctx)
 		Logger.info(`[registerPlugins] 插件安装成功: ${plugin.name}`)
 	}
 }
@@ -29,8 +29,8 @@ const onInstall = async (plugin, mod, ctx) => {
  * @param ctx - 插件上下文
  */
 const onRegister = async (plugin, mod, ctx) => {
-	if (typeof mod.default.onRegister === "function") {
-		await mod.default.onRegister(ctx)
+	if (typeof mod.onRegister === "function") {
+		await mod.onRegister(ctx)
 		Logger.info(`[registerPlugins] 插件已注册: ${plugin.name}`)
 	}
 }
@@ -42,8 +42,8 @@ const onRegister = async (plugin, mod, ctx) => {
  * @param ctx - 插件上下文
  */
 const onLoad = async (plugin, mod, ctx) => {
-	if (typeof mod.default.onLoad === "function") {
-		await mod.default.onLoad(ctx)
+	if (typeof mod.onLoad === "function") {
+		await mod.onLoad(ctx)
 		Logger.info(`[registerPlugins] 插件已加载: ${plugin.name}`)
 	}
 }
@@ -60,16 +60,10 @@ export async function initEnabledPlugins(appContext) {
 		const PLUGIN = PLUGINS[i]
 		try {
 			let mod = null
-			if (window.go) {
-				try {
-					const REQUIRE = typeof __webpack_require__ === "function" ? __non_webpack_require__ : require
-					mod = REQUIRE(PLUGIN.entryPath)
-					mod = mod?.default || mod
-				} catch (reqError) {
-					Logger.info(`[registerPlugins] require错误: ${PLUGIN.name}`, reqError)
-				}
-			} else {
+			if(window.go){
 				mod = PLUGIN.entry
+			} else {
+				mod = PLUGIN.entry.default
 			}
 			if (!mod) {
 				Logger.warn(`[registerPlugins] 插件模块为空: ${PLUGIN.name}`)
