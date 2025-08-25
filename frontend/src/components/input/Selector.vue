@@ -91,6 +91,7 @@ export default {
 			if (this.showLoading) return
 			this.isOpen = false
 			this.$emit("update:selectorSelected", item)
+			this.$emit("select", item)
 		},
 		/**
 		 * 标题

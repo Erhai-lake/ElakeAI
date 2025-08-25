@@ -48,6 +48,7 @@ export default {
 		}
 	},
 	beforeUnmount() {
+		EventBus.off("[function] initChatView", this.initChatView)
 		EventBus.off("[stream] userMessage", this.userMessage)
 		EventBus.off("[stream] streamStream", this.streamStream)
 		EventBus.off("[stream] streamComplete", this.streamComplete)
@@ -56,6 +57,7 @@ export default {
 		EventBus.off("[function] showSetup", this.setup)
 	},
 	async created() {
+		EventBus.on("[function] initChatView", this.initChatView)
 		EventBus.on("[stream] userMessage", this.userMessage)
 		EventBus.on("[stream] streamStream", this.streamStream)
 		EventBus.on("[stream] streamComplete", this.streamComplete)

@@ -3,11 +3,15 @@ import Button from "@/components/input/Button.vue"
 import InputNumber from "@/components/input/InputNumber.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import Selector from "@/components/input/Selector.vue"
+import SVGIcon from "@/components/SVGIcon.vue"
+import EventBus from "@/services/EventBus"
+import FoldingPanel from "@/components/FoldingPanel.vue"
 
 export default {
 	name: "ChatConfigs",
 	inject: ["$DB", "$log"],
-	components: {InputNumber, Button},
+	components: {FoldingPanel, SVGIcon, Selector, InputNumber, Button},
 	props: {
 		chatKey: {
 			type: String,
@@ -28,7 +32,19 @@ export default {
 				top_p: 1,
 				max_tokens: 2048,
 				presence_penalty: 0
-			}
+			},
+			roleList: [
+				{
+					title: "user"
+				},
+				{
+					title: "assistant"
+				},
+				{
+					title: "system"
+				}
+			],
+			chatRecords: []
 		}
 	},
 	watch: {
@@ -49,6 +65,54 @@ export default {
 			return i18nRegistry.translate(key, params)
 		},
 		/**
+		 * 更新选中角色
+		 * @param role {Object} - 角色
+		 * @param id {String} - 消息ID
+		 */
+		updateSelected(role, id) {
+			const MESSAGE = this.chatRecords.find(item => item.id === id)
+			if (MESSAGE) {
+				MESSAGE.message.role = role
+			}
+		},
+		/**
+		 * 移除消息
+		 * @param id {String} - 消息ID
+		 */
+		remove(id) {
+			this.chatRecords = this.chatRecords.filter(item => item.id !== id)
+		},
+		/**
+		 * 加载聊天配置
+		 */
+		async loadChatConfig() {
+			await this.loadGlobalConfig()
+			await this.getChatRecords()
+			try {
+				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
+				if (CHAT_DATA.configs) {
+					this.configs = CHAT_DATA.configs
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取聊天配置失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
+			}
+		},
+		/**
+		 * 获取聊天记录
+		 */
+		async getChatRecords() {
+			try {
+				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
+				if (CHAT_DATA && CHAT_DATA.data) {
+					this.chatRecords = CHAT_DATA.data
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取聊天记录失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
+			}
+		},
+		/**
 		 * 加载全局配置
 		 */
 		async loadGlobalConfig() {
@@ -63,29 +127,16 @@ export default {
 			}
 		},
 		/**
-		 * 加载聊天配置
-		 */
-		async loadChatConfig() {
-			await this.loadGlobalConfig()
-			try {
-				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
-				if (CHAT_DATA.configs) {
-					this.configs = CHAT_DATA.configs
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取聊天配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
-			}
-		},
-		/**
 		 * 保存聊天配置
 		 */
 		async save() {
 			try {
 				await this.$DB.chats.update(this.chatKey, {
+					data: JSON.parse(JSON.stringify(this.chatRecords)),
 					configs: JSON.parse(JSON.stringify(this.configs))
 				})
 				this.close()
+				EventBus.emit("[function] initChatView")
 				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存聊天配置失败`, error)
@@ -108,6 +159,28 @@ export default {
 			<div class="chat-configs-content" @click.stop>
 				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
 				<div class="chat-configs-content-container">
+					<FoldingPanel class="folding-panel">
+						<template #Title>
+							<p>{{ t("views.ChatConfigs.chatRecords") }}</p>
+						</template>
+						<template #Content>
+							<div
+								class="chat-record-item"
+								v-for="item in chatRecords"
+								:key="item.id">
+								<Selector
+									class="selector"
+									unique-key="title"
+									:selector-list="roleList"
+									:selector-selected="{title: item.message.role}"
+									@select="(role) => updateSelected(role.title, item.id)"/>
+								<textarea spellcheck="false" v-model="item.message.content"></textarea>
+								<Button class="but" @click="remove(item.id)">
+									<SVGIcon name="#icon-close"/>
+								</Button>
+							</div>
+						</template>
+					</FoldingPanel>
 					<div class="container">
 						<div class="item">
 							<p>{{ t("views.ChatConfigs.temperature") }} [<em>temperature</em>]</p>
@@ -199,10 +272,11 @@ export default {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	height: 500px;
+	padding: 20px;
+	width: 80%;
+	height: 80%;
 	transform: translate(-50%, -50%);
 	background-color: var(--background-color);
-	padding: 20px;
 	border-radius: 12px;
 	display: grid;
 	grid-template-rows: 50px 1fr 50px;
@@ -213,7 +287,46 @@ export default {
 	}
 
 	.chat-configs-content-container {
-		overflow: auto;
+		padding: 0 20px;
+		overflow: hidden auto;
+	}
+}
+
+.folding-panel{
+	margin-bottom: 20px;
+}
+
+.chat-record-item {
+	margin-bottom: 10px;
+	display: grid;
+	grid-template-columns: 100px 1fr 32px;
+	gap: 10px;
+
+	textarea {
+		padding: 10px 12px;
+		box-sizing: border-box;
+		width: 100%;
+		height: 45px;
+		background-color: var(--background-color);
+		color: var(--text-color);
+		border: 1px solid var(--border-color);
+		border-radius: 8px;
+		font-size: 14px;
+		resize: none;
+
+		&:focus {
+			outline: none;
+			border-color: var(--button-hover-background-color);
+			box-shadow: 0 0 4px var(--button-hover-background-color);
+		}
+	}
+
+	.but {
+		width: 100%;
+		height: 45px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 }
 
@@ -230,7 +343,7 @@ export default {
 	display: grid;
 	grid-template-columns: 1fr 200px;
 	align-items: center;
-	gap: 150px;
+	gap: 10px;
 	border-bottom: 1px solid var(--border-color);
 	border-top: 1px solid var(--border-color);
 	white-space: nowrap;
