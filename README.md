@@ -48,15 +48,6 @@ ElakeAI 是一个基于 Vue 3 的 AI 对话应用, 支持多种大语言模型 A
 	* 文件上传(传了可能不认)
 	* 使用统计(数字看看就好)
 
-## 技术栈
-
-* **前端框架**: Vue 3 + Vue Router
-* **状态管理**: DexieClass (IndexedDB)
-* **国际化**: vue-i18n
-* **Markdown 渲染**: markdown-it + 插件
-* **API 请求**: axios
-* **样式**: Less
-
 ## 数据库设计
 
 使用 DexieClass (IndexedDB) 存储以下数据:

@@ -219,7 +219,6 @@ export default {
 						const NEW_KEY = crypto.randomUUID()
 						const CHAT = JSON.parse(JSON.stringify(chat))
 						const NEW_CHAT = {...CHAT, key: NEW_KEY}
-						console.log(chat, NEW_CHAT)
 						// 添加新聊天记录
 						await this.$DB.chats.add(NEW_CHAT)
 					}

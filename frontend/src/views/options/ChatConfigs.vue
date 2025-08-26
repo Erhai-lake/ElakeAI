@@ -7,6 +7,7 @@ import Selector from "@/components/input/Selector.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
+import {publicRegistry} from "@/services/plugin/api/PublicClass"
 
 export default {
 	name: "ChatConfigs",
@@ -33,6 +34,24 @@ export default {
 				max_tokens: 2048,
 				presence_penalty: 0
 			},
+			chatData: [],
+			chatRecords: [],
+			page: 1,
+			totalPages: 0,
+			orderList: [
+				{
+					key: "asc",
+					title: "正序"
+				},
+				{
+					key: "desc",
+					title: "倒序"
+				}
+			],
+			order: {
+				key: "asc",
+				title: "正序"
+			},
 			roleList: [
 				{
 					title: "user"
@@ -43,15 +62,40 @@ export default {
 				{
 					title: "system"
 				}
-			],
-			chatRecords: []
+			]
 		}
 	},
 	watch: {
-		modelValue(newVal) {
+		async modelValue(newVal) {
 			if (newVal) {
-				this.loadChatConfig()
+				await this.init()
 			}
+		}
+	},
+	computed: {
+		/**
+		 * 计算可见页码
+		 */
+		visiblePages() {
+			const PAGES = []
+			const LEFT = Math.max(2, this.page - 2)
+			const RIGHT = Math.min(this.totalPages, this.page + 2)
+			// 首页
+			PAGES.push(1)
+			if (LEFT > 2) PAGES.push("...")
+			// 中间页
+			for (let i = LEFT; i <= RIGHT; i++) {
+				PAGES.push(i)
+			}
+			// 尾页
+			if (RIGHT < this.totalPages - 1) PAGES.push("...")
+			if (this.totalPages > 1) PAGES.push(this.totalPages)
+			return PAGES
+		}
+	},
+	async created() {
+		if (this.chatKey) {
+			await this.init()
 		}
 	},
 	methods: {
@@ -65,15 +109,32 @@ export default {
 			return i18nRegistry.translate(key, params)
 		},
 		/**
+		 * 初始化组件
+		 */
+		async init() {
+			await this.loadChatData()
+			await this.loadChatConfig()
+			this.page = 1
+			this.getChatRecords(this.page, "asc")
+		},
+		/**
 		 * 更新选中角色
 		 * @param role {Object} - 角色
 		 * @param id {String} - 消息ID
 		 */
-		updateSelected(role, id) {
-			const MESSAGE = this.chatRecords.find(item => item.id === id)
+		updateRoleSelected(role, id) {
+			const MESSAGE = this.chatData.find(item => item.id === id)
 			if (MESSAGE) {
 				MESSAGE.message.role = role
 			}
+		},
+		/**
+		 * 更新排序类型
+		 * @param order {Object} - 排序类型
+		 */
+		updateOrderSelected(order) {
+			this.order = order
+			this.getChatRecords(this.page)
 		},
 		/**
 		 * 移除消息
@@ -81,13 +142,13 @@ export default {
 		 */
 		remove(id) {
 			this.chatRecords = this.chatRecords.filter(item => item.id !== id)
+			this.chatData = this.chatData.filter(item => item.id !== id)
 		},
 		/**
 		 * 加载聊天配置
 		 */
 		async loadChatConfig() {
 			await this.loadGlobalConfig()
-			await this.getChatRecords()
 			try {
 				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
 				if (CHAT_DATA.configs) {
@@ -99,19 +160,34 @@ export default {
 			}
 		},
 		/**
-		 * 获取聊天记录
+		 * 加载聊天数据
 		 */
-		async getChatRecords() {
+		async loadChatData() {
 			try {
 				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
 				if (CHAT_DATA && CHAT_DATA.data) {
-					this.chatRecords = CHAT_DATA.data
+					this.chatData = CHAT_DATA.data
 				}
 			} catch (error) {
-				this.$log.error(`[${this.name}] 获取聊天记录失败`, error)
+				this.$log.error(`[${this.name}] 获取聊天数据失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
 			}
 		},
+		/**
+		 * 分页获取聊天记录
+		 * @param page {Number} - 页码
+		 */
+		getChatRecords:  publicRegistry.debounce(function(page = 1) {
+			const PAGE_SIZE = 10
+			const OFFSET = (page - 1) * PAGE_SIZE
+			let records = JSON.parse(JSON.stringify(this.chatData))
+			if (this.order.key === "desc") {
+				records.reverse()
+			}
+			this.page = page
+			this.totalPages = Math.ceil(records.length / PAGE_SIZE)
+			this.chatRecords = records.slice(OFFSET, OFFSET + PAGE_SIZE)
+		}, 100),
 		/**
 		 * 加载全局配置
 		 */
@@ -132,7 +208,7 @@ export default {
 		async save() {
 			try {
 				await this.$DB.chats.update(this.chatKey, {
-					data: JSON.parse(JSON.stringify(this.chatRecords)),
+					data: JSON.parse(JSON.stringify(this.chatData)),
 					configs: JSON.parse(JSON.stringify(this.configs))
 				})
 				this.close()
@@ -159,28 +235,46 @@ export default {
 			<div class="chat-configs-content" @click.stop>
 				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
 				<div class="chat-configs-content-container">
-					<FoldingPanel class="folding-panel">
-						<template #Title>
-							<p>{{ t("views.ChatConfigs.chatRecords") }}</p>
-						</template>
-						<template #Content>
-							<div
-								class="chat-record-item"
-								v-for="item in chatRecords"
-								:key="item.id">
-								<Selector
-									class="selector"
-									unique-key="title"
-									:selector-list="roleList"
-									:selector-selected="{title: item.message.role}"
-									@select="(role) => updateSelected(role.title, item.id)"/>
-								<textarea spellcheck="false" v-model="item.message.content"></textarea>
-								<Button class="but" @click="remove(item.id)">
-									<SVGIcon name="#icon-close"/>
+					<div class="container">
+						<div
+							class="chat-record-item"
+							v-for="item in chatRecords"
+							:key="item.id">
+							<Selector
+								unique-key="title"
+								:selector-list="roleList"
+								:selector-selected="{title: item.message.role}"
+								@select="(role) => updateRoleSelected(role.title, item.id)"/>
+							<textarea spellcheck="false" v-model="item.message.content"></textarea>
+							<Button class="but" @click="remove(item.id)">
+								<SVGIcon name="#icon-close"/>
+							</Button>
+						</div>
+						<div class="pagination">
+							<Selector
+								unique-key="key"
+								:selector-list="orderList"
+								:selector-selected="order"
+								@select="updateOrderSelected"/>
+							<Button @click="getChatRecords(page - 1)" :disabled="page === 1">
+								上一页
+							</Button>
+							<div class="page-btn-container">
+								<Button
+									v-for="num in visiblePages"
+									:key="num"
+									:class="['page-btn', { active: num === page, ellipsis: num === '...' }]"
+									@click="getChatRecords(num)"
+									:disabled="num === '...'">
+									{{ num }}
 								</Button>
 							</div>
-						</template>
-					</FoldingPanel>
+							<Button @click="getChatRecords(page + 1)" :disabled="page === totalPages">
+								下一页
+							</Button>
+							<InputNumber @input="getChatRecords(page)" v-model="page" :min="1" :max="totalPages" mode="slider"/>
+						</div>
+					</div>
 					<div class="container">
 						<div class="item">
 							<p>{{ t("views.ChatConfigs.temperature") }} [<em>temperature</em>]</p>
@@ -292,10 +386,6 @@ export default {
 	}
 }
 
-.folding-panel{
-	margin-bottom: 20px;
-}
-
 .chat-record-item {
 	margin-bottom: 10px;
 	display: grid;
@@ -327,6 +417,35 @@ export default {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+}
+
+.pagination {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 100px 100px 1fr 100px 200px;
+	gap: 10px;
+
+	.page-btn-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+
+		.page-btn {
+			padding: 10px;
+		}
+
+		.page-btn.active {
+			background-color: var(--theme-color);
+			color: var(--text-color-anti);
+		}
+
+		.page-btn.ellipsis {
+			cursor: default;
+			background: transparent;
+			border: none;
+		}
 	}
 }
 

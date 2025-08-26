@@ -462,7 +462,6 @@
 			"max_tokens": "Max Tokens",
 			"presence_penalty": "Presence Penalty",
 			"frequency_penalty": "Frequency Penalty",
-			"chatRecords": "Chat record",
 			"close": "Close",
 			"save": "Save",
 			"global": "Reset global"

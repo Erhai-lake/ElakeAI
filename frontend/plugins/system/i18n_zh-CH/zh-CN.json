@@ -462,7 +462,6 @@
 			"max_tokens": "单次回复限制",
 			"presence_penalty": "话题新鲜度",
 			"frequency_penalty": "频率惩罚度",
-			"chatRecords": "聊天记录",
 			"close": "关闭",
 			"save": "保存",
 			"global": "重置回全局"
