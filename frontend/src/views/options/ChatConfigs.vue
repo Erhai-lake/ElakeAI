@@ -8,11 +8,12 @@ import SVGIcon from "@/components/SVGIcon.vue"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
+import InputText from "@/components/input/InputText.vue"
 
 export default {
 	name: "ChatConfigs",
 	inject: ["$DB", "$log"],
-	components: {FoldingPanel, SVGIcon, Selector, InputNumber, Button},
+	components: {InputText, FoldingPanel, SVGIcon, Selector, InputNumber, Button},
 	props: {
 		chatKey: {
 			type: String,
@@ -34,6 +35,7 @@ export default {
 				max_tokens: 2048,
 				presence_penalty: 0
 			},
+			originalChatData: [],
 			chatData: [],
 			chatRecords: [],
 			page: 1,
@@ -124,8 +126,26 @@ export default {
 		 */
 		updateRoleSelected(role, id) {
 			const MESSAGE = this.chatData.find(item => item.id === id)
-			if (MESSAGE) {
-				MESSAGE.message.role = role
+			if (!MESSAGE) return
+			MESSAGE.message.role = role
+			const ORIGINAL = this.originalChatData.find(item => item.id === id)
+			// 处理 model
+			if (role === "user" || role === "system") {
+				// 移除 model
+				delete MESSAGE.model
+			} else if (role === "assistant") {
+				if (ORIGINAL && ORIGINAL.model) {
+					// 原本有 model, 恢复
+					MESSAGE.model = { ...ORIGINAL.model }
+				} else if (!MESSAGE.model) {
+					// 原本没有, 新建
+					MESSAGE.model = { platform: "", model: "" }
+				}
+			}
+			const RECORD = this.chatRecords.find(item => item.id === id)
+			if (RECORD) {
+				RECORD.message.role = MESSAGE.message.role
+				RECORD.model = MESSAGE.model
 			}
 		},
 		/**
@@ -135,14 +155,6 @@ export default {
 		updateOrderSelected(order) {
 			this.order = order
 			this.getChatRecords(this.page)
-		},
-		/**
-		 * 移除消息
-		 * @param id {String} - 消息ID
-		 */
-		remove(id) {
-			this.chatRecords = this.chatRecords.filter(item => item.id !== id)
-			this.chatData = this.chatData.filter(item => item.id !== id)
 		},
 		/**
 		 * 加载聊天配置
@@ -167,6 +179,7 @@ export default {
 				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
 				if (CHAT_DATA && CHAT_DATA.data) {
 					this.chatData = CHAT_DATA.data
+					this.originalChatData = JSON.parse(JSON.stringify(this.chatData))
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取聊天数据失败`, error)
@@ -177,10 +190,10 @@ export default {
 		 * 分页获取聊天记录
 		 * @param page {Number} - 页码
 		 */
-		getChatRecords:  publicRegistry.debounce(function(page = 1) {
+		getChatRecords: publicRegistry.debounce(function (page = 1) {
 			const PAGE_SIZE = 10
 			const OFFSET = (page - 1) * PAGE_SIZE
-			let records = JSON.parse(JSON.stringify(this.chatData))
+			let records = this.chatData.slice()
 			if (this.order.key === "desc") {
 				records.reverse()
 			}
@@ -188,6 +201,32 @@ export default {
 			this.totalPages = Math.ceil(records.length / PAGE_SIZE)
 			this.chatRecords = records.slice(OFFSET, OFFSET + PAGE_SIZE)
 		}, 100),
+		/**
+		 * 新增聊天记录
+		 */
+		addChatRecord() {
+			const MESSAGE = {
+				id: crypto.randomUUID(),
+				message: {
+					role: "user",
+					content: ""
+				},
+				status: "done",
+				timestamp: Date.now()
+			}
+			this.chatData.push(MESSAGE)
+			const PAGE_SIZE = 10
+			this.totalPages = Math.ceil(this.chatData.length / PAGE_SIZE)
+			this.order.key === "asc" ? this.getChatRecords(this.totalPages) : this.getChatRecords(1)
+		},
+		/**
+		 * 移除消息
+		 * @param id {String} - 消息ID
+		 */
+		remove(id) {
+			this.chatRecords = this.chatRecords.filter(item => item.id !== id)
+			this.chatData = this.chatData.filter(item => item.id !== id)
+		},
 		/**
 		 * 加载全局配置
 		 */
@@ -245,12 +284,19 @@ export default {
 								:selector-list="roleList"
 								:selector-selected="{title: item.message.role}"
 								@select="(role) => updateRoleSelected(role.title, item.id)"/>
+							<div class="input-container" v-if="item.message.role === 'assistant'">
+								<InputText v-model="item.model.platform"/>
+								<InputText v-model="item.model.model"/>
+							</div>
+							<div v-else></div>
 							<textarea spellcheck="false" v-model="item.message.content"></textarea>
 							<Button class="but" @click="remove(item.id)">
 								<SVGIcon name="#icon-close"/>
 							</Button>
 						</div>
+						<hr>
 						<div class="pagination">
+							<Button @click="addChatRecord()">新增</Button>
 							<Selector
 								unique-key="key"
 								:selector-list="orderList"
@@ -272,7 +318,12 @@ export default {
 							<Button @click="getChatRecords(page + 1)" :disabled="page === totalPages">
 								下一页
 							</Button>
-							<InputNumber @input="getChatRecords(page)" v-model="page" :min="1" :max="totalPages" mode="slider"/>
+							<InputNumber
+								@input="getChatRecords(page)"
+								v-model="page"
+								:min="1"
+								:max="totalPages"
+								mode="slider"/>
 						</div>
 					</div>
 					<div class="container">
@@ -389,8 +440,15 @@ export default {
 .chat-record-item {
 	margin-bottom: 10px;
 	display: grid;
-	grid-template-columns: 100px 1fr 32px;
-	gap: 10px;
+	grid-template-columns: 100px auto 1fr auto;
+	gap: 5px;
+
+	.input-container {
+		margin-left: 5px;
+		display: grid;
+		grid-template-columns: 100px 150px;
+		gap: 5px;
+	}
 
 	textarea {
 		padding: 10px 12px;
@@ -421,9 +479,10 @@ export default {
 }
 
 .pagination {
+	margin-top: 20px;
 	width: 100%;
 	display: grid;
-	grid-template-columns: 100px 100px 1fr 100px 200px;
+	grid-template-columns: 100px 100px auto 1fr auto auto;
 	gap: 10px;
 
 	.page-btn-container {
