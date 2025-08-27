@@ -379,6 +379,7 @@ export default {
 					data: JSON.parse(JSON.stringify(this.chatData)),
 					configs: JSON.parse(JSON.stringify(this.configs))
 				})
+				EventBus.emit("[update] maskListUpdate")
 				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveMaskSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存面具失败`, error)
