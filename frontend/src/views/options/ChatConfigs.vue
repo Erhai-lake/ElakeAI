@@ -342,6 +342,23 @@ export default {
 		 */
 		close() {
 			this.$emit("update:modelValue", false)
+		},
+		/**
+		 * 保存到面具
+		 */
+		async saveMask() {
+			try {
+				await this.$DB.masks.add({
+					key: crypto.randomUUID(),
+					title: this.chatTitle,
+					data: JSON.parse(JSON.stringify(this.chatData)),
+					configs: JSON.parse(JSON.stringify(this.configs))
+				})
+				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveMaskSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 保存面具失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveMaskError")}`)
+			}
 		}
 	}
 }
@@ -479,6 +496,7 @@ export default {
 				<div class="but">
 					<Button @click="close">{{ t("views.ChatConfigs.close") }}</Button>
 					<Button @click="save">{{ t("views.ChatConfigs.save") }}</Button>
+					<Button @click="saveMask">{{ t("views.ChatConfigs.saveMask") }}</Button>
 					<Button @click="loadGlobalConfig">{{ t("views.ChatConfigs.global") }}</Button>
 				</div>
 			</div>
@@ -660,7 +678,7 @@ export default {
 .but {
 	padding: 10px;
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
+	grid-template-columns: repeat(4, 1fr);
 	gap: 20px;
 }
 </style>

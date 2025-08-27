@@ -457,7 +457,9 @@
 				"getGlobalConfigError": "Failed to get global config",
 				"getError": "Failed to get chat configuration",
 				"saveSuccess": "Chat configuration saved successfully",
-				"saveError": "Failed to save chat configuration"
+				"saveError": "Failed to save chat configuration",
+				"saveMaskSuccess": "Mask saved successfully",
+				"saveMaskError": "Failed to save mask"
 			},
 			"chatSetup": "Current Chat Config",
 			"chatTitle": "Chat Title",
@@ -468,6 +470,7 @@
 			"frequency_penalty": "Frequency Penalty",
 			"close": "Close",
 			"save": "Save",
+			"saveMask": "Save to Mask",
 			"global": "Reset global"
 		}
 	}

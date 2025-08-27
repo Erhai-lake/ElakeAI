@@ -457,7 +457,9 @@
 				"getGlobalConfigError": "获取全局配置失败",
 				"getError": "获取聊天配置失败",
 				"saveSuccess": "保存聊天配置成功",
-				"saveError": "保存聊天配置失败"
+				"saveError": "保存聊天配置失败",
+				"saveMaskSuccess": "保存面具成功",
+				"saveMaskError": "保存面具失败"
 			},
 			"chatSetup": "当前聊天配置",
 			"chatTitle": "聊天标题",
@@ -468,6 +470,7 @@
 			"frequency_penalty": "频率惩罚度",
 			"close": "关闭",
 			"save": "保存",
+			"saveMask": "保存到面具",
 			"global": "重置回全局"
 		}
 	}
