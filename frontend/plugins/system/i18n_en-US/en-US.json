@@ -472,6 +472,17 @@
 			"save": "Save",
 			"saveMask": "Save to Mask",
 			"global": "Reset global"
+		},
+		"MaskView": {
+			"toast": {
+				"errorGettingMaskList": "Failed to get mask list",
+				"errorChattingMask": "Failed to chat mask",
+				"errorDeletingMask": "Failed to delete mask"
+			},
+			"num": "Contains { num } preset dialogues",
+			"chat": "Chat",
+			"config": "Config",
+			"delete": "Delete"
 		}
 	}
 }

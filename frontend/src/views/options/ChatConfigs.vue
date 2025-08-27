@@ -24,6 +24,11 @@ export default {
 			type: Boolean,
 			default: false
 		}
+		,
+		type: {
+			type: String,
+			default: "chat"
+		}
 	},
 	emits: ["update:modelValue"],
 	data() {
@@ -178,10 +183,15 @@ export default {
 		async loadChatConfig() {
 			await this.loadGlobalConfig()
 			try {
-				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
-				if (CHAT_DATA.configs) {
-					this.chatTitle = CHAT_DATA.title
-					this.configs = CHAT_DATA.configs
+				let chatData = null
+				if (this.type === "chat") {
+					chatData = await this.$DB.chats.get(this.chatKey)
+				} else if (this.type === "mask") {
+					chatData = await this.$DB.masks.get(this.chatKey)
+				}
+				if (chatData && chatData.configs) {
+					this.chatTitle = chatData.title
+					this.configs = chatData.configs
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取聊天配置失败`, error)
@@ -193,9 +203,14 @@ export default {
 		 */
 		async loadChatData() {
 			try {
-				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
-				if (CHAT_DATA && CHAT_DATA.data) {
-					this.chatData = CHAT_DATA.data
+				let chatData = null
+				if (this.type === "chat") {
+					chatData = await this.$DB.chats.get(this.chatKey)
+				} else if (this.type === "mask") {
+					chatData = await this.$DB.masks.get(this.chatKey)
+				}
+				if (chatData && chatData.data) {
+					this.chatData = chatData.data
 					this.originalChatData = JSON.parse(JSON.stringify(this.chatData))
 				}
 			} catch (error) {
@@ -323,14 +338,24 @@ export default {
 				if (!this.chatTitle.trim()) {
 					this.chatTitle = this.t("components.AIInput.newChat")
 				}
-				await this.$DB.chats.update(this.chatKey, {
-					title: this.chatTitle,
-					data: JSON.parse(JSON.stringify(this.chatData)),
-					configs: JSON.parse(JSON.stringify(this.configs))
-				})
+				// 检查是否为面具
+				if (this.type === "chat") {
+					await this.$DB.chats.update(this.chatKey, {
+						title: this.chatTitle,
+						data: JSON.parse(JSON.stringify(this.chatData)),
+						configs: JSON.parse(JSON.stringify(this.configs))
+					})
+					EventBus.emit("[function] initChatView")
+					EventBus.emit("[update] chatListUpdate")
+				} else if (this.type === "mask") {
+					await this.$DB.masks.update(this.chatKey, {
+						title: this.chatTitle,
+						data: JSON.parse(JSON.stringify(this.chatData)),
+						configs: JSON.parse(JSON.stringify(this.configs))
+					})
+					EventBus.emit("[update] maskListUpdate")
+				}
 				this.close()
-				EventBus.emit("[function] initChatView")
-				EventBus.emit("[update] chatListUpdate")
 				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存聊天配置失败`, error)
