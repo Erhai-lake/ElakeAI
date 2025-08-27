@@ -460,6 +460,7 @@
 				"saveError": "Failed to save chat configuration"
 			},
 			"chatSetup": "Current Chat Config",
+			"chatTitle": "Chat Title",
 			"temperature": "Temperature",
 			"top_p": "Top P",
 			"max_tokens": "Max Tokens",

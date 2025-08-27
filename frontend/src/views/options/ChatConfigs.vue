@@ -29,6 +29,7 @@ export default {
 	data() {
 		return {
 			name: "ChatConfigs",
+			chatTitle: "",
 			configs: {
 				temperature: 1,
 				frequency_penalty: 0,
@@ -158,6 +159,20 @@ export default {
 			this.getChatRecords(this.page)
 		},
 		/**
+		 * 加载全局配置
+		 */
+		async loadGlobalConfig() {
+			try {
+				const GLOBAL_CONFIG = await this.$DB.configs.get("chatConfigs")
+				if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
+					this.configs = GLOBAL_CONFIG.value
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取全局配置失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
+			}
+		},
+		/**
 		 * 加载聊天配置
 		 */
 		async loadChatConfig() {
@@ -165,6 +180,7 @@ export default {
 			try {
 				const CHAT_DATA = await this.$DB.chats.get(this.chatKey)
 				if (CHAT_DATA.configs) {
+					this.chatTitle = CHAT_DATA.title
 					this.configs = CHAT_DATA.configs
 				}
 			} catch (error) {
@@ -282,7 +298,7 @@ export default {
 				: (this.page - 1) * PAGE_SIZE
 			const PAGE_END = PAGE_START + PAGE_SIZE - 1
 			// 判断是否需要翻页
-			if(!IS_DESC){
+			if (!IS_DESC) {
 				if (newIndex < PAGE_START && this.page > 1) {
 					this.page--
 				} else if (newIndex > PAGE_END && this.page < this.totalPages) {
@@ -299,30 +315,22 @@ export default {
 			this.getChatRecords(this.page)
 		},
 		/**
-		 * 加载全局配置
-		 */
-		async loadGlobalConfig() {
-			try {
-				const GLOBAL_CONFIG = await this.$DB.configs.get("chatConfigs")
-				if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
-					this.configs = GLOBAL_CONFIG.value
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取全局配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
-			}
-		},
-		/**
 		 * 保存聊天配置
 		 */
 		async save() {
 			try {
+				// 检查标题是否为空
+				if (!this.chatTitle.trim()) {
+					this.chatTitle = this.t("components.AIInput.newChat")
+				}
 				await this.$DB.chats.update(this.chatKey, {
+					title: this.chatTitle,
 					data: JSON.parse(JSON.stringify(this.chatData)),
 					configs: JSON.parse(JSON.stringify(this.configs))
 				})
 				this.close()
 				EventBus.emit("[function] initChatView")
+				EventBus.emit("[update] chatListUpdate")
 				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 保存聊天配置失败`, error)
@@ -345,6 +353,12 @@ export default {
 			<div class="chat-configs-content" @click.stop>
 				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
 				<div class="chat-configs-content-container">
+					<div class="container">
+						<div class="item">
+							<p>{{ t("views.ChatConfigs.chatTitle") }}</p>
+							<InputText v-model="chatTitle"/>
+						</div>
+					</div>
 					<div class="container">
 						<draggable
 							v-model="chatRecords"
