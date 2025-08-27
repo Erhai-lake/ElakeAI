@@ -64,7 +64,8 @@ export default {
 				const NEW_KEY = crypto.randomUUID()
 				await this.$DB.masks.add({
 					key: NEW_KEY,
-					title: this.t("components.AIInput.newChat")
+					title: this.t("components.AIInput.newChat"),
+					data: []
 				})
 				await this.getMasks()
 				this.configMask(NEW_KEY)
