@@ -240,12 +240,13 @@ export default {
 					for (const config of configs) {
 						// 检查是否已存在相同item的配置
 						const EXISTING = await this.$DB.configs.get({item: config.item})
+						const CLEAN_CONFIG = JSON.parse(JSON.stringify(config))
 						if (EXISTING) {
 							// 更新现有配置
-							await this.$DB.configs.update(EXISTING.item, config)
+							await this.$DB.configs.update(EXISTING.item, CLEAN_CONFIG)
 						} else {
 							// 添加新配置
-							await this.$DB.configs.add(config)
+							await this.$DB.configs.add(CLEAN_CONFIG)
 						}
 					}
 				})
