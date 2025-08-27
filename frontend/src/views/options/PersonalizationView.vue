@@ -40,3 +40,16 @@ export default {
 		<BackgroundImage/>
 	</div>
 </template>
+
+<style scoped lang="less">
+.item {
+	padding: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	border-bottom: 1px solid var(--border-color);
+	border-top: 1px solid var(--border-color);
+	white-space: nowrap;
+}
+</style>

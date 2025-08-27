@@ -91,24 +91,3 @@ export default {
 	overflow-y: auto;
 }
 </style>
-
-<style>
-.container {
-	padding: 20px;
-	margin-bottom: 20px;
-	border-radius: 10px;
-	background-color: rgba(127, 127, 127, 0.5);
-	border: 1px solid var(--border-color);
-}
-
-.item {
-	padding: 10px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 10px;
-	border-bottom: 1px solid var(--border-color);
-	border-top: 1px solid var(--border-color);
-	white-space: nowrap;
-}
-</style>
