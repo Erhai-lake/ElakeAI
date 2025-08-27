@@ -70,6 +70,13 @@
 		"url": "https://github.com/timmywil/panzoom"
 	},
 	{
+		"category": "UI 与交互",
+		"name": "vuedraggable",
+		"license": "MIT",
+		"description": "Vue 3 的拖拽排序组件",
+		"url": "https://github.com/SortableJS/vue.draggable.next"
+	},
+	{
 		"category": "数据与工具",
 		"name": "Axios",
 		"license": "MIT",
