@@ -9,11 +9,12 @@ import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
 import InputText from "@/components/input/InputText.vue"
+import draggable from "vuedraggable"
 
 export default {
 	name: "ChatConfigs",
 	inject: ["$DB", "$log"],
-	components: {InputText, FoldingPanel, SVGIcon, Selector, InputNumber, Button},
+	components: {InputText, FoldingPanel, SVGIcon, Selector, InputNumber, Button, draggable},
 	props: {
 		chatKey: {
 			type: String,
@@ -136,10 +137,10 @@ export default {
 			} else if (role === "assistant") {
 				if (ORIGINAL && ORIGINAL.model) {
 					// 原本有 model, 恢复
-					MESSAGE.model = { ...ORIGINAL.model }
+					MESSAGE.model = {...ORIGINAL.model}
 				} else if (!MESSAGE.model) {
 					// 原本没有, 新建
-					MESSAGE.model = { platform: "", model: "" }
+					MESSAGE.model = {platform: "", model: ""}
 				}
 			}
 			const RECORD = this.chatRecords.find(item => item.id === id)
@@ -228,6 +229,76 @@ export default {
 			this.chatData = this.chatData.filter(item => item.id !== id)
 		},
 		/**
+		 * 拖动结束
+		 */
+		onDragEnd() {
+			// 重新拼接 chatData
+			const PAGE_SIZE = 10
+			let records = this.chatData.slice()
+			if (this.order.key === "desc") {
+				records.reverse()
+			}
+			// 替换掉当前页的数据
+			const OFFSET = (this.page - 1) * PAGE_SIZE
+			records.splice(OFFSET, this.chatRecords.length, ...this.chatRecords)
+			// 再反转回去
+			if (this.order.key === "desc") {
+				records.reverse()
+			}
+			this.chatData = records
+		},
+		/**
+		 * 移动
+		 * @param id {String} - 消息ID
+		 * @param type {String} - 移动类型
+		 */
+		move(id, type) {
+			const PAGE_SIZE = 10
+			const INDEX_ALL = this.chatData.findIndex(item => item.id === id)
+			if (INDEX_ALL === -1) return
+			let newIndex = INDEX_ALL
+			const IS_DESC = this.order.key === "desc"
+			// 移动数据
+			if (type === "up") {
+				if (IS_DESC && INDEX_ALL < this.chatData.length - 1) {
+					[this.chatData[INDEX_ALL], this.chatData[INDEX_ALL + 1]] = [this.chatData[INDEX_ALL + 1], this.chatData[INDEX_ALL]]
+					newIndex = INDEX_ALL + 1
+				} else if (!IS_DESC && INDEX_ALL > 0) {
+					[this.chatData[INDEX_ALL - 1], this.chatData[INDEX_ALL]] = [this.chatData[INDEX_ALL], this.chatData[INDEX_ALL - 1]]
+					newIndex = INDEX_ALL - 1
+				} else return
+			} else if (type === "down") {
+				if (IS_DESC && INDEX_ALL > 0) {
+					[this.chatData[INDEX_ALL - 1], this.chatData[INDEX_ALL]] = [this.chatData[INDEX_ALL], this.chatData[INDEX_ALL - 1]]
+					newIndex = INDEX_ALL - 1
+				} else if (!IS_DESC && INDEX_ALL < this.chatData.length - 1) {
+					[this.chatData[INDEX_ALL], this.chatData[INDEX_ALL + 1]] = [this.chatData[INDEX_ALL + 1], this.chatData[INDEX_ALL]]
+					newIndex = INDEX_ALL + 1
+				} else return
+			}
+			// 当前页索引范围
+			const PAGE_START = IS_DESC
+				? this.chatData.length - this.page * PAGE_SIZE
+				: (this.page - 1) * PAGE_SIZE
+			const PAGE_END = PAGE_START + PAGE_SIZE - 1
+			// 判断是否需要翻页
+			if(!IS_DESC){
+				if (newIndex < PAGE_START && this.page > 1) {
+					this.page--
+				} else if (newIndex > PAGE_END && this.page < this.totalPages) {
+					this.page++
+				}
+			} else {
+				if (newIndex < PAGE_START && this.page < this.totalPages) {
+					this.page++
+				} else if (newIndex > PAGE_END && this.page > 1) {
+					this.page--
+				}
+			}
+			// 更新当前页显示
+			this.getChatRecords(this.page)
+		},
+		/**
 		 * 加载全局配置
 		 */
 		async loadGlobalConfig() {
@@ -275,25 +346,42 @@ export default {
 				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
 				<div class="chat-configs-content-container">
 					<div class="container">
-						<div
-							class="chat-record-item"
-							v-for="item in chatRecords"
-							:key="item.id">
-							<Selector
-								unique-key="title"
-								:selector-list="roleList"
-								:selector-selected="{title: item.message.role}"
-								@select="(role) => updateRoleSelected(role.title, item.id)"/>
-							<div class="input-container" v-if="item.message.role === 'assistant'">
-								<InputText v-model="item.model.platform"/>
-								<InputText v-model="item.model.model"/>
-							</div>
-							<div v-else></div>
-							<textarea spellcheck="false" v-model="item.message.content"></textarea>
-							<Button class="but" @click="remove(item.id)">
-								<SVGIcon name="#icon-close"/>
-							</Button>
-						</div>
+						<draggable
+							v-model="chatRecords"
+							item-key="id"
+							handle=".move"
+							animation="200"
+							ghost-class="dragging-ghost"
+							chosen-class="dragging-chosen"
+							@end="onDragEnd">
+							<template #item="{element}">
+								<div class="chat-record-item">
+									<SVGIcon name="#icon-move" class="move"/>
+									<div class="move-button">
+										<Button class="but" @click="move(element.id, 'up')">
+											<SVGIcon name="#icon-upArrow"/>
+										</Button>
+										<Button class="but" @click="move(element.id, 'down')">
+											<SVGIcon name="#icon-downArrow"/>
+										</Button>
+									</div>
+									<Selector
+										unique-key="title"
+										:selector-list="roleList"
+										:selector-selected="{title: element.message.role}"
+										@select="(role) => updateRoleSelected(role.title, element.id)"/>
+									<div class="input-container" v-if="element.message.role === 'assistant'">
+										<InputText v-model="element.model.platform"/>
+										<InputText v-model="element.model.model"/>
+									</div>
+									<div v-else></div>
+									<textarea spellcheck="false" v-model="element.message.content"></textarea>
+									<Button class="but" @click="remove(element.id)">
+										<SVGIcon name="#icon-close"/>
+									</Button>
+								</div>
+							</template>
+						</draggable>
 						<hr>
 						<div class="pagination">
 							<Button @click="addChatRecord()">新增</Button>
@@ -437,11 +525,39 @@ export default {
 	}
 }
 
+.dragging-chosen {
+	background-color: var(--theme-color);
+}
+
+.dragging-ghost {
+	opacity: 0.5;
+	background-color: var(--theme-color);
+}
+
 .chat-record-item {
 	margin-bottom: 10px;
 	display: grid;
-	grid-template-columns: 100px auto 1fr auto;
+	grid-template-columns: auto auto 100px auto 1fr auto;
+	align-items: center;
 	gap: 5px;
+
+	.move {
+		cursor: move;
+	}
+
+	.move-button {
+		button {
+			height: 22px;
+		}
+
+		button:first-child {
+			border-radius: 8px 8px 0 0;
+		}
+
+		button:last-child {
+			border-radius: 0 0 8px 8px;
+		}
+	}
 
 	.input-container {
 		margin-left: 5px;
