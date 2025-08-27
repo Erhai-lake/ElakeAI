@@ -476,10 +476,13 @@
 		"MaskView": {
 			"toast": {
 				"errorGettingMaskList": "获取面具列表失败",
+				"errorNewMask": "新建面具失败",
 				"errorChattingMask": "面具聊天失败",
 				"errorDeletingMask": "删除面具失败"
 			},
+			"search": "搜索角色面具",
 			"num": "包含 { num } 条预设对话",
+			"newMask": "新建面具",
 			"chat": "对话",
 			"config": "配置",
 			"delete": "删除"

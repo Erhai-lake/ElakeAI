@@ -476,10 +476,13 @@
 		"MaskView": {
 			"toast": {
 				"errorGettingMaskList": "Failed to get mask list",
+				"errorNewMask": "Failed to create new mask",
 				"errorChattingMask": "Failed to chat mask",
 				"errorDeletingMask": "Failed to delete mask"
 			},
+			"search": "Search for role masks",
 			"num": "Contains { num } preset dialogues",
+			"newMask": "New Mask",
 			"chat": "Chat",
 			"config": "Config",
 			"delete": "Delete"
