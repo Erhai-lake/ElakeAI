@@ -62,6 +62,11 @@ const routes = [
 				component: () => import("@/views/options/AboutView.vue")
 			},
 			{
+				path: "aboutElakeAI",
+				name: "OptionsAboutElakeAI",
+				component: () => import("@/views/options/AboutElakeAIView.vue")
+			},
+			{
 				path: "openSourceDeclaration",
 				name: "OptionsOpenSourceDeclaration",
 				component: () => import("@/views/options/OpenSourceDeclarationView.vue")

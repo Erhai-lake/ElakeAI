@@ -22,7 +22,7 @@ export default {
 <template>
 	<div class="item">
 		{{ t("views.OptionsView.AboutView.aboutApp") }}
-		<router-link to="/options/about">
+		<router-link to="/options/aboutElakeAI">
 			<Button>{{ t("views.OptionsView.AboutView.view") }}</Button>
 		</router-link>
 	</div>

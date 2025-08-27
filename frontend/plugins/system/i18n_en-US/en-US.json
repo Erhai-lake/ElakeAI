@@ -440,6 +440,9 @@
 			"OpenSourceDeclarationView": {
 				"view": "View"
 			},
+			"AboutElakeAIView": {
+				"loading": "Loading..."
+			},
 			"OptionsNotFoundView": "Nothing here, please go back~",
 			"personalization": "Personalization",
 			"chats": "Chats",

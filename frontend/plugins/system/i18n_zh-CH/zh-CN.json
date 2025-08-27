@@ -440,6 +440,9 @@
 			"OpenSourceDeclarationView": {
 				"view": "查看"
 			},
+			"AboutElakeAIView": {
+				"loading": "加载中..."
+			},
 			"OptionsNotFoundView": "这里什么都没有, 返回吧~",
 			"personalization": "个性化",
 			"chats": "对话",
