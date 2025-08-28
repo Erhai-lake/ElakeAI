@@ -247,6 +247,7 @@ export default {
 		opacity: 0;
 		display: flex;
 		gap: 10px;
+		transition: all 0.3s ease-in-out;
 	}
 
 	.message-info {

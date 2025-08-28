@@ -118,6 +118,7 @@ export default {
 	display: flex;
 	align-items: center;
 	cursor: pointer;
+	transition: all 0.3s ease-in-out;
 
 	&:hover {
 		background-color: var(--right-click-menu-background-color-anti);
