@@ -389,6 +389,7 @@
 			},
 			"CustomThemeView": {
 				"customTheme": "Custom Theme",
+				"reset": "Reset",
 				"themeColor": "Theme Color",
 				"scrollbarTrackColor": "Scrollbar Track Color",
 				"scrollbarThumbColor": "Scrollbar Thumb Color",

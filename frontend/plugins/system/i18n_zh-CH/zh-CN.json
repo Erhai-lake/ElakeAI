@@ -389,6 +389,7 @@
 			},
 			"CustomThemeView": {
 				"customTheme": "自定义主题",
+				"reset": "重置",
 				"themeColor": "主题色",
 				"scrollbarTrackColor": "滚动条轨道颜色",
 				"scrollbarThumbColor": "滚动条滑块颜色",
