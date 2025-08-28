@@ -174,6 +174,7 @@ export default {
 				class="item"
 				v-for="mask in masks"
 				:key="mask.key"
+				@click="configMask(mask.key)"
 				@contextmenu.prevent="onRightClick($event, mask)">
 				<div class="left">
 					<p>{{ mask.title }}</p>
