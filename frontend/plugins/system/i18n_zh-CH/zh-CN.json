@@ -46,7 +46,8 @@
 					"remove": "移除{count}个Key",
 					"edit": "编辑",
 					"enable": "启用{count}个Key",
-					"disable": "禁用{count}个Key"
+					"disable": "禁用{count}个Key",
+					"viewKeys": "查看Key"
 				},
 				"toast": {
 					"loadKeyPoolError": "加载Key池失败",

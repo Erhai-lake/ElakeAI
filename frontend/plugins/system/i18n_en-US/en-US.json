@@ -46,7 +46,8 @@
 					"remove": "Remove {count} keys",
 					"edit": "Edit",
 					"enable": "Enable {count} keys",
-					"disable": "Disable {count} keys"
+					"disable": "Disable {count} keys",
+					"viewKeys": "View keys"
 				},
 				"toast": {
 					"loadKeyPoolError": "Failed to load key pool",

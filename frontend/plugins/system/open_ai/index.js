@@ -5,7 +5,8 @@ let context = {}
 const PLATFORM_INFO = {
 	name: "OpenAI",
 	image: "https://openai.com/favicon.ico",
-	url: "https://api.openai.com"
+	url: "https://api.openai.com",
+	keyViewUrl: "https://platform.openai.com/api-keys"
 }
 let streamChatHandler = null
 

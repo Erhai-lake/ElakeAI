@@ -410,6 +410,13 @@ export default {
 			}
 		},
 		/**
+		 * 查看Key
+		 */
+		viewKeys() {
+			const PLATFORM = platformRegistry.getAllPlatforms().find(item => item.name === this.selectedPlatform.title)
+			window.open(PLATFORM.api.info.keyViewUrl)
+		},
+		/**
 		 * 切换全选状态
 		 */
 		toggleAllSelection() {
@@ -468,6 +475,10 @@ export default {
 					<!-- 禁用选中 -->
 					<Button @click="batchToggleEnable(false)">
 						{{ t("components.Options.ChatAIKey.operationButton.disable", operationSelection.length) }}
+					</Button>
+					<!-- 查看Key -->
+					<Button @click="viewKeys">
+						{{ t("components.Options.ChatAIKey.operationButton.viewKeys") }}
 					</Button>
 					<div/>
 				</div>

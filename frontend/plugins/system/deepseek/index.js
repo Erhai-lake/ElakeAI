@@ -5,7 +5,8 @@ let context = {}
 const PLATFORM_INFO = {
 	name: "DeepSeek",
 	image: "https://chat.deepseek.com/favicon.svg",
-	url: "https://api.deepseek.com"
+	url: "https://api.deepseek.com",
+	keyViewUrl: "https://platform.deepseek.com/api_keys"
 }
 let streamChatHandler = null
 
