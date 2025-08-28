@@ -20,10 +20,7 @@ export default {
 			name: "App",
 			loading: {
 				status: true,
-				loadingMessage: "正在加载插件系统...",
-				currentPluginName: "",
-				loadedCount: 0,
-				totalCount: 0
+				loadingMessage: "正在加载插件系统..."
 			},
 			backgroundImage: null,
 			isDevToolsSuspensionWindow: false,
@@ -56,24 +53,18 @@ export default {
 		}
 	},
 	beforeUnmount() {
-		EventBus.off("[update] pluginProgress")
 		EventBus.off("[update] devToolsSuspensionWindowUpdate", this.devToolsSuspensionWindow)
 		EventBus.off("[function] configInitialization", this.configInitialization)
+		EventBus.off("[update] pluginReady")
 	},
 	async created() {
 		document.addEventListener("contextmenu", event => event.preventDefault())
-		EventBus.on("[update] pluginProgress", (data) => {
-			const DETAIL = data.detail || {}
-			this.loading.loadedCount = DETAIL.loaded || 0
-			this.loading.totalCount = DETAIL.total || 0
-			this.loading.currentPluginName = DETAIL.name || ""
-		})
+		EventBus.on("[update] devToolsSuspensionWindowUpdate", this.devToolsSuspensionWindow)
+		EventBus.on("[function] configInitialization", this.configInitialization)
 		EventBus.on("[update] pluginReady", () => {
 			this.$.appContext.provides.$DB = Dexie
 			this.$.appContext.provides.$log = Logger
 		})
-		EventBus.on("[update] devToolsSuspensionWindowUpdate", this.devToolsSuspensionWindow)
-		EventBus.on("[function] configInitialization", this.configInitialization)
 		// 加载界面初始化
 		this.updateMessage()
 		// 环境信息
@@ -225,10 +216,10 @@ export default {
 		updateMessage() {
 			const MESSAGE_MAP = [
 				{time: 0, content: "正在加载插件系统..."},
-				{time: 2000, content: "额......等会, 这是有点久了..."},
-				{time: 4000, content: "再等等也许就好了?"},
-				{time: 6000, content: "你确定插件都放对了吗😓"},
-				{time: 8000, content: "👊😡"}
+				{time: 200, content: "额......等会, 这是有点久了..."},
+				{time: 500, content: "再等等也许就好了?"},
+				{time: 800, content: "zZZZ😓"},
+				{time: 1000, content: "👊😡"}
 			]
 			if (!this._startTime) this._startTime = Date.now()
 			const NOW = Date.now() - this._startTime
@@ -345,7 +336,7 @@ export default {
 	<Loading
 		class="app"
 		:loading="loading.status"
-		:text="loading.status ? `${loading.loadingMessage}<br />正在加载 ${loading.currentPluginName} 插件 (${loading.loadedCount}/${loading.totalCount})` : '!!!插件全部加载完成!!!'">
+		:text="loading.status ? `${loading.loadingMessage}` : '!!!准备就绪!!!'">
 		<template v-if="!loading.status">
 			<Sidebar/>
 			<div class="RouterView">

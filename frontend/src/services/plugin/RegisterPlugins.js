@@ -101,12 +101,6 @@ export async function initEnabledPlugins(appContext) {
 			registerPluginInstance(PLUGIN.uuid, mod)
 		} catch (error) {
 			Logger.warn(`[registerPlugins] 插件注册失败: ${PLUGIN.name}`, error)
-		} finally {
-			EventBus.emit("[update] pluginProgress", {
-				loaded: i + 1,
-				total: PLUGINS.length,
-				name: PLUGIN.name
-			})
 		}
 	}
 	EventBus.emit("[update] pluginReady")
