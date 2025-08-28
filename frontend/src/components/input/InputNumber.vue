@@ -73,6 +73,8 @@ export default {
 				// 自动聚焦输入框
 				const INPUT = this.$refs.valueInput
 				INPUT && INPUT.focus()
+				// 自动全选
+				INPUT && INPUT.select()
 			})
 		},
 		/**
