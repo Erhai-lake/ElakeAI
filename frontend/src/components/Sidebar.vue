@@ -5,10 +5,11 @@ import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
+import Loading from "@/components/Loading.vue"
 
 export default {
 	name: "Sidebar",
-	components: {SVGIcon, RightClickMenu},
+	components: {SVGIcon, RightClickMenu, Loading},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
@@ -16,6 +17,7 @@ export default {
 			route: useRoute(),
 			sidebarStatus: true,
 			chatList: [],
+			conversationListLoading: false,
 			inProgress: []
 		}
 	},
@@ -57,6 +59,7 @@ export default {
 		 * 获取聊天列表
 		 */
 		async chatListGet() {
+			this.conversationListLoading = true
 			try {
 				const CHAT_LIST = await this.$DB.chats.toArray()
 				this.chatList = CHAT_LIST.map(ITEM => {
@@ -71,6 +74,8 @@ export default {
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表获取失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorGettingChatList")}`)
+			} finally {
+				this.conversationListLoading = false
 			}
 		},
 		/**
@@ -163,7 +168,7 @@ export default {
 </script>
 
 <template>
-	<RightClickMenu ref="menu" />
+	<RightClickMenu ref="menu"/>
 	<div
 		class="sidebar-container"
 		:class="sidebarStatus ? 'sidebar-expand-container' : 'sidebar-stow-container'"
@@ -186,38 +191,39 @@ export default {
 				<SVGIcon name="#icon-stow" size="2em"/>
 			</div>
 		</div>
-		<div
-			class="sidebar-conversation-list"
-			v-if="sidebarStatus"
-			:aria-label="t('components.Sidebar.barrierFree.conversationList')">
+		<Loading :loading="conversationListLoading" class="sidebar-conversation-list-loading">
 			<div
-				class="conversation-card"
-				role="button"
-				:aria-label="chatItem.title"
-				:class="{ active: route.params.key === chatItem.key , progress: inProgress.includes(chatItem.key)}"
-				v-for="chatItem in chatList"
-				:key="chatItem.key"
-				@click="openChat(chatItem.key)"
-				@contextmenu.prevent="onRightClick($event, chatItem)">
-				<p class="title" :title="chatItem.title" :aria-label="chatItem.title">{{ chatItem.title }}</p>
-				<div class="bottom">
-					<p aria-hidden="true">
-						{{ chatItem.length }}
-					</p>
-					<p :aria-label="formatTimestamp(chatItem.timestamp)">
-						{{ formatTimestamp(chatItem.timestamp) }}
-					</p>
-				</div>
+				class="sidebar-conversation-list"
+				v-if="sidebarStatus"
+				:aria-label="t('components.Sidebar.barrierFree.conversationList')">
 				<div
-					class="conversation-delete"
-					:title="t('components.Sidebar.function.delete')"
-					@click.stop="deleteChat(chatItem.key)"
-					:aria-label="t('components.Sidebar.function.delete')">
-					<SVGIcon name="#icon-delete" size="2em"/>
+					class="conversation-card"
+					role="button"
+					:aria-label="chatItem.title"
+					:class="{ active: route.params.key === chatItem.key , progress: inProgress.includes(chatItem.key)}"
+					v-for="chatItem in chatList"
+					:key="chatItem.key"
+					@click="openChat(chatItem.key)"
+					@contextmenu.prevent="onRightClick($event, chatItem)">
+					<p class="title" :title="chatItem.title" :aria-label="chatItem.title">{{ chatItem.title }}</p>
+					<div class="bottom">
+						<p aria-hidden="true">
+							{{ chatItem.length }}
+						</p>
+						<p :aria-label="formatTimestamp(chatItem.timestamp)">
+							{{ formatTimestamp(chatItem.timestamp) }}
+						</p>
+					</div>
+					<div
+						class="conversation-delete"
+						:title="t('components.Sidebar.function.delete')"
+						@click.stop="deleteChat(chatItem.key)"
+						:aria-label="t('components.Sidebar.function.delete')">
+						<SVGIcon name="#icon-delete" size="2em"/>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div v-if="!sidebarStatus"></div>
+		</Loading>
 		<router-link
 			to="/mask"
 			class="sidebar-mask"
@@ -314,10 +320,15 @@ export default {
 	}
 }
 
-.sidebar-conversation-list {
-	padding: 0 20px;
-	white-space: nowrap;
-	overflow: hidden auto;
+.sidebar-conversation-list-loading {
+	overflow: hidden;
+
+	.sidebar-conversation-list {
+		padding: 0 20px;
+		height: 100%;
+		white-space: nowrap;
+		overflow-y: auto;
+	}
 
 	.conversation-card {
 		position: relative;
@@ -332,7 +343,7 @@ export default {
 		&.active {
 			border-color: var(--theme-color);
 		}
-		
+
 		&.progress {
 			background-color: #9eaeb7;
 		}
