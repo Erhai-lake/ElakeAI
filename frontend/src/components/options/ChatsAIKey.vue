@@ -652,7 +652,7 @@ export default {
 			}
 
 			tbody tr {
-				transition: background-color 0.2s;
+				transition: all 0.3s ease-in-out;
 				cursor: pointer;
 
 				&:hover {

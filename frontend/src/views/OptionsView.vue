@@ -65,8 +65,8 @@ export default {
 }
 
 .sidebar {
-	border-left: 1px solid var(--border-color);
 	padding: 10px;
+	border-left: 1px solid var(--border-color);
 
 	.menu-item {
 		padding: 10px;
@@ -75,6 +75,7 @@ export default {
 		border-radius: 20px;
 		border: 2px solid transparent;
 		display: flex;
+		transition: all 0.3s ease-in-out;
 
 		&:hover {
 			background-color: var(--sidebar-item-hover-background-color);
