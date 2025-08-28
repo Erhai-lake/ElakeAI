@@ -27,6 +27,11 @@ const routes = [
 				component: () => import("@/views/options/PersonalizationView.vue")
 			},
 			{
+				path: "customTheme",
+				name: "CustomTheme",
+				component: () => import("@/views/options/CustomThemeView.vue")
+			},
+			{
 				path: "chats",
 				name: "OptionsChats",
 				component: () => import("@/views/options/ChatsView.vue")

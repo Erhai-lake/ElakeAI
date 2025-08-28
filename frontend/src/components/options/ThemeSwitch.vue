@@ -3,6 +3,7 @@ import {defineComponent} from "vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import CustomTheme from "@/services/CustomTheme"
 
 export default defineComponent({
 	name: "ThemeSelect",
@@ -25,6 +26,11 @@ export default defineComponent({
 					code: "Dark",
 					title: "i18n:components.Options.ThemeSwitch.dark",
 					images: "https://openmoji.org/data/color/svg/1F319.svg"
+				},
+				{
+					code: "Custom",
+					title: "i18n:components.Options.ThemeSwitch.custom",
+					images: "https://openmoji.org/data/color/svg/1F31F.svg"
 				}
 			],
 			selectedTheme: null,
@@ -67,6 +73,9 @@ export default defineComponent({
 		 */
 		updateSelectedTheme(newVal) {
 			this.selectedTheme = newVal
+			if (newVal.code === "Custom") {
+				this.$router.push({name: "CustomTheme"})
+			}
 		},
 		/**
 		 * 选择主题
@@ -79,6 +88,10 @@ export default defineComponent({
 					? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
 					: theme.code
 				document.documentElement.setAttribute("data-theme", THEME_CODE)
+				if (THEME_CODE === "Custom") {
+					document.documentElement.removeAttribute("data-theme")
+					await CustomTheme.applyCustomTheme()
+				}
 				void document.body.offsetWidth
 				// 保存设置
 				await this.$DB.configs.put({
@@ -100,6 +113,7 @@ export default defineComponent({
 			:selectorSelected="selectedTheme || {}"
 			:selectorList="theme"
 			uniqueKey="code"
+			:num="4"
 			@update:selectorSelected="updateSelectedTheme"/>
 	</div>
 

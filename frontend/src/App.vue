@@ -10,6 +10,7 @@ import Logger, {setupLogCleanup} from "@/services/Logger"
 import {unloadPlugins} from "@/services/plugin/UnloadPlugins"
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import Loading from "@/components/Loading.vue"
+import CustomTheme from "@/services/CustomTheme"
 
 export default {
 	name: "App",
@@ -190,11 +191,12 @@ export default {
 				// 应用主题
 				const THEME_DATA = await Dexie.configs.get("theme")
 				const THEME = THEME_DATA ? THEME_DATA.value : "System"
+				document.documentElement.setAttribute("data-theme", THEME)
 				if (THEME === "System") {
 					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
 					document.documentElement.setAttribute("data-theme", SYSTEM_THEME)
-				} else {
-					document.documentElement.setAttribute("data-theme", THEME)
+				} else if (THEME === "Custom") {
+					await CustomTheme.applyCustomTheme()
 				}
 				// 应用语言
 				const LANGUAGE_DATA = await Dexie.configs.get("language")
