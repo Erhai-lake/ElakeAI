@@ -1,0 +1,11 @@
+{
+	"name": "Kimi",
+	"author": "Erhai-lake",
+	"type": [
+		"platform"
+	],
+	"uuid": "61fa51e0-622e-4bf9-a5c4-bbc50b2768ac",
+	"version": "1.0.0",
+	"description": "Kimi 接入插件",
+	"entry": "index.js"
+}

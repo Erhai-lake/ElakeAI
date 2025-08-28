@@ -1,0 +1,18 @@
+{
+	"Plugins": {
+		"Kimi": {
+			"invalidRequest": "无效的请求或内容审查拒绝",
+			"authenticationFailed": "认证失败",
+			"insufficientBalance": "余额不足",
+			"resourceNotFoundError": "未找到资源",
+			"requestTooFastOrInsufficient": "请求过快或额度不足",
+			"serverError": "服务器错误",
+			"requestTimeout": "请求超时",
+			"badRequest": "错误的请求",
+			"networkError": "网络错误",
+			"getError": "获取错误",
+			"noResponse": "没有响应",
+			"unknownError": "未知错误"
+		}
+	}
+}
