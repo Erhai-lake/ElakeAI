@@ -11,7 +11,6 @@ export default {
 				if (!THEME_DATA && !THEME_DATA.value) {
 					const SYSTEM_THEME_CODE = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
 					document.documentElement.setAttribute("data-theme", SYSTEM_THEME_CODE)
-					void document.body.offsetWidth
 					return
 				}
 				themeData = THEME_DATA.value

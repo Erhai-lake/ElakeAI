@@ -84,15 +84,13 @@ export default defineComponent({
 		async selectTheme(theme) {
 			try {
 				if (!theme) return
-				const THEME_CODE = theme.code === "System"
-					? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light")
-					: theme.code
-				document.documentElement.setAttribute("data-theme", THEME_CODE)
-				if (THEME_CODE === "Custom") {
-					document.documentElement.removeAttribute("data-theme")
+				document.documentElement.setAttribute("data-theme", theme.code)
+				if (theme.code === "System") {
+					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
+					document.documentElement.setAttribute("data-theme", SYSTEM_THEME)
+				} else if (theme.code === "Custom") {
 					await CustomTheme.applyCustomTheme()
 				}
-				void document.body.offsetWidth
 				// 保存设置
 				await this.$DB.configs.put({
 					item: "theme",
