@@ -407,8 +407,10 @@
 				"confirmImport": "确认导入",
 				"selectAll": "全选 {item}",
 				"chats": "对话",
+				"masks": "面具",
 				"configs": "配置",
-				"apiKeys": "API Keys"
+				"apiKeys": "API Keys",
+				"logs": "日志"
 			},
 			"ExportView": {
 				"toast": {
@@ -422,8 +424,10 @@
 				"loading": "加载",
 				"selectAll": "全选 {item}",
 				"chats": "对话",
+				"masks": "面具",
 				"configs": "配置",
 				"apiKeys": "API Keys",
+				"logs": "日志",
 				"exportTip": "是否导出所选数据?",
 				"export": "导出"
 			},

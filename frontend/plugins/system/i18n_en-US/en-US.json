@@ -407,8 +407,10 @@
 				"confirmImport": "Confirm import",
 				"selectAll": "Select all {item}",
 				"chats": "Chats",
+				"masks": "Masks",
 				"configs": "Configurations",
-				"apiKeys": "API Keys"
+				"apiKeys": "API Keys",
+				"logs": "Logs"
 			},
 			"ExportView": {
 				"toast": {
@@ -422,8 +424,10 @@
 				"loading": "Loading",
 				"selectAll": "Select all {item}",
 				"chats": "Chats",
+				"masks": "Masks",
 				"configs": "Configurations",
 				"apiKeys": "API Keys",
+				"logs": "Logs",
 				"exportTip": "Export selected data?",
 				"export": "Export"
 			},

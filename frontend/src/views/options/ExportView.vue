@@ -18,6 +18,11 @@ export default {
 				selected: [],
 				selectAll: false
 			},
+			masks: {
+				options: [],
+				selected: [],
+				selectAll: false
+			},
 			configs: {
 				options: [],
 				selected: [],
@@ -34,6 +39,9 @@ export default {
 		"chats.selected"(newVal) {
 			this.chats.selectAll = this.chats.options.length > 0 && newVal.length === this.chats.options.length
 		},
+		"masks.selected"(newVal) {
+			this.masks.selectAll = this.masks.options.length > 0 && newVal.length === this.masks.options.length
+		},
 		"configs.selected"(newVal) {
 			this.configs.selectAll = this.configs.options.length > 0 && newVal.length === this.configs.options.length
 		},
@@ -43,11 +51,15 @@ export default {
 	},
 	computed: {
 		/**
-		 * 是否有数据可导入
+		 * 是否有数据可导出
 		 * @returns {Boolean}
 		 */
-		hasDataToImport() {
-			return this.singleSelection.optional.length > 0 || this.chats.options.length > 0 || this.configs.options.length > 0 || this.apiKeys.options.length > 0
+		hasDataToExport() {
+			return this.singleSelection.optional.length > 0
+				|| this.chats.options.length > 0
+				|| this.masks.options.length > 0
+				|| this.configs.options.length > 0
+				|| this.apiKeys.options.length > 0
 		}
 	},
 	methods: {
@@ -72,46 +84,42 @@ export default {
 			}
 		},
 		/**
-		 * 初始化
-		 */
-		initialization() {
-			this.singleSelection = {
-				optional: [],
-				selected: []
-			}
-			this.chats = {
-				options: [],
-				selected: [],
-				selectAll: false
-			}
-			this.configs = {
-				options: [],
-				selected: [],
-				selectAll: false
-			}
-			this.apiKeys = {
-				options: [],
-				selected: [],
-				selectAll: false
-			}
-		},
-		/**
 		 * 加载导出数据
 		 */
 		async loadExportData() {
-			this.initialization()
 			// 加载子选项数据
 			try {
-				this.chats.options = await this.$DB.chats.toArray()
-				this.configs.options = await this.$DB.configs.toArray()
-				this.apiKeys.options = await this.$DB.apiKeys.toArray()
+				this.chats = {
+					options: await this.$DB.chats.toArray(),
+					selected: [],
+					selectAll: false
+				}
+				this.masks = {
+					options: await this.$DB.masks.toArray(),
+					selected: [],
+					selectAll: false
+				}
+				this.configs = {
+					options: await this.$DB.configs.toArray(),
+					selected: [],
+					selectAll: false
+				}
+				this.apiKeys = {
+					options: await this.$DB.apiKeys.toArray(),
+					selected: [],
+					selectAll: false
+				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载子选项失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToLoadSubOptions")}`)
 			}
 			// 加载单选项数据
 			try {
-				// if (await this.$DB.chats.count() > 0) this.singleSelection.optional.push("chats")
+				this.singleSelection = {
+					optional: [],
+					selected: []
+				}
+				if (await this.$DB.logs.count() > 0) this.singleSelection.optional.push("logs")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取数据失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
@@ -125,11 +133,15 @@ export default {
 		async handleExport() {
 			const EXPORT_DATA = {}
 			const CHATS = await this.handleExportChats()
+			const MASKS = await this.handleExportMasks()
 			const CONFIGS = await this.handleExportConfigs()
 			const API_KEYS = await this.handleExportApiKey()
+			const LOGS = await this.handleExportLogs()
 			if (CHATS) EXPORT_DATA.chats = CHATS
+			if (MASKS) EXPORT_DATA.masks = MASKS
 			if (CONFIGS) EXPORT_DATA.configs = CONFIGS
 			if (API_KEYS) EXPORT_DATA.apiKeys = API_KEYS
+			if (LOGS) EXPORT_DATA.logs = LOGS
 			if (Object.keys(EXPORT_DATA).length === 0) {
 				this.$log.warn(`[${this.name}] 没有数据可导出`, EXPORT_DATA)
 				toastRegistry.warning(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.noDataToExport")}`)
@@ -154,7 +166,7 @@ export default {
 					document.body.removeChild(DOWNLOAD_LINK)
 					URL.revokeObjectURL(DOWNLOAD_URL)
 				}, 100)
-				this.$log.info(`[${this.name}] 导出成功`, EXPORT_DATA)
+				this.$log.info(`[${this.name}] 导出成功`)
 				toastRegistry.success(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.exportSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导出失败`, error)
@@ -163,7 +175,6 @@ export default {
 		},
 		/**
 		 * 处理导出chats
-		 * @returns {Promise<*>}
 		 */
 		async handleExportChats() {
 			if (this.chats.selected.length === 0) {
@@ -183,8 +194,27 @@ export default {
 			}
 		},
 		/**
+		 * 处理导出masks
+		 */
+		async handleExportMasks() {
+			if (this.masks.selected.length === 0) {
+				return null
+			}
+			try {
+				const MASKS_DATA = await this.$DB.masks.toArray()
+				const MASKS = MASKS_DATA.filter(item => this.masks.selected.includes(item.key))
+				if (MASKS.length === 0) {
+					return null
+				}
+				return MASKS
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取masks数据失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
+				return null
+			}
+		},
+		/**
 		 * 处理导出configs
-		 * @returns {Promise<*>}
 		 */
 		async handleExportConfigs() {
 			if (this.configs.selected.length === 0) {
@@ -205,7 +235,6 @@ export default {
 		},
 		/**
 		 * 处理导出apiKeys
-		 * @returns {Promise<*>}
 		 */
 		async handleExportApiKey() {
 			if (this.apiKeys.selected.length === 0) {
@@ -224,6 +253,25 @@ export default {
 				return null
 			}
 		},
+		/**
+		 * 处理导出logs
+		 */
+		async handleExportLogs() {
+			if (!this.singleSelection.selected.includes("logs")) {
+				return null
+			}
+			try {
+				const LOGS_DATA = await this.$DB.logs.toArray()
+				if (LOGS_DATA.length === 0) {
+					return null
+				}
+				return LOGS_DATA
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取logs数据失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
+				return null
+			}
+		}
 	}
 }
 </script>
@@ -234,15 +282,7 @@ export default {
 			{{ t("views.OptionsView.ExportView.loadExportData") }}
 			<Button @click="loadExportData">{{ t("views.OptionsView.ExportView.loading") }}</Button>
 		</div>
-		<div class="export" v-if="hasDataToImport">
-			<!--单项例子-->
-			<!--<div class="option-group" v-if="singleSelection.optional.length > 0">-->
-			<!--	<label class="option-item" v-if="singleSelection.optional.includes('chats')">-->
-			<!--		<input type="checkbox" v-model="singleSelection.selected" value="chats"/>-->
-			<!--		<span class="custom-checkbox"></span>-->
-			<!--		<span>{{ t("views.OptionsView.ExportView.chats") }}</span>-->
-			<!--	</label>-->
-			<!--</div>-->
+		<div class="export" v-if="hasDataToExport">
 			<div class="option-group" v-if="chats.options.length > 0">
 				<label class="option-item">
 					<input type="checkbox" v-model="chats.selectAll" @change="toggleAll('chats')"/>
@@ -257,6 +297,25 @@ export default {
 						v-for="(option, index) in chats.options"
 						:key="'chats-'+index">
 						<input type="checkbox" v-model="chats.selected" :value="option.key"/>
+						<span class="custom-checkbox"></span>
+						<span>[{{ option.key }}] {{ option.title }}</span>
+					</label>
+				</div>
+			</div>
+			<div class="option-group" v-if="masks.options.length > 0">
+				<label class="option-item">
+					<input type="checkbox" v-model="masks.selectAll" @change="toggleAll('masks')"/>
+					<span class="custom-checkbox"></span>
+					<span>{{
+							t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.masks")})
+						}}</span>
+				</label>
+				<div class="sub-options" v-if="masks.options.length">
+					<label
+						class="option-item sub-option"
+						v-for="(option, index) in masks.options"
+						:key="'chats-'+index">
+						<input type="checkbox" v-model="masks.selected" :value="option.key"/>
 						<span class="custom-checkbox"></span>
 						<span>[{{ option.key }}] {{ option.title }}</span>
 					</label>
@@ -300,8 +359,15 @@ export default {
 					</label>
 				</div>
 			</div>
+			<div class="option-group" v-if="singleSelection.optional.length > 0">
+				<label class="option-item" v-if="singleSelection.optional.includes('logs')">
+					<input type="checkbox" v-model="singleSelection.selected" value="logs"/>
+					<span class="custom-checkbox"></span>
+					<span>{{ t("views.OptionsView.ExportView.logs") }}</span>
+				</label>
+			</div>
 		</div>
-		<div class="item" v-if="hasDataToImport">
+		<div class="item" v-if="hasDataToExport">
 			{{ t("views.OptionsView.ExportView.exportTip") }}
 			<Button @click="handleExport">{{ t("views.OptionsView.ExportView.export") }}</Button>
 		</div>

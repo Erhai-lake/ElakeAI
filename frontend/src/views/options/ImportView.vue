@@ -20,6 +20,11 @@ export default {
 				selected: [],
 				selectAll: false
 			},
+			masks: {
+				options: [],
+				selected: [],
+				selectAll: false
+			},
 			configs: {
 				options: [],
 				selected: [],
@@ -37,6 +42,9 @@ export default {
 		"chats.selected"(newVal) {
 			this.chats.selectAll = this.chats.options.length > 0 && newVal.length === this.chats.options.length
 		},
+		"masks.selected"(newVal) {
+			this.masks.selectAll = this.masks.options.length > 0 && newVal.length === this.masks.options.length
+		},
 		"configs.selected"(newVal) {
 			this.configs.selectAll = this.configs.options.length > 0 && newVal.length === this.configs.options.length
 		},
@@ -50,11 +58,12 @@ export default {
 		 * @returns {boolean}
 		 */
 		hasDataToImport() {
-			return this.singleSelection.optional.length > 0 || this.chats.options.length > 0 || this.configs.options.length > 0 || this.apiKeys.options.length > 0
+			return this.singleSelection.optional.length > 0
+				|| this.chats.options.length > 0
+				|| this.masks.options.length > 0
+				|| this.configs.options.length > 0
+				|| this.apiKeys.options.length > 0
 		}
-	},
-	created() {
-		this.initialization()
 	},
 	methods: {
 		/**
@@ -65,31 +74,6 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 初始化
-		 */
-		initialization() {
-			this.singleSelection = {
-				optional: [],
-				selected: []
-			}
-			this.chats = {
-				options: [],
-				selected: [],
-				selectAll: false
-			}
-			this.configs = {
-				options: [],
-				selected: [],
-				selectAll: false
-			}
-			this.apiKeys = {
-				options: [],
-				selected: [],
-				selectAll: false
-			}
-			this.importFileData = null
 		},
 		/**
 		 * 处理导入
@@ -105,17 +89,42 @@ export default {
 			const FILE = event.target.files[0]
 			if (!FILE) return
 			try {
-				this.initialization()
 				this.importFileData = await this.readJsonFile(FILE)
-				this.$log.info(`[${this.name}] 开始解析数据`, this.importFileData)
+				this.$log.info(`[${this.name}] 开始解析数据`)
 				if (this.importFileData.chats && this.importFileData.chats.length > 0) {
-					this.chats.options = this.importFileData.chats
+					this.chats = {
+						options: this.importFileData.chats,
+						selected: [],
+						selectAll: false
+					}
+				}
+				if (this.importFileData.masks && this.importFileData.masks.length > 0) {
+					this.masks = {
+						options: this.importFileData.masks,
+						selected: [],
+						selectAll: false
+					}
 				}
 				if (this.importFileData.configs && this.importFileData.configs.length > 0) {
-					this.configs.options = this.importFileData.configs
+					this.configs = {
+						options: this.importFileData.configs,
+						selected: [],
+						selectAll: false
+					}
 				}
 				if (this.importFileData.apiKeys && this.importFileData.apiKeys.length > 0) {
-					this.apiKeys.options = this.importFileData.apiKeys
+					this.apiKeys = {
+						options: this.importFileData.apiKeys,
+						selected: [],
+						selectAll: false
+					}
+				}
+				this.singleSelection = {
+					optional: [],
+					selected: []
+				}
+				if (this.importFileData.logs && this.importFileData.logs.length > 0) {
+					this.singleSelection.optional.push("logs")
 				}
 				this.$log.info(`[${this.name}] 解析完成`)
 			} catch (error) {
@@ -167,15 +176,20 @@ export default {
 		async confirmImport() {
 			try {
 				const IMPORT_TASKS = []
-				// if (this.singleSelection.selected.includes("chats") && this.importFileData.chats) {
-				// 	IMPORT_TASKS.push(this.importChats(this.importFileData.chats))
-				// }
 				if (this.chats.selected.length > 0 && this.importFileData.chats) {
 					const SELECTED_CHATS = this.importFileData.chats.filter(chat =>
 						this.chats.selected.includes(chat.key)
 					)
 					if (SELECTED_CHATS.length > 0) {
 						IMPORT_TASKS.push(this.importChats(SELECTED_CHATS))
+					}
+				}
+				if (this.masks.selected.length > 0 && this.importFileData.masks) {
+					const SELECTED_MASKS = this.importFileData.masks.filter(mask =>
+						this.masks.selected.includes(mask.key)
+					)
+					if (SELECTED_MASKS.length > 0) {
+						IMPORT_TASKS.push(this.importMasks(SELECTED_MASKS))
 					}
 				}
 				if (this.configs.selected.length > 0 && this.importFileData.configs) {
@@ -193,6 +207,9 @@ export default {
 					if (SELECTED_API_KEYS.length > 0) {
 						IMPORT_TASKS.push(this.importApiKeys(SELECTED_API_KEYS))
 					}
+				}
+				if (this.singleSelection.selected.includes("logs") && this.importFileData.logs) {
+					IMPORT_TASKS.push(this.importLogs(this.importFileData.logs))
 				}
 				if (IMPORT_TASKS.length === 0) {
 					this.$log.warn(`[${this.name}] 没有数据可导入`, IMPORT_TASKS)
@@ -227,6 +244,29 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入chat数据失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
+			}
+		},
+		/**
+		 * 导入masks
+		 * @param masks - 面具
+		 */
+		async importMasks(masks) {
+			try {
+				await this.$DB.transaction("rw", this.$DB.masks, async () => {
+					for (const mask of masks) {
+						// 生成新的key避免冲突
+						const NEW_KEY = crypto.randomUUID()
+						const MASK = JSON.parse(JSON.stringify(mask))
+						const NEW_CHAT = {...MASK, key: NEW_KEY}
+						// 添加新面具
+						await this.$DB.masks.add(NEW_CHAT)
+					}
+				})
+				this.$log.info(`[${this.name}] 成功导入 ${masks.length} 个chat`)
+				EventBus.emit("[update] chatListUpdate")
+			} catch (error) {
+				this.$log.error(`[${this.name}] 导入mask数据失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
 			}
 		},
@@ -278,6 +318,26 @@ export default {
 				this.$log.error(`[${this.name}] 导入apiKey数据失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
 			}
+		},
+		/**
+		 * 导入logs
+		 * @param logs - 日志
+		 */
+		async importLogs(logs) {
+			try {
+				await this.$DB.transaction("rw", this.$DB.logs, async () => {
+					for (const log of logs) {
+						// 移除原有id字段, 使用数据库自增id
+						const { id, ...NEW_LOG } = log
+						// 添加新日志
+						await this.$DB.logs.add(NEW_LOG)
+					}
+				})
+				this.$log.info(`[${this.name}] 成功导入 ${logs.length} 条log`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 导入log数据失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
+			}
 		}
 	}
 }
@@ -291,14 +351,6 @@ export default {
 			<input type="file" ref="fileInput" @change="handleFileChange" style="display: none;" accept=".json"/>
 		</div>
 		<div class="import" v-if="hasDataToImport">
-			<!--单项例子-->
-			<!--<div class="option-group" v-if="singleSelection.optional.length > 0">-->
-			<!--	<label class="option-item" v-if="singleSelection.optional.includes('chats')">-->
-			<!--		<input type="checkbox" v-model="singleSelection.selected" value="chats"/>-->
-			<!--		<span class="custom-checkbox"></span>-->
-			<!--		<span>{{ t("views.OptionsView.ImportView.chats") }}</span>-->
-			<!--	</label>-->
-			<!--</div>-->
 			<div class="option-group" v-if="chats.options.length > 0">
 				<label class="option-item">
 					<input type="checkbox" v-model="chats.selectAll" @change="toggleAll('chats')"/>
@@ -313,6 +365,25 @@ export default {
 						v-for="(option, index) in chats.options"
 						:key="'chats-'+index">
 						<input type="checkbox" v-model="chats.selected" :value="option.key"/>
+						<span class="custom-checkbox"></span>
+						<span>[{{ option.key }}] {{ option.title }}</span>
+					</label>
+				</div>
+			</div>
+			<div class="option-group" v-if="masks.options.length > 0">
+				<label class="option-item">
+					<input type="checkbox" v-model="masks.selectAll" @change="toggleAll('masks')"/>
+					<span class="custom-checkbox"></span>
+					<span>{{
+							t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.masks")})
+						}}</span>
+				</label>
+				<div class="sub-options" v-if="masks.options.length">
+					<label
+						class="option-item sub-option"
+						v-for="(option, index) in masks.options"
+						:key="'chats-'+index">
+						<input type="checkbox" v-model="masks.selected" :value="option.key"/>
 						<span class="custom-checkbox"></span>
 						<span>[{{ option.key }}] {{ option.title }}</span>
 					</label>
@@ -355,6 +426,13 @@ export default {
 						<span>[{{ option.model }}] {{ option.remark }}</span>
 					</label>
 				</div>
+			</div>
+			<div class="option-group" v-if="singleSelection.optional.length > 0">
+				<label class="option-item" v-if="singleSelection.optional.includes('logs')">
+					<input type="checkbox" v-model="singleSelection.selected" value="logs"/>
+					<span class="custom-checkbox"></span>
+					<span>{{ t("views.OptionsView.ImportView.logs") }}</span>
+				</label>
 			</div>
 		</div>
 		<div class="item" v-if="hasDataToImport">
