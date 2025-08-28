@@ -246,7 +246,7 @@ export default {
 	display: grid;
 	grid-template-rows: auto 1fr auto auto;
 	user-select: none;
-	transition: all 0.3s ease-in-out;
+	transition: width 0.3s ease-in-out;
 }
 
 .sidebar-top-logo {
@@ -327,7 +327,7 @@ export default {
 		border-radius: 10px;
 		overflow: hidden;
 		cursor: pointer;
-		transition: all 0.3s ease-in-out;
+		transition: background-color 0.3s ease-in-out;
 
 		&.active {
 			border-color: var(--theme-color);
@@ -345,7 +345,7 @@ export default {
 			}
 
 			.conversation-delete {
-				transition: all 0.3s ease-in-out;
+				transition: opacity 0.3s ease-in-out;
 				opacity: 1;
 			}
 		}

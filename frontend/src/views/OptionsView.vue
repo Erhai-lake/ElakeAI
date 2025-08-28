@@ -75,7 +75,7 @@ export default {
 		border-radius: 20px;
 		border: 2px solid transparent;
 		display: flex;
-		transition: all 0.3s ease-in-out;
+		transition: background-color 0.3s ease-in-out;
 
 		&:hover {
 			background-color: var(--sidebar-item-hover-background-color);

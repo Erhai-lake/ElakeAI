@@ -160,7 +160,7 @@ export default {
 
 <template>
 	<ChatConfigs v-model="showSetup" :chatKey="maskConfigKey" type="mask"/>
-	<RightClickMenu ref="menu" />
+	<RightClickMenu ref="menu"/>
 	<div class="mask-view">
 		<div class="header">
 			<InputText :placeholder="t('views.MaskView.search')" @input="getMasks"/>
@@ -223,9 +223,14 @@ export default {
 		display: grid;
 		grid-template-columns: 1fr auto;
 		border: 1px solid var(--border-color);
+		transition: background-color 0.3s ease-in-out;
 
 		&:hover {
 			background-color: var(--active-background-color);
+
+			.right {
+				opacity: 1;
+			}
 		}
 
 		&:first-child {
@@ -241,6 +246,8 @@ export default {
 		.right {
 			display: flex;
 			gap: 10px;
+			opacity: 0;
+			transition: opacity 0.3s ease-in-out;
 		}
 	}
 }

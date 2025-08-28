@@ -589,7 +589,7 @@ export default {
 .show-input-box {
 	transform: translate(-50%, 120%);
 	opacity: 0;
-	transition: all 0.3s ease-in-out;
+	transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 .ai-disclaimer {
