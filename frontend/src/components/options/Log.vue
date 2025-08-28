@@ -15,30 +15,22 @@ export default {
 			name: "Log",
 			levelList: [
 				{
-					label: "all",
 					title: "all"
 				},
 				{
-					label: "debug",
 					title: "debug"
 				},
 				{
-					label: "info",
 					title: "info"
 				},
 				{
-					label: "warn",
 					title: "warn"
 				},
 				{
-					label: "error",
 					title: "error"
 				},
 			],
-			levelSelector: {
-				label: "all",
-				title: "all"
-			},
+			levelSelector: "error",
 			logs: [],
 			isKeepScrollToBottom: true,
 			isLogSuspensionWindow: false,
@@ -69,8 +61,8 @@ export default {
 			try {
 				const LOGS_DATA = await this.$DB.logs.toArray()
 				this.logs = LOGS_DATA.filter(log => {
-					if (this.levelSelector.label === "all") return true
-					return log.level === this.levelSelector.label
+					if (this.levelSelector === "all") return true
+					return log.level === this.levelSelector
 				})
 			} catch (error) {
 				this.$log.error(`[${this.name}] 加载日志失败`, error)
@@ -83,7 +75,7 @@ export default {
 		 * @param {Object} value - 选择器值
 		 */
 		updateSelectedLevel(value) {
-			this.levelSelector = value
+			this.levelSelector = value.title
 			this.loadLogs()
 		},
 		/**
@@ -176,10 +168,10 @@ export default {
 		<div class="header">
 			<Selector
 				class="level-selector"
-				uniqueKey="label"
+				uniqueKey="title"
 				:num="5"
 				:selectorList="levelList"
-				:selectorSelected="levelSelector || {}"
+				:selectorSelected="{title: levelSelector}"
 				@update:selectorSelected="updateSelectedLevel"/>
 			<Button @click="loadLogs">🔄 {{ t("components.Options.Log.function.load") }}</Button>
 			<Button @click="clearLogs">🗑️ {{ t("components.Options.Log.function.clear") }}</Button>
@@ -187,9 +179,8 @@ export default {
 			<Button @click="keepScrollToBottom">
 				{{ t("components.Options.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
 			</Button>
-			<span class="log-count">{{
-					t("components.Options.Log.count", {count: logs.length, level: levelSelector.label})
-				}}</span>
+			<span class="log-count">
+				{{ t("components.Options.Log.count", {count: logs.length, level: levelSelector}) }}</span>
 		</div>
 		<div ref="logList" class="log-list">
 			<div v-for="(log, index) in logs" :key="index" :class="['log-item', log.level]">
