@@ -4,10 +4,11 @@ import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import CustomTheme from "@/services/CustomTheme"
+import Button from "@/components/input/Button.vue"
 
 export default defineComponent({
 	name: "ThemeSelect",
-	components: {Selector},
+	components: {Button, Selector},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
@@ -73,9 +74,6 @@ export default defineComponent({
 		 */
 		updateSelectedTheme(newVal) {
 			this.selectedTheme = newVal
-			if (newVal.code === "Custom") {
-				this.$router.push({name: "CustomTheme"})
-			}
 		},
 		/**
 		 * 选择主题
@@ -107,37 +105,28 @@ export default defineComponent({
 
 <template>
 	<div class="theme-select" ref="themeSelector">
-		<Selector
-			:selectorSelected="selectedTheme || {}"
-			:selectorList="theme"
-			uniqueKey="code"
-			:num="4"
-			@update:selectorSelected="updateSelectedTheme"/>
+		<div class="container">
+			<Selector
+				:selectorSelected="selectedTheme || {}"
+				:selectorList="theme"
+				uniqueKey="code"
+				:num="4"
+				@update:selectorSelected="updateSelectedTheme"/>
+			<router-link to="/options/customTheme" v-if="(selectedTheme ? selectedTheme.code : '') === 'Custom'">
+				<Button>{{t("components.Options.ThemeSwitch.custom")}}</Button>
+			</router-link>
+		</div>
 	</div>
 
 </template>
 
-<style lang="less">
-.theme-transition-effect {
-	position: fixed;
-	width: 1px;
-	height: 1px;
-	background: var(--background-color-anti);
-	border-radius: 50%;
-	transform: translate(-50%, -50%) scale(0);
-	z-index: 9999;
-	pointer-events: none;
-	opacity: 1;
-	transition: transform 0.6s ease-out, opacity 0.3s ease-out;
-}
-
-.theme-transition-effect.expand {
-	opacity: 0;
-}
-</style>
-
 <style scoped lang="less">
 .theme-select {
 	width: 240px;
+
+	.container{
+		display: flex;
+		gap: 10px;
+	}
 }
 </style>
