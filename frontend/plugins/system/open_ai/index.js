@@ -77,12 +77,16 @@ class OpenAI {
 	 */
 	models = async (params) => {
 		const PUBLIC_CLASS = new context.api.PublicClass()
+		if (sessionStorage.getItem(`${PLATFORM_INFO.name}-${params.apiKey}-model`)) {
+			return PUBLIC_CLASS.response(params, JSON.parse(sessionStorage.getItem(`${PLATFORM_INFO.name}-${params.apiKey}-model`)))
+		}
 		const DEXIE = context.api.dexie
 		try {
 			const KEY_DATA = await DEXIE.apiKeys.get(params.apiKey)
 			const CLIENT = PUBLIC_CLASS.createClient(KEY_DATA)
 			const RESPONSE = await CLIENT.get("v1/models")
 			const MODELS = RESPONSE.data.data.map(model => model.id)
+			sessionStorage.setItem(`${PLATFORM_INFO.name}-${params.apiKey}-model`, JSON.stringify(MODELS))
 			return PUBLIC_CLASS.response(params, MODELS)
 		} catch (error) {
 			return errorHandler(error, params)
