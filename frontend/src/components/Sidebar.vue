@@ -50,10 +50,11 @@ export default {
 			return i18nRegistry.translate(key, params)
 		},
 		/**
-		 * 侧边栏展开收起
+		 * 侧边栏展开收起, 展开时获取聊天列表
 		 */
-		sidebarSwitch() {
+		async sidebarSwitch() {
 			this.sidebarStatus = !this.sidebarStatus
+			if (this.sidebarStatus) await this.chatListGet()
 		},
 		/**
 		 * 获取聊天列表
@@ -188,7 +189,7 @@ export default {
 				:title="t('components.Sidebar.function.stow')"
 				@click="sidebarSwitch"
 				:aria-label="t('components.Sidebar.function.stow')">
-				<SVGIcon name="#icon-stow" size="2em"/>
+				<SVGIcon :name="sidebarStatus ? '#icon-stow' : '#icon-expand'" size="2em"/>
 			</div>
 		</div>
 		<Loading :loading="conversationListLoading" class="sidebar-conversation-list-loading">
