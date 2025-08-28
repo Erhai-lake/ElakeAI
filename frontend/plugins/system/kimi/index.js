@@ -75,8 +75,14 @@ class Kimi {
 			const KEY_DATA = await DEXIE.apiKeys.get(params.apiKey)
 			const CLIENT = PUBLIC_CLASS.createClient(KEY_DATA)
 			const RESPONSE = await CLIENT.get("/users/me/balance")
-			console.log(RESPONSE)
-			return PUBLIC_CLASS.response(params, `${RESPONSE.data.data.available_balance} CNY`)
+			let balance = RESPONSE.data.data.available_balance
+			// 转成字符串, 保留两位小数, 不四舍五入
+			balance = String(balance)
+			if (balance.includes(".")) {
+				const [intPart, decPart] = balance.split(".")
+				balance = intPart + "." + decPart.slice(0, 2)
+			}
+			return PUBLIC_CLASS.response(params, `${balance} CNY`)
 		} catch (error) {
 			return errorHandler(error, params)
 		}
