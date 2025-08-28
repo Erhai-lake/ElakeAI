@@ -4,13 +4,14 @@ import SVGIcon from "@/components/SVGIcon.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import ChatConfigs from "@/views/options/ChatConfigs.vue"
+import RightClickMenu from "@/components/RightClickMenu.vue"
+import InputText from "@/components/input/InputText.vue"
 import EventBus from "@/services/EventBus"
-import InputText from "@/components/input/InputText.vue";
 
 export default {
 	name: "MaskView",
 	inject: ["$DB", "$log"],
-	components: {InputText, ChatConfigs, SVGIcon, Button},
+	components: {InputText, ChatConfigs, SVGIcon, Button, RightClickMenu},
 	data() {
 		return {
 			name: "MaskView",
@@ -55,6 +56,43 @@ export default {
 				this.$log.error(`[${this.name}] 面具列表获取失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.MaskView.toast.errorGettingMaskList")}`)
 			}
+		},
+		/**
+		 * 右键点击
+		 * @param event 事件
+		 * @param item 项
+		 */
+		onRightClick(event, item) {
+			event.preventDefault()
+			event.stopPropagation()
+			this.$refs.menu.show(event.clientX, event.clientY, [
+				{
+					title: this.t("views.MaskView.chat"),
+					icon: {
+						type: "svg",
+						src: "#icon-new"
+					},
+					color: "var(--theme-color)",
+					onClick: () => this.chatMask(item)
+				},
+				{
+					title: this.t("views.MaskView.config"),
+					icon: {
+						type: "svg",
+						src: "#icon-setup"
+					},
+					onClick: (key) => this.configMask(key)
+				},
+				{
+					title: this.t("views.MaskView.delete"),
+					icon: {
+						type: "svg",
+						src: "#icon-close"
+					},
+					color: "red",
+					onClick: (key) => this.deleteMask(key)
+				}
+			], item.key)
 		},
 		/**
 		 * 新建面具
@@ -122,6 +160,7 @@ export default {
 
 <template>
 	<ChatConfigs v-model="showSetup" :chatKey="maskConfigKey" type="mask"/>
+	<RightClickMenu ref="menu" />
 	<div class="mask-view">
 		<div class="header">
 			<InputText :placeholder="t('views.MaskView.search')" @input="getMasks"/>
@@ -134,7 +173,8 @@ export default {
 			<div
 				class="item"
 				v-for="mask in masks"
-				:key="mask.key">
+				:key="mask.key"
+				@contextmenu.prevent="onRightClick($event, mask)">
 				<div class="left">
 					<p>{{ mask.title }}</p>
 					<p>{{ t("views.MaskView.num", {num: mask.data ? mask.data.length : 0}) }}</p>
