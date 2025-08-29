@@ -66,8 +66,6 @@ export class ThemeClass {
 			Logger.warn(`[${NAME}] 主题不存在: ${code}`)
 			return
 		}
-		// 设置主题
-		document.documentElement.setAttribute("data-theme", code)
 		// 生成 CSS 字符串
 		const THEME = THEME_MAP.get(code).info.theme
 		const THEME_VARS = Object.entries(THEME).map(([key, value]) => `${key}: ${value};`).join("\n")
@@ -80,6 +78,8 @@ export class ThemeClass {
 			document.head.appendChild(styleTag)
 		}
 		styleTag.innerHTML = CSS
+		// 设置主题
+		document.documentElement.setAttribute("data-theme", code)
 	}
 
 	/**
