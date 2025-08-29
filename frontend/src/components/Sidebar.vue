@@ -251,6 +251,7 @@ export default {
 	border-right: 1px solid var(--border-color);
 	overflow: hidden;
 	display: grid;
+	grid-template-columns: 256px;
 	grid-template-rows: auto 1fr auto auto;
 	user-select: none;
 	transition: width 0.3s ease-in-out;

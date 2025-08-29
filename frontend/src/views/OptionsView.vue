@@ -47,6 +47,7 @@ export default {
 				v-for="item in menuItems"
 				:key="item"
 				:to="`/options/${item}`"
+				:title="t(`views.OptionsView.${item}`)"
 				class="menu-item"
 				active-class="active"
 				exact-active-class="active">
@@ -62,6 +63,7 @@ export default {
 	user-select: none;
 	display: grid;
 	grid-template-columns: 1fr 256px;
+	overflow: hidden;
 }
 
 .sidebar {
@@ -76,6 +78,7 @@ export default {
 		border: 2px solid transparent;
 		display: flex;
 		transition: background-color 0.3s ease-in-out;
+		overflow: hidden;
 
 		&:hover {
 			background-color: var(--sidebar-item-hover-background-color);
