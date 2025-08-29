@@ -70,17 +70,13 @@ export default {
 		this.updateMessage()
 		// 环境信息
 		this.information()
+		// 加载插件系统
+		await this.loadPluginSystem()
 		// 初始化配置
-		await this.$nextTick(() => {
-			requestIdleCallback(() => this.configInitialization())
-		})
-		// 空闲时间加载执行
-		requestIdleCallback(async () => {
-			// 日志清理定时任务
-			await setupLogCleanup()
-			setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
-			await this.loadPluginSystem()
-		})
+		await this.configInitialization()
+		// 日志清理定时任务
+		await setupLogCleanup()
+		setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
 	},
 	methods: {
 		/**
@@ -234,14 +230,11 @@ export default {
 		 */
 		async loadPluginSystem() {
 			try {
-				// 延迟一点, 避免阻塞渲染
-				setTimeout(async () => {
-					const APP = this.$.appContext.app
-					await unloadPlugins()
-					await initEnabledPlugins(APP)
-					Logger.info("[App.vue] 插件加载完成")
-					this.loading.status = false
-				}, 300)
+				const APP = this.$.appContext.app
+				await unloadPlugins()
+				await initEnabledPlugins(APP)
+				Logger.info("[App.vue] 插件加载完成")
+				this.loading.status = false
 			} catch (error) {
 				Logger.error("[App.vue] 插件系统加载失败", error)
 			}
