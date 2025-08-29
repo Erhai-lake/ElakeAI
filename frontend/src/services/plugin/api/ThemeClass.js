@@ -54,7 +54,6 @@ export class ThemeClass {
 	 * @returns {Array<Object>} 主题列表
 	 */
 	getAllThemes = () => {
-		console.log(THEME_MAP)
 		return Array.from(THEME_MAP.values()).map(theme => theme.info)
 	}
 

@@ -391,6 +391,7 @@
 			},
 			"CustomThemeView": {
 				"customTheme": "Custom Theme",
+				"template": "Template",
 				"reset": "Reset",
 				"themeColor": "Theme Color",
 				"scrollbarTrackColor": "Scrollbar Track Color",
@@ -412,6 +413,7 @@
 				"sidebarExpandContainerInfoTextColorAnti": "Sidebar Expand Container Info Text Color (Anti)",
 				"sidebarItemHoverBackgroundColor": "Sidebar Item Hover Background Color",
 				"chatInputButtonBorderColor": "Chat Input Box Button Border Color",
+				"chatInputAttachmentButtonBackgroundColor": "Chat input box attachment button background color",
 				"chatInputAttachmentButtonTextColor": "Chat Input Box Attachment Button Text Color",
 				"chatSystemBackgroundColor": "Chat System Background Color",
 				"chatSystemTextColor": "Chat System Text Color",

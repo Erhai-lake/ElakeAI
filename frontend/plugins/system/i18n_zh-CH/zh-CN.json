@@ -391,6 +391,7 @@
 			},
 			"CustomThemeView": {
 				"customTheme": "自定义主题",
+				"template": "模板",
 				"reset": "重置",
 				"themeColor": "主题色",
 				"scrollbarTrackColor": "滚动条轨道颜色",
@@ -412,6 +413,7 @@
 				"sidebarExpandContainerInfoTextColorAnti": "侧边栏展开容器信息文本颜色 (反)",
 				"sidebarItemHoverBackgroundColor": "侧边栏项目悬停背景颜色",
 				"chatInputButtonBorderColor": "聊天输入框按钮边框颜色",
+				"chatInputAttachmentButtonBackgroundColor": "聊天输入框附件按钮背景颜色",
 				"chatInputAttachmentButtonTextColor": "聊天输入框附件按钮文本颜色",
 				"chatSystemBackgroundColor": "聊天系统背景颜色",
 				"chatSystemTextColor": "聊天系统文本颜色",

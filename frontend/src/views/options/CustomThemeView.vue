@@ -4,13 +4,17 @@ import CustomTheme from "@/services/CustomTheme"
 import {ColorPicker} from "vue3-colorpicker"
 import "vue3-colorpicker/style.css"
 import Button from "@/components/input/Button.vue"
+import Selector from "@/components/input/Selector.vue"
+import {ThemeRegistry} from "@/services/plugin/api/ThemeClass"
 
 export default {
 	name: "CustomThemeView",
-	components: {Button, ColorPicker},
+	components: {Selector, Button, ColorPicker},
 	inject: ["$DB", "$log"],
 	data() {
 		return {
+			themeList: [],
+			selectedTheme: null,
 			theme: null
 		}
 	},
@@ -23,6 +27,8 @@ export default {
 		}
 	},
 	created() {
+		// 初始化主题列表
+		this.loadTheme()
 		this.reset()
 		this.initCustomTheme()
 	},
@@ -35,6 +41,35 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
+		},
+		/**
+		 * 更新选中的主题
+		 * @param newVal {Object} - 选中主题
+		 */
+		updateSelectedTheme(newVal) {
+			this.selectedTheme = newVal
+		},
+		/**
+		 * 获取全部主题
+		 */
+		loadTheme() {
+			const THEMES = ThemeRegistry.getAllThemes()
+			this.themeList = [...THEMES.map(item => ({
+				code: item.code,
+				title: `i18n:${item.name}`,
+				images: item.icon
+			}))]
+			// 初始化选中模型
+			if (this.themeList.length > 0) {
+				this.selectedTheme = this.themeList[0]
+			}
+		},
+		/**
+		 * 重置自定义主题
+		 */
+		reset() {
+			const THEMES = ThemeRegistry.getTheme(this.selectedTheme.code)
+			this.theme = THEMES.info.theme
 		},
 		/**
 		 * 初始化自定义主题
@@ -65,51 +100,6 @@ export default {
 			}
 			// 应用自定义主题
 			await CustomTheme.applyCustomTheme(this.theme)
-		},
-		/**
-		 * 重置自定义主题
-		 */
-		reset() {
-			this.theme = {
-				"--theme-color": "#80ceff",
-				"--scrollbar-track-color": "rgba(255, 255, 255, 0.5)",
-				"--scrollbar-thumb-color": "rgba(193, 193, 193, 0.6)",
-				"--scrollbar-thumb-hover-color": "rgba(168, 168, 168, 0.78)",
-				"--background-color": "#ffffff",
-				"--background-color-anti": "#292A2D",
-				"--text-color": "#434344",
-				"--text-color-anti": "#E4E4E7",
-				"--border-color": "#6C787F",
-				"--box-shadow-color": "rgba(0, 0, 0, 0.2)",
-				"--box-shadow-color-anti": "rgba(255, 255, 255, 0.2)",
-				"--disabled-background-color": "#dedede",
-				"--disabled-text-color": "#000000",
-				"--button-hover-background-color": "#dadada",
-				"--button-active-background-color": "#c3c3c3",
-				"--sidebar-expand-container-background-color": "rgba(249, 251, 255, 0.5)",
-				"--sidebar-expand-container-info-text-color": "#5b5b5b",
-				"--sidebar-expand-container-info-text-color-anti": "#a9abad",
-				"--sidebar-item-hover-background-color": "#dadada",
-				"--chat-input-button-border-color": "#d3d3d3",
-				"--chat-input-attachment-button-text-color": "#d3d3d3",
-				"--chat-system-background-color": "rgba(227, 205, 205, 0.7)",
-				"--chat-system-text-color": "#464646",
-				"--chat-user-background-color": "rgba(227, 242, 253, 0.7)",
-				"--chat-user-text-color": "#464646",
-				"--chat-assistant-background-color": "rgba(245, 245, 245, 0.7)",
-				"--chat-assistant-text-color": "#464646",
-				"--chat-dialogue-time-text-color": "#868788",
-				"--chat-disclaimer-text-color": "#868788",
-				"--blockquote-text-color": "#57606a",
-				"--blockquote-border-color": "#d0d7de",
-				"--blockquote-bg-color": "rgba(175, 184, 193, 0.1)",
-				"--active-background-color": "rgba(189, 229, 255, 0.5)",
-				"--active-background-color-anti": "rgba(107, 130, 145, 0.5)",
-				"--loading-mask-background-color": "rgba(255, 255, 255, 0.6)",
-				"--loading-spinner-border-color": "rgba(255, 255, 255, 0.1)",
-				"--right-click-menu-background-color": "#F9FBFF",
-				"--right-click-menu-background-color-anti": "#212327"
-			}
 		}
 	}
 }
@@ -119,7 +109,19 @@ export default {
 	<div class="custom-theme">
 		<h1>{{ t("views.OptionsView.CustomThemeView.customTheme") }}</h1>
 		<div class="container">
-			<Button @click="reset">{{ t("views.OptionsView.CustomThemeView.reset") }}</Button>
+			<div class="item">
+				{{ t("views.OptionsView.CustomThemeView.template") }}
+				<div class="template">
+					<Selector
+						class="selector"
+						:selectorSelected="selectedTheme || {}"
+						:selectorList="themeList"
+						uniqueKey="code"
+						:num="4"
+						@update:selectorSelected="updateSelectedTheme"/>
+					<Button @click="reset">{{ t("views.OptionsView.CustomThemeView.reset") }}</Button>
+				</div>
+			</div>
 		</div>
 		<div class="container">
 			<div class="item">
@@ -361,6 +363,17 @@ export default {
 					blurClose/>
 			</div>
 			<div class="item">
+				{{ t("views.OptionsView.CustomThemeView.chatInputAttachmentButtonBackgroundColor") }}
+				<ColorPicker
+					class="color-picker"
+					v-model:pureColor="theme['--chat-input-attachment-button-background-color']"
+					format="rgb"
+					shape="circle"
+					pickerType="chrome"
+					disableHistory
+					blurClose/>
+			</div>
+			<div class="item">
 				{{ t("views.OptionsView.CustomThemeView.chatInputAttachmentButtonTextColor") }}
 				<ColorPicker
 					class="color-picker"
@@ -576,6 +589,12 @@ export default {
 .custom-theme {
 	h1 {
 		margin-bottom: 20px;
+	}
+
+	.template{
+		display: grid;
+		grid-template-columns: 200px auto;
+		gap: 10px;
 	}
 }
 
