@@ -77,16 +77,34 @@ class OpenAI {
 	 */
 	models = async (params) => {
 		const PUBLIC_CLASS = new context.api.PublicClass()
-		if (sessionStorage.getItem(`${PLATFORM_INFO.name}-${params.apiKey}-model`)) {
-			return PUBLIC_CLASS.response(params, JSON.parse(sessionStorage.getItem(`${PLATFORM_INFO.name}-${params.apiKey}-model`)))
+		const CACHE_KEY = `${PLATFORM_INFO.name}-${params.apiKey}-model`
+		// 读取缓存
+		const CACHE = sessionStorage.getItem(CACHE_KEY)
+		if (CACHE) {
+			try {
+				const PARSED = JSON.parse(CACHE)
+				const NOW = Date.now()
+				// 判断是否过期(10分钟)
+				if (NOW - PARSED.timestamp < 600000) {
+					return PUBLIC_CLASS.response(params, PARSED.models)
+				}
+			} catch (error) {
+				// 如果解析失败, 就当缓存无效
+				console.warn("缓存解析失败", error)
+			}
+			return PUBLIC_CLASS.response(params, JSON.parse(sessionStorage.getItem(CACHE_KEY)))
 		}
+		// 没有缓存或缓存过期 -> 发请求
 		const DEXIE = context.api.dexie
 		try {
 			const KEY_DATA = await DEXIE.apiKeys.get(params.apiKey)
 			const CLIENT = PUBLIC_CLASS.createClient(KEY_DATA)
 			const RESPONSE = await CLIENT.get("v1/models")
 			const MODELS = RESPONSE.data.data.map(model => model.id)
-			sessionStorage.setItem(`${PLATFORM_INFO.name}-${params.apiKey}-model`, JSON.stringify(MODELS))
+			sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+				timestamp: Date.now(),
+				models: MODELS
+			}))
 			return PUBLIC_CLASS.response(params, MODELS)
 		} catch (error) {
 			return errorHandler(error, params)
