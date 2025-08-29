@@ -66,7 +66,7 @@ export default {
 		},
 		/**
 		 * 加载插件列表
-		 * @param type {String} - 类型, 可选值: "all", "platform", "i18n", "other"
+		 * @param type {String} - 类型, 可选值: "all", "platform", "theme", "i18n", "other"
 		 * @param category {String} - 分类, 可选值: "all", "system", "thirdParty"
 		 */
 		async loadPlugInList(type = "all", category = "all") {
@@ -184,16 +184,29 @@ export default {
 			</template>
 			<template #Content>
 				<div class="header"></div>
-				<button :class="{ active: system.activeTab === 'all' }" @click="system.activeTab = 'all'">
+				<button
+					:class="{ active: system.activeTab === 'all' }"
+					@click="system.activeTab = 'all'">
 					{{ t("components.Options.Plugins.type.all") }}
 				</button>
-				<button :class="{ active: system.activeTab === 'platform' }" @click="system.activeTab = 'platform'">
+				<button
+					:class="{ active: system.activeTab === 'platform' }"
+					@click="system.activeTab = 'platform'">
 					{{ t("components.Options.Plugins.type.platform") }}
 				</button>
-				<button :class="{ active: system.activeTab === 'i18n' }" @click="system.activeTab = 'i18n'">
+				<button
+					:class="{ active: system.activeTab === 'theme' }"
+					@click="system.activeTab = 'theme'">
+					{{ t("components.Options.Plugins.type.theme") }}
+				</button>
+				<button
+					:class="{ active: system.activeTab === 'i18n' }"
+					@click="system.activeTab = 'i18n'">
 					{{ t("components.Options.Plugins.type.i18n") }}
 				</button>
-				<button :class="{ active: system.activeTab === 'other' }" @click="system.activeTab = 'other'">
+				<button
+					:class="{ active: system.activeTab === 'other' }"
+					@click="system.activeTab = 'other'">
 					{{ t("components.Options.Plugins.type.other") }}
 				</button>
 				<table class="list">
@@ -265,17 +278,29 @@ export default {
 			</template>
 			<template #Content>
 				<div class="header"></div>
-				<button :class="{ active: thirdParty.activeTab === 'all' }" @click="thirdParty.activeTab = 'all'">
+				<button
+					:class="{ active: thirdParty.activeTab === 'all' }"
+					@click="thirdParty.activeTab = 'all'">
 					{{ t("components.Options.Plugins.type.all") }}
 				</button>
-				<button :class="{ active: thirdParty.activeTab === 'platform' }"
-						@click="thirdParty.activeTab = 'platform'">
+				<button
+					:class="{ active: thirdParty.activeTab === 'platform' }"
+					@click="thirdParty.activeTab = 'platform'">
 					{{ t("components.Options.Plugins.type.platform") }}
 				</button>
-				<button :class="{ active: thirdParty.activeTab === 'i18n' }" @click="thirdParty.activeTab = 'i18n'">
+				<button
+					:class="{ active: thirdParty.activeTab === 'theme' }"
+					@click="thirdParty.activeTab = 'theme'">
+					{{ t("components.Options.Plugins.type.theme") }}
+				</button>
+				<button
+					:class="{ active: thirdParty.activeTab === 'i18n' }"
+					@click="thirdParty.activeTab = 'i18n'">
 					{{ t("components.Options.Plugins.type.i18n") }}
 				</button>
-				<button :class="{ active: thirdParty.activeTab === 'other' }" @click="thirdParty.activeTab = 'other'">
+				<button
+					:class="{ active: thirdParty.activeTab === 'other' }"
+					@click="thirdParty.activeTab = 'other'">
 					{{ t("components.Options.Plugins.type.other") }}
 				</button>
 				<table class="list">
