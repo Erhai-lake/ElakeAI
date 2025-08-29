@@ -189,8 +189,8 @@ export default {
 				}
 				// 应用语言
 				const LANGUAGE_DATA = await Dexie.configs.get("language")
-				const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
-				if (LANGUAGE === "System") {
+				const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "system"
+				if (LANGUAGE === "system") {
 					const SYSTEM_LANG = window.navigator.language || "zh-CN"
 					i18nRegistry.locale(SYSTEM_LANG)
 				} else {
