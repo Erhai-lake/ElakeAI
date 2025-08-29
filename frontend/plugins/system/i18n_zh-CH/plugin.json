@@ -7,5 +7,6 @@
 	"uuid": "f8f6a422-cf63-4061-af35-7688a08e120c",
 	"version": "1.0.0",
 	"description": "中文语言包",
+	"required": true,
 	"entry": "index.js"
 }

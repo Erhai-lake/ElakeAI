@@ -155,12 +155,18 @@ export default {
 				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.Plugins.toast.disabledTip")}`)
 				return
 			}
+			if (plugin.required) {
+				this.$log.warn(`[${this.name}] 标记为 required 的插件不能被禁用! ${plugin.name}`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.Plugins.toast.requiredTip")}`)
+				return
+			}
 			try {
 				const NEW_STATUS = !plugin.enabled
 				await updatePluginEnabled(plugin.uuid, NEW_STATUS)
 				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.Plugins.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
 				await initEnabledPlugins()
-				await this.loadPlugInList()
+				await this.loadPlugInList(this.system.activeTab, "system")
+				await this.loadPlugInList(this.thirdParty.activeTab, "thirdParty")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 状态更新失败 ${plugin.name}`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Plugins.toast.statusUpdateError")}`)
@@ -233,7 +239,7 @@ export default {
 								<input
 									type="checkbox"
 									:checked="plugin.enabled"
-									:disabled="plugin.disabled"
+									:disabled="plugin.disabled || plugin.required"
 									@change="togglePluginEnable(plugin)">
 								<span class="custom-checkbox"></span>
 							</label>
@@ -262,7 +268,8 @@ export default {
 				<button :class="{ active: thirdParty.activeTab === 'all' }" @click="thirdParty.activeTab = 'all'">
 					{{ t("components.Options.Plugins.type.all") }}
 				</button>
-				<button :class="{ active: thirdParty.activeTab === 'platform' }" @click="thirdParty.activeTab = 'platform'">
+				<button :class="{ active: thirdParty.activeTab === 'platform' }"
+						@click="thirdParty.activeTab = 'platform'">
 					{{ t("components.Options.Plugins.type.platform") }}
 				</button>
 				<button :class="{ active: thirdParty.activeTab === 'i18n' }" @click="thirdParty.activeTab = 'i18n'">

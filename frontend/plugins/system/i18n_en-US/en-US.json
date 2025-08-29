@@ -165,6 +165,7 @@
 			"Plugins": {
 				"toast": {
 					"disabledTip": "Plugins marked as disabled cannot be enabled!",
+					"requiredTip": "Plugins marked as required cannot be disabled!",
 					"enableSuccess": "Plugin enabled successfully",
 					"disableSuccess": "Plugin disabled successfully",
 					"statusUpdateError": "Failed to update status"

@@ -120,6 +120,10 @@ export async function updatePluginEnabled(uuid, enabled) {
 		console.warn(`[PluginManager] 禁止启用被标记为 disabled 的插件: ${TARGET_PLUGIN.name}`)
 		return
 	}
+	if (TARGET_PLUGIN?.required) {
+		console.warn(`[PluginManager] 禁止禁用被标记为 required 的插件: ${TARGET_PLUGIN.name}`)
+		return
+	}
 	const CONFIG_DATA = (await DB.configs.get("plugins"))?.value || []
 	const SET = new Set(CONFIG_DATA)
 	enabled ? SET.add(uuid) : SET.delete(uuid)
