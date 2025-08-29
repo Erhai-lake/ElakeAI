@@ -95,11 +95,15 @@ export default {
 					item: "customTheme",
 					value: JSON.parse(JSON.stringify(this.theme))
 				})
+				// 判断是否是自定义主题
+				const THEME = await this.$DB.configs.get("theme")
+				if (THEME && THEME.value === "custom") {
+					// 应用自定义主题
+					await CustomTheme.applyCustomTheme(this.theme)
+				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 自定义主题应用失败`, error)
 			}
-			// 应用自定义主题
-			await CustomTheme.applyCustomTheme(this.theme)
 		}
 	}
 }
