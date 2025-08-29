@@ -5,6 +5,7 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import CustomTheme from "@/services/CustomTheme"
 import Button from "@/components/input/Button.vue"
+import {ThemeRegistry} from "@/services/plugin/api/ThemeClass"
 
 export default defineComponent({
 	name: "ThemeSelect",
@@ -12,28 +13,7 @@ export default defineComponent({
 	inject: ["$DB", "$log"],
 	data() {
 		return {
-			theme: [
-				{
-					code: "System",
-					title: "i18n:components.Options.ThemeSwitch.system",
-					images: "https://openmoji.org/data/color/svg/2699.svg"
-				},
-				{
-					code: "Light",
-					title: "i18n:components.Options.ThemeSwitch.light",
-					images: "https://openmoji.org/data/color/svg/1F31E.svg"
-				},
-				{
-					code: "Dark",
-					title: "i18n:components.Options.ThemeSwitch.dark",
-					images: "https://openmoji.org/data/color/svg/1F319.svg"
-				},
-				{
-					code: "Custom",
-					title: "i18n:components.Options.ThemeSwitch.custom",
-					images: "https://openmoji.org/data/color/svg/1F31F.svg"
-				}
-			],
+			theme: [],
 			selectedTheme: null,
 		}
 	},
@@ -44,10 +24,11 @@ export default defineComponent({
 		}
 	},
 	async created() {
-		// 获取主题
+		// 初始化主题列表
+		this.loadTheme()
 		try {
 			const THEME_DATA = await this.$DB.configs.get("theme")
-			const THEME = THEME_DATA ? THEME_DATA.value : "System"
+			const THEME = THEME_DATA ? THEME_DATA.value : "system"
 			this.selectedTheme = {
 				code: THEME,
 				title: this.theme.find(lang => lang.code === THEME).title,
@@ -76,18 +57,46 @@ export default defineComponent({
 			this.selectedTheme = newVal
 		},
 		/**
+		 * 获取全部主题
+		 */
+		loadTheme() {
+			this.theme = [
+				{
+					code: "system",
+					title: "i18n:components.Options.ThemeSwitch.system",
+					images: "https://openmoji.org/data/color/svg/2699.svg"
+				},
+				{
+					code: "custom",
+					title: "i18n:components.Options.ThemeSwitch.custom",
+					images: "https://openmoji.org/data/color/svg/1F31F.svg"
+				}
+			]
+			const THEMES = ThemeRegistry.getAllThemes()
+			this.theme = [...this.theme, ...THEMES.map(item => ({
+				code: item.code,
+				title: `i18n:${item.name}`,
+				images: item.icon
+			}))]
+			// 初始化选中模型
+			if (this.theme.length > 0) {
+				this.selectedTheme = this.theme[0]
+			}
+		},
+		/**
 		 * 选择主题
 		 * @param theme 主题名称
 		 */
 		async selectTheme(theme) {
 			try {
 				if (!theme) return
-				document.documentElement.setAttribute("data-theme", theme.code)
-				if (theme.code === "System") {
-					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
-					document.documentElement.setAttribute("data-theme", SYSTEM_THEME)
-				} else if (theme.code === "Custom") {
+				if (theme.code === "system") {
+					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+					ThemeRegistry.setTheme(SYSTEM_THEME)
+				} else if (theme.code === "custom") {
 					await CustomTheme.applyCustomTheme()
+				} else {
+					ThemeRegistry.setTheme(theme.code)
 				}
 				// 保存设置
 				await this.$DB.configs.put({
@@ -112,7 +121,7 @@ export default defineComponent({
 				uniqueKey="code"
 				:num="4"
 				@update:selectorSelected="updateSelectedTheme"/>
-			<router-link to="/options/customTheme" v-if="(selectedTheme ? selectedTheme.code : '') === 'Custom'">
+			<router-link to="/options/customTheme" v-if="(selectedTheme ? selectedTheme.code : '') === 'custom'">
 				<Button>{{t("components.Options.ThemeSwitch.custom")}}</Button>
 			</router-link>
 		</div>

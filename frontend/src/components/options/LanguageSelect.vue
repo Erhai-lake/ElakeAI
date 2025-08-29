@@ -26,7 +26,7 @@ export default {
 		// 获取语言
 		try {
 			const LANGUAGE_DATA = await this.$DB.configs.get("language")
-			const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "System"
+			const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "system"
 			this.selectedLang = {
 				code: LANGUAGE,
 				title: this.languages.find(lang => lang.code === LANGUAGE).title,
@@ -60,25 +60,17 @@ export default {
 		loadLanguages() {
 			this.languages = [
 				{
-					code: "System",
+					code: "system",
 					title: "i18n:components.Options.LanguageSelect.system",
 					images: "https://openmoji.org/data/color/svg/2699.svg"
 				}
 			]
 			const I18N = i18nRegistry.getAll()
-			const PLUGIN_LANGUAGES = I18N.reduce((acc, item) => {
-				try {
-					acc.push({
-						code: item.info.code,
-						title: item.info.title,
-						images: item.info.image
-					})
-				} catch (error) {
-					this.$log.error(`[${this.name}] 加载语言 ${item.info.code} 失败`, error)
-				}
-				return acc
-			}, [])
-			this.languages = [...this.languages, ...PLUGIN_LANGUAGES]
+			this.languages = [...this.languages, ...I18N.map(item => ({
+				code: item.info.code,
+				title: item.info.title,
+				images: item.info.image
+			}))]
 			// 初始化选中模型
 			if (this.languages.length > 0) {
 				this.selectedLang = this.languages[0]
@@ -91,7 +83,7 @@ export default {
 		async selectLanguage(selectLang) {
 			try {
 				if (!selectLang) return
-				if (selectLang.code === "System") {
+				if (selectLang.code === "system") {
 					i18nRegistry.locale(navigator.language || this.languages[0].code)
 				} else {
 					i18nRegistry.locale(selectLang.code)

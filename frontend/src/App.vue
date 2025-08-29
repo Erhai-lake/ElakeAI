@@ -11,6 +11,7 @@ import {unloadPlugins} from "@/services/plugin/UnloadPlugins"
 import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
 import Loading from "@/components/Loading.vue"
 import CustomTheme from "@/services/CustomTheme"
+import {ThemeRegistry} from "@/services/plugin/api/ThemeClass"
 
 export default {
 	name: "App",
@@ -181,13 +182,14 @@ export default {
 			try {
 				// 应用主题
 				const THEME_DATA = await Dexie.configs.get("theme")
-				const THEME = THEME_DATA ? THEME_DATA.value : "System"
-				document.documentElement.setAttribute("data-theme", THEME)
-				if (THEME === "System") {
-					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
-					document.documentElement.setAttribute("data-theme", SYSTEM_THEME)
-				} else if (THEME === "Custom") {
+				const THEME = THEME_DATA ? THEME_DATA.value : "system"
+				if (THEME === "system") {
+					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+					ThemeRegistry.setTheme(SYSTEM_THEME)
+				} else if (THEME === "custom") {
 					await CustomTheme.applyCustomTheme()
+				} else {
+					ThemeRegistry.setTheme(THEME)
 				}
 				// 应用语言
 				const LANGUAGE_DATA = await Dexie.configs.get("language")

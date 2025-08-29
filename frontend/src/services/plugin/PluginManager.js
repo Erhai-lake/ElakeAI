@@ -1,4 +1,5 @@
 import DB from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
 let _cachedPlugins = null
 
@@ -21,7 +22,7 @@ const loadPluginsInBrowser = async () => {
 			// 直接按路径动态 import (必须和 import.meta.glob 配合)
 			const IMPORTER = import.meta.glob("../../../plugins/system/**", {eager: false})
 			if (!IMPORTER[ENTRY_PATH]) {
-				console.warn(`[PluginManager] 插件 ${META.name || META.uuid} 缺少入口文件: ${ENTRY_FILE_NAME}`)
+				Logger.warn(`[PluginManager] 插件 ${META.name || META.uuid} 缺少入口文件: ${ENTRY_FILE_NAME}`)
 				continue
 			}
 			const ENTRY = await IMPORTER[ENTRY_PATH]()
@@ -32,7 +33,7 @@ const loadPluginsInBrowser = async () => {
 			})
 		}
 	} catch (error) {
-		console.warn("[PluginManager] 加载本地插件失败", error)
+		Logger.error("[PluginManager] 加载本地插件失败", error)
 	}
 	return PLUGINS
 }
@@ -55,7 +56,7 @@ const loadPluginsInWails = async () => {
 				entry: ENTRY.default || ENTRY
 			})
 		} catch (error) {
-			console.error(`[PluginManager] 插件 ${PLUGIN.name} 加载失败:`, error)
+			Logger.error(`[PluginManager] 插件 ${PLUGIN.name} 加载失败:`, error)
 		}
 	}
 	return RESULTS
@@ -73,7 +74,7 @@ const scanAllPlugins = async () => {
 		try {
 			_cachedPlugins = loadPluginsInBrowser()
 		} catch (error) {
-			console.warn("[PluginManager] 加载本地插件失败, 返回空列表", error)
+			Logger.error("[PluginManager] 加载本地插件失败, 返回空列表", error)
 			_cachedPlugins = []
 		}
 	}
@@ -119,11 +120,11 @@ export async function updatePluginEnabled(uuid, enabled) {
 	const ALL_PLUGINS = await scanAllPlugins()
 	const TARGET_PLUGIN = ALL_PLUGINS.find(p => p.uuid === uuid)
 	if (enabled && TARGET_PLUGIN?.disabled) {
-		console.warn(`[PluginManager] 禁止启用被标记为 disabled 的插件: ${TARGET_PLUGIN.name}`)
+		Logger.warn(`[PluginManager] 禁止启用被标记为 disabled 的插件: ${TARGET_PLUGIN.name}`)
 		return
 	}
 	if (!enabled && TARGET_PLUGIN?.required) {
-		console.warn(`[PluginManager] 禁止禁用被标记为 required 的插件: ${TARGET_PLUGIN.name}`)
+		Logger.warn(`[PluginManager] 禁止禁用被标记为 required 的插件: ${TARGET_PLUGIN.name}`)
 		return
 	}
 	const CONFIG_DATA = (await DB.configs.get("plugins"))?.value || []

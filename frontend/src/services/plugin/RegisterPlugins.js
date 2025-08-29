@@ -8,6 +8,7 @@ import dexie from "@/services/Dexie"
 import {I18nClass} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
+import {ThemeClass} from "@/services/plugin/api/ThemeClass"
 
 /**
  * 插件安装成功
@@ -85,6 +86,8 @@ export async function initEnabledPlugins(appContext) {
 					axios: axios,
 					// 平台注册类
 					PlatformRegistrarClass: PlatformClass,
+					// 主题注册类
+					ThemeClass: ThemeClass,
 					// 通知
 					ToastClass: toastRegistry,
 					// 日志
