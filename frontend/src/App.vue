@@ -96,7 +96,7 @@ export default {
 		 * 保存运行环境
 		 */
 		information() {
-			Logger.info(`[${this.name}] 环境信息`, this.getEnvInfo())
+			Logger.debug(`[${this.name}] 环境信息`, this.getEnvInfo())
 			const VERSION = this.getIEVersion()
 			if (VERSION) {
 				Logger.error(`[${this.name}] 检测到IE浏览器`, VERSION)

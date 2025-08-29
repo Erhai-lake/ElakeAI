@@ -240,7 +240,7 @@ export default {
 						await this.$DB.chats.add(NEW_CHAT)
 					}
 				})
-				this.$log.info(`[${this.name}] 成功导入 ${chats.length} 个chat`)
+				this.$log.debug(`[${this.name}] 成功导入 ${chats.length} 个chat`)
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入chat数据失败`, error)
@@ -263,7 +263,7 @@ export default {
 						await this.$DB.masks.add(NEW_CHAT)
 					}
 				})
-				this.$log.info(`[${this.name}] 成功导入 ${masks.length} 个chat`)
+				this.$log.debug(`[${this.name}] 成功导入 ${masks.length} 个chat`)
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入mask数据失败`, error)
@@ -290,7 +290,7 @@ export default {
 						}
 					}
 				})
-				this.$log.info(`[${this.name}] 成功导入 ${configs.length} 个config`)
+				this.$log.debug(`[${this.name}] 成功导入 ${configs.length} 个config`)
 				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入configs数据失败`, error)
@@ -312,7 +312,7 @@ export default {
 						await this.$DB.apiKeys.add(NEW_API_KEY)
 					}
 				})
-				this.$log.info(`[${this.name}] 成功导入 ${apiKeys.length} 个apiKey`)
+				this.$log.debug(`[${this.name}] 成功导入 ${apiKeys.length} 个apiKey`)
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入apiKey数据失败`, error)
@@ -333,7 +333,7 @@ export default {
 						await this.$DB.logs.add(NEW_LOG)
 					}
 				})
-				this.$log.info(`[${this.name}] 成功导入 ${logs.length} 条log`)
+				this.$log.debug(`[${this.name}] 成功导入 ${logs.length} 条log`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入log数据失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)

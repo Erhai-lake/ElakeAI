@@ -3,7 +3,6 @@ import Logger from "@/services/Logger"
 
 export default {
 	async applyCustomTheme(theme = {}) {
-		document.documentElement.setAttribute("data-theme", "custom")
 		try {
 			let themeData = theme
 			// 如果 themeData 为空对象, 从 Dexie 中获取自定义主题
@@ -27,6 +26,7 @@ export default {
 				document.head.appendChild(styleTag)
 			}
 			styleTag.innerHTML = CSS
+			document.documentElement.setAttribute("data-theme", "custom")
 		} catch (error) {
 			Logger.error("[CustomTheme] 自定义主题应用失败", error)
 		}

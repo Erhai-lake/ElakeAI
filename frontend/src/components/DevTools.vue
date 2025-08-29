@@ -217,7 +217,7 @@ export default {
 			try {
 				await this.$DB[tableName].clear()
 				EventBus.emit("[update] chatListUpdate")
-				this.$log.info(`[${this.name}] 清空 ${tableName} 数据成功`)
+				this.$log.debug(`[${this.name}] 清空 ${tableName} 数据成功`)
 				toastRegistry.success(`[${this.name}] ${this.t("components.DevTools.toast.clearSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 清空 ${tableName} 数据失败`, error)
@@ -236,7 +236,7 @@ export default {
 			try {
 				await this.$DB[tableName].delete(key)
 				EventBus.emit("[update] chatListUpdate")
-				this.$log.info(`[${this.name}] 删除 ${tableName} 数据成功`, {key, filterKey})
+				this.$log.debug(`[${this.name}] 删除 ${tableName} 数据成功`, {key, filterKey})
 				toastRegistry.success(`[${this.name}] ${this.t("components.DevTools.toast.deleteSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 删除 ${tableName} 数据失败`, {key, filterKey, error})
@@ -255,13 +255,13 @@ export default {
 				// 先获取数据判断是否一致, 不一致在更新
 				const OLD_DATA = await this.$DB[tableName].get(key)
 				if (JSON.stringify(OLD_DATA) === JSON.stringify(data)) {
-					this.$log.info(`[${this.name}] 更新 ${tableName} 数据失败, 数据未改变`, {key, data})
+					this.$log.debug(`[${this.name}] 更新 ${tableName} 数据失败, 数据未改变`, {key, data})
 					toastRegistry.info(`[${this.name}] ${this.t("components.DevTools.toast.updateSameData")}`)
 					return
 				}
 				await this.$DB[tableName].update(key, data)
 				EventBus.emit("[update] chatListUpdate")
-				this.$log.info(`[${this.name}] 更新 ${tableName} 数据成功`, {key, data})
+				this.$log.debug(`[${this.name}] 更新 ${tableName} 数据成功`, {key, data})
 				toastRegistry.success(`[${this.name}] ${this.t("components.DevTools.toast.updateSuccess")}`)
 			} catch (error) {
 				this.$log.error(`[${this.name}] 更新 ${tableName} 数据失败`, {key, data, error})
