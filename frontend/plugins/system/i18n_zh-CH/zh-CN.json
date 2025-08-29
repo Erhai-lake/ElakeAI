@@ -479,6 +479,9 @@
 				"export": "导出"
 			},
 			"AdvancedToolsView": {
+				"logView": "日志视图",
+				"logLevel": "日志级别",
+				"devTools": "开发者工具",
 				"hazardousOperations": "危险操作"
 			},
 			"AboutView": {

@@ -479,6 +479,9 @@
 				"export": "Export"
 			},
 			"AdvancedToolsView": {
+				"logView": "Log View",
+				"logLevel": "Log level",
+				"devTools": "Developer Tools",
 				"hazardousOperations": "Hazardous operations"
 			},
 			"AboutView": {

@@ -2,6 +2,29 @@ import EventBus from "@/services/EventBus"
 import DB from "@/services/Dexie"
 
 /**
+ * 日志等级优先级
+ */
+const LOG_LEVEL_PRIORITY = {
+	debug: 1,
+	info: 2,
+	warn: 3,
+	error: 4
+}
+
+/**
+ * 获取日志配置等级
+ * @returns {Promise<string>} 日志等级(默认 info)
+ */
+const getLogLevel = async () => {
+	try {
+		const config = await DB.configs.get("logLevel")
+		return config?.value || "warn"
+	} catch {
+		return "warn"
+	}
+}
+
+/**
  * 日志格式化
  * @param arg 日志参数
  * @returns string
@@ -27,6 +50,13 @@ const formatMessage = (arg) => {
  */
 const storeLog = async (level, ...args) => {
 	try {
+		const CURRENT_LEVEL = await getLogLevel()
+		if (LOG_LEVEL_PRIORITY[level] < LOG_LEVEL_PRIORITY[CURRENT_LEVEL]) {
+			// 等级低于配置等级, 不记录到数据库
+			return
+		}
+
+		console[level](...args)
 		const MATCH = args[0]?.match?.(/^\[(.*?)](.*)$/) || ["NULL", "NULL"]
 		args.shift()
 
@@ -54,7 +84,6 @@ const storeLog = async (level, ...args) => {
 
 const Logger = {
 	debug: (...args) => {
-		console.debug(...args)
 		void storeLog("debug", ...args)
 	},
 	info: (...args) => {
@@ -64,7 +93,6 @@ const Logger = {
 		void storeLog("warn", ...args)
 	},
 	error: (...args) => {
-		console.error(...args)
 		void storeLog("error", ...args)
 	}
 }

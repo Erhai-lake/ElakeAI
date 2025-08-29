@@ -2,11 +2,12 @@
 import Button from "@/components/input/Button.vue"
 import HazardousOperations from "@/components/options/HazardousOperations.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import LogLevel from "@/components/options/LogLevel.vue"
 import DevToolsSuspensionWindow from "@/components/options/DevToolsSuspensionWindow.vue"
 
 export default {
 	name: "AdvancedToolsView",
-	components: {DevToolsSuspensionWindow, Button, HazardousOperations},
+	components: {LogLevel, DevToolsSuspensionWindow, Button, HazardousOperations},
 	methods: {
 		/**
 		 * 翻译
@@ -23,13 +24,17 @@ export default {
 
 <template>
 	<div class="item">
-		Log View
+		{{ t("views.OptionsView.AdvancedToolsView.logView") }}
 		<router-link to="/options/log">
-			<Button>Open Log View</Button>
+			<Button>{{ t("views.OptionsView.AdvancedToolsView.logView") }}</Button>
 		</router-link>
 	</div>
 	<div class="item">
-		DevTools
+		{{ t("views.OptionsView.AdvancedToolsView.logLevel") }}
+		<LogLevel/>
+	</div>
+	<div class="item">
+		{{ t("views.OptionsView.AdvancedToolsView.devTools") }}
 		<DevToolsSuspensionWindow/>
 	</div>
 	<div class="item">
