@@ -95,7 +95,8 @@ export async function getEnabledPlugins() {
 		CONFIG_DATA = {value: ALL_UUIDS}
 	}
 	const ENABLED_UUIDS = CONFIG_DATA.value
-	return ALL_PLUGINS.filter(p => ENABLED_UUIDS.includes(p.uuid))
+	const REQUIRED_UUIDS = ALL_PLUGINS.filter(p => p.required).map(p => p.uuid)
+	return ALL_PLUGINS.filter(p => ENABLED_UUIDS.includes(p.uuid) || REQUIRED_UUIDS.includes(p.uuid))
 }
 
 /**
@@ -105,7 +106,8 @@ export async function getEnabledPlugins() {
 export async function getAllPlugins() {
 	const ALL_PLUGINS = await scanAllPlugins()
 	const ENABLED_UUIDS = new Set((await DB.configs.get("plugins"))?.value || [])
-	return ALL_PLUGINS.map(p => ({...p, enabled: ENABLED_UUIDS.has(p.uuid)}))
+	const REQUIRED_UUIDS = ALL_PLUGINS.filter(p => p.required).map(p => p.uuid)
+	return ALL_PLUGINS.map(p => ({...p, enabled: ENABLED_UUIDS.has(p.uuid) || REQUIRED_UUIDS.includes(p.uuid)}))
 }
 
 /**
@@ -120,7 +122,7 @@ export async function updatePluginEnabled(uuid, enabled) {
 		console.warn(`[PluginManager] 禁止启用被标记为 disabled 的插件: ${TARGET_PLUGIN.name}`)
 		return
 	}
-	if (TARGET_PLUGIN?.required) {
+	if (!enabled && TARGET_PLUGIN?.required) {
 		console.warn(`[PluginManager] 禁止禁用被标记为 required 的插件: ${TARGET_PLUGIN.name}`)
 		return
 	}
