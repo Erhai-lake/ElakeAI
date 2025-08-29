@@ -110,7 +110,6 @@ class Kimi {
 				// 如果解析失败, 就当缓存无效
 				console.warn("缓存解析失败", error)
 			}
-			return PUBLIC_CLASS.response(params, JSON.parse(sessionStorage.getItem(CACHE_KEY)))
 		}
 		// 没有缓存或缓存过期 -> 发请求
 		const DEXIE = context.api.dexie
