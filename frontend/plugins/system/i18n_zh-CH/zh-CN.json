@@ -34,21 +34,19 @@
 			"LogoImage": {
 				"toast": {
 					"getLogoImageError": "获取Logo图片配置失败",
-					"uploadError": "上传Logo图片失败",
 					"applyLogoImageError": "应用Logo图片配置失败"
 				},
 				"upload": "上传",
-				"base64Placeholder": "Base64图片上传",
-				"logoImageURL": "Logo图片URL/Base64"
+				"localPlaceholder": "已上传图片",
+				"logoImageURL": "Logo图片URL"
 			},
 			"BackgroundImage": {
 				"toast": {
 					"getBackgroundImageError": "获取背景图片配置失败",
-					"uploadError": "上传背景图片失败",
 					"applyBackgroundImageError": "应用背景图片配置失败"
 				},
 				"upload": "上传",
-				"base64Placeholder": "已上传Base64图片",
+				"localPlaceholder": "已上传图片",
 				"backgroundImageURL": "图片URL/Base64",
 				"backgroundImageOpacity": "透明度",
 				"backgroundImageMask": "遮罩"

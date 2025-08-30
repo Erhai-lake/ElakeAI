@@ -34,21 +34,19 @@
 			"LogoImage": {
 				"toast": {
 					"getLogoImageError": "Failed to get logo image configuration",
-					"uploadError": "Failed to upload logo image",
 					"applyLogoImageError": "Failed to apply logo image configuration"
 				},
 				"upload": "Upload",
-				"base64Placeholder": "Base64 Picture Uploaded",
-				"logoImageURL": "Logo Image URL/Base64"
+				"localPlaceholder": "Local Image Uploaded",
+				"logoImageURL": "Logo Image URL"
 			},
 			"BackgroundImage": {
 				"toast": {
 					"getBackgroundImageError": "Failed to get background image configuration",
-					"uploadError": "Failed to upload background image",
 					"applyBackgroundImageError": "Failed to apply background image configuration"
 				},
 				"upload": "Upload",
-				"base64Placeholder": "Base64 Picture Uploaded",
+				"localPlaceholder": "Local Image Uploaded",
 				"backgroundImageURL": "Image URL/Base64",
 				"backgroundImageOpacity": "Opacity",
 				"backgroundImageMask": "Mask"

@@ -17,6 +17,7 @@ export default {
 			backgroundImage: {
 				enabled: false,
 				url: "https://www.loliapi.com/acg",
+				blob: null,
 				opacity: 50,
 				mask: 50
 			}
@@ -25,15 +26,15 @@ export default {
 	computed: {
 		displayUrl: {
 			get() {
-				const URL = this.backgroundImage.url
-				if (!URL) return ""
-				// 如果是 Base64, 用占z位文本代替
-				return URL.startsWith("data:image/") ? this.t("components.Options.BackgroundImage.base64Placeholder") : URL
+				if (this.backgroundImage.blob) {
+					return this.t("components.Options.BackgroundImage.localPlaceholder")
+				}
+				return this.backgroundImage.url || ""
 			},
 			set(val) {
-				// 如果用户输入的不是占位符, 直接写入
-				if (!val.startsWith(this.t("components.Options.BackgroundImage.base64Placeholder"))) {
+				if (!val.startsWith(this.t("components.Options.BackgroundImage.localPlaceholder"))) {
 					this.backgroundImage.url = val
+					this.backgroundImage.blob = null
 				}
 			}
 		}
@@ -57,7 +58,18 @@ export default {
 		async read() {
 			try {
 				const BACKGROUND_IMAGE_DATA = await this.$DB.configs.get("backgroundImage")
-				this.backgroundImage = BACKGROUND_IMAGE_DATA ? BACKGROUND_IMAGE_DATA.value : this.backgroundImage
+				if (BACKGROUND_IMAGE_DATA?.value) {
+					this.backgroundImage = {
+						enabled:  BACKGROUND_IMAGE_DATA.value.enabled,
+						url: BACKGROUND_IMAGE_DATA.value.url,
+						blob: null,
+						opacity: BACKGROUND_IMAGE_DATA.value.opacity,
+						mask: BACKGROUND_IMAGE_DATA.value.mask
+					}
+					if (BACKGROUND_IMAGE_DATA.value.blob) {
+						this.backgroundImage.blob = new Blob([BACKGROUND_IMAGE_DATA.value.blob])
+					}
+				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 背景图片配置获取失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.getBackgroundImageError")}`)
@@ -75,15 +87,8 @@ export default {
 		handleFileChange(event) {
 			const FILE = event.target.files[0]
 			if (!FILE) return
-			const READER = new FileReader()
-			READER.onload = (readerEvent) => {
-				this.backgroundImage.url = readerEvent.target.result
-			}
-			READER.onerror = (readerEvent) => {
-				this.$log.error(`[${this.name}] 图片读取失败`, readerEvent)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.uploadError")}`)
-			}
-			READER.readAsDataURL(FILE)
+			this.backgroundImage.blob = FILE
+			this.backgroundImage.url = ""
 			event.target.value = ""
 			this.apply()
 		},
@@ -92,10 +97,18 @@ export default {
 		 */
 		apply: publicRegistry.debounce(async function () {
 			try {
-				await this.$DB.configs.put({
-					item: "backgroundImage",
-					value: JSON.parse(JSON.stringify(this.backgroundImage))
-				})
+				let value = {
+					enabled: this.backgroundImage.enabled,
+					url: this.backgroundImage.url,
+					blob: null,
+					opacity: this.backgroundImage.opacity,
+					mask: this.backgroundImage.mask
+				}
+				if (this.backgroundImage.blob) {
+					const BUFFER = await this.backgroundImage.blob.arrayBuffer()
+					value.blob = new Uint8Array(BUFFER)
+				}
+				await this.$DB.configs.put({ item: "backgroundImage", value })
 				EventBus.emit("[function] configInitialization")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 背景图片配置应用失败`, {

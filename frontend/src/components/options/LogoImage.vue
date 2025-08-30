@@ -15,22 +15,23 @@ export default {
 			name: "LogoImage",
 			logoImage: {
 				enabled: false,
-				url: ""
+				url: "",
+				blob: null
 			}
 		}
 	},
 	computed: {
 		displayUrl: {
 			get() {
-				const URL = this.logoImage.url
-				if (!URL) return ""
-				// 如果是 Base64, 用占z位文本代替
-				return URL.startsWith("data:image/") ? this.t("components.Options.LogoImage.base64Placeholder") : URL
+				if (this.logoImage.blob) {
+					return this.t("components.Options.LogoImage.localPlaceholder")
+				}
+				return this.logoImage.url || ""
 			},
 			set(val) {
-				// 如果用户输入的不是占位符, 直接写入
-				if (!val.startsWith(this.t("components.Options.LogoImage.base64Placeholder"))) {
+				if (!val.startsWith(this.t("components.Options.LogoImage.localPlaceholder"))) {
 					this.logoImage.url = val
+					this.logoImage.blob = null
 				}
 			}
 		}
@@ -54,7 +55,16 @@ export default {
 		async read() {
 			try {
 				const LOGO_IMAGE_DATA = await this.$DB.configs.get("logoImage")
-				this.logoImage = LOGO_IMAGE_DATA ? LOGO_IMAGE_DATA.value : this.logoImage
+				if (LOGO_IMAGE_DATA?.value) {
+					this.logoImage = {
+						enabled:  LOGO_IMAGE_DATA.value.enabled,
+						url: LOGO_IMAGE_DATA.value.url,
+						blob: null
+					}
+					if (LOGO_IMAGE_DATA.value.blob) {
+						this.logoImage.blob = new Blob([LOGO_IMAGE_DATA.value.blob])
+					}
+				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] logo图片配置获取失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.getLogoImageError")}`)
@@ -72,15 +82,8 @@ export default {
 		handleFileChange(event) {
 			const FILE = event.target.files[0]
 			if (!FILE) return
-			const READER = new FileReader()
-			READER.onload = (readerEvent) => {
-				this.logoImage.url = readerEvent.target.result
-			}
-			READER.onerror = (readerEvent) => {
-				this.$log.error(`[${this.name}] logo图片读取失败`, readerEvent)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.uploadError")}`)
-			}
-			READER.readAsDataURL(FILE)
+			this.logoImage.blob = FILE
+			this.logoImage.url = ""
 			event.target.value = ""
 			this.apply()
 		},
@@ -89,16 +92,19 @@ export default {
 		 */
 		apply: publicRegistry.debounce(async function () {
 			try {
-				await this.$DB.configs.put({
-					item: "logoImage",
-					value: JSON.parse(JSON.stringify(this.logoImage))
-				})
+				let value = {
+					enabled: this.logoImage.enabled,
+					url: this.logoImage.url,
+					blob: null
+				}
+				if (this.logoImage.blob) {
+					const BUFFER = await this.logoImage.blob.arrayBuffer()
+					value.blob = new Uint8Array(BUFFER)
+				}
+				await this.$DB.configs.put({ item: "logoImage", value })
 				EventBus.emit("[update] logoImageApply")
 			} catch (error) {
-				this.$log.error(`[${this.name}] logo图片配置应用失败`, {
-					logoImage: this.logoImage,
-					error
-				})
+				this.$log.error(`[${this.name}] logo图片配置应用失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.applyLogoImageError")}`)
 			}
 		}, 500)

@@ -16,7 +16,11 @@ export default {
 			name: "Sidebar",
 			route: useRoute(),
 			leftMenuTitle: null,
-			logoImage: null,
+			logoImage: {
+				enabled: false,
+				url: "",
+				blob: null
+			},
 			sidebarStatus: true,
 			chatList: [],
 			conversationListLoading: false,
@@ -75,7 +79,17 @@ export default {
 		async logoImageApply() {
 			try {
 				const LOGO_IMAGE_DATA = await this.$DB.configs.get("logoImage")
-				this.logoImage = LOGO_IMAGE_DATA ? LOGO_IMAGE_DATA.value : this.logoImage
+				if (LOGO_IMAGE_DATA?.value) {
+					this.logoImage = {
+						enabled:  LOGO_IMAGE_DATA.value.enabled,
+						url: LOGO_IMAGE_DATA.value.url,
+						blob: null
+					}
+					if (LOGO_IMAGE_DATA.value.blob) {
+						this.logoImage.blob = new Blob([LOGO_IMAGE_DATA.value.blob])
+						this.logoImage.url = URL.createObjectURL(this.logoImage.blob)
+					}
+				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] logo图片配置获取失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.getLogoImageError")}`)

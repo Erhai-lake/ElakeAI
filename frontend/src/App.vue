@@ -23,7 +23,13 @@ export default {
 				status: true,
 				loadingMessage: "正在加载插件系统..."
 			},
-			backgroundImage: null,
+			backgroundImage: {
+				enabled: false,
+				url: "",
+				blob: null,
+				opacity: 100,
+				mask: 100
+			},
 			isDevToolsSuspensionWindow: false,
 			buttonPosition: {top: 10, left: window.innerWidth - 130},
 			dragging: false,
@@ -198,7 +204,19 @@ export default {
 				}
 				// 应用背景图片
 				const BACKGROUND_IMAGE_DATA = await Dexie.configs.get("backgroundImage")
-				this.backgroundImage = BACKGROUND_IMAGE_DATA ? BACKGROUND_IMAGE_DATA.value : null
+				if (BACKGROUND_IMAGE_DATA?.value) {
+					this.backgroundImage = {
+						enabled:  BACKGROUND_IMAGE_DATA.value.enabled,
+						url: BACKGROUND_IMAGE_DATA.value.url,
+						blob: null,
+						opacity: BACKGROUND_IMAGE_DATA.value.opacity,
+						mask: BACKGROUND_IMAGE_DATA.value.mask
+					}
+					if (BACKGROUND_IMAGE_DATA.value.blob) {
+						this.backgroundImage.blob = new Blob([BACKGROUND_IMAGE_DATA.value.blob])
+						this.backgroundImage.url = URL.createObjectURL(this.backgroundImage.blob)
+					}
+				}
 				// DevTools悬浮窗
 				const DEV_TOOLS_SUSPENSION_WINDOW_DATA = await Dexie.configs.get("devToolsSuspensionWindow")
 				this.isDevToolsSuspensionWindow = DEV_TOOLS_SUSPENSION_WINDOW_DATA ? DEV_TOOLS_SUSPENSION_WINDOW_DATA.value : false
