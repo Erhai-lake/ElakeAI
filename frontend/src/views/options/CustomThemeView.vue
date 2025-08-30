@@ -16,15 +16,25 @@ export default {
 		return {
 			themeList: [],
 			selectedTheme: null,
-			theme: null
+			theme: null,
+			themeJson: ""
 		}
 	},
 	watch: {
 		theme: {
-			handler() {
+			handler(newVal) {
+				this.themeJson = JSON.stringify(newVal, null, 2)
 				this.applyCustomTheme()
 			},
 			deep: true
+		},
+		themeJson(newVal) {
+			if (!newVal) return
+			try {
+				this.theme = JSON.parse(newVal)
+			} catch (error) {
+				this.$log.error(`[${this.name}] JSON 解析失败`, error)
+			}
 		}
 	},
 	created() {
@@ -168,6 +178,9 @@ export default {
 					<Button @click="importTheme">{{ t("views.OptionsView.CustomThemeView.import") }}</Button>
 				</div>
 			</div>
+		</div>
+		<div class="container">
+			<textarea v-model="themeJson"></textarea>
 		</div>
 		<div class="container">
 			<div class="item">
@@ -652,6 +665,24 @@ export default {
 		display: grid;
 		grid-template-columns: 200px auto auto auto;
 		gap: 10px;
+	}
+
+	textarea{
+		padding: 10px;
+		box-sizing: border-box;
+		width: 100%;
+		height: 600px;
+		background-color: var(--box-shadow-color-anti);
+		border: 1px solid var(--border-color);
+		color: var(--text-color);
+		font-size: 16px;
+		letter-spacing: 3px;
+		border-radius: 10px;
+		resize: none;
+
+		&:focus {
+			outline: none;
+		}
 	}
 }
 
