@@ -15,7 +15,7 @@ button {
 	padding: 10px 30px;
 	background-color: var(--background-color);
 	color: var(--text-color);
-	border: 1px solid #909399FF;
+	border: 1px solid var(--border-color);
 	border-radius: 8px;
 	font-size: 14px;
 	cursor: pointer;
