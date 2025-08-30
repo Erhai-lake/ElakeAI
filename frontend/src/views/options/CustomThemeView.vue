@@ -69,7 +69,7 @@ export default {
 		 */
 		reset() {
 			const THEMES = ThemeRegistry.getTheme(this.selectedTheme.code)
-			this.theme = THEMES.info.theme
+			this.theme = JSON.parse(JSON.stringify(THEMES.info.theme))
 		},
 		/**
 		 * 初始化自定义主题
@@ -606,7 +606,7 @@ export default {
 		margin-bottom: 20px;
 	}
 
-	.template{
+	.template {
 		display: grid;
 		grid-template-columns: 200px auto;
 		gap: 10px;

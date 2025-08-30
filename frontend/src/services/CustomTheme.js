@@ -20,6 +20,7 @@ export default {
 			const CSS = `[data-theme="custom"] {\n${THEME_VARS}\n}`
 			// 注入到 <style id="custom-theme">
 			let styleTag = document.getElementById("custom-theme")
+			// 存在就更新, 不存在就创建
 			if (!styleTag) {
 				styleTag = document.createElement("style")
 				styleTag.id = "custom-theme"
