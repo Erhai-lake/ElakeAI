@@ -23,6 +23,8 @@ const THEME_INFO = {
 		"--text-color": "#434344",
 		// 文字颜色(反)
 		"--text-color-anti": "#E4E4E7",
+		// 次要文字颜色
+		"--text-secondary-color": "#b9bdbe",
 		// 边框颜色
 		"--border-color": "#6C787F",
 		// 阴影颜色

@@ -222,6 +222,17 @@ export default {
 					disableHistory
 					blurClose/>
 			</div>
+			<div class="item">
+				{{ t("views.OptionsView.CustomThemeView.textSecondaryColor") }}
+				<ColorPicker
+					class="color-picker"
+					v-model:pureColor="theme['--text-secondary-color']"
+					format="rgb"
+					shape="circle"
+					pickerType="chrome"
+					disableHistory
+					blurClose/>
+			</div>
 		</div>
 		<div class="container">
 			<div class="item">

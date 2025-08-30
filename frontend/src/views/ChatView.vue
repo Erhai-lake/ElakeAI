@@ -3,7 +3,6 @@ import Loading from "@/components/Loading.vue"
 import AIInput from "@/components/AIInput.vue"
 import {useRoute} from "vue-router"
 import EventBus from "@/services/EventBus"
-import TopTitle from "@/components/chat/TopTitle.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import RightClickMenu from "@/components/RightClickMenu.vue"
@@ -15,7 +14,7 @@ import ChatConfigs from "@/views/options/ChatConfigs.vue"
 export default {
 	name: "ChatView",
 	inject: ["$DB", "$log"],
-	components: {ChatConfigs, Button, SVGIcon, RightClickMenu, Loading, TopTitle, AIInput},
+	components: {ChatConfigs, Button, SVGIcon, RightClickMenu, Loading, AIInput},
 	data() {
 		return {
 			name: "ChatView",
@@ -510,7 +509,17 @@ export default {
 		<ChatConfigs v-model="showSetup" :chatKey="data.key"/>
 		<div class="chat-view">
 			<!-- 顶部标题 -->
-			<TopTitle :chatTitle="data.title" :chatKey="data.key"/>
+			<div class="head">
+				<div class="left">
+					<p class="title">{{ data.title }}</p>
+					<p class="time">{{ t("views.ChatView.numberOfConversations", {num: data.data.length}) }}</p>
+				</div>
+				<div class="right">
+					<Button>
+						<SVGIcon name="#icon-share"/>
+					</Button>
+				</div>
+			</div>
 			<!-- 消息列表 -->
 			<RightClickMenu ref="menu"/>
 			<div
@@ -590,6 +599,50 @@ export default {
 	display: grid;
 	grid-template-rows: auto 1fr auto;
 	overflow: hidden;
+}
+
+.head {
+	padding: 0 20px;
+	box-sizing: border-box;
+	height: 65px;
+	border-radius: 0 0 20px 20px;
+	backdrop-filter: blur(10px);
+	box-shadow: 0 6px 15px 0 var(--box-shadow-color);
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: center;
+	gap: 30px;
+	z-index: 2;
+
+	.left {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		overflow: hidden;
+
+		.title {
+			font-size: 18px;
+			font-weight: bold;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			cursor: pointer;
+		}
+
+		.time {
+			font-size: 12px;
+			color: var(--text-secondary-color);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	.right {
+		button {
+			padding: 10px 11px;
+		}
+	}
 }
 
 .message-list {

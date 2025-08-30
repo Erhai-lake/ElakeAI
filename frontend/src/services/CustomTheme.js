@@ -9,7 +9,7 @@ export default {
 			if (themeData) {
 				const THEME_DATA = await Dexie.configs.get("customTheme")
 				if (!THEME_DATA && !THEME_DATA.value) {
-					const SYSTEM_THEME_CODE = window.matchMedia("(prefers-color-scheme: dark)").matches ? "Dark" : "Light"
+					const SYSTEM_THEME_CODE = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 					document.documentElement.setAttribute("data-theme", SYSTEM_THEME_CODE)
 					return
 				}

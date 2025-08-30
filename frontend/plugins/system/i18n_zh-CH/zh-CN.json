@@ -388,6 +388,7 @@
 				"hideInputBox": "隐藏输入框"
 			},
 			"loading": "请耐心等待聊天记录载入...\n加载进度: {loadedMessages} / {totalMessages} 条",
+			"numberOfConversations": "共 {num} 条对话",
 			"aiDisclaimer": "内容由 AI 生成, 请仔细甄别"
 		},
 		"OptionsView": {
@@ -409,6 +410,7 @@
 				"backgroundColorAnti": "背景颜色 (反)",
 				"textColor": "文本颜色",
 				"textColorAnti": "文本颜色 (反)",
+				"textSecondaryColor": "次要文本颜色",
 				"borderColor": "边框颜色",
 				"boxShadowColor": "阴影颜色",
 				"boxShadowColorAnti": "阴影颜色 (反)",

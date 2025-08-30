@@ -182,10 +182,13 @@ export default {
 				if (THEME === "system") {
 					const SYSTEM_THEME = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 					ThemeRegistry.setTheme(SYSTEM_THEME)
+					console.log(SYSTEM_THEME)
 				} else if (THEME === "custom") {
 					await CustomTheme.applyCustomTheme()
+					console.log(THEME)
 				} else {
 					ThemeRegistry.setTheme(THEME)
+					console.log(THEME)
 				}
 				// 应用语言
 				const LANGUAGE_DATA = await Dexie.configs.get("language")

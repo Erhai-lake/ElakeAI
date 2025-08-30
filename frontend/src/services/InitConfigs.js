@@ -9,9 +9,9 @@ export async function InitConfigs() {
 			}
 		}
 		// 主题
-		await ensureConfig("theme", "System")
+		await ensureConfig("theme", "system")
 		// 语言
-		await ensureConfig("language", "System")
+		await ensureConfig("language", "system")
 		// 聊天配置
 		await ensureConfig("chatConfigs", {
 			temperature: 1,
