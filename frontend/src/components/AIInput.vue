@@ -25,6 +25,7 @@ export default defineComponent({
 			modelSelected: null,
 			// 输入框
 			chatInput: "",
+			oldChatInput: "",
 			// 联网搜索状态
 			enableWebSearch: false,
 			// 停止
@@ -151,14 +152,14 @@ export default defineComponent({
 			// 检查输入框是否为空
 			if (this.chatInput.trim() === "") return
 			this.stopStatus = true
-			const CONTENT = this.chatInput
+			this.oldChatInput = this.chatInput.trim()
 			this.chatInput = ""
 			// 更新输入框高度
 			await this.$nextTick(() => {
 				this.adjustTextareaHeight()
 			})
 			// 判断是否存在聊天, 否则新建
-			const CHAT_KEY = this.route.params.key ? this.route.params.key : await this.newChat(CONTENT)
+			const CHAT_KEY = this.route.params.key ? this.route.params.key : await this.newChat(this.oldChatInput)
 			// 请求开始
 			const DIALOGUE_ID = crypto.randomUUID()
 			const USER_DIALOGUE_ID = crypto.randomUUID()
@@ -170,11 +171,11 @@ export default defineComponent({
 					userDialogueId: USER_DIALOGUE_ID,
 					apiKey: this.keyPoolsSelected.key,
 					chatKey: CHAT_KEY,
-					content: CONTENT.trim(),
+					content: this.oldChatInput,
 					model: this.modelSelected.title,
 				})
 				if (RESPONSE.error) {
-					this.chatInput = CONTENT
+					this.chatInput = this.oldChatInput
 					await this.$nextTick(() => {
 						this.adjustTextareaHeight()
 					})
@@ -183,7 +184,7 @@ export default defineComponent({
 					EventBus.emit("[stream] streamComplete", {chatKey: CHAT_KEY})
 				}
 			} catch (error) {
-				this.chatInput = CONTENT
+				this.chatInput = this.oldChatInput
 				await this.$nextTick(() => {
 					this.adjustTextareaHeight()
 				})
@@ -263,6 +264,11 @@ export default defineComponent({
 			try {
 				await INSTANCE.api.chatStop()
 				this.stopStatus = false
+				this.chatInput = this.oldChatInput
+				// 更新输入框高度
+				await this.$nextTick(() => {
+					this.adjustTextareaHeight()
+				})
 			} catch (error) {
 				this.stopStatus = true
 				this.$log.error(`[${this.name}] 停止失败`, error)

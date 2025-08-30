@@ -62,7 +62,6 @@ export default {
 		}
 	},
 	async created() {
-		console.log(this.message.message.content)
 		await this.parseContent()
 		// 获取对话主题
 		try {
