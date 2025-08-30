@@ -23,21 +23,9 @@ export default defineComponent({
 			this.selectTheme(newVal)
 		}
 	},
-	async created() {
+	created() {
 		// 初始化主题列表
 		this.loadTheme()
-		try {
-			const THEME_DATA = await this.$DB.configs.get("theme")
-			const THEME = THEME_DATA ? THEME_DATA.value : "system"
-			this.selectedTheme = {
-				code: THEME,
-				title: this.theme.find(lang => lang.code === THEME).title,
-				images: this.theme.find(lang => lang.code === THEME).images
-			}
-		} catch (error) {
-			this.$log.error(`[${this.name}] 主题获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.Options.ThemeSwitch.toast.getThemeError")}`)
-		}
 	},
 	methods: {
 		/**
@@ -59,7 +47,7 @@ export default defineComponent({
 		/**
 		 * 获取全部主题
 		 */
-		loadTheme() {
+		async loadTheme() {
 			this.theme = [
 				{
 					code: "system",
@@ -79,8 +67,17 @@ export default defineComponent({
 				images: item.icon
 			}))]
 			// 初始化选中模型
-			if (this.theme.length > 0) {
-				this.selectedTheme = this.theme[0]
+			try {
+				const THEME_DATA = await this.$DB.configs.get("theme")
+				const THEME = THEME_DATA ? THEME_DATA.value : "system"
+				this.selectedTheme = {
+					code: THEME,
+					title: this.theme.find(lang => lang.code === THEME).title,
+					images: this.theme.find(lang => lang.code === THEME).images
+				}
+			} catch (error) {
+				this.$log.error(`[${this.name}] 主题获取失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ThemeSwitch.toast.getThemeError")}`)
 			}
 		},
 		/**
@@ -122,7 +119,7 @@ export default defineComponent({
 				:num="4"
 				@update:selectorSelected="updateSelectedTheme"/>
 			<router-link to="/options/customTheme" v-if="(selectedTheme ? selectedTheme.code : '') === 'custom'">
-				<Button>{{t("components.Options.ThemeSwitch.custom")}}</Button>
+				<Button>{{ t("components.Options.ThemeSwitch.custom") }}</Button>
 			</router-link>
 		</div>
 	</div>
@@ -133,7 +130,7 @@ export default defineComponent({
 .theme-select {
 	width: 240px;
 
-	.container{
+	.container {
 		display: flex;
 		gap: 10px;
 	}

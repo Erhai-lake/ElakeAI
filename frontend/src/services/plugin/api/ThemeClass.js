@@ -1,5 +1,4 @@
 import Logger from "@/services/Logger"
-import {PlatformClass} from "@/services/plugin/api/PlatformClass";
 
 const NAME = "PluginAPI ThemeClass"
 const THEME_MAP = new Map()
@@ -32,7 +31,11 @@ export class ThemeClass {
 	unregisterTheme = (code) => {
 		if (THEME_MAP.has(code)) {
 			THEME_MAP.delete(code)
-			Logger.info(`[${NAME}] 主题注销成功: ${name}`)
+			// 如果有移除css
+			// 移除css
+			const STYLE_TAG = document.getElementById(`theme-${code}`)
+			if (STYLE_TAG) STYLE_TAG.remove()
+			Logger.info(`[${NAME}] 主题注销成功: ${code}`)
 		}
 	}
 
@@ -66,15 +69,18 @@ export class ThemeClass {
 			Logger.warn(`[${NAME}] 主题不存在: ${code}`)
 			return
 		}
+		// 移除旧主题
+		const OLD_STYLE_TAG = document.getElementById(`theme-${this.getCurrentTheme()}`)
+		if (OLD_STYLE_TAG) OLD_STYLE_TAG.remove()
 		// 生成 CSS 字符串
 		const THEME = THEME_MAP.get(code).info.theme
 		const THEME_VARS = Object.entries(THEME).map(([key, value]) => `${key}: ${value};`).join("\n")
 		const CSS = `[data-theme="${code}"] {\n${THEME_VARS}\n}`
 		// 注入到 <style id="custom-theme">
-		let styleTag = document.getElementById("custom-theme")
+		let styleTag = document.getElementById(`theme-${code}`)
 		if (!styleTag) {
 			styleTag = document.createElement("style")
-			styleTag.id = "custom-theme"
+			styleTag.id = `theme-${code}`
 			document.head.appendChild(styleTag)
 		}
 		styleTag.innerHTML = CSS
