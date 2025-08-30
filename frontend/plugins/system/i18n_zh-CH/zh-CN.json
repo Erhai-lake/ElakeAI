@@ -25,12 +25,20 @@
 	},
 	"components": {
 		"Options": {
+			"LogoImage": {
+				"toast": {
+					"getLogoImageError": "获取Logo图片配置失败",
+					"uploadError": "上传Logo图片失败",
+					"applyLogoImageError": "应用Logo图片配置失败"
+				},
+				"upload": "上传",
+				"base64Placeholder": "Base64图片上传",
+				"logoImageURL": "Logo图片URL/Base64"
+			},
 			"BackgroundImage": {
 				"toast": {
 					"getBackgroundImageError": "获取背景图片配置失败",
-					"uploadSuccess": "上传背景图片成功",
 					"uploadError": "上传背景图片失败",
-					"applyBackgroundImageSuccess": "应用背景图片配置成功",
 					"applyBackgroundImageError": "应用背景图片配置失败"
 				},
 				"upload": "上传",
@@ -273,6 +281,7 @@
 				"conversationList": "对话列表"
 			},
 			"toast": {
+				"getLogoImageError": "获取logo图片失败",
 				"errorGettingChatList": "获取聊天列表失败",
 				"successDeletingChatList": "删除聊天列表成功",
 				"errorDeletingChatList": "删除聊天列表失败"
@@ -396,6 +405,7 @@
 				"theme": "主题",
 				"language": "语言",
 				"chatThemes": "对话主题",
+				"logoImage": "logo图片",
 				"backgroundImage": "背景图片"
 			},
 			"CustomThemeView": {

@@ -15,6 +15,7 @@ export default {
 		return {
 			name: "Sidebar",
 			route: useRoute(),
+			logoImage: null,
 			sidebarStatus: true,
 			chatList: [],
 			conversationListLoading: false,
@@ -22,13 +23,13 @@ export default {
 		}
 	},
 	beforeUnmount() {
-		// 移除更新列表事件监听
+		EventBus.off("[update] logoImageApply", this.logoImageApply)
 		EventBus.off("[update] chatListUpdate", this.chatListGet)
 		EventBus.off("[stream] userMessage", this.userMessage)
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 	},
 	created() {
-		// 监听更新列表事件
+		EventBus.on("[update] logoImageApply", this.logoImageApply)
 		EventBus.on("[update] chatListUpdate", this.chatListGet)
 		EventBus.on("[stream] userMessage", this.userMessage)
 		EventBus.on("[stream] streamComplete", this.streamComplete)
@@ -36,6 +37,8 @@ export default {
 		if (window.innerWidth < 768) {
 			this.sidebarStatus = false
 		}
+		// 初始化时获取logo图片
+		this.logoImageApply()
 		// 初始化时获取聊天列表
 		this.chatListGet()
 	},
@@ -48,6 +51,18 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
+		},
+		/**
+		 * logo图片应用
+		 */
+		async logoImageApply() {
+			try {
+				const LOGO_IMAGE_DATA = await this.$DB.configs.get("logoImage")
+				this.logoImage = LOGO_IMAGE_DATA ? LOGO_IMAGE_DATA.value : this.logoImage
+			} catch (error) {
+				this.$log.error(`[${this.name}] logo图片配置获取失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.getLogoImageError")}`)
+			}
 		},
 		/**
 		 * 侧边栏展开收起, 展开时获取聊天列表
@@ -175,7 +190,10 @@ export default {
 		:class="sidebarStatus ? 'sidebar-expand-container' : 'sidebar-stow-container'"
 		:aria-label="t('components.Sidebar.barrierFree.title')">
 		<div class="sidebar-top">
-			<div class="sidebar-top-logo" aria-hidden="true"></div>
+			<div
+				class="sidebar-top-logo"
+				:style="{ backgroundImage: `url(${logoImage?.enabled && logoImage?.url ? logoImage.url : '/images/logo.svg'})` }"
+				aria-hidden="true"></div>
 			<h1 v-if="sidebarStatus" aria-label="ElakeAI">ElakeAI</h1>
 			<router-link
 				to="/"
@@ -260,7 +278,6 @@ export default {
 .sidebar-top-logo {
 	width: 48px;
 	height: 48px;
-	background-image: url("@/assets/images/logo.svg");
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-position: center;

@@ -25,12 +25,20 @@
 	},
 	"components": {
 		"Options": {
+			"LogoImage": {
+				"toast": {
+					"getLogoImageError": "Failed to get logo image configuration",
+					"uploadError": "Failed to upload logo image",
+					"applyLogoImageError": "Failed to apply logo image configuration"
+				},
+				"upload": "Upload",
+				"base64Placeholder": "Base64 Picture Uploaded",
+				"logoImageURL": "Logo Image URL/Base64"
+			},
 			"BackgroundImage": {
 				"toast": {
 					"getBackgroundImageError": "Failed to get background image configuration",
-					"uploadSuccess": "Background image uploaded successfully",
 					"uploadError": "Failed to upload background image",
-					"applyBackgroundImageSuccess": "Background image configuration applied successfully",
 					"applyBackgroundImageError": "Failed to apply background image configuration"
 				},
 				"upload": "Upload",
@@ -273,6 +281,7 @@
 				"conversationList": "Conversation list"
 			},
 			"toast": {
+				"getLogoImageError": "Failed to get logo image",
 				"errorGettingChatList": "Failed to get chat list",
 				"successDeletingChatList": "Chat list deleted successfully",
 				"errorDeletingChatList": "Failed to delete chat list"
@@ -396,6 +405,7 @@
 				"theme": "Theme",
 				"language": "Language",
 				"chatThemes": "Chat Themes",
+				"logoImage": "Logo Image",
 				"backgroundImage": "Background Image"
 			},
 			"CustomThemeView": {

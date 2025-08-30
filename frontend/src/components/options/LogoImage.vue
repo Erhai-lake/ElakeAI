@@ -1,6 +1,5 @@
 <script>
 import InputText from "@/components/input/InputText.vue"
-import InputNumber from "@/components/input/InputNumber.vue"
 import Button from "@/components/input/Button.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
@@ -8,32 +7,30 @@ import EventBus from "@/services/EventBus"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
 
 export default {
-	name: "BackgroundImage",
+	name: "LogoImage",
 	inject: ["$DB", "$log"],
-	components: {Button, InputText, InputNumber},
+	components: {Button, InputText},
 	data() {
 		return {
-			name: "BackgroundImage",
-			backgroundImage: {
+			name: "LogoImage",
+			logoImage: {
 				enabled: false,
-				url: "https://www.loliapi.com/acg",
-				opacity: 50,
-				mask: 50
+				url: ""
 			}
 		}
 	},
 	computed: {
 		displayUrl: {
 			get() {
-				const URL = this.backgroundImage.url
+				const URL = this.logoImage.url
 				if (!URL) return ""
 				// 如果是 Base64, 用占z位文本代替
-				return URL.startsWith("data:image/") ? this.t("components.Options.BackgroundImage.base64Placeholder") : URL
+				return URL.startsWith("data:image/") ? this.t("components.Options.LogoImage.base64Placeholder") : URL
 			},
 			set(val) {
 				// 如果用户输入的不是占位符, 直接写入
-				if (!val.startsWith(this.t("components.Options.BackgroundImage.base64Placeholder"))) {
-					this.backgroundImage.url = val
+				if (!val.startsWith(this.t("components.Options.LogoImage.base64Placeholder"))) {
+					this.logoImage.url = val
 				}
 			}
 		}
@@ -56,11 +53,11 @@ export default {
 		 */
 		async read() {
 			try {
-				const BACKGROUND_IMAGE_DATA = await this.$DB.configs.get("backgroundImage")
-				this.backgroundImage = BACKGROUND_IMAGE_DATA ? BACKGROUND_IMAGE_DATA.value : this.backgroundImage
+				const LOGO_IMAGE_DATA = await this.$DB.configs.get("logoImage")
+				this.logoImage = LOGO_IMAGE_DATA ? LOGO_IMAGE_DATA.value : this.logoImage
 			} catch (error) {
-				this.$log.error(`[${this.name}] 背景图片配置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.getBackgroundImageError")}`)
+				this.$log.error(`[${this.name}] logo图片配置获取失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.getLogoImageError")}`)
 			}
 		},
 		/**
@@ -77,11 +74,11 @@ export default {
 			if (!FILE) return
 			const READER = new FileReader()
 			READER.onload = (readerEvent) => {
-				this.backgroundImage.url = readerEvent.target.result
+				this.logoImage.url = readerEvent.target.result
 			}
 			READER.onerror = (readerEvent) => {
-				this.$log.error(`[${this.name}] 图片读取失败`, readerEvent)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.uploadError")}`)
+				this.$log.error(`[${this.name}] logo图片读取失败`, readerEvent)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.uploadError")}`)
 			}
 			READER.readAsDataURL(FILE)
 			event.target.value = ""
@@ -93,16 +90,16 @@ export default {
 		apply: publicRegistry.debounce(async function () {
 			try {
 				await this.$DB.configs.put({
-					item: "backgroundImage",
-					value: JSON.parse(JSON.stringify(this.backgroundImage))
+					item: "logoImage",
+					value: JSON.parse(JSON.stringify(this.logoImage))
 				})
-				EventBus.emit("[function] configInitialization")
+				EventBus.emit("[update] logoImageApply")
 			} catch (error) {
-				this.$log.error(`[${this.name}] 背景图片配置应用失败`, {
-					backgroundImage: this.backgroundImage,
+				this.$log.error(`[${this.name}] logo图片配置应用失败`, {
+					logoImage: this.logoImage,
 					error
 				})
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.applyBackgroundImageError")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.applyLogoImageError")}`)
 			}
 		}, 500)
 	}
@@ -110,55 +107,33 @@ export default {
 </script>
 
 <template>
-	<div class="background-image">
+	<div class="logo-image">
 		<label class="switch">
-			<input type="checkbox" v-model="backgroundImage.enabled" @change="apply"/>
+			<input type="checkbox" v-model="logoImage.enabled" @change="apply"/>
 			<span class="custom-checkbox"></span>
 		</label>
 		<input type="file" ref="fileInput" style="display: none;" accept="image/*" @change="handleFileChange">
-		<Button @click="upload" :disabled="!backgroundImage.enabled">
-			{{t('components.Options.BackgroundImage.upload') }}
+		<Button @click="upload" :disabled="!logoImage.enabled">
+			{{ t('components.Options.LogoImage.upload') }}
 		</Button>
 		<InputText
 			class="text"
-			:placeholder="t('components.Options.BackgroundImage.backgroundImageURL')"
-			:title="t('components.Options.BackgroundImage.backgroundImageURL')"
-			:disabled="!backgroundImage.enabled"
+			:placeholder="t('components.Options.LogoImage.logoImageURL')"
+			:title="t('components.Options.LogoImage.logoImageURL')"
+			:disabled="!logoImage.enabled"
 			v-model="displayUrl"
-			@input="apply"/>
-		<InputNumber
-			class="number"
-			mode="slider"
-			:min="0"
-			:max="100"
-			:title="t('components.Options.BackgroundImage.backgroundImageOpacity')"
-			:disabled="!backgroundImage.enabled"
-			v-model="backgroundImage.opacity"
-			@input="apply"/>
-		<InputNumber
-			class="number"
-			mode="slider"
-			:min="0"
-			:max="100"
-			:title="t('components.Options.BackgroundImage.backgroundImageMask')"
-			:disabled="!backgroundImage.enabled"
-			v-model="backgroundImage.mask"
 			@input="apply"/>
 	</div>
 </template>
 
 <style scoped lang="less">
-.background-image {
+.logo-image {
 	display: flex;
 	gap: 10px;
 }
 
 .text {
 	width: 250px;
-}
-
-.number {
-	width: 200px;
 }
 
 input[type="checkbox"] {
