@@ -15,6 +15,7 @@ export default {
 		return {
 			name: "Sidebar",
 			route: useRoute(),
+			leftMenuTitle: null,
 			logoImage: null,
 			sidebarStatus: true,
 			chatList: [],
@@ -23,12 +24,14 @@ export default {
 		}
 	},
 	beforeUnmount() {
+		EventBus.off("[update] leftMenuTitleApply", this.leftMenuTitleApply)
 		EventBus.off("[update] logoImageApply", this.logoImageApply)
 		EventBus.off("[update] chatListUpdate", this.chatListGet)
 		EventBus.off("[stream] userMessage", this.userMessage)
 		EventBus.off("[stream] streamComplete", this.streamComplete)
 	},
 	created() {
+		EventBus.on("[update] leftMenuTitleApply", this.leftMenuTitleApply)
 		EventBus.on("[update] logoImageApply", this.logoImageApply)
 		EventBus.on("[update] chatListUpdate", this.chatListGet)
 		EventBus.on("[stream] userMessage", this.userMessage)
@@ -37,6 +40,8 @@ export default {
 		if (window.innerWidth < 768) {
 			this.sidebarStatus = false
 		}
+		// 初始化时获取左侧菜单标题
+		this.leftMenuTitleApply()
 		// 初始化时获取logo图片
 		this.logoImageApply()
 		// 初始化时获取聊天列表
@@ -51,6 +56,18 @@ export default {
 		 */
 		t(key, params = {}) {
 			return i18nRegistry.translate(key, params)
+		},
+		/**
+		 * 左侧菜单标题应用
+		 */
+		async leftMenuTitleApply() {
+			try {
+				const LEFT_MENU_TITLE_DATA = await this.$DB.configs.get("leftMenuTitle")
+				this.leftMenuTitle = LEFT_MENU_TITLE_DATA ? LEFT_MENU_TITLE_DATA.value : this.leftMenuTitle
+			} catch (error) {
+				this.$log.error(`[${this.name}] 左侧菜单标题配置获取失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.getLeftMenuTitleError")}`)
+			}
 		},
 		/**
 		 * logo图片应用
@@ -194,7 +211,9 @@ export default {
 				class="sidebar-top-logo"
 				:style="{ backgroundImage: `url(${logoImage?.enabled && logoImage?.url ? logoImage.url : '/images/logo.svg'})` }"
 				aria-hidden="true"></div>
-			<h1 v-if="sidebarStatus" aria-label="ElakeAI">ElakeAI</h1>
+			<h1 v-if="sidebarStatus" aria-label="ElakeAI">
+				{{ leftMenuTitle?.enabled && leftMenuTitle?.title ? leftMenuTitle.title : "ElakeAI" }}
+			</h1>
 			<router-link
 				to="/"
 				class="sidebar-new"

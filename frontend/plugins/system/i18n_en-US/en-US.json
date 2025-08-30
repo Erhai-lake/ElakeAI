@@ -25,6 +25,12 @@
 	},
 	"components": {
 		"Options": {
+			"LeftMenuTitle": {
+				"toast": {
+					"getLeftMenuTitleError": "Failed to get left menu title configuration",
+					"applyLeftMenuTitleError": "Failed to apply left menu title configuration"
+				}
+			},
 			"LogoImage": {
 				"toast": {
 					"getLogoImageError": "Failed to get logo image configuration",
@@ -281,6 +287,7 @@
 				"conversationList": "Conversation list"
 			},
 			"toast": {
+				"getLeftMenuTitleError": "Failed to get left menu title",
 				"getLogoImageError": "Failed to get logo image",
 				"errorGettingChatList": "Failed to get chat list",
 				"successDeletingChatList": "Chat list deleted successfully",
@@ -405,6 +412,7 @@
 				"theme": "Theme",
 				"language": "Language",
 				"chatThemes": "Chat Themes",
+				"leftMenuTitle": "Left Menu Title",
 				"logoImage": "Logo Image",
 				"backgroundImage": "Background Image"
 			},

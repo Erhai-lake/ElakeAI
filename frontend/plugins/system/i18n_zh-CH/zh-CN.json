@@ -25,6 +25,12 @@
 	},
 	"components": {
 		"Options": {
+			"LeftMenuTitle": {
+				"toast": {
+					"getLeftMenuTitleError": "获取左侧菜单标题配置失败",
+					"applyLeftMenuTitleError": "应用左侧菜单标题配置失败"
+				}
+			},
 			"LogoImage": {
 				"toast": {
 					"getLogoImageError": "获取Logo图片配置失败",
@@ -281,6 +287,7 @@
 				"conversationList": "对话列表"
 			},
 			"toast": {
+				"getLeftMenuTitleError": "获取左侧菜单标题失败",
 				"getLogoImageError": "获取logo图片失败",
 				"errorGettingChatList": "获取聊天列表失败",
 				"successDeletingChatList": "删除聊天列表成功",
@@ -405,6 +412,7 @@
 				"theme": "主题",
 				"language": "语言",
 				"chatThemes": "对话主题",
+				"leftMenuTitle": "左侧菜单标题",
 				"logoImage": "logo图片",
 				"backgroundImage": "背景图片"
 			},
