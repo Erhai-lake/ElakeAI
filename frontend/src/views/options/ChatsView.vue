@@ -5,10 +5,11 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import ChatBatchSize from "@/components/options/ChatBatchSize.vue"
 import GlobalChatSettings from "@/components/options/GlobalChatSettings.vue"
 import SystemPrompt from "@/components/options/SystemPrompt.vue"
+import PreviewBubbles from "@/components/options/PreviewBubbles.vue"
 
 export default {
 	name: "ChatsView",
-	components: {SystemPrompt, GlobalChatSettings, ChatBatchSize, DefaultChatSettings, ChatAIKey},
+	components: {PreviewBubbles, SystemPrompt, GlobalChatSettings, ChatBatchSize, DefaultChatSettings, ChatAIKey},
 	methods: {
 		/**
 		 * 翻译
@@ -33,6 +34,10 @@ export default {
 		<div class="item">
 			{{ t("views.OptionsView.ChatsView.chatBatchSize") }}
 			<ChatBatchSize/>
+		</div>
+		<div class="item">
+			{{ t("views.OptionsView.ChatsView.previewBubbles") }}
+			<PreviewBubbles/>
 		</div>
 	</div>
 	<div class="container">

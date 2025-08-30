@@ -1,15 +1,34 @@
 <script>
+import {encode} from "gpt-tokenizer"
+import markdownItTaskLists from "markdown-it-task-lists"
+import {full as emoji} from "markdown-it-emoji"
+import markdownItKatex from "@iktakahiro/markdown-it-katex"
+import markdownItMathjax3 from "markdown-it-mathjax3"
+import "katex/dist/katex.min.css"
+import {imgLazyload} from "@mdit/plugin-img-lazyload"
 import Button from "@/components/input/Button.vue"
+import MarkdownBlockRenderer from "@/components/chat/renderer/MarkdownBlockRenderer.vue"
+import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
+import MermaidRenderer from "@/components/chat/renderer/MermaidRenderer.vue"
+import FlowchartRenderer from "@/components/chat/renderer/FlowchartRenderer.vue"
+import PlantUMLRenderer from "@/components/chat/renderer/PlantUMLRenderer.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import {encode} from "gpt-tokenizer"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "UserMessageCard",
 	inject: ["$DB", "$log"],
-	components: {RightClickMenu, Button},
+	components: {
+		RightClickMenu,
+		Button,
+		MarkdownBlockRenderer,
+		CodeBlockRenderer,
+		MermaidRenderer,
+		FlowchartRenderer,
+		PlantUMLRenderer
+	},
 	props: {
 		message: {
 			type: Object,
@@ -24,13 +43,27 @@ export default {
 		return {
 			name: "UserMessageCard",
 			chatTheme: "card",
+			parsedBlocks: [],
 			editingContent: {
 				show: false,
 				value: ""
 			}
 		}
 	},
+	watch: {
+		"message.message.content"(newVal, oldVal) {
+			if (newVal !== oldVal) {
+				this.isReasoningExpanded = false
+				const HAS_UNCLOSED_MERMAID = /```(mermaid|flow)[\s\S]*$/.test(newVal) && !/```(mermaid|flow)[\s\S]*```/.test(newVal)
+				if (!HAS_UNCLOSED_MERMAID) {
+					this.parseContent()
+				}
+			}
+		}
+	},
 	async created() {
+		console.log(this.message.message.content)
+		await this.parseContent()
 		// 获取对话主题
 		try {
 			const CHAT_THEME_DATA = await this.$DB.configs.get("chatTheme")
@@ -69,6 +102,90 @@ export default {
 		 */
 		tokens() {
 			return encode(this.message.message.content).length
+		},
+		/**
+		 * 解析内容
+		 */
+		async parseContent() {
+			const MARKDOWNIT = (await import("markdown-it")).default
+			const MD = MARKDOWNIT({
+				html: false,
+				breaks: true,
+				linkify: true,
+				typographer: true,
+				langPrefix: "",
+				highlight: null
+			})
+				.use(markdownItTaskLists)
+				.use(emoji)
+				.use(markdownItKatex)
+				.use(markdownItMathjax3)
+				.use(imgLazyload)
+			MD.renderer.rules.fence = (tokens, idx) => {
+				const TOKEN = tokens[idx]
+				const CODE = TOKEN.content
+				const LANG = TOKEN.info.trim().toLowerCase()
+				const TYPE_MAP = {
+					mermaid: "mermaid",
+					flow: "flowchart",
+					flowchart: "flowchart",
+					plantuml: "plantuml",
+				}
+				const SAFE_LANG = TYPE_MAP[LANG] || "code"
+				return `<div data-lang="${SAFE_LANG}" data-language="${LANG || "plaintext"}" data-code="${encodeURIComponent(CODE)}"></div>`
+			}
+			const RAW_HTML = MD.render(this.message.message.content)
+			const CONTAINER = document.createElement("div")
+			CONTAINER.innerHTML = RAW_HTML
+			const BLOCKS = []
+			for (const NODE of Array.from(CONTAINER.childNodes)) {
+				const LANG = NODE.dataset?.lang
+				if (NODE.nodeType === 1 && LANG === "code") {
+					BLOCKS.push({
+						component: "CodeBlockRenderer",
+						props: {
+							code: decodeURIComponent(NODE.dataset.code),
+							language: NODE.dataset.language || "plaintext"
+						}
+					})
+				} else if (NODE.nodeType === 1 && LANG === "mermaid") {
+					BLOCKS.push({
+						component: "MermaidRenderer",
+						props: {
+							code: decodeURIComponent(NODE.dataset.code)
+						}
+					})
+				} else if (NODE.nodeType === 1 && (LANG === "flow" || LANG === "flowchart")) {
+					BLOCKS.push({
+						component: "FlowchartRenderer",
+						props: {
+							code: decodeURIComponent(NODE.dataset.code)
+						}
+					})
+				} else if (NODE.nodeType === 1 && LANG === "plantuml") {
+					BLOCKS.push({
+						component: "PlantUMLRenderer",
+						props: {
+							code: decodeURIComponent(NODE.dataset.code)
+						}
+					})
+				} else if (NODE.nodeType === 1) {
+					BLOCKS.push({
+						component: "MarkdownBlockRenderer",
+						props: {
+							html: NODE.outerHTML
+						}
+					})
+				} else if (NODE.nodeType === 3 && NODE.textContent.trim()) {
+					BLOCKS.push({
+						component: "MarkdownBlockRenderer",
+						props: {
+							html: NODE.textContent
+						}
+					})
+				}
+			}
+			this.parsedBlocks = BLOCKS
 		},
 		/**
 		 * 右键点击
@@ -156,7 +273,12 @@ export default {
 		:class="['user-message-card', currentMessageId === message.id ? 'current' : '', chatTheme]"
 		@contextmenu.prevent="onRightClick($event, message)">
 		<div class="message-content">
-			<div v-if="!editingContent.show" v-text="message.message.content"></div>
+			<component
+				v-for="(block, index) in parsedBlocks"
+				:key="index"
+				v-if="!editingContent.show"
+				:is="block.component"
+				v-bind="block.props"/>
 			<textarea
 				v-else
 				spellcheck="false"

@@ -436,6 +436,13 @@ export default {
 									<Button class="but" @click="remove(element.id)">
 										<SVGIcon name="#icon-close"/>
 									</Button>
+									<!--TODO 分享-->
+<!--									<label>-->
+<!--										<input type="checkbox"-->
+<!--											   :checked="isAllSelected"-->
+<!--											   @change="toggleAllSelection">-->
+<!--										<span class="custom-checkbox"></span>-->
+<!--									</label>-->
 								</div>
 							</template>
 						</draggable>
@@ -595,7 +602,7 @@ export default {
 .chat-record-item {
 	margin-bottom: 10px;
 	display: grid;
-	grid-template-columns: auto auto 100px auto 1fr auto;
+	grid-template-columns: auto auto 100px auto 1fr auto auto;
 	align-items: center;
 	gap: 5px;
 
@@ -649,6 +656,39 @@ export default {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	input[type="checkbox"] {
+		display: none;
+
+		&:checked + .custom-checkbox::after {
+			opacity: 1;
+		}
+	}
+
+	.custom-checkbox {
+		display: inline-block;
+		width: 20px;
+		height: 20px;
+		box-sizing: border-box;
+		vertical-align: middle;
+		border: 2px solid var(--border-color);
+		border-radius: 4px;
+		position: relative;
+		cursor: pointer;
+
+		&::after {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 10px;
+			height: 10px;
+			background-color: var(--background-color-anti);
+			border-radius: 2px;
+			opacity: 0;
+		}
 	}
 }
 

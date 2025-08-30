@@ -24,7 +24,7 @@ export default defineComponent({
 			// 模型
 			modelSelected: null,
 			// 输入框
-			ChatInput: "",
+			chatInput: "",
 			// 联网搜索状态
 			enableWebSearch: false,
 			// 停止
@@ -36,6 +36,9 @@ export default defineComponent({
 		"route.path"() {
 			this.focusInput()
 		},
+		chatInput() {
+			EventBus.emit("[update] inputChange", this.chatInput)
+		}
 	},
 	beforeDestroy() {
 		this.cancelAllRequests()
@@ -146,10 +149,10 @@ export default defineComponent({
 		 */
 		async send() {
 			// 检查输入框是否为空
-			if (this.ChatInput.trim() === "") return
+			if (this.chatInput.trim() === "") return
 			this.stopStatus = true
-			const CONTENT = this.ChatInput
-			this.ChatInput = ""
+			const CONTENT = this.chatInput
+			this.chatInput = ""
 			// 更新输入框高度
 			await this.$nextTick(() => {
 				this.adjustTextareaHeight()
@@ -171,7 +174,7 @@ export default defineComponent({
 					model: this.modelSelected.title,
 				})
 				if (RESPONSE.error) {
-					this.ChatInput = CONTENT
+					this.chatInput = CONTENT
 					await this.$nextTick(() => {
 						this.adjustTextareaHeight()
 					})
@@ -180,7 +183,7 @@ export default defineComponent({
 					EventBus.emit("[stream] streamComplete", {chatKey: CHAT_KEY})
 				}
 			} catch (error) {
-				this.ChatInput = CONTENT
+				this.chatInput = CONTENT
 				await this.$nextTick(() => {
 					this.adjustTextareaHeight()
 				})
@@ -238,7 +241,7 @@ export default defineComponent({
 				})
 				return NEW_CHAT_KEY
 			} catch (error) {
-				this.ChatInput = content
+				this.chatInput = content
 				await this.$nextTick(() => {
 					this.adjustTextareaHeight()
 				})
@@ -281,7 +284,7 @@ export default defineComponent({
 			event.preventDefault()
 			const textarea = event.target
 			const cursorPos = textarea.selectionStart
-			const currentValue = this.ChatInput
+			const currentValue = this.chatInput
 
 			// 获取当前行的缩进
 			const lineStart = currentValue.lastIndexOf("\n", cursorPos - 1) + 1
@@ -289,7 +292,7 @@ export default defineComponent({
 			const indent = currentLine.match(/^\s*/)[0]
 
 			// 插入换行符和缩进
-			this.ChatInput = currentValue.substring(0, cursorPos) + "\n" + indent + currentValue.substring(cursorPos)
+			this.chatInput = currentValue.substring(0, cursorPos) + "\n" + indent + currentValue.substring(cursorPos)
 
 			this.$nextTick(() => {
 				this.adjustTextareaHeight()
@@ -366,7 +369,7 @@ export default defineComponent({
 				:placeholder="t('components.AIInput.inputTip')"
 				ref="textareaRef"
 				spellcheck="false"
-				v-model="ChatInput"
+				v-model="chatInput"
 				@keydown.enter.exact.prevent="send"
 				@keydown.ctrl.enter.exact="handleNewLine"
 				@keydown.shift.enter.exact="handleNewLine"></textarea>

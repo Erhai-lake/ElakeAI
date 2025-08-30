@@ -211,6 +211,12 @@
 				"placeholder": "System prompt",
 				"save": "Save",
 				"reset": "Reset"
+			},
+			"PreviewBubbles": {
+				"toast": {
+					"getPreviewBubblesError": "Failed to get preview bubbles",
+					"applicationPreviewBubblesError": "Failed to apply preview bubbles"
+				}
 			}
 		},
 		"Role": {
@@ -360,6 +366,7 @@
 		},
 		"ChatView": {
 			"toast": {
+				"getPreviewBubblesError": "Failed to get preview bubbles setting",
 				"chatBatchSizeError": "Chat batch size setting error",
 				"noChatKey": "Chat does not exist",
 				"getChatLogError": "Failed to get chat log",
@@ -437,6 +444,7 @@
 			"ChatsView": {
 				"defaultChat": "Default chat",
 				"chatBatchSize": "Single batch quantity when loading chat record",
+				"previewBubbles": "Preview Bubbles",
 				"systemPrompt": "System Prompt"
 			},
 			"ImportView": {

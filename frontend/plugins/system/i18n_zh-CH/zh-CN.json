@@ -211,6 +211,12 @@
 				"placeholder": "请输入系统提示词",
 				"save": "保存",
 				"reset": "重置"
+			},
+			"PreviewBubbles": {
+				"toast": {
+					"getPreviewBubblesError": "获取预览气泡失败",
+					"applicationPreviewBubblesError": "应用预览气泡失败"
+				}
 			}
 		},
 		"Role": {
@@ -360,6 +366,7 @@
 		},
 		"ChatView": {
 			"toast": {
+				"getPreviewBubblesError": "获取预览气泡设置失败",
 				"chatBatchSizeError": "聊天批大小设置错误",
 				"noChatKey": "聊天不存在",
 				"getChatLogError": "获取聊天记录失败",
@@ -437,6 +444,7 @@
 			"ChatsView": {
 				"defaultChat": "默认对话",
 				"chatBatchSize": "加载聊天记录时的单批数量",
+				"previewBubbles": "预览气泡",
 				"systemPrompt": "系统提示词"
 			},
 			"ImportView": {

@@ -37,7 +37,9 @@ export default {
 				data: [],
 			},
 			showInputBox: true,
-			showSetup: false
+			showSetup: false,
+			chatInput: null,
+			previewBubbles: true
 		}
 	},
 	watch: {
@@ -55,6 +57,7 @@ export default {
 		EventBus.off("[function] removeMessage", this.removeMessage)
 		EventBus.off("[function] editMessage", this.editMessage)
 		EventBus.off("[function] showSetup", this.setup)
+		EventBus.off("[update] inputChange", this.inputChange)
 	},
 	async created() {
 		EventBus.on("[function] initChatView", this.initChatView)
@@ -64,8 +67,16 @@ export default {
 		EventBus.on("[function] removeMessage", this.removeMessage)
 		EventBus.on("[function] editMessage", this.editMessage)
 		EventBus.on("[function] showSetup", this.setup)
+		EventBus.on("[update] inputChange", this.inputChange)
 		await this.roleToComponent()
 		await this.initChatView()
+		try {
+			const PREVIEW_BUBBLES_DATA = await this.$DB.configs.get("previewBubbles")
+			this.previewBubbles = PREVIEW_BUBBLES_DATA ? PREVIEW_BUBBLES_DATA.value : true
+		} catch (error) {
+			this.$log.error(`[${this.name}] 预览气泡获取失败`, error)
+			toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.getPreviewBubblesError")}`)
+		}
 	},
 	methods: {
 		/**
@@ -410,6 +421,25 @@ export default {
 			}
 		},
 		/**
+		 * 输入框内容改变
+		 * @param content {string} - 输入框内容
+		 */
+		inputChange(content) {
+			if (!content || !this.previewBubbles) {
+				this.chatInput = null
+				return
+			}
+			this.chatInput = {
+				id: crypto.randomUUID(),
+				message: {
+					content: content,
+					role: "user"
+				},
+				status: "done",
+				timestamp: Date.now()
+			}
+		},
+		/**
 		 * 检查最后一条消息是否完成
 		 */
 		checkLastMessage() {
@@ -498,6 +528,10 @@ export default {
 						:message="message"
 						:currentMessageId="currentMessageId"/>
 				</div>
+				<component
+					v-if="chatInput && previewBubbles"
+					:is="messageComponentMap.user"
+					:message="chatInput"/>
 			</div>
 			<div></div>
 			<!-- 底部输入框 -->
