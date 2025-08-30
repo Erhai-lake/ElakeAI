@@ -394,7 +394,7 @@ export default {
 	<transition name="fade">
 		<div class="chat-configs" v-if="modelValue" @click="close">
 			<div class="chat-configs-content" @click.stop>
-				<h2>{{ t("views.ChatConfigs.chatSetup") }}</h2>
+				<h2>{{ t(`views.ChatConfigs.${this.type}Setup`) }}</h2>
 				<div class="chat-configs-content-container">
 					<div class="container">
 						<div class="item">

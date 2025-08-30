@@ -13,7 +13,7 @@
   * 编辑消息
   * tokens计算
   * 侧边栏对话历史管理
-  * 多模型切换(DeepSeek/ChatGPT)
+  * 多模型切换(DeepSeek/ChatGPT/Kimi)
   * 系统提示词(支持自定义)
   * 聊天独立配置
 * **API管理**

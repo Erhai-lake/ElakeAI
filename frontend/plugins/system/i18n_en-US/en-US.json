@@ -517,6 +517,7 @@
 				"saveMaskError": "Failed to save mask"
 			},
 			"chatSetup": "Current Chat Config",
+			"maskSetup": "Current Mask Config",
 			"chatTitle": "Chat Title",
 			"temperature": "Temperature",
 			"top_p": "Top P",

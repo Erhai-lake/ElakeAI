@@ -517,6 +517,7 @@
 				"saveMaskError": "保存面具失败"
 			},
 			"chatSetup": "当前聊天配置",
+			"maskSetup": "当前面具配置",
 			"chatTitle": "聊天标题",
 			"temperature": "温度",
 			"top_p": "核采样",
