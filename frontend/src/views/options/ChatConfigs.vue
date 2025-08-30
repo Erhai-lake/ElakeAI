@@ -10,11 +10,12 @@ import FoldingPanel from "@/components/FoldingPanel.vue"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
 import InputText from "@/components/input/InputText.vue"
 import draggable from "vuedraggable"
+import ChatTitle from "@/components/chat/ChatTitle.vue"
 
 export default {
 	name: "ChatConfigs",
 	inject: ["$DB", "$log"],
-	components: {InputText, FoldingPanel, SVGIcon, Selector, InputNumber, Button, draggable},
+	components: {ChatTitle, InputText, FoldingPanel, SVGIcon, Selector, InputNumber, Button, draggable},
 	props: {
 		chatKey: {
 			type: String,
@@ -345,7 +346,7 @@ export default {
 						data: JSON.parse(JSON.stringify(this.chatData)),
 						configs: JSON.parse(JSON.stringify(this.configs))
 					})
-					EventBus.emit("[function] initChatView")
+					EventBus.emit("[update] initChatView")
 					EventBus.emit("[update] chatListUpdate")
 				} else if (this.type === "mask") {
 					await this.$DB.masks.update(this.chatKey, {
@@ -397,9 +398,9 @@ export default {
 				<h2>{{ t(`views.ChatConfigs.${this.type}Setup`) }}</h2>
 				<div class="chat-configs-content-container">
 					<div class="container">
-						<div class="item">
+						<div class="item" style="grid-template-columns: 1fr 40%">
 							<p>{{ t("views.ChatConfigs.chatTitle") }}</p>
-							<InputText v-model="chatTitle"/>
+							<ChatTitle :chatTitle="chatTitle" :chatKey="chatKey"/>
 						</div>
 					</div>
 					<div class="container">

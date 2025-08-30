@@ -4,7 +4,7 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
-    name: "TopTitle",
+    name: "ChatTitle",
     inject: ["$DB", "$log"],
     props: {
         chatTitle: {
@@ -18,7 +18,7 @@ export default {
     },
     data() {
         return {
-            name: "TopTitle",
+            name: "ChatTitle",
             title: this.chatTitle || this.t("components.AIInput.newChat"),
             editingTitle: {
                 show: false,
@@ -51,7 +51,6 @@ export default {
                 const INPUT = this.$el.querySelector(".top-title input")
                 if (INPUT) {
 					INPUT.focus()
-					INPUT.select()
                 }
             })
         },
@@ -74,7 +73,8 @@ export default {
                 this.title = NEW_TITLE
                 await this.$DB.chats.update(this.chatKey, {title: NEW_TITLE})
                 toastRegistry.success(this.t("views.ChatView.toast.titleUpdated"))
-                EventBus.emit("[update] chatListUpdate")
+				EventBus.emit("[update] chatListUpdate")
+				EventBus.emit("[update] chatTitle", NEW_TITLE)
             } catch (error) {
                 this.$log.error(`[${this.name}] 标题更新失败`, error)
                 toastRegistry.error(`[${this.name}] ${this.t("views.ChatView.toast.titleUpdateError")}`)
@@ -120,21 +120,15 @@ export default {
 
 <style scoped lang="less">
 .top-title {
-    position: relative;
-    height: 65px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 0 0 20px 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 6px 15px 0 var(--box-shadow-color);
+	width: 100%;
+    height: 39px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    z-index: 2;
+    justify-content: end;
 
     p {
-        position: absolute;
-        max-width: 90%;
+		font-size: 18px;
+		font-weight: bold;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -142,11 +136,11 @@ export default {
     }
 
     .title-input {
-        max-width: 500px;
         padding: 8px 12px;
+		width: 100%;
         border: 1px solid var(--border-color);
         border-radius: 4px;
-        background: var(--background-color);
+        background-color: var(--background-color);
         color: var(--text-color);
         font-size: 18px;
         font-weight: bold;

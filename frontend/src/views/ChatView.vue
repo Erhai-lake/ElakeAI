@@ -49,7 +49,8 @@ export default {
 		}
 	},
 	beforeUnmount() {
-		EventBus.off("[function] initChatView", this.initChatView)
+		EventBus.off("[update] initChatView", this.initChatView)
+		EventBus.off("[update] chatTitle", this.chatTitle)
 		EventBus.off("[stream] userMessage", this.userMessage)
 		EventBus.off("[stream] streamStream", this.streamStream)
 		EventBus.off("[stream] streamComplete", this.streamComplete)
@@ -59,7 +60,8 @@ export default {
 		EventBus.off("[update] inputChange", this.inputChange)
 	},
 	async created() {
-		EventBus.on("[function] initChatView", this.initChatView)
+		EventBus.on("[update] initChatView", this.initChatView)
+		EventBus.on("[update] chatTitle", this.chatTitle)
 		EventBus.on("[stream] userMessage", this.userMessage)
 		EventBus.on("[stream] streamStream", this.streamStream)
 		EventBus.on("[stream] streamComplete", this.streamComplete)
@@ -293,6 +295,13 @@ export default {
 					this.isLoading = false
 				}
 			}
+		},
+		/**
+		 * 聊天标题更新
+		 * @param title {string} - 聊天标题
+		 */
+		chatTitle(title) {
+			this.data.title = title
 		},
 		/**
 		 * 等待 message-list 渲染稳定（高度不再变化）
