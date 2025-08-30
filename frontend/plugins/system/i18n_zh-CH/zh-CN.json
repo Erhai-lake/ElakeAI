@@ -417,9 +417,14 @@
 				"backgroundImage": "背景图片"
 			},
 			"CustomThemeView": {
+				"toast": {
+					"uploadError": "上传失败"
+				},
 				"customTheme": "自定义主题",
 				"template": "模板",
 				"reset": "重置",
+				"export": "导出",
+				"import": "导入",
 				"themeColor": "主题色",
 				"scrollbarTrackColor": "滚动条轨道颜色",
 				"scrollbarThumbColor": "滚动条滑块颜色",

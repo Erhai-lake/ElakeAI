@@ -6,6 +6,7 @@ import "vue3-colorpicker/style.css"
 import Button from "@/components/input/Button.vue"
 import Selector from "@/components/input/Selector.vue"
 import {ThemeRegistry} from "@/services/plugin/api/ThemeClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 
 export default {
 	name: "CustomThemeView",
@@ -29,7 +30,7 @@ export default {
 	created() {
 		// 初始化主题列表
 		this.loadTheme()
-		this.reset()
+		this.resetTheme()
 		this.initCustomTheme()
 	},
 	methods: {
@@ -67,9 +68,47 @@ export default {
 		/**
 		 * 重置自定义主题
 		 */
-		reset() {
+		resetTheme() {
 			const THEMES = ThemeRegistry.getTheme(this.selectedTheme.code)
 			this.theme = JSON.parse(JSON.stringify(THEMES.info.theme))
+		},
+		/**
+		 * 导出
+		 */
+		exportTheme() {
+			const JSON_STRING = JSON.stringify(this.theme, null, 2)
+			const BLOB = new Blob([JSON_STRING], {type: "application/json"})
+			const DOWNLOAD_URL = URL.createObjectURL(BLOB)
+			const DOWNLOAD_A = document.createElement("a")
+			DOWNLOAD_A.href = DOWNLOAD_URL
+			DOWNLOAD_A.download = "custom-theme.json"
+			DOWNLOAD_A.click()
+			DOWNLOAD_A.remove()
+			URL.revokeObjectURL(DOWNLOAD_URL)
+		},
+		/**
+		 * 导入
+		 */
+		async importTheme() {
+			this.$refs.fileInput.click()
+		},
+		/**
+		 * 处理文件选择
+		 */
+		handleFileChange(event) {
+			const FILE = event.target.files[0]
+			if (!FILE) return
+			const READER = new FileReader()
+			READER.onload = (readerEvent) => {
+				this.theme = JSON.parse(readerEvent.target.result)
+			}
+			READER.onerror = (readerEvent) => {
+				this.$log.error(`[${this.name}] 自定义主题上传失败`, readerEvent)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.CustomThemeView.toast.uploadError")}`)
+			}
+			READER.readAsText(FILE)
+			event.target.value = ""
+			this.applyCustomTheme()
 		},
 		/**
 		 * 初始化自定义主题
@@ -123,7 +162,10 @@ export default {
 						uniqueKey="code"
 						:num="4"
 						@update:selectorSelected="updateSelectedTheme"/>
-					<Button @click="reset">{{ t("views.OptionsView.CustomThemeView.reset") }}</Button>
+					<Button @click="resetTheme">{{ t("views.OptionsView.CustomThemeView.reset") }}</Button>
+					<Button @click="exportTheme">{{ t("views.OptionsView.CustomThemeView.export") }}</Button>
+					<input type="file" ref="fileInput" style="display: none;" accept=".json" @change="handleFileChange">
+					<Button @click="importTheme">{{ t("views.OptionsView.CustomThemeView.import") }}</Button>
 				</div>
 			</div>
 		</div>
@@ -608,7 +650,7 @@ export default {
 
 	.template {
 		display: grid;
-		grid-template-columns: 200px auto;
+		grid-template-columns: 200px auto auto auto;
 		gap: 10px;
 	}
 }

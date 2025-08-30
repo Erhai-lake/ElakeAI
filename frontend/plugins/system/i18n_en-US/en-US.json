@@ -417,9 +417,14 @@
 				"backgroundImage": "Background Image"
 			},
 			"CustomThemeView": {
+				"toast": {
+					"uploadError": "Upload failed"
+				},
 				"customTheme": "Custom Theme",
 				"template": "Template",
 				"reset": "Reset",
+				"export": "Export",
+				"import": "Import",
 				"themeColor": "Theme Color",
 				"scrollbarTrackColor": "Scrollbar Track Color",
 				"scrollbarThumbColor": "Scrollbar Thumb Color",
