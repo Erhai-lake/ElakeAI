@@ -17,11 +17,14 @@ import InputText from "@/components/input/InputText.vue"
 import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
 import ChatBatchSize from "@/components/options/ChatBatchSize.vue"
 import BackgroundImage from "@/components/options/BackgroundImage.vue"
+import LogoImage from "@/components/options/LogoImage.vue";
+import LeftMenuTitle from "@/components/options/LeftMenuTitle.vue";
 
 export default {
 	name: "DevTools",
 	inject: ["$DB", "$log"],
 	components: {
+		LeftMenuTitle, LogoImage,
 		BackgroundImage,
 		ChatBatchSize,
 		ChatThemesSelect,
@@ -35,6 +38,7 @@ export default {
 			activeTab: "router",
 			allRoutes: [],
 			chats: [],
+			masks: [],
 			configs: [],
 			apiKeys: [],
 			eventBus: []
@@ -86,6 +90,7 @@ export default {
 		 */
 		async getDBData() {
 			this.chats = await this.getDBAll("chats")
+			this.masks = await this.getDBAll("masks")
 			this.configs = await this.getDBAll("configs")
 			this.apiKeys = await this.getDBAll("apiKeys")
 		},
@@ -317,30 +322,42 @@ export default {
 		</TabsTab>
 		<TabsTab name="options">
 			<template #label>{{ t("components.DevTools.options") }}</template>
-			<div class="item">
-				{{ t("views.OptionsView.PersonalizationView.theme") }}
-				<ThemeSelect/>
+			<div class="container">
+				<div class="item">
+					{{ t("views.OptionsView.PersonalizationView.theme") }}
+					<ThemeSelect/>
+				</div>
+				<div class="item">
+					{{ t("views.OptionsView.PersonalizationView.language") }}
+					<LanguageSelect/>
+				</div>
+				<div class="item">
+					{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
+					<ChatThemesSelect/>
+				</div>
+				<div class="item">
+					{{ t("views.OptionsView.PersonalizationView.leftMenuTitle") }}
+					<LeftMenuTitle/>
+				</div>
+				<div class="item">
+					{{ t("views.OptionsView.PersonalizationView.logoImage") }}
+					<LogoImage/>
+				</div>
+				<div class="item">
+					{{ t("views.OptionsView.PersonalizationView.backgroundImage") }}
+					<BackgroundImage/>
+				</div>
 			</div>
-			<div class="item">
-				{{ t("views.OptionsView.PersonalizationView.language") }}
-				<LanguageSelect/>
-			</div>
-			<div class="item">
-				{{ t("views.OptionsView.PersonalizationView.chatThemes") }}
-				<ChatThemesSelect/>
-			</div>
-			<div class="item">
-				{{ t("views.OptionsView.PersonalizationView.backgroundImage") }}
-				<BackgroundImage/>
-			</div>
-			<ChatAIKey/>
-			<div class="item">
-				{{ t("views.OptionsView.ChatsView.defaultChat") }}
-				<DefaultChatSettings/>
-			</div>
-			<div class="item">
-				{{ t("views.OptionsView.ChatsView.chatBatchSize") }}
-				<ChatBatchSize/>
+			<div class="container">
+				<ChatAIKey/>
+				<div class="item">
+					{{ t("views.OptionsView.ChatsView.defaultChat") }}
+					<DefaultChatSettings/>
+				</div>
+				<div class="item">
+					{{ t("views.OptionsView.ChatsView.chatBatchSize") }}
+					<ChatBatchSize/>
+				</div>
 			</div>
 		</TabsTab>
 		<TabsTab name="database">
@@ -363,6 +380,25 @@ export default {
 								:value="JSON.stringify(item, null)"
 								@blur="updateByKey('chats', item.key, JSON.parse($event.target.value))"/>
 							<Button class="database-btn" @click="deleteByKey('chats', item.key, 'key')">
+								{{ t("components.DevTools.delete") }}
+							</Button>
+						</div>
+					</div>
+				</template>
+			</FoldingPanel>
+			<FoldingPanel>
+				<template #Title>masks</template>
+				<template #Content>
+					<Button @click="clearDB('masks')">{{ t("components.DevTools.clear") }}</Button>
+					<div class="database-list">
+						<div class="database-item" v-for="item in masks" :key="item.key">
+							<span class="database-title">{{ item.title }}</span>
+							<span class="database-key">{{ item.key }}</span>
+							<InputText
+								class="database-input"
+								:value="JSON.stringify(item, null)"
+								@blur="updateByKey('masks', item.key, JSON.parse($event.target.value))"/>
+							<Button class="database-btn" @click="deleteByKey('masks', item.key, 'key')">
 								{{ t("components.DevTools.delete") }}
 							</Button>
 						</div>
@@ -420,6 +456,14 @@ export default {
 </template>
 
 <style scoped lang="less">
+.container {
+	padding: 20px;
+	margin-bottom: 20px;
+	border-radius: 10px;
+	background-color: rgba(127, 127, 127, 0.5);
+	border: 1px solid var(--border-color);
+}
+
 .item {
 	padding: 10px;
 	display: flex;

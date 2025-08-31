@@ -5,11 +5,12 @@ import {nextTick} from "vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import LogLevel from "@/components/options/LogLevel.vue"
 
 export default {
 	name: "Log",
 	inject: ["$DB", "$log"],
-	components: {Selector, Button},
+	components: {LogLevel, Selector, Button},
 	data() {
 		return {
 			name: "Log",
@@ -179,8 +180,10 @@ export default {
 			<Button @click="keepScrollToBottom">
 				{{ t("components.Options.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
 			</Button>
+			<LogLevel/>
 			<span class="log-count">
-				{{ t("components.Options.Log.count", {count: logs.length, level: levelSelector}) }}</span>
+				{{ t("components.Options.Log.count", {count: logs.length, level: levelSelector}) }}
+			</span>
 		</div>
 		<div ref="logList" class="log-list">
 			<div v-for="(log, index) in logs" :key="index" :class="['log-item', log.level]">
