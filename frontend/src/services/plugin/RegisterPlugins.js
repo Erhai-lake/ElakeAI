@@ -1,6 +1,6 @@
 import {getEnabledPlugins} from "@/services/plugin/PluginManager"
 import Logger from "@/services/Logger"
-import {registerPluginInstance, unloadPlugins} from "@/services/plugin/UnloadPlugins"
+import {registerPluginInstance, unloadALlPlugins} from "@/services/plugin/UnloadALlPlugins"
 import {PlatformClass} from "@/services/plugin/api/PlatformClass"
 import {PublicClass} from "@/services/plugin/api/PublicClass"
 import axios from "axios"
@@ -50,13 +50,42 @@ const onLoad = async (plugin, mod, ctx) => {
 }
 
 /**
- * 初始化已启用的插件
+ * 上下文
+ */
+const CTX = (plugin, appContext) => {
+	return {
+		// 插件信息
+		plugin: plugin,
+		// 应用上下文
+		app: appContext,
+		api: {
+			// 公共类
+			PublicClass: PublicClass,
+			// i18n类
+			I18nClass: I18nClass,
+			// 数据库实例
+			dexie: dexie,
+			// axios实例
+			axios: axios,
+			// 平台注册类
+			PlatformRegistrarClass: PlatformClass,
+			// 主题注册类
+			ThemeClass: ThemeClass,
+			// 通知
+			ToastClass: toastRegistry,
+			// 日志
+			logger: Logger
+		}
+	}
+}
+
+/**
+ * 初始化所有插件
  * @param appContext - 应用上下文
  */
-export async function initEnabledPlugins(appContext) {
-	await unloadPlugins()
+export async function initAllPlugins(appContext) {
+	await unloadALlPlugins()
 	const PLUGINS = await getEnabledPlugins()
-
 	for (let i = 0; i < PLUGINS.length; i++) {
 		const PLUGIN = PLUGINS[i]
 		try {
@@ -70,36 +99,11 @@ export async function initEnabledPlugins(appContext) {
 				Logger.warn(`[registerPlugins] 插件模块为空: ${PLUGIN.name}`)
 				continue
 			}
-			const CTX = {
-				// 插件信息
-				plugin: PLUGIN,
-				// 应用上下文
-				app: appContext,
-				api: {
-					// 公共类
-					PublicClass: PublicClass,
-					// i18n类
-					I18nClass: I18nClass,
-					// 数据库实例
-					dexie: dexie,
-					// axios实例
-					axios: axios,
-					// 平台注册类
-					PlatformRegistrarClass: PlatformClass,
-					// 主题注册类
-					ThemeClass: ThemeClass,
-					// 通知
-					ToastClass: toastRegistry,
-					// 日志
-					logger: Logger
-				}
-			}
-
+			const CONTEXT = CTX(PLUGIN, appContext)
 			// 生命周期
-			await onInstall(PLUGIN, mod, CTX)
-			await onRegister(PLUGIN, mod, CTX)
-			await onLoad(PLUGIN, mod, CTX)
-
+			await onInstall(PLUGIN, mod, CONTEXT)
+			await onRegister(PLUGIN, mod, CONTEXT)
+			await onLoad(PLUGIN, mod, CONTEXT)
 			// 存储插件实例, 供卸载用
 			registerPluginInstance(PLUGIN.uuid, mod)
 		} catch (error) {
@@ -107,4 +111,35 @@ export async function initEnabledPlugins(appContext) {
 		}
 	}
 	EventBus.emit("[update] pluginReady")
+}
+
+/**
+ * 初始化单个插件
+ * @param uuid 插件UUID
+ */
+export async function initPlugin(uuid) {
+	const PLUGINS = await getEnabledPlugins()
+	const PLUGIN = PLUGINS.find(p => p.uuid === uuid)
+	if (!PLUGIN) return
+	try {
+		let mod = null
+		if(window.go){
+			mod = PLUGIN.entry
+		} else {
+			mod = PLUGIN.entry.default
+		}
+		if (!mod) {
+			Logger.warn(`[registerPlugins] 插件模块为空: ${PLUGIN.name}`)
+			return
+		}
+		const CONTEXT = CTX(PLUGIN)
+		// 生命周期
+		await onInstall(PLUGIN, mod, CONTEXT)
+		await onRegister(PLUGIN, mod, CONTEXT)
+		await onLoad(PLUGIN, mod, CONTEXT)
+		// 存储插件实例, 供卸载用
+		registerPluginInstance(PLUGIN.uuid, mod)
+	} catch (error) {
+		Logger.warn(`[registerPlugins] 插件注册失败: ${PLUGIN.name}`, error)
+	}
 }

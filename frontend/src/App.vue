@@ -7,8 +7,8 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import Dexie from "@/services/Dexie"
 import Logger, {setupLogCleanup} from "@/services/Logger"
-import {unloadPlugins} from "@/services/plugin/UnloadPlugins"
-import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
+import {unloadALlPlugins} from "@/services/plugin/UnloadALlPlugins"
+import {initAllPlugins} from "@/services/plugin/RegisterPlugins"
 import Loading from "@/components/Loading.vue"
 import CustomTheme from "@/services/CustomTheme"
 import {ThemeRegistry} from "@/services/plugin/api/ThemeClass"
@@ -249,8 +249,8 @@ export default {
 		async loadPluginSystem() {
 			try {
 				const APP = this.$.appContext.app
-				await unloadPlugins()
-				await initEnabledPlugins(APP)
+				await unloadALlPlugins()
+				await initAllPlugins(APP)
 				Logger.info("[App.vue] 插件加载完成")
 				this.loading.status = false
 			} catch (error) {

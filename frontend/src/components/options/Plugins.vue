@@ -1,9 +1,10 @@
 <script>
 import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/PluginManager"
-import {initEnabledPlugins} from "@/services/plugin/RegisterPlugins"
+import {initPlugin} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import {unloadPlugin} from "@/services/plugin/UnloadALlPlugins"
 
 export default {
 	name: "Plugins",
@@ -163,8 +164,12 @@ export default {
 			try {
 				const NEW_STATUS = !plugin.enabled
 				await updatePluginEnabled(plugin.uuid, NEW_STATUS)
+				if (NEW_STATUS) {
+					await initPlugin(plugin.uuid, this.$root)
+				} else {
+					await unloadPlugin(plugin.uuid)
+				}
 				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.Plugins.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
-				await initEnabledPlugins()
 				await this.loadPlugInList(this.system.activeTab, "system")
 				await this.loadPlugInList(this.thirdParty.activeTab, "thirdParty")
 			} catch (error) {
