@@ -20,14 +20,8 @@ export default {
 			paused: false
 		}
 	},
-	async mounted() {
-		this.isGame = true
-		await this.$nextTick(() => {
-			const scoreEl = this.$refs.score
-			const stageEl = this.$refs.stage
-			this.game = new SnakeGame(scoreEl, stageEl)
-			this.game.start()
-		})
+	mounted() {
+		this.openGame()
 	},
 	methods: {
 		/**
@@ -92,25 +86,41 @@ export default {
 				this.isShaking = false
 				this.isColorful = false
 				this.isCrazy = false
-				this.isGame = true
-				await this.$nextTick(() => {
-					const scoreEl = this.$refs.score
-					const stageEl = this.$refs.stage
-					this.game = new SnakeGame(scoreEl, stageEl)
-					this.game.start()
-				})
+				this.openGame()
 			}
 		},
+		/**
+		 * 震动
+		 */
 		triggerShake() {
 			this.isShaking = true
 			setTimeout(() => {
 				this.isShaking = false
 			}, 600)
 		},
+		/**
+		 * 打开游戏
+		 */
+		openGame() {
+			this.isGame = true
+			this.$nextTick(() => {
+				const ELEMENT_SCORE = this.$refs.score
+				const ELEMENT_STAGE = this.$refs.stage
+				const ELEMENT_HIGH_SCORE = this.$refs.highScore
+				this.game = new SnakeGame(ELEMENT_SCORE, ELEMENT_STAGE, ELEMENT_HIGH_SCORE)
+				this.game.start()
+			})
+		},
+		/**
+		 * 关闭游戏
+		 */
 		closeGame() {
 			this.isGame = false
 			this.game.destroy()
 		},
+		/**
+		 * 暂停游戏
+		 */
 		pauseGame() {
 			if (!this.game) return
 			this.paused = !this.paused
@@ -130,7 +140,11 @@ export default {
 	<div class="game-container" v-if="isGame">
 		<div class="game" id="game">
 			<div class="head">
-				<div class="score" ref="score">0</div>
+				<p>
+					<span class="score" ref="score">0</span>
+					/
+					<span class="score" ref="highScore">0</span>
+				</p>
 				<div class="controls">
 					<div class="pause" @click="pauseGame" ref="pauseBtn"></div>
 					<div class="close" @click="closeGame"></div>
