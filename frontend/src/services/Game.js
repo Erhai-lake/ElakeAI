@@ -12,7 +12,9 @@ export class SnakeGame {
 		this.tileSize = 20
 		this.rows = 20
 		this.cols = 20
-		this.speed = 150
+		this.normalSpeed = 150
+		this.boostSpeed = 75
+		this.speed = this.normalSpeed
 		this.foodCountMax = 5
 		this.foodSpawnInterval = 2000
 
@@ -25,7 +27,9 @@ export class SnakeGame {
 		this.foodTimer = null
 		this.animationFrame = null
 		this.keyHandler = this.handleKey.bind(this)
+		this.keyUpHandler = this.handleKeyUp.bind(this)
 		this.lastFrameTime = null
+		this.isBoosting = false
 
 		// 历史最高分(静态变量)
 		if (typeof SnakeGame.highScore === "undefined") {
@@ -37,6 +41,11 @@ export class SnakeGame {
 	 * 初始化游戏
 	 */
 	start() {
+		alert("游戏介绍：\n" +
+			"1. 用方向键或WASD控制蛇移动\n" +
+			"2. 吃到食物得分\n" +
+			"3. 避免撞到自己\n" +
+			"4. 按住空格消耗1长度进行加速")
 		// 计算行列
 		const HEAD_HEIGHT = 40
 		const AVAILABLE_HEIGHT = this.stageEl.clientHeight - HEAD_HEIGHT
@@ -50,6 +59,7 @@ export class SnakeGame {
 		this.renderSnakeAndFood()
 		// 监听键盘
 		window.addEventListener("keydown", this.keyHandler)
+		window.addEventListener("keyup", this.keyUpHandler)
 		// 游戏循环
 		this.lastFrameTime = performance.now()
 		this.loop()
@@ -66,6 +76,7 @@ export class SnakeGame {
 		this.foods = [this.randomFood()]
 		this.direction = "right"
 		this.nextDirection = "right"
+		this.isBoosting = false
 		this.updateScore()
 	}
 
@@ -100,7 +111,6 @@ export class SnakeGame {
 		if (HEAD.y >= this.rows) HEAD.y = 0
 		// 撞到自己
 		if (this.snake.some(seg => seg.x === HEAD.x && seg.y === HEAD.y)) {
-			alert("游戏结束! 你的得分：" + this.score)
 			this.reset()
 			return
 		}
@@ -132,6 +142,7 @@ export class SnakeGame {
 	destroy() {
 		cancelAnimationFrame(this.animationFrame)
 		window.removeEventListener("keydown", this.keyHandler)
+		window.removeEventListener("keyup", this.keyUpHandler)
 		this.stageEl.innerHTML = ""
 		this.scoreEl.textContent = "0"
 		this.stopFoodSpawner()
@@ -175,7 +186,7 @@ export class SnakeGame {
 	}
 
 	/**
-	 * 处理键盘事件
+	 * 处理键盘事件(按下)
 	 * @param event 键盘事件
 	 */
 	handleKey(event) {
@@ -184,6 +195,25 @@ export class SnakeGame {
 		if ((KEY === 40 || KEY === 83) && this.direction !== "up") this.nextDirection = "down"
 		if ((KEY === 37 || KEY === 65) && this.direction !== "right") this.nextDirection = "left"
 		if ((KEY === 39 || KEY === 68) && this.direction !== "left") this.nextDirection = "right"
+
+		// 空格按下 → 进入加速(如果长度>1)
+		if (KEY === 32 && !this.isBoosting && this.snake.length > 1) {
+			this.isBoosting = true
+			this.speed = this.boostSpeed
+			// 按下瞬间减一节
+			this.snake.pop()
+		}
+	}
+
+	/**
+	 * 处理键盘事件(松开)
+	 * @param event 键盘事件
+	 */
+	handleKeyUp(event) {
+		if (event.keyCode === 32 && this.isBoosting) {
+			this.isBoosting = false
+			this.speed = this.normalSpeed
+		}
 	}
 
 	/**
@@ -294,5 +324,27 @@ export class SnakeGame {
 			}
 		} while (this.snake.some(seg => seg.x === pos.x && seg.y === pos.y))
 		return pos
+	}
+
+	/**
+	 * 切换加速状态
+	 */
+	toggleBoost() {
+		if (!this.isBoosting) {
+			this.isBoosting = true
+			this.speed = this.boostSpeed
+		} else {
+			this.isBoosting = false
+			this.speed = this.normalSpeed
+		}
+	}
+
+	/**
+	 * 每次空格蛇减一节
+	 */
+	trimSnake() {
+		if (this.snake.length > 1) {
+			this.snake.pop()
+		}
 	}
 }
