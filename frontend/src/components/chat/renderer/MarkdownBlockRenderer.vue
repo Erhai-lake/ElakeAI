@@ -19,13 +19,19 @@ export default {
 	// 超链接
 	a {
 		color: var(--theme-color);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
 	}
 
 	// 图片
 	img {
 		max-width: 100%;
 		height: auto;
-		border-radius: 4px;
+		border-radius: 6px;
+		box-shadow: 0 2px 8px var(--box-shadow-color);
 	}
 
 	// 列表
@@ -61,17 +67,22 @@ export default {
 	table {
 		border-collapse: collapse;
 		width: 100%;
-		margin: 1em 0;
+		margin: 1.2em 0;
+		overflow: hidden;
 
 		th, td {
-			padding: 0.5em 1em;
+			padding: 0.6em 1em;
 			border: 1px solid var(--border-color);
 		}
 
 		th {
 			background-color: rgba(175, 184, 193, 0.2);
-			font-weight: bold;
+			font-weight: 600;
 			text-align: left;
+		}
+
+		tr{
+			transition: background-color 0.3s ease-in-out;
 		}
 
 		tr:nth-child(even) {
@@ -100,9 +111,10 @@ export default {
 		color: var(--blockquote-text-color);
 		border-left: 4px solid var(--blockquote-border-color);
 		background-color: var(--blockquote-bg-color);
+		border-radius: 4px;
 
 		p {
-			margin: 12px 0;
+			margin: 0.4em 0;
 			line-height: 1.6;
 		}
 
@@ -123,11 +135,14 @@ export default {
 	p > code,
 	li > code,
 	td > code {
-		background-color: rgba(175, 184, 193, 0.2);
-		padding: 0.2em 0.4em;
-		border-radius: 3px;
-		font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
-		font-size: 85%;
+		background-color: rgba(175, 184, 193, 0.25);
+		padding: 0.25em 0.5em;
+		border-radius: 4px;
+		font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, Menlo, monospace;
+		font-size: 0.9em;
+		font-weight: 500;
+		letter-spacing: 0.2px;
+		color: var(--theme-color);
 	}
 }
 </style>

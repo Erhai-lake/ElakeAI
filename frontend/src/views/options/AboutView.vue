@@ -1,10 +1,11 @@
 <script>
 import Button from "@/components/input/Button.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import VersionButton from "@/components/options/VersionButton.vue"
 
 export default {
 	name: "AboutView",
-	components: {Button},
+	components: {VersionButton, Button},
 	methods: {
 		/**
 		 * 翻译
@@ -20,6 +21,10 @@ export default {
 </script>
 
 <template>
+	<div class="item">
+		{{ t("views.OptionsView.AboutView.version") }}
+		<VersionButton/>
+	</div>
 	<div class="item">
 		{{ t("views.OptionsView.AboutView.aboutApp") }}
 		<router-link to="/options/aboutElakeAI">

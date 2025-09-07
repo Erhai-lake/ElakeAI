@@ -518,6 +518,7 @@
 			},
 			"AboutView": {
 				"view": "View",
+				"version": "Version",
 				"aboutApp": "About ElakeAI",
 				"githubRepo": "GitHub repository",
 				"contactSupport": "Contact support",

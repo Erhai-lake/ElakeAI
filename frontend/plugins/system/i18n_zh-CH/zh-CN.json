@@ -518,6 +518,7 @@
 			},
 			"AboutView": {
 				"view": "查看",
+				"version": "版本",
 				"aboutApp": "关于 ElakeAI",
 				"githubRepo": "GitHub仓库",
 				"contactSupport": "联系支持",
