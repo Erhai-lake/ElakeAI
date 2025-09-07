@@ -3,25 +3,26 @@
  */
 export class SnakeGame {
 	constructor(scoreEl, stageEl, highScoreEl) {
+		// 游戏元素
 		this.scoreEl = scoreEl
 		this.stageEl = stageEl
 		this.highScoreEl = highScoreEl
 
+		// 游戏参数
+		this.tileSize = 20
+		this.rows = 20
+		this.cols = 20
+		this.speed = 150
+		this.foodCountMax = 5
+		this.foodSpawnInterval = 2000
 
+		// 状态
 		this.score = 0
 		this.snake = []
 		this.foods = []
 		this.direction = "right"
 		this.nextDirection = "right"
-
-		// 游戏参数
-		this.tileSize = 20
-		this.cols = 20
-		this.rows = 20
-		this.speed = 150
-		this.foodCountMax = 5
 		this.foodTimer = null
-		this.foodSpawnInterval = 2000
 		this.animationFrame = null
 		this.keyHandler = this.handleKey.bind(this)
 		this.lastFrameTime = null
@@ -36,21 +37,13 @@ export class SnakeGame {
 	 * 初始化游戏
 	 */
 	start() {
-		// 基础配置
-		this.tileSize = 20
+		// 计算行列
 		const HEAD_HEIGHT = 40
 		const AVAILABLE_HEIGHT = this.stageEl.clientHeight - HEAD_HEIGHT
 		this.rows = Math.floor(AVAILABLE_HEIGHT / this.tileSize)
 		this.cols = Math.floor(this.stageEl.clientWidth / this.tileSize)
-		this.direction = "right"
-		this.nextDirection = "right"
-		this.snake = [{x: 5, y: 5}]
-		this.foods = []
-		this.foodCountMax = 5
-		this.foodSpawnInterval = 2000
-		this.score = 0
-		// 初始化默认一个食物
-		this.foods.push(this.randomFood())
+		// 初始化状态
+		this.resetState()
 		// 清空舞台并绘制固定网格
 		this.stageEl.innerHTML = ""
 		this.renderGrid()
@@ -62,6 +55,18 @@ export class SnakeGame {
 		this.loop()
 		// 启动食物生成
 		this.startFoodSpawner()
+	}
+
+	/**
+	 * 重置状态(不清舞台)
+	 */
+	resetState() {
+		this.score = 0
+		this.snake = [{x: 5, y: 5}]
+		this.foods = [this.randomFood()]
+		this.direction = "right"
+		this.nextDirection = "right"
+		this.updateScore()
 	}
 
 	/**
@@ -83,50 +88,31 @@ export class SnakeGame {
 	update() {
 		this.direction = this.nextDirection
 		const HEAD = {...this.snake[0]}
-		switch (this.direction) {
-			case "up":
-				HEAD.y--
-				break
-			case "down":
-				HEAD.y++
-				break
-			case "left":
-				HEAD.x--
-				break
-			case "right":
-				HEAD.x++
-				break
-		}
-		// 穿墙处理
+		// 移动
+		if (this.direction === "up") HEAD.y--
+		if (this.direction === "down") HEAD.y++
+		if (this.direction === "left") HEAD.x--
+		if (this.direction === "right") HEAD.x++
+		// 穿墙
 		if (HEAD.x < 0) HEAD.x = this.cols - 1
 		if (HEAD.x >= this.cols) HEAD.x = 0
 		if (HEAD.y < 0) HEAD.y = this.rows - 1
 		if (HEAD.y >= this.rows) HEAD.y = 0
-		// 判断撞到自己
+		// 撞到自己
 		if (this.snake.some(seg => seg.x === HEAD.x && seg.y === HEAD.y)) {
 			alert("游戏结束! 你的得分：" + this.score)
 			this.reset()
 			return
 		}
 		this.snake.unshift(HEAD)
-		// 判断是否吃到食物
-		let ateFood = false
-		for (let i = 0; i < this.foods.length; i++) {
-			const f = this.foods[i]
-			if (HEAD.x === f.x && HEAD.y === f.y) {
-				this.score++
-				this.scoreEl.textContent = this.score
-				// 移除被吃掉的食物
-				this.foods.splice(i, 1)
-				ateFood = true
-				// 少于最大数量时重新启动定时器
-				if (this.foods.length < this.foodCountMax) this.startFoodSpawner()
-				break
-			}
-		}
-		this.updateScore()
-		// 如果没吃到食物, 则移除尾巴
-		if (!ateFood) {
+		// 吃到食物
+		const foodIndex = this.foods.findIndex(f => f.x === HEAD.x && f.y === HEAD.y)
+		if (foodIndex !== -1) {
+			this.score++
+			this.updateScore()
+			this.foods.splice(foodIndex, 1)
+			if (this.foods.length < this.foodCountMax) this.startFoodSpawner()
+		} else {
 			this.snake.pop()
 		}
 	}
@@ -135,11 +121,7 @@ export class SnakeGame {
 	 * 重置游戏
 	 */
 	reset() {
-		this.snake = [{ x: 5, y: 5 }]
-		this.foods = [this.randomFood()]
-		this.score = 0
-		this.scoreEl.textContent = this.score
-		this.updateScore()
+		this.resetState()
 		this.stopFoodSpawner()
 		this.startFoodSpawner()
 	}
@@ -197,32 +179,11 @@ export class SnakeGame {
 	 * @param event 键盘事件
 	 */
 	handleKey(event) {
-		switch (event.keyCode) {
-			case 38:
-				if (this.direction !== "down") this.nextDirection = "up"
-				break
-			case 87:
-				if (this.direction !== "down") this.nextDirection = "up"
-				break
-			case 40:
-				if (this.direction !== "up") this.nextDirection = "down"
-				break
-			case 83:
-				if (this.direction !== "up") this.nextDirection = "down"
-				break
-			case 37:
-				if (this.direction !== "right") this.nextDirection = "left"
-				break
-			case 65:
-				if (this.direction !== "right") this.nextDirection = "left"
-				break
-			case 39:
-				if (this.direction !== "left") this.nextDirection = "right"
-				break
-			case 68:
-				if (this.direction !== "left") this.nextDirection = "right"
-				break
-		}
+		const KEY = event.keyCode
+		if ((KEY === 38 || KEY === 87) && this.direction !== "down") this.nextDirection = "up"
+		if ((KEY === 40 || KEY === 83) && this.direction !== "up") this.nextDirection = "down"
+		if ((KEY === 37 || KEY === 65) && this.direction !== "right") this.nextDirection = "left"
+		if ((KEY === 39 || KEY === 68) && this.direction !== "left") this.nextDirection = "right"
 	}
 
 	/**
@@ -241,13 +202,12 @@ export class SnakeGame {
 				this.stageEl.appendChild(TILE)
 			}
 		}
-		// 边框
-		const ELEMENT_BORDER = document.createElement("div")
-		ELEMENT_BORDER.className = "stage-border"
-		ELEMENT_BORDER.style.width = this.cols * this.tileSize + "px"
-		ELEMENT_BORDER.style.height = this.rows * this.tileSize + "px"
-		ELEMENT_BORDER.style.top = HEAD_HEIGHT + "px"
-		this.stageEl.appendChild(ELEMENT_BORDER)
+		const BORDER = document.createElement("div")
+		BORDER.className = "stage-border"
+		BORDER.style.width = this.cols * this.tileSize + "px"
+		BORDER.style.height = this.rows * this.tileSize + "px"
+		BORDER.style.top = HEAD_HEIGHT + "px"
+		this.stageEl.appendChild(BORDER)
 	}
 
 	/**
@@ -269,7 +229,7 @@ export class SnakeGame {
 			if(index === 0) ELEMENT_SNAKE.style.boxShadow = "0 0 8px #ffffff"
 			this.stageEl.appendChild(ELEMENT_SNAKE)
 		})
-		// 绘制食物
+		// 绘制食物 + 定位点
 		this.foods.forEach(f => {
 			const ELEMENT_FOOD = document.createElement("div")
 			ELEMENT_FOOD.className = "tile food"
@@ -278,7 +238,7 @@ export class SnakeGame {
 			ELEMENT_FOOD.style.width = this.tileSize + "px"
 			ELEMENT_FOOD.style.height = this.tileSize + "px"
 			this.stageEl.appendChild(ELEMENT_FOOD)
-			// 绘制整行整列小点
+			// 绘制整行定位点
 			for(let x = 0; x < this.cols; x++){
 				const DOT_X = document.createElement("div")
 				DOT_X.className = "tile food-center-dot"
@@ -286,6 +246,7 @@ export class SnakeGame {
 				DOT_X.style.top = f.y * this.tileSize + HEAD_HEIGHT + this.tileSize / 2 - 2 + "px"
 				this.stageEl.appendChild(DOT_X)
 			}
+			// 绘制整列定位点
 			for(let y = 0; y < this.rows; y++){
 				const DOT_Y = document.createElement("div")
 				DOT_Y.className = "tile food-center-dot"
@@ -300,14 +261,11 @@ export class SnakeGame {
 	 * 启动定时生成食物
 	 */
 	startFoodSpawner() {
-		// 如果已经存在定时器，不重复启动
 		if (this.foodTimer) return
-
 		this.foodTimer = setInterval(() => {
 			if (this.foods.length < this.foodCountMax) {
 				this.foods.push(this.randomFood())
 			} else {
-				// 达到上限，暂停定时器
 				this.stopFoodSpawner()
 			}
 		}, this.foodSpawnInterval)
