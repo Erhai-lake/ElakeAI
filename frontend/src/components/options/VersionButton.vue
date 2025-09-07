@@ -294,6 +294,44 @@ export default {
 	position: relative;
 	overflow: hidden;
 
+	.game-intro {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: rgba(0, 0, 0, 0.85);
+		color: #fff;
+		padding: 20px 30px;
+		border-radius: 10px;
+		text-align: left;
+		max-width: 400px;
+		font-family: sans-serif;
+		box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+
+		button {
+			padding: 10px 30px;
+			margin: 15px auto 0 auto;
+			display: block;
+			border: 1px solid var(--border-color);
+			border-radius: 8px;
+			cursor: pointer;
+			background-color: var(--background-color);
+			color: var(--text-color);
+			font-size: 14px;
+			user-select: none;
+			transition: all 0.15s;
+			white-space: nowrap;
+
+			&:hover {
+				background-color: var(--button-hover-background-color);
+			}
+
+			&:active {
+				background-color: var(--button-active-background-color);
+			}
+		}
+	}
+
 	.tile {
 		position: absolute;
 

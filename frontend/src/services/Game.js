@@ -5,8 +5,8 @@ export class SnakeGame {
 	constructor(scoreEl, stageEl, highScoreEl) {
 		// 游戏元素
 		this.scoreEl = scoreEl
-		this.stageEl = stageEl
 		this.highScoreEl = highScoreEl
+		this.stageEl = stageEl
 
 		// 游戏参数
 		this.tileSize = 20
@@ -41,11 +41,35 @@ export class SnakeGame {
 	 * 初始化游戏
 	 */
 	start() {
-		alert("游戏介绍：\n" +
-			"1. 用方向键或WASD控制蛇移动\n" +
-			"2. 吃到食物得分\n" +
-			"3. 避免撞到自己\n" +
-			"4. 按住Shift消耗1长度进行加速")
+		// 显示自定义提示框
+		const ELEMENT_INTRO = document.createElement("div")
+		ELEMENT_INTRO.className = "game-intro"
+		ELEMENT_INTRO.innerHTML = `
+    		<p>游戏介绍: </p>
+    		<ol>
+    			<li>用方向键或WASD控制蛇移动</li>
+    			<li>吃到食物得分</li>
+    			<li>避免撞到自己</li>
+    			<li>按住Shift消耗1长度进行加速</li>
+    			<li>右上角绿色按钮是暂停, 再次点击恢复</li>
+    			<li>右上角红色按钮是退出</li>
+    			<li>食物最多生成${this.foodCountMax}个, 生成间隔${this.foodSpawnInterval / 1000}s</li>
+    		</ol>
+    		<button id="startGameBtn">开始游戏</button>
+  		`
+		// 插入到舞台元素内
+		this.stageEl.appendChild(ELEMENT_INTRO)
+		// 点击按钮后初始化游戏
+		ELEMENT_INTRO.querySelector("#startGameBtn").addEventListener("click", () => {
+			ELEMENT_INTRO.remove()
+			this.initGame()
+		})
+	}
+
+	/**
+	 * 初始化游戏
+	 */
+	initGame() {
 		// 计算行列
 		const HEAD_HEIGHT = 40
 		const AVAILABLE_HEIGHT = this.stageEl.clientHeight - HEAD_HEIGHT
@@ -257,7 +281,7 @@ export class SnakeGame {
 			ELEMENT_SNAKE.style.top = (seg.y * this.tileSize + HEAD_HEIGHT) + "px"
 			ELEMENT_SNAKE.style.width = this.tileSize + "px"
 			ELEMENT_SNAKE.style.height = this.tileSize + "px"
-			if(index === 0) ELEMENT_SNAKE.style.boxShadow = "0 0 8px #ffffff"
+			if (index === 0) ELEMENT_SNAKE.style.boxShadow = "0 0 8px #ffffff"
 			this.stageEl.appendChild(ELEMENT_SNAKE)
 		})
 		// 绘制食物 + 定位点
@@ -270,7 +294,7 @@ export class SnakeGame {
 			ELEMENT_FOOD.style.height = this.tileSize + "px"
 			this.stageEl.appendChild(ELEMENT_FOOD)
 			// 绘制整行定位点
-			for(let x = 0; x < this.cols; x++){
+			for (let x = 0; x < this.cols; x++) {
 				const DOT_X = document.createElement("div")
 				DOT_X.className = "tile food-center-dot"
 				DOT_X.style.left = x * this.tileSize + this.tileSize / 2 - 2 + "px"
@@ -278,7 +302,7 @@ export class SnakeGame {
 				this.stageEl.appendChild(DOT_X)
 			}
 			// 绘制整列定位点
-			for(let y = 0; y < this.rows; y++){
+			for (let y = 0; y < this.rows; y++) {
 				const DOT_Y = document.createElement("div")
 				DOT_Y.className = "tile food-center-dot"
 				DOT_Y.style.left = f.x * this.tileSize + this.tileSize / 2 - 2 + "px"
@@ -325,27 +349,5 @@ export class SnakeGame {
 			}
 		} while (this.snake.some(seg => seg.x === pos.x && seg.y === pos.y))
 		return pos
-	}
-
-	/**
-	 * 切换加速状态
-	 */
-	toggleBoost() {
-		if (!this.isBoosting) {
-			this.isBoosting = true
-			this.speed = this.boostSpeed
-		} else {
-			this.isBoosting = false
-			this.speed = this.normalSpeed
-		}
-	}
-
-	/**
-	 * 每次空格蛇减一节
-	 */
-	trimSnake() {
-		if (this.snake.length > 1) {
-			this.snake.pop()
-		}
 	}
 }
