@@ -53,7 +53,7 @@ export class SnakeGame {
     			<li>吃到食物得分</li>
     			<li>避免撞到自己</li>
     			<li>按住Shift消耗1长度进行加速</li>
-    			<li>右上角黄色按钮是托管, 再次点击取消托管</li>
+    			<li>右上角黄色按钮是托管, 再次点击取消托管(别依赖, 会死的)</li>
     			<li>右上角绿色按钮是暂停, 再次点击恢复</li>
     			<li>右上角红色按钮是退出</li>
     			<li>食物最多生成${this.foodCountMax}个, 生成间隔${this.foodSpawnInterval / 1000}s</li>
