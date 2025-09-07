@@ -14,6 +14,7 @@ export class SnakeGame {
 		this.cols = 20
 		this.normalSpeed = 150
 		this.boostSpeed = 75
+		this.aiSpeed = 50
 		this.speed = this.normalSpeed
 		this.foodCountMax = 5
 		this.foodSpawnInterval = 2000
@@ -30,6 +31,7 @@ export class SnakeGame {
 		this.keyUpHandler = this.handleKeyUp.bind(this)
 		this.lastFrameTime = null
 		this.isBoosting = false
+		this.isAI = false
 
 		// 历史最高分(静态变量)
 		if (typeof SnakeGame.highScore === "undefined") {
@@ -51,6 +53,7 @@ export class SnakeGame {
     			<li>吃到食物得分</li>
     			<li>避免撞到自己</li>
     			<li>按住Shift消耗1长度进行加速</li>
+    			<li>右上角黄色按钮是托管, 再次点击取消托管</li>
     			<li>右上角绿色按钮是暂停, 再次点击恢复</li>
     			<li>右上角红色按钮是退出</li>
     			<li>食物最多生成${this.foodCountMax}个, 生成间隔${this.foodSpawnInterval / 1000}s</li>
@@ -122,6 +125,7 @@ export class SnakeGame {
 	 * 更新游戏状态
 	 */
 	update() {
+		if (this.isAI) this.ai()
 		this.direction = this.nextDirection
 		const HEAD = {...this.snake[0]}
 		// 移动
@@ -197,6 +201,61 @@ export class SnakeGame {
 			return true
 		}
 		return false
+	}
+
+	/**
+	 * 切换 AI 自动游戏
+	 */
+	toggleAI() {
+		this.isAI = !this.isAI
+		this.speed = this.isAI ? this.aiSpeed : this.normalSpeed
+	}
+
+	/**
+	 * AI 自动游戏
+	 */
+	ai() {
+		if (this.snake.length <= 0 || this.foods.length === 0) return
+		// 找到最近的食物
+		const HEAD = this.snake[0]
+		let closestFood = this.foods[0]
+		let minDist = Math.abs(HEAD.x - closestFood.x) + Math.abs(HEAD.y - closestFood.y)
+		this.foods.forEach(f => {
+			const DIST = Math.abs(HEAD.x - f.x) + Math.abs(HEAD.y - f.y)
+			if (DIST < minDist) {
+				minDist = DIST
+				closestFood = f
+			}
+		})
+		// 计算移动方向优先顺序
+		let dx = closestFood.x - HEAD.x
+		let dy = closestFood.y - HEAD.y
+		let preferredDirs = []
+		if (dx !== 0) preferredDirs.push(dx > 0 ? "right" : "left")
+		if (dy !== 0) preferredDirs.push(dy > 0 ? "down" : "up")
+		// 添加备用方向, 避免卡住
+		const ALL_DIRS = ["up", "down", "left", "right"]
+		ALL_DIRS.forEach(d => {
+			if (!preferredDirs.includes(d)) preferredDirs.push(d)
+		})
+		// 找一个不会撞到自己的方向
+		for (const DIR of preferredDirs) {
+			const NEXT_POS = {...HEAD}
+			if (DIR === "up") NEXT_POS.y--
+			if (DIR === "down") NEXT_POS.y++
+			if (DIR === "left") NEXT_POS.x--
+			if (DIR === "right") NEXT_POS.x++
+			// 穿墙处理
+			if (NEXT_POS.x < 0) NEXT_POS.x = this.cols - 1
+			if (NEXT_POS.x >= this.cols) NEXT_POS.x = 0
+			if (NEXT_POS.y < 0) NEXT_POS.y = this.rows - 1
+			if (NEXT_POS.y >= this.rows) NEXT_POS.y = 0
+			// 检查是否撞到自己
+			if (!this.snake.some(seg => seg.x === NEXT_POS.x && seg.y === NEXT_POS.y)) {
+				this.nextDirection = DIR
+				break
+			}
+		}
 	}
 
 	/**

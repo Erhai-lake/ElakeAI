@@ -131,6 +131,12 @@ export default {
 				this.game.resume()
 				this.$refs.pauseBtn.style.backgroundColor = "#E9FFF3"
 			}
+		},
+		/**
+		 * AI 自动游戏
+		 */
+		aiGame() {
+			this.game.toggleAI()
 		}
 	}
 }
@@ -146,6 +152,7 @@ export default {
 					<span class="score" ref="highScore">0</span>
 				</p>
 				<div class="controls">
+					<div class="ai" @click="aiGame"></div>
 					<div class="pause" @click="pauseGame" ref="pauseBtn"></div>
 					<div class="close" @click="closeGame"></div>
 				</div>
@@ -211,8 +218,17 @@ export default {
 					transition: background-color 0.3s ease-in-out;
 				}
 
+				.ai{
+					border: 1px solid #F7A623;
+					background-color: #FFF7D3;
+
+					&:hover {
+						background-color: #F7A623;
+					}
+				}
+
 				.pause {
-					border: 1px solid #43CD92;
+					border: 1px solid #3ECF8E;
 					background-color: #E9FFF3;
 
 					&:hover {
@@ -221,7 +237,7 @@ export default {
 				}
 
 				.close {
-					border: 1px solid #F52B54;
+					border: 1px solid #FF2851;
 					background-color: #FAC0F2;
 
 					&:hover {
