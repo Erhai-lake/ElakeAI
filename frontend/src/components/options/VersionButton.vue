@@ -2,6 +2,7 @@
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import Button from "@/components/input/Button.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import {SnakeGame} from "@/services/Game"
 
 export default {
 	name: "VersionButton",
@@ -14,13 +15,19 @@ export default {
 			isShaking: false,
 			isColorful: false,
 			isCrazy: false,
-			// TODO isGame: false
-			isGame: false
+			isGame: false,
+			game: null,
+			paused: false
 		}
 	},
-	async created() {
+	async mounted() {
 		this.isGame = true
-		await import("@/services/Game")
+		await this.$nextTick(() => {
+			const scoreEl = this.$refs.score
+			const stageEl = this.$refs.stage
+			this.game = new SnakeGame(scoreEl, stageEl)
+			this.game.start()
+		})
 	},
 	methods: {
 		/**
@@ -49,7 +56,7 @@ export default {
 					this.isShaking = false
 					this.isColorful = false
 					this.isCrazy = false
-					this.isGame = false
+					this.closeGame()
 				}, 1000)
 			}
 
@@ -86,8 +93,12 @@ export default {
 				this.isColorful = false
 				this.isCrazy = false
 				this.isGame = true
-				// 加载游戏
-				await import("@/services/Game")
+				await this.$nextTick(() => {
+					const scoreEl = this.$refs.score
+					const stageEl = this.$refs.stage
+					this.game = new SnakeGame(scoreEl, stageEl)
+					this.game.start()
+				})
 			}
 		},
 		triggerShake() {
@@ -95,6 +106,21 @@ export default {
 			setTimeout(() => {
 				this.isShaking = false
 			}, 600)
+		},
+		closeGame() {
+			this.isGame = false
+			this.game.destroy()
+		},
+		pauseGame() {
+			if (!this.game) return
+			this.paused = !this.paused
+			if (this.paused) {
+				this.game.pause()
+				this.$refs.pauseBtn.style.backgroundColor = "#FFA500"
+			} else {
+				this.game.resume()
+				this.$refs.pauseBtn.style.backgroundColor = "#E9FFF3"
+			}
 		}
 	}
 }
@@ -103,8 +129,14 @@ export default {
 <template>
 	<div class="game-container" v-if="isGame">
 		<div class="game" id="game">
-			<p class="close" @click="isGame = false">X</p>
-			<canvas id="canvas"></canvas>
+			<div class="head">
+				<div class="score" ref="score">0</div>
+				<div class="controls">
+					<div class="pause" @click="pauseGame" ref="pauseBtn"></div>
+					<div class="close" @click="closeGame"></div>
+				</div>
+			</div>
+			<div class="stage" ref="stage"></div>
 		</div>
 	</div>
 	<Button
@@ -121,24 +153,68 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
+	background-color: rgba(127, 127, 127, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 4;
 
 	.game {
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		width: 70%;
-		height: 70%;
+		width: 80%;
+		height: 80%;
 		transform: translate(-50%, -50%);
 		background-color: var(--background-color);
-		border: 1px solid var(--border-color);
-		box-shadow: 0 0 16px 2px rgba(0, 0, 0, 0.8);
+		border-radius: 12px;
+		display: grid;
+		grid-template-rows: auto 1fr;
+		z-index: 5;
 
-		.close {
-			position: absolute;
-			top: 10px;
-			right: 10px;
-			padding: 5px;
-			border: 1px solid var(--border-color);
+		.head {
+			padding: 10px;
+			background-color: var(--theme-color);
+			color: var(--text-color-anti);
+			display: grid;
+			grid-template-columns: 1fr auto auto;
+			justify-content: center;
+			align-items: center;
+
+			.score {
+				font-size: 20px;
+				font-weight: bold;
+			}
+
+			.controls {
+				display: flex;
+				gap: 10px;
+
+				div {
+					width: 20px;
+					height: 20px;
+					border-radius: 50%;
+					transition: background-color 0.3s ease-in-out;
+				}
+
+				.pause {
+					border: 1px solid #43CD92;
+					background-color: #E9FFF3;
+
+					&:hover {
+						background-color: #3ECF8E;
+					}
+				}
+
+				.close {
+					border: 1px solid #F52B54;
+					background-color: #FAC0F2;
+
+					&:hover {
+						background-color: #FF2851;
+					}
+				}
+			}
 		}
 	}
 }
@@ -194,5 +270,80 @@ export default {
 	background-size: 400% 400%;
 	color: white !important;
 	animation: rainbow 3s ease infinite, shake 0.3s infinite;
+}
+</style>
+
+<style lang="less">
+.game-container .game .stage {
+	padding-top: 40px;
+	height: calc(100% - 40px);
+	position: relative;
+	overflow: hidden;
+
+	.tile {
+		position: absolute;
+
+		&:before {
+			bottom: 0;
+			content: '';
+			height: 0;
+			left: 0;
+			margin: auto;
+			opacity: 0;
+			position: absolute;
+			right: 0;
+			top: 0;
+			width: 0;
+			transition: opacity 300ms;
+		}
+	}
+
+	// 蛇身
+	.tile.snake {
+		position: absolute;
+		background-color: white;
+		border-radius: 4px;
+	}
+
+	// 蛇头发光
+	.tile.snake-head {
+		background-color: #ffffff;
+		box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff;
+	}
+
+	// 食物
+	.tile.food {
+		position: absolute;
+		background: #4ade80;
+		border-radius: 4px;
+		box-shadow: 0 0 10px #4ade80, 0 0 20px #4ade80, 0 0 30px #4ade80;
+	}
+
+	// 食物定位点
+	.tile.food-center-dot {
+		position: absolute;
+		width: 4px;
+		height: 4px;
+		background-color: var(--border-color);
+		opacity: 0.1;
+		border-radius: 50%;
+		pointer-events: none;
+	}
+
+	// 舞台边界
+	.stage-border {
+		position: absolute;
+		border: 2px solid var(--border-color);
+		pointer-events: none;
+		box-sizing: border-box;
+	}
+
+	// 网格线
+	.tile.grid {
+		position: absolute;
+		border: 1px solid var(--border-color);
+		opacity: 0.1;
+		box-sizing: border-box;
+	}
 }
 </style>
