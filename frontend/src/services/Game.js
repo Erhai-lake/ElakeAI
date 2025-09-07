@@ -45,7 +45,7 @@ export class SnakeGame {
 			"1. 用方向键或WASD控制蛇移动\n" +
 			"2. 吃到食物得分\n" +
 			"3. 避免撞到自己\n" +
-			"4. 按住空格消耗1长度进行加速")
+			"4. 按住Shift消耗1长度进行加速")
 		// 计算行列
 		const HEAD_HEIGHT = 40
 		const AVAILABLE_HEIGHT = this.stageEl.clientHeight - HEAD_HEIGHT
@@ -77,6 +77,7 @@ export class SnakeGame {
 		this.direction = "right"
 		this.nextDirection = "right"
 		this.isBoosting = false
+		this.speed = this.normalSpeed
 		this.updateScore()
 	}
 
@@ -197,7 +198,7 @@ export class SnakeGame {
 		if ((KEY === 39 || KEY === 68) && this.direction !== "left") this.nextDirection = "right"
 
 		// 空格按下 → 进入加速(如果长度>1)
-		if (KEY === 32 && !this.isBoosting && this.snake.length > 1) {
+		if (KEY === 16 && !this.isBoosting && this.snake.length > 1) {
 			this.isBoosting = true
 			this.speed = this.boostSpeed
 			// 按下瞬间减一节
@@ -210,7 +211,7 @@ export class SnakeGame {
 	 * @param event 键盘事件
 	 */
 	handleKeyUp(event) {
-		if (event.keyCode === 32 && this.isBoosting) {
+		if (event.keyCode === 16 && this.isBoosting) {
 			this.isBoosting = false
 			this.speed = this.normalSpeed
 		}
