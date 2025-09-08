@@ -37,6 +37,10 @@ export default {
 		currentMessageId: {
 			type: String,
 			default: ""
+		},
+		controls: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -288,7 +292,7 @@ export default {
 				@blur="handleTextareaBlur"></textarea>
 		</div>
 		<div class="message-bottom">
-			<div class="functional-controls">
+			<div class="functional-controls" v-if="controls">
 				<template v-if="editingContent.show">
 					<Button @click="editingContent.show = false">
 						{{ t("components.MessageCard.cancel") }}
@@ -300,6 +304,7 @@ export default {
 					<Button @click="remove">{{ t("components.MessageCard.removeMessage") }}</Button>
 				</template>
 			</div>
+			<div v-if="!controls"></div>
 			<div class="message-info">
 				<div>
 					{{

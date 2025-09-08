@@ -543,6 +543,9 @@
 			"toast": {
 				"getGlobalConfigError": "获取全局配置失败",
 				"writeToClipboard": "已写入到剪贴板",
+				"copyError": "复制失败",
+				"downloadSuccess": "下载成功",
+				"downloadError": "下载失败",
 				"getError": "获取聊天配置失败",
 				"shareIsEmpty": "分享列表不能为空",
 				"saveSuccess": "保存聊天配置成功",

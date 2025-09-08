@@ -120,8 +120,16 @@ export default {
 			:key="message.id"
 			class="message"
 			:data-message-id="message.id">
-			<AssistantMessageCard v-if="message.message.role === 'assistant'" :message="message" currentMessageId="0"/>
-			<UserMessageCard v-if="message.message.role === 'user'" :message="message" currentMessageId="0"/>
+			<AssistantMessageCard
+				v-if="message.message.role === 'assistant'"
+				:message="message"
+				currentMessageId="0"
+				:controls="false"/>
+			<UserMessageCard
+				v-if="message.message.role === 'user'"
+				:message="message"
+				currentMessageId="0"
+				:controls="false"/>
 		</div>
 	</div>
 </template>

@@ -543,6 +543,9 @@
 			"toast": {
 				"getGlobalConfigError": "Failed to get global config",
 				"writeToClipboard": "Written to clipboard",
+				"copyError": "Copy failed",
+				"downloadSuccess": "Download successful",
+				"downloadError": "Download failed",
 				"getError": "Failed to get chat configuration",
 				"shareIsEmpty": "Share list cannot be empty",
 				"saveSuccess": "Chat configuration saved successfully",

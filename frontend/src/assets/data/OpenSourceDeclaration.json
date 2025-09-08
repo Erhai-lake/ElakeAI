@@ -187,5 +187,12 @@
 		"license": "MIT",
 		"description": "PDF 生成工具",
 		"url": "https://github.com/parallax/jsPDF"
+	},
+	{
+		"category": "文件导出",
+		"name": "html2canvas",
+		"license": "MIT",
+		"description": "HTML 渲染器",
+		"url": "https://github.com/niklasvh/html2canvas"
 	}
 ]

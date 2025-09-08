@@ -23,6 +23,7 @@
 		"flowchart.js": "^1.18.0",
 		"gpt-tokenizer": "^3.0.0",
 		"highlight.js": "^11.11.1",
+		"html2canvas": "^1.4.1",
 		"jspdf": "^3.0.2",
 		"katex": "^0.16.22",
 		"markdown-it": "^14.1.0",

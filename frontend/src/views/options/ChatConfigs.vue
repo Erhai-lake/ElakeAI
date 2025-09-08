@@ -11,11 +11,29 @@ import {publicRegistry} from "@/services/plugin/api/PublicClass"
 import InputText from "@/components/input/InputText.vue"
 import draggable from "vuedraggable"
 import ChatTitle from "@/components/chat/ChatTitle.vue"
+import SystemMessageCard from "@/components/chat/role/SystemMessageCard.vue"
+import AssistantMessageCard from "@/components/chat/role/AssistantMessageCard.vue"
+import UserMessageCard from "@/components/chat/role/UserMessageCard.vue"
+import html2canvas from "html2canvas"
+import Loading from "@/components/Loading.vue"
 
 export default {
 	name: "ChatConfigs",
 	inject: ["$DB", "$log"],
-	components: {ChatTitle, InputText, FoldingPanel, SVGIcon, Selector, InputNumber, Button, draggable},
+	components: {
+		Loading,
+		SystemMessageCard,
+		AssistantMessageCard,
+		ChatTitle,
+		InputText,
+		FoldingPanel,
+		SVGIcon,
+		Selector,
+		InputNumber,
+		Button,
+		draggable,
+		UserMessageCard
+	},
 	props: {
 		chatKey: {
 			type: String,
@@ -77,6 +95,9 @@ export default {
 				shareTitle: "",
 				shareList: [
 					{
+						title: "png"
+					},
+					{
 						title: "text"
 					},
 					{
@@ -84,10 +105,11 @@ export default {
 					}
 				],
 				share: {
-					title: "text"
+					title: "png"
 				},
 				sharePreview: false,
-				content: ""
+				content: null,
+				loading: false
 			}
 		}
 	},
@@ -392,14 +414,15 @@ export default {
 		 * 预览
 		 */
 		preview() {
-			// TODO 分享预览
 			if (this.share.shareChoice.length === 0) {
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.shareIsEmpty")}`)
 				return
 			}
 			this.share.sharePreview = true
 			const SELECTED_MESSAGES = this.chatData.filter(item => this.share.shareChoice.includes(item.id))
-			if (this.share.share.title === "text") {
+			if (this.share.share.title === "png") {
+				this.share.content = SELECTED_MESSAGES
+			} else if (this.share.share.title === "text") {
 				let text = `# ${this.share.shareTitle}\n\n`
 				SELECTED_MESSAGES.forEach(item => {
 					text += `## ${item.message.role}`
@@ -420,37 +443,80 @@ export default {
 					})
 				})
 				this.share.content = JSON.stringify(json, null, 2)
+			} else {
+				this.share.content = SELECTED_MESSAGES.map(item => item.message.content).join("\n\n")
 			}
 		},
 		/**
 		 * 复制
 		 */
-		copy() {
-			if (this.share.share.title === "text") {
-				navigator.clipboard.writeText(this.share.content)
-			} else if (this.share.share.title === "json") {
-				navigator.clipboard.writeText(JSON.stringify(JSON.parse(this.share.content)))
+		async copy() {
+			this.share.loading = true
+			try {
+				if (this.share.share.title === "png") {
+					const EL = this.$refs.sharePng
+					if (!EL) return
+					const CANVAS = await html2canvas(EL, {
+						backgroundColor: null,
+						useCORS: true,
+						scale: 2
+					})
+					CANVAS.toBlob(async (blob) => {
+						if (!blob) return
+						await navigator.clipboard.write([
+							new ClipboardItem({"image/png": blob})
+						])
+					})
+				} else if (this.share.share.title === "text") {
+					await navigator.clipboard.writeText(this.share.content)
+				} else if (this.share.share.title === "json") {
+					await navigator.clipboard.writeText(JSON.stringify(JSON.parse(this.share.content)))
+				}
+				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.writeToClipboard")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 复制失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.copyError")}`)
+			} finally {
+				this.share.loading = false
 			}
-			toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.writeToClipboard")}`)
 		},
 		/**
 		 * 下载
 		 */
-		download() {
-			const DOWNLOAD_A = document.createElement("a")
-			let blob = null
-			let fileName = ""
-			if (this.share.share.title === "text") {
-				blob = new Blob([this.share.content], {type: "text/plain;charset=utf-8"})
-				fileName = `${this.share.shareTitle}.txt`
-			} else if (this.share.share.title === "json") {
-				blob = new Blob([JSON.stringify(JSON.parse(this.share.content))], {type: "application/json;charset=utf-8"})
-				fileName = `${this.share.shareTitle}.json`
+		async download() {
+			this.share.loading = true
+			try {
+				const DOWNLOAD_A = document.createElement("a")
+				let blob = null
+				let fileName = ""
+				if (this.share.share.title === "png") {
+					const EL = this.$refs.sharePng
+					if (!EL) return
+					const CANVAS = await html2canvas(EL, {
+						backgroundColor: null,
+						useCORS: true,
+						scale: 2
+					})
+					blob = await new Promise((resolve) => CANVAS.toBlob((b) => resolve(b), "image/png"))
+					fileName = `${this.share.shareTitle}.png`
+				} else if (this.share.share.title === "text") {
+					blob = new Blob([this.share.content], {type: "text/plain;charset=utf-8"})
+					fileName = `${this.share.shareTitle}.txt`
+				} else if (this.share.share.title === "json") {
+					blob = new Blob([JSON.stringify(JSON.parse(this.share.content))], {type: "application/json;charset=utf-8"})
+					fileName = `${this.share.shareTitle}.json`
+				}
+				DOWNLOAD_A.href = URL.createObjectURL(blob)
+				DOWNLOAD_A.download = fileName
+				DOWNLOAD_A.click()
+				URL.revokeObjectURL(DOWNLOAD_A.href)
+				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.downloadSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 下载失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.downloadError")}`)
+			} finally {
+				this.share.loading = false
 			}
-			DOWNLOAD_A.href = URL.createObjectURL(blob)
-			DOWNLOAD_A.download = fileName
-			DOWNLOAD_A.click()
-			URL.revokeObjectURL(DOWNLOAD_A.href)
 		},
 		/**
 		 * 保存聊天配置
@@ -517,12 +583,37 @@ export default {
 <template>
 	<transition name="fade">
 		<div v-if="share.sharePreview" class="share-preview">
-			<pre class="share"><code v-html="share.content"></code></pre>
+			<Button @click="share.sharePreview = false">{{ t("views.ChatConfigs.close") }}</Button>
 			<div class="function">
 				<Button @click="copy">{{ t("views.ChatConfigs.copy") }}</Button>
 				<Button @click="download">{{ t("views.ChatConfigs.download") }}</Button>
 			</div>
-			<Button @click="share.sharePreview = false">{{ t("views.ChatConfigs.close") }}</Button>
+			<Loading :loading="share.loading">
+				<div v-if="share.share.title === 'png'" class="share" ref="sharePng">
+					<div
+						v-for="message in share.content"
+						:key="message.id"
+						class="message"
+						:data-message-id="message.id">
+						<SystemMessageCard
+							v-if="message.message.role === 'system'"
+							:message="message"
+							currentMessageId="0"
+							:controls="false"/>
+						<AssistantMessageCard
+							v-if="message.message.role === 'assistant'"
+							:message="message"
+							currentMessageId="0"
+							:controls="false"/>
+						<UserMessageCard
+							v-if="message.message.role === 'user'"
+							:message="message"
+							currentMessageId="0"
+							:controls="false"/>
+					</div>
+				</div>
+				<pre v-else class="share"><code v-html="share.content"></code></pre>
+			</Loading>
 		</div>
 	</transition>
 	<transition name="fade">
@@ -724,19 +815,25 @@ export default {
 	grid-template-rows: 1fr auto auto;
 	gap: 10px;
 	z-index: 6;
-	overflow: hidden;
+	overflow: hidden auto;
 
-	.share{
-		overflow: auto;
+	.share {
+		padding: 20px 50px;
+		box-sizing: border-box;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
 		user-select: none;
 	}
 
-	.function{
+	.function {
 		display: flex;
 		justify-content: center;
 		gap: 10px;
 
-		Button{
+		Button {
 			flex: 1;
 		}
 	}
