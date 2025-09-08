@@ -20,9 +20,9 @@ export default {
 			paused: false
 		}
 	},
-	mounted() {
-		this.openGame()
-	},
+	// mounted() {
+	// 	this.openGame()
+	// },
 	methods: {
 		/**
 		 * 翻译
