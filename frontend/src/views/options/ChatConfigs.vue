@@ -24,8 +24,7 @@ export default {
 		modelValue: {
 			type: Boolean,
 			default: false
-		}
-		,
+		},
 		type: {
 			type: String,
 			default: "chat"
@@ -48,19 +47,20 @@ export default {
 			chatRecords: [],
 			page: 1,
 			totalPages: 0,
+			shareChoice: [],
 			orderList: [
 				{
 					key: "asc",
-					title: "正序"
+					title: "i18n:views.ChatConfigs.asc"
 				},
 				{
 					key: "desc",
-					title: "倒序"
+					title: "i18n:views.ChatConfigs.desc"
 				}
 			],
 			order: {
 				key: "asc",
-				title: "正序"
+				title: "i18n:views.ChatConfigs.asc"
 			},
 			roleList: [
 				{
@@ -72,7 +72,18 @@ export default {
 				{
 					title: "system"
 				}
-			]
+			],
+			share: {
+				shareTitle: "",
+				shareList: [
+					{
+						title: "text"
+					}
+				],
+				share: {
+					title: "text"
+				}
+			}
 		}
 	},
 	watch: {
@@ -122,6 +133,7 @@ export default {
 		 * 初始化组件
 		 */
 		async init() {
+			this.shareChoice = []
 			await this.loadChatData()
 			await this.loadChatConfig()
 			this.page = 1
@@ -192,6 +204,7 @@ export default {
 				}
 				if (chatData && chatData.configs) {
 					this.chatTitle = chatData.title
+					this.share.shareTitle = chatData.title
 					this.configs = chatData.configs
 				}
 			} catch (error) {
@@ -331,6 +344,48 @@ export default {
 			this.getChatRecords(this.page)
 		},
 		/**
+		 * 选择分享
+		 */
+		selectShare(element) {
+			if (this.shareChoice.includes(element.id)) {
+				this.shareChoice = this.shareChoice.filter(item => item !== element.id)
+			} else {
+				this.shareChoice.push(element.id)
+			}
+		},
+		/**
+		 * 选择所有
+		 */
+		selectAll() {
+			if (this.shareChoice.length === this.chatData.length) {
+				this.shareChoice = []
+			} else {
+				this.shareChoice = this.chatData.map(item => item.id)
+			}
+		},
+		/**
+		 * 选择当前页
+		 */
+		selectPage() {
+			const CURRENT_PAGE_IDS = this.chatRecords.map(item => item.id)
+			const ALL_SELECTED = CURRENT_PAGE_IDS.every(id => this.shareChoice.includes(id))
+			if (ALL_SELECTED) {
+				this.shareChoice = this.shareChoice.filter(id => !CURRENT_PAGE_IDS.includes(id))
+			} else {
+				this.shareChoice = [...new Set([...this.shareChoice, ...CURRENT_PAGE_IDS])];
+			}
+		},
+		/**
+		 * 预览
+		 */
+		preview() {
+			// TODO 分享预览
+			if (this.shareChoice.length === 0) {
+				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.shareIsEmpty")}`)
+				return
+			}
+		},
+		/**
 		 * 保存聊天配置
 		 */
 		async save() {
@@ -404,6 +459,30 @@ export default {
 						</div>
 					</div>
 					<div class="container">
+						<div class="share">
+							<InputText
+								v-model="share.shareTitle"
+								:placeholder="t('views.ChatConfigs.shareTitle')"
+								:title="t('views.ChatConfigs.shareTitle')"/>
+							<Selector
+								unique-key="title"
+								:selector-list="share.shareList"
+								:selector-selected="share.share"
+								@select="updateOrderSelected"
+								:title="t('views.ChatConfigs.shareType')"/>
+							<Button @click="selectAll">
+								{{
+									t(`views.ChatConfigs.${shareChoice.length === chatData.length ? 'cancelSelectAll' : 'selectAll'}`)
+								}}
+							</Button>
+							<Button @click="selectPage">
+								{{
+									t(`views.ChatConfigs.${this.chatRecords.map(item => item.id).every(id => this.shareChoice.includes(id)) ? 'cancelSelectPage' : 'selectPage'}`)
+								}}
+							</Button>
+							<Button @click="preview">{{ t("views.ChatConfigs.preview") }}</Button>
+						</div>
+						<hr>
 						<draggable
 							v-model="chatRecords"
 							item-key="id"
@@ -437,26 +516,25 @@ export default {
 									<Button class="but" @click="remove(element.id)">
 										<SVGIcon name="#icon-close"/>
 									</Button>
-									<!--TODO 分享-->
-<!--									<label>-->
-<!--										<input type="checkbox"-->
-<!--											   :checked="isAllSelected"-->
-<!--											   @change="toggleAllSelection">-->
-<!--										<span class="custom-checkbox"></span>-->
-<!--									</label>-->
+									<label>
+										<input type="checkbox"
+											   :checked="shareChoice.includes(element.id)"
+											   @change="selectShare(element)">
+										<span class="custom-checkbox"></span>
+									</label>
 								</div>
 							</template>
 						</draggable>
 						<hr>
 						<div class="pagination">
-							<Button @click="addChatRecord()">新增</Button>
+							<Button @click="addChatRecord()">{{ t("views.ChatConfigs.addChatRecord") }}</Button>
 							<Selector
 								unique-key="key"
 								:selector-list="orderList"
 								:selector-selected="order"
 								@select="updateOrderSelected"/>
 							<Button @click="getChatRecords(page - 1)" :disabled="page === 1">
-								上一页
+								{{ t("views.ChatConfigs.previousPage") }}
 							</Button>
 							<div class="page-btn-container">
 								<Button
@@ -469,7 +547,7 @@ export default {
 								</Button>
 							</div>
 							<Button @click="getChatRecords(page + 1)" :disabled="page === totalPages">
-								下一页
+								{{ t("views.ChatConfigs.nextPage") }}
 							</Button>
 							<InputNumber
 								@input="getChatRecords(page)"
@@ -601,7 +679,7 @@ export default {
 }
 
 .chat-record-item {
-	margin-bottom: 10px;
+	margin: 10px 0;
 	display: grid;
 	grid-template-columns: auto auto 100px auto 1fr auto auto;
 	align-items: center;
@@ -691,6 +769,14 @@ export default {
 			opacity: 0;
 		}
 	}
+}
+
+.share {
+	margin-bottom: 20px;
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(5, auto);
+	gap: 10px;
 }
 
 .pagination {
