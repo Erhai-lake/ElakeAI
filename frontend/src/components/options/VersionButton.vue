@@ -378,6 +378,13 @@ export default {
 		box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff;
 	}
 
+	// 敌人
+	.tile.enemy {
+		position: absolute;
+		background-color: #f87171;
+		transition: transform 0.1s linear;
+	}
+
 	// 食物
 	.tile.food {
 		position: absolute;

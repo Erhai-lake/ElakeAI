@@ -9,28 +9,47 @@ export class SnakeGame {
 		this.stageEl = stageEl
 
 		// 游戏参数
+		// 尺寸
 		this.tileSize = 20
-		this.rows = 20
-		this.cols = 20
+		// 正常速度
 		this.normalSpeed = 150
+		// 加速速度
 		this.boostSpeed = 75
+		// AI速度
 		this.aiSpeed = 50
+		// 速度
 		this.speed = this.normalSpeed
+		// 最大食物数量
 		this.foodCountMax = 5
+		// 食物生成间隔
 		this.foodSpawnInterval = 2000
+		// 最大敌人数量
+		this.enemyMax = 3
 
 		// 状态
+		// 得分
 		this.score = 0
+		// 蛇
 		this.snake = []
+		// 敌人
+		this.enemies = []
+		// 食物
 		this.foods = []
+		// 方向
 		this.direction = "right"
 		this.nextDirection = "right"
+		// 食物定时器
 		this.foodTimer = null
+		// 动画帧
 		this.animationFrame = null
+		// 键盘事件
 		this.keyHandler = this.handleKey.bind(this)
 		this.keyUpHandler = this.handleKeyUp.bind(this)
+		// 上一个帧时间
 		this.lastFrameTime = null
+		// 加速状态
 		this.isBoosting = false
+		// AI状态
 		this.isAI = false
 
 		// 历史最高分(静态变量)
@@ -83,7 +102,7 @@ export class SnakeGame {
 		// 清空舞台并绘制固定网格
 		this.stageEl.innerHTML = ""
 		this.renderGrid()
-		this.renderSnakeAndFood()
+		this.render()
 		// 监听键盘
 		window.addEventListener("keydown", this.keyHandler)
 		window.addEventListener("keyup", this.keyUpHandler)
@@ -92,6 +111,16 @@ export class SnakeGame {
 		this.loop()
 		// 启动食物生成
 		this.startFoodSpawner()
+		// 初始化敌人
+		this.initEnemies()
+	}
+
+	/**
+	 * 初始化敌人
+	 */
+	initEnemies() {
+		this.enemies = []
+		this.spawnEnemy()
 	}
 
 	/**
@@ -116,7 +145,8 @@ export class SnakeGame {
 		if (NOW - this.lastFrameTime > this.speed) {
 			this.lastFrameTime = NOW
 			this.update()
-			this.renderSnakeAndFood()
+			this.updateEnemies()
+			this.render()
 		}
 		this.animationFrame = requestAnimationFrame(this.loop.bind(this))
 	}
@@ -125,7 +155,9 @@ export class SnakeGame {
 	 * 更新游戏状态
 	 */
 	update() {
-		if (this.isAI) this.ai()
+		if (this.isAI) {
+			this.nextDirection = SnakeGame.computeNextMove(this.snake, this.foods, [this, ...this.enemies], this.cols, this.rows) || this.nextDirection
+		}
 		this.direction = this.nextDirection
 		const HEAD = {...this.snake[0]}
 		// 移动
@@ -138,21 +170,60 @@ export class SnakeGame {
 		if (HEAD.x >= this.cols) HEAD.x = 0
 		if (HEAD.y < 0) HEAD.y = this.rows - 1
 		if (HEAD.y >= this.rows) HEAD.y = 0
-		// 撞到自己
-		if (this.snake.some(seg => seg.x === HEAD.x && seg.y === HEAD.y)) {
+		// 撞到蛇
+		if ([this, ...this.enemies].some(e => e.snake.some(seg => seg.x === HEAD.x && seg.y === HEAD.y))) {
 			this.reset()
 			return
 		}
 		this.snake.unshift(HEAD)
-		// 吃到食物
-		const foodIndex = this.foods.findIndex(f => f.x === HEAD.x && f.y === HEAD.y)
-		if (foodIndex !== -1) {
+		// 吃食物
+		const FOOD_INDEX = this.foods.findIndex(f => f.x === HEAD.x && f.y === HEAD.y)
+		if (FOOD_INDEX !== -1) {
 			this.score++
 			this.updateScore()
-			this.foods.splice(foodIndex, 1)
+			this.foods.splice(FOOD_INDEX, 1)
 			if (this.foods.length < this.foodCountMax) this.startFoodSpawner()
 		} else {
 			this.snake.pop()
+		}
+	}
+
+	/**
+	 * 更新敌人游戏状态
+	 */
+	updateEnemies() {
+		const NOW = performance.now()
+		for (const ENEMY of this.enemies) {
+			if (!ENEMY.alive) continue
+			if (NOW - ENEMY.lastMove < ENEMY.aiSpeed) continue
+			ENEMY.lastMove = NOW
+			ENEMY.nextDirection = SnakeGame.computeNextMove(ENEMY.snake, this.foods, [this, ...this.enemies], this.cols, this.rows) || ENEMY.nextDirection
+			ENEMY.direction = ENEMY.nextDirection
+			let HEAD = {...ENEMY.snake[0]}
+			if (ENEMY.direction === "up") HEAD.y--
+			if (ENEMY.direction === "down") HEAD.y++
+			if (ENEMY.direction === "left") HEAD.x--
+			if (ENEMY.direction === "right") HEAD.x++
+			// 穿墙
+			if (HEAD.x < 0) HEAD.x = this.cols - 1
+			if (HEAD.x >= this.cols) HEAD.x = 0
+			if (HEAD.y < 0) HEAD.y = this.rows - 1
+			if (HEAD.y >= this.rows) HEAD.y = 0
+			// 碰撞 → 死亡, 蛇身变食物
+			if ([this, ...this.enemies].some(e => e.snake.some(seg => seg.x === HEAD.x && seg.y === HEAD.y))) {
+				ENEMY.alive = false
+				ENEMY.snake.forEach(seg => this.foods.push({x: seg.x, y: seg.y}))
+				continue
+			}
+			ENEMY.snake.unshift(HEAD)
+			// 吃食物
+			const FOOD_INDEX = this.foods.findIndex(f => f.x === HEAD.x && f.y === HEAD.y)
+			if (FOOD_INDEX !== -1) {
+				this.foods.splice(FOOD_INDEX, 1)
+				if (this.foods.length < this.foodCountMax) this.startFoodSpawner()
+			} else {
+				ENEMY.snake.pop()
+			}
 		}
 	}
 
@@ -161,8 +232,10 @@ export class SnakeGame {
 	 */
 	reset() {
 		this.resetState()
+		this.enemies = []
 		this.stopFoodSpawner()
 		this.startFoodSpawner()
+		this.initEnemies()
 	}
 
 	/**
@@ -212,50 +285,74 @@ export class SnakeGame {
 	}
 
 	/**
-	 * AI 自动游戏
+	 * 根据蛇和场上局势计算下一步方向
+	 * @param {Array} snake 当前蛇
+	 * @param {Array} foods 食物数组
+	 * @param {Array} enemies 所有敌人(包含玩家)
+	 * @param {number} cols 场地列
+	 * @param {number} rows 场地行
+	 * @returns {"up"|"down"|"left"|"right"|null}
 	 */
-	ai() {
-		if (this.snake.length <= 0 || this.foods.length === 0) return
-		// 找到最近的食物
-		const HEAD = this.snake[0]
-		let closestFood = this.foods[0]
-		let minDist = Math.abs(HEAD.x - closestFood.x) + Math.abs(HEAD.y - closestFood.y)
-		this.foods.forEach(f => {
-			const DIST = Math.abs(HEAD.x - f.x) + Math.abs(HEAD.y - f.y)
-			if (DIST < minDist) {
-				minDist = DIST
-				closestFood = f
-			}
-		})
-		// 计算移动方向优先顺序
-		let dx = closestFood.x - HEAD.x
-		let dy = closestFood.y - HEAD.y
-		let preferredDirs = []
-		if (dx !== 0) preferredDirs.push(dx > 0 ? "right" : "left")
-		if (dy !== 0) preferredDirs.push(dy > 0 ? "down" : "up")
-		// 添加备用方向, 避免卡住
-		const ALL_DIRS = ["up", "down", "left", "right"]
-		ALL_DIRS.forEach(d => {
-			if (!preferredDirs.includes(d)) preferredDirs.push(d)
-		})
-		// 找一个不会撞到自己的方向
-		for (const DIR of preferredDirs) {
-			const NEXT_POS = {...HEAD}
-			if (DIR === "up") NEXT_POS.y--
-			if (DIR === "down") NEXT_POS.y++
-			if (DIR === "left") NEXT_POS.x--
-			if (DIR === "right") NEXT_POS.x++
-			// 穿墙处理
-			if (NEXT_POS.x < 0) NEXT_POS.x = this.cols - 1
-			if (NEXT_POS.x >= this.cols) NEXT_POS.x = 0
-			if (NEXT_POS.y < 0) NEXT_POS.y = this.rows - 1
-			if (NEXT_POS.y >= this.rows) NEXT_POS.y = 0
-			// 检查是否撞到自己
-			if (!this.snake.some(seg => seg.x === NEXT_POS.x && seg.y === NEXT_POS.y)) {
-				this.nextDirection = DIR
-				break
+	static computeNextMove(snake, foods, enemies, cols, rows) {
+		if (snake.length <= 0) return null
+		const HEAD = snake[0]
+		// ---- 1. 判断能否碰瓷 ----
+		for (const ENEMY of enemies) {
+			if (ENEMY.snake === snake || !ENEMY.alive) continue
+			const ENEMY_HEAD = ENEMY.snake[0]
+			// 如果敌人头相邻, 尝试卡位
+			const DX = ENEMY_HEAD.x - HEAD.x
+			const DY = ENEMY_HEAD.y - HEAD.y
+			if (Math.abs(DX) + Math.abs(DY) === 1) {
+				// 逼近敌人头
+				if (DX === 1) return "right"
+				if (DX === -1) return "left"
+				if (DY === 1) return "down"
+				if (DY === -1) return "up"
 			}
 		}
+		// ---- 2. 最近食物 ----
+		if (foods.length > 0) {
+			let closestFood = foods[0]
+			let minDist = Math.abs(HEAD.x - closestFood.x) + Math.abs(HEAD.y - closestFood.y)
+			for (const F of foods) {
+				const DIST = Math.abs(HEAD.x - F.x) + Math.abs(HEAD.y - F.y)
+				if (DIST < minDist) {
+					minDist = DIST
+					closestFood = F
+				}
+			}
+			// 贪心选择方向
+			const PREFERRED_DIRS = []
+			if (closestFood.x > HEAD.x) PREFERRED_DIRS.push("right")
+			else if (closestFood.x < HEAD.x) PREFERRED_DIRS.push("left")
+			if (closestFood.y > HEAD.y) PREFERRED_DIRS.push("down")
+			else if (closestFood.y < HEAD.y) PREFERRED_DIRS.push("up")
+			// 备用
+			const ALL_DIRS = ["up", "down", "left", "right"]
+			ALL_DIRS.forEach(d => {
+				if (!PREFERRED_DIRS.includes(d)) PREFERRED_DIRS.push(d)
+			})
+			// 找到安全方向
+			for (const DIR of PREFERRED_DIRS) {
+				let nx = HEAD.x
+				let ny = HEAD.y
+				if (DIR === "up") ny--
+				if (DIR === "down") ny++
+				if (DIR === "left") nx--
+				if (DIR === "right") nx++
+				// 穿墙
+				if (nx < 0) nx = cols - 1
+				if (nx >= cols) nx = 0
+				if (ny < 0) ny = rows - 1
+				if (ny >= rows) ny = 0
+				// 检查是否撞到任意蛇
+				if (!enemies.some(e => e.snake.some(seg => seg.x === nx && seg.y === ny))) {
+					return DIR
+				}
+			}
+		}
+		return null
 	}
 
 	/**
@@ -301,6 +398,31 @@ export class SnakeGame {
 	}
 
 	/**
+	 * 生成敌人
+	 */
+	spawnEnemy() {
+		if (this.enemies.length >= this.enemyMax) return
+		// 随机出生点
+		let pos
+		do {
+			pos = {x: Math.floor(Math.random() * this.cols), y: Math.floor(Math.random() * this.rows)}
+		} while (
+			this.snake.some(seg => seg.x === pos.x && seg.y === pos.y) ||
+			this.enemies.some(e => e.snake.some(seg => seg.x === pos.x && seg.y === pos.y))
+			)
+		const ENEMY = {
+			id: Date.now() + Math.random(),
+			snake: [pos],
+			direction: "right",
+			nextDirection: "right",
+			alive: true,
+			aiSpeed: this.speed,
+			lastMove: performance.now()
+		}
+		this.enemies.push(ENEMY)
+	}
+
+	/**
 	 * 绘制固定网格
 	 */
 	renderGrid() {
@@ -325,12 +447,12 @@ export class SnakeGame {
 	}
 
 	/**
-	 * 渲染蛇和食物
+	 * 渲染
 	 */
-	renderSnakeAndFood() {
+	render() {
 		const HEAD_HEIGHT = 40
 		// 先移除旧蛇和食物
-		const OLD_TILES = this.stageEl.querySelectorAll(".tile.snake, .tile.food, .tile.food-center-dot")
+		const OLD_TILES = this.stageEl.querySelectorAll(".tile.snake, .tile.enemy, .tile.food, .tile.food-center-dot")
 		OLD_TILES.forEach(el => el.remove())
 		// 绘制蛇
 		this.snake.forEach((seg, index) => {
@@ -342,6 +464,20 @@ export class SnakeGame {
 			ELEMENT_SNAKE.style.height = this.tileSize + "px"
 			if (index === 0) ELEMENT_SNAKE.style.boxShadow = "0 0 8px #ffffff"
 			this.stageEl.appendChild(ELEMENT_SNAKE)
+		})
+		// 绘制敌人
+		this.enemies.forEach(enemy => {
+			if (!enemy.alive) return
+			enemy.snake.forEach((seg, index) => {
+				const ELEMENT_ENEMY = document.createElement("div")
+				ELEMENT_ENEMY.className = "tile enemy"
+				ELEMENT_ENEMY.style.left = seg.x * this.tileSize + "px"
+				ELEMENT_ENEMY.style.top = (seg.y * this.tileSize + HEAD_HEIGHT) + "px"
+				ELEMENT_ENEMY.style.width = this.tileSize + "px"
+				ELEMENT_ENEMY.style.height = this.tileSize + "px"
+				if (index === 0) ELEMENT_ENEMY.style.boxShadow = "0 0 8px red"
+				this.stageEl.appendChild(ELEMENT_ENEMY)
+			})
 		})
 		// 绘制食物 + 定位点
 		this.foods.forEach(f => {
