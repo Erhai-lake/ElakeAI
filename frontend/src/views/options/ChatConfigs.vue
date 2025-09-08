@@ -47,7 +47,6 @@ export default {
 			chatRecords: [],
 			page: 1,
 			totalPages: 0,
-			shareChoice: [],
 			orderList: [
 				{
 					key: "asc",
@@ -74,6 +73,7 @@ export default {
 				}
 			],
 			share: {
+				shareChoice: [],
 				shareTitle: "",
 				shareList: [
 					{
@@ -82,7 +82,9 @@ export default {
 				],
 				share: {
 					title: "text"
-				}
+				},
+				sharePreview: false,
+				text: ""
 			}
 		}
 	},
@@ -133,7 +135,7 @@ export default {
 		 * 初始化组件
 		 */
 		async init() {
-			this.shareChoice = []
+			this.share.shareChoice = []
 			await this.loadChatData()
 			await this.loadChatConfig()
 			this.page = 1
@@ -347,20 +349,20 @@ export default {
 		 * 选择分享
 		 */
 		selectShare(element) {
-			if (this.shareChoice.includes(element.id)) {
-				this.shareChoice = this.shareChoice.filter(item => item !== element.id)
+			if (this.share.shareChoice.includes(element.id)) {
+				this.share.shareChoice = this.share.shareChoice.filter(item => item !== element.id)
 			} else {
-				this.shareChoice.push(element.id)
+				this.share.shareChoice.push(element.id)
 			}
 		},
 		/**
 		 * 选择所有
 		 */
 		selectAll() {
-			if (this.shareChoice.length === this.chatData.length) {
-				this.shareChoice = []
+			if (this.share.shareChoice.length === this.chatData.length) {
+				this.share.shareChoice = []
 			} else {
-				this.shareChoice = this.chatData.map(item => item.id)
+				this.share.shareChoice = this.chatData.map(item => item.id)
 			}
 		},
 		/**
@@ -368,11 +370,11 @@ export default {
 		 */
 		selectPage() {
 			const CURRENT_PAGE_IDS = this.chatRecords.map(item => item.id)
-			const ALL_SELECTED = CURRENT_PAGE_IDS.every(id => this.shareChoice.includes(id))
+			const ALL_SELECTED = CURRENT_PAGE_IDS.every(id => this.share.shareChoice.includes(id))
 			if (ALL_SELECTED) {
-				this.shareChoice = this.shareChoice.filter(id => !CURRENT_PAGE_IDS.includes(id))
+				this.share.shareChoice = this.share.shareChoice.filter(id => !CURRENT_PAGE_IDS.includes(id))
 			} else {
-				this.shareChoice = [...new Set([...this.shareChoice, ...CURRENT_PAGE_IDS])];
+				this.share.shareChoice = [...new Set([...this.share.shareChoice, ...CURRENT_PAGE_IDS])];
 			}
 		},
 		/**
@@ -380,10 +382,42 @@ export default {
 		 */
 		preview() {
 			// TODO 分享预览
-			if (this.shareChoice.length === 0) {
+			if (this.share.shareChoice.length === 0) {
 				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.shareIsEmpty")}`)
 				return
 			}
+			this.share.sharePreview = true
+			if (this.share.share.title === "text") {
+				const SELECTED_MESSAGES = this.chatData.filter(item => this.share.shareChoice.includes(item.id))
+				let text = `# ${this.share.shareTitle}\n\n`
+				SELECTED_MESSAGES.forEach(item => {
+					text += `## ${item.message.role}`
+					if (item.model) {
+						text += ` [${item.model.platform}] [${item.model.model}]`
+					}
+					text += `:\n${item.message.content}\n\n`
+				})
+				this.share.text = text
+			}
+		},
+		/**
+		 * 复制
+		 */
+		copy() {
+			navigator.clipboard.writeText(this.share.text)
+			toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.writeToClipboard")}`)
+		},
+		/**
+		 * 下载
+		 */
+		download() {
+			// 下载文件
+			const BLOB = new Blob([this.share.text], { type: "text/plain;charset=utf-8" })
+			const DOWNLOAD_A = document.createElement("a")
+			DOWNLOAD_A.href = URL.createObjectURL(BLOB)
+			DOWNLOAD_A.download = `${this.share.shareTitle}.txt`
+			DOWNLOAD_A.click()
+			URL.revokeObjectURL(DOWNLOAD_A.href)
 		},
 		/**
 		 * 保存聊天配置
@@ -422,6 +456,7 @@ export default {
 		 * 关闭
 		 */
 		close() {
+			this.share.sharePreview = false
 			this.$emit("update:modelValue", false)
 		},
 		/**
@@ -448,6 +483,16 @@ export default {
 
 <template>
 	<transition name="fade">
+		<div v-if="share.sharePreview" class="share-preview">
+			<pre class="share"><code v-html="share.text"></code></pre>
+			<div class="function">
+				<Button @click="copy">{{ t("views.ChatConfigs.copy") }}</Button>
+				<Button @click="download">{{ t("views.ChatConfigs.download") }}</Button>
+			</div>
+			<Button @click="share.sharePreview = false">{{ t("views.ChatConfigs.close") }}</Button>
+		</div>
+	</transition>
+	<transition name="fade">
 		<div class="chat-configs" v-if="modelValue" @click="close">
 			<div class="chat-configs-content" @click.stop>
 				<h2>{{ t(`views.ChatConfigs.${this.type}Setup`) }}</h2>
@@ -460,6 +505,16 @@ export default {
 					</div>
 					<div class="container">
 						<div class="share">
+							<Button @click="selectAll">
+								{{
+									t(`views.ChatConfigs.${share.shareChoice.length === chatData.length ? 'cancelSelectAll' : 'selectAll'}`)
+								}}
+							</Button>
+							<Button @click="selectPage">
+								{{
+									t(`views.ChatConfigs.${this.chatRecords.map(item => item.id).every(id => this.share.shareChoice.includes(id)) ? 'cancelSelectPage' : 'selectPage'}`)
+								}}
+							</Button>
 							<InputText
 								v-model="share.shareTitle"
 								:placeholder="t('views.ChatConfigs.shareTitle')"
@@ -470,16 +525,6 @@ export default {
 								:selector-selected="share.share"
 								@select="updateOrderSelected"
 								:title="t('views.ChatConfigs.shareType')"/>
-							<Button @click="selectAll">
-								{{
-									t(`views.ChatConfigs.${shareChoice.length === chatData.length ? 'cancelSelectAll' : 'selectAll'}`)
-								}}
-							</Button>
-							<Button @click="selectPage">
-								{{
-									t(`views.ChatConfigs.${this.chatRecords.map(item => item.id).every(id => this.shareChoice.includes(id)) ? 'cancelSelectPage' : 'selectPage'}`)
-								}}
-							</Button>
 							<Button @click="preview">{{ t("views.ChatConfigs.preview") }}</Button>
 						</div>
 						<hr>
@@ -518,7 +563,7 @@ export default {
 									</Button>
 									<label>
 										<input type="checkbox"
-											   :checked="shareChoice.includes(element.id)"
+											   :checked="share.shareChoice.includes(element.id)"
 											   @change="selectShare(element)">
 										<span class="custom-checkbox"></span>
 									</label>
@@ -630,6 +675,38 @@ export default {
 .fade-enter-to,
 .fade-leave-from {
 	opacity: 1;
+}
+
+.share-preview {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	padding: 20px;
+	width: 80%;
+	height: 80%;
+	transform: translate(-50%, -50%);
+	background-color: var(--background-color);
+	border-radius: 12px;
+	display: grid;
+	grid-template-rows: 1fr auto auto;
+	gap: 10px;
+	z-index: 6;
+	overflow: hidden;
+
+	.share{
+		overflow: auto;
+		user-select: none;
+	}
+
+	.function{
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+
+		Button{
+			flex: 1;
+		}
+	}
 }
 
 .chat-configs {

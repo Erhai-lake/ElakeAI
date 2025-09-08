@@ -542,6 +542,7 @@
 		"ChatConfigs": {
 			"toast": {
 				"getGlobalConfigError": "Failed to get global config",
+				"writeToClipboard": "Written to clipboard",
 				"getError": "Failed to get chat configuration",
 				"shareIsEmpty": "Share list cannot be empty",
 				"saveSuccess": "Chat configuration saved successfully",
@@ -557,6 +558,8 @@
 			"selectAll": "Select all",
 			"cancelSelectAll": "Cancel select all",
 			"preview": "Preview",
+			"copy": "Copy",
+			"download": "Download",
 			"selectPage": "Select current page",
 			"cancelSelectPage": "Cancel select current page",
 			"addChatRecord": "New",

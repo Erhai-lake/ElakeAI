@@ -542,6 +542,7 @@
 		"ChatConfigs": {
 			"toast": {
 				"getGlobalConfigError": "获取全局配置失败",
+				"writeToClipboard": "已写入到剪贴板",
 				"getError": "获取聊天配置失败",
 				"shareIsEmpty": "分享列表不能为空",
 				"saveSuccess": "保存聊天配置成功",
@@ -559,6 +560,8 @@
 			"selectPage": "选择当前页",
 			"cancelSelectPage": "取消选择当前页",
 			"preview": "预览",
+			"copy": "复制",
+			"download": "下载",
 			"addChatRecord": "新增",
 			"asc": "正序",
 			"desc": "倒序",
