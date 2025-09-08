@@ -78,13 +78,16 @@ export default {
 				shareList: [
 					{
 						title: "text"
+					},
+					{
+						title: "json"
 					}
 				],
 				share: {
 					title: "text"
 				},
 				sharePreview: false,
-				text: ""
+				content: ""
 			}
 		}
 	},
@@ -177,6 +180,14 @@ export default {
 		updateOrderSelected(order) {
 			this.order = order
 			this.getChatRecords(this.page)
+		},
+		/**
+		 * 更新分享类型
+		 * @param share {Object} - 分享类型
+		 */
+		updateShareSelected(share) {
+			this.share.share = share
+			this.share.content = ""
 		},
 		/**
 		 * 加载全局配置
@@ -387,8 +398,8 @@ export default {
 				return
 			}
 			this.share.sharePreview = true
+			const SELECTED_MESSAGES = this.chatData.filter(item => this.share.shareChoice.includes(item.id))
 			if (this.share.share.title === "text") {
-				const SELECTED_MESSAGES = this.chatData.filter(item => this.share.shareChoice.includes(item.id))
 				let text = `# ${this.share.shareTitle}\n\n`
 				SELECTED_MESSAGES.forEach(item => {
 					text += `## ${item.message.role}`
@@ -397,25 +408,47 @@ export default {
 					}
 					text += `:\n${item.message.content}\n\n`
 				})
-				this.share.text = text
+				this.share.content = text
+			} else if (this.share.share.title === "json") {
+				let json = {
+					message: []
+				}
+				SELECTED_MESSAGES.forEach(item => {
+					json.message.push({
+						role: item.message.role,
+						content: item.message.content
+					})
+				})
+				this.share.content = JSON.stringify(json, null, 2)
 			}
 		},
 		/**
 		 * 复制
 		 */
 		copy() {
-			navigator.clipboard.writeText(this.share.text)
+			if (this.share.share.title === "text") {
+				navigator.clipboard.writeText(this.share.content)
+			} else if (this.share.share.title === "json") {
+				navigator.clipboard.writeText(JSON.stringify(JSON.parse(this.share.content)))
+			}
 			toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.writeToClipboard")}`)
 		},
 		/**
 		 * 下载
 		 */
 		download() {
-			// 下载文件
-			const BLOB = new Blob([this.share.text], { type: "text/plain;charset=utf-8" })
 			const DOWNLOAD_A = document.createElement("a")
-			DOWNLOAD_A.href = URL.createObjectURL(BLOB)
-			DOWNLOAD_A.download = `${this.share.shareTitle}.txt`
+			let blob = null
+			let fileName = ""
+			if (this.share.share.title === "text") {
+				blob = new Blob([this.share.content], {type: "text/plain;charset=utf-8"})
+				fileName = `${this.share.shareTitle}.txt`
+			} else if (this.share.share.title === "json") {
+				blob = new Blob([JSON.stringify(JSON.parse(this.share.content))], {type: "application/json;charset=utf-8"})
+				fileName = `${this.share.shareTitle}.json`
+			}
+			DOWNLOAD_A.href = URL.createObjectURL(blob)
+			DOWNLOAD_A.download = fileName
 			DOWNLOAD_A.click()
 			URL.revokeObjectURL(DOWNLOAD_A.href)
 		},
@@ -484,7 +517,7 @@ export default {
 <template>
 	<transition name="fade">
 		<div v-if="share.sharePreview" class="share-preview">
-			<pre class="share"><code v-html="share.text"></code></pre>
+			<pre class="share"><code v-html="share.content"></code></pre>
 			<div class="function">
 				<Button @click="copy">{{ t("views.ChatConfigs.copy") }}</Button>
 				<Button @click="download">{{ t("views.ChatConfigs.download") }}</Button>
@@ -523,7 +556,7 @@ export default {
 								unique-key="title"
 								:selector-list="share.shareList"
 								:selector-selected="share.share"
-								@select="updateOrderSelected"
+								@select="updateShareSelected"
 								:title="t('views.ChatConfigs.shareType')"/>
 							<Button @click="preview">{{ t("views.ChatConfigs.preview") }}</Button>
 						</div>
