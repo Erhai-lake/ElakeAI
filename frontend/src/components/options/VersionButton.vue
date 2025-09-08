@@ -315,14 +315,13 @@ export default {
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		background: rgba(0, 0, 0, 0.85);
-		color: #fff;
+		background-color: var(--background-color);
 		padding: 20px 30px;
 		border-radius: 10px;
 		text-align: left;
 		max-width: 400px;
 		font-family: sans-serif;
-		box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+		box-shadow: 0 0 20px var(--box-shadow-color);
 
 		button {
 			padding: 10px 30px;
