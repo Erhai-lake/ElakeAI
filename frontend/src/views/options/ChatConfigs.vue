@@ -592,6 +592,12 @@ export default {
 			</div>
 			<Loading :loading="share.loading">
 				<div v-if="share.share.title === 'png'" class="share" ref="sharePng">
+					<div class="head">
+						<p class="title">{{ share.shareTitle }}</p>
+						<p class="time">{{
+								t("views.ChatConfigs.numberOfConversations", {num: share.content.length})
+							}}</p>
+					</div>
 					<div
 						v-for="message in share.content"
 						:key="message.id"
@@ -999,9 +1005,41 @@ export default {
 .share {
 	margin-bottom: 20px;
 	width: 100%;
+	background-color: var(--background-color);
+	border-radius: 20px;
 	display: grid;
 	grid-template-columns: repeat(5, auto);
 	gap: 10px;
+
+	.head {
+		padding: 0 20px;
+		box-sizing: border-box;
+		height: 65px;
+		border-radius: 20px;
+		border: 1px solid var(--border-color);
+		box-shadow: 0 6px 15px 0 var(--box-shadow-color);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		overflow: hidden;
+
+		.title {
+			font-size: 20px;
+			font-weight: bold;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			cursor: pointer;
+		}
+
+		.time {
+			font-size: 14px;
+			color: var(--text-secondary-color);
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
 }
 
 .pagination {

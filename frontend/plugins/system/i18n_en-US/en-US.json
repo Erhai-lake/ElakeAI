@@ -563,6 +563,7 @@
 			"preview": "Preview",
 			"copy": "Copy",
 			"download": "Download",
+			"numberOfConversations": "A total of {num} conversations",
 			"selectPage": "Select current page",
 			"cancelSelectPage": "Cancel select current page",
 			"addChatRecord": "New",

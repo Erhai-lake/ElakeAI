@@ -519,15 +519,8 @@ export default {
 		<div class="chat-view">
 			<!-- 顶部标题 -->
 			<div class="head">
-				<div class="left">
-					<p class="title">{{ data.title }}</p>
-					<p class="time">{{ t("views.ChatView.numberOfConversations", {num: data.data.length}) }}</p>
-				</div>
-				<div class="right">
-					<Button>
-						<SVGIcon name="#icon-share"/>
-					</Button>
-				</div>
+				<p class="title">{{ data.title }}</p>
+				<p class="time">{{ t("views.ChatView.numberOfConversations", {num: data.data.length}) }}</p>
 			</div>
 			<!-- 消息列表 -->
 			<RightClickMenu ref="menu"/>
@@ -618,40 +611,27 @@ export default {
 	border-radius: 0 0 20px 20px;
 	backdrop-filter: blur(10px);
 	box-shadow: 0 6px 15px 0 var(--box-shadow-color);
-	display: grid;
-	grid-template-columns: 1fr auto;
-	align-items: center;
-	gap: 30px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	overflow: hidden;
 	z-index: 2;
 
-	.left {
-		display: flex;
-		flex-direction: column;
-		min-width: 0;
+	.title {
+		font-size: 20px;
+		font-weight: bold;
+		white-space: nowrap;
 		overflow: hidden;
-
-		.title {
-			font-size: 18px;
-			font-weight: bold;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			cursor: pointer;
-		}
-
-		.time {
-			font-size: 12px;
-			color: var(--text-secondary-color);
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
+		text-overflow: ellipsis;
+		cursor: pointer;
 	}
 
-	.right {
-		button {
-			padding: 10px 11px;
-		}
+	.time {
+		font-size: 14px;
+		color: var(--text-secondary-color);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 }
 

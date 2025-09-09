@@ -565,6 +565,7 @@
 			"preview": "预览",
 			"copy": "复制",
 			"download": "下载",
+			"numberOfConversations": "共 {num} 条对话",
 			"addChatRecord": "新增",
 			"asc": "正序",
 			"desc": "倒序",
