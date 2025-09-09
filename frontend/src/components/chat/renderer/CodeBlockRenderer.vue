@@ -19,6 +19,10 @@ export default {
 		language: {
 			type: String,
 			default: "plaintext"
+		},
+		copy: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -155,7 +159,7 @@ export default {
 
 <template>
 	<div class="code-block-wrapper">
-		<div class="controls">
+		<div class="controls" v-if="copy">
 			<div class="ball">
 				<div class="red"></div>
 				<div class="yellow"></div>
@@ -238,12 +242,13 @@ export default {
 	pre {
 		position: relative;
 		max-height: 500px;
-		padding: 50px 16px 16px 16px;
 		margin: 0;
 		border-radius: 6px;
 		overflow: hidden;
 
 		code {
+			padding: 30px 20px 30px 20px;
+			box-sizing: border-box;
 			display: block;
 			overflow: auto;
 			max-height: 500px;

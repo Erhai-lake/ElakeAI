@@ -438,7 +438,7 @@ export default {
 				return
 			}
 			this.chatInput = {
-				id: crypto.randomUUID(),
+				id: "00000000-0000-0000-0000-000000000000",
 				message: {
 					content: content,
 					role: "user"
@@ -549,7 +549,8 @@ export default {
 				<component
 					v-if="chatInput && previewBubbles"
 					:is="messageComponentMap.user"
-					:message="chatInput"/>
+					:message="chatInput"
+					:controls="false"/>
 			</div>
 			<div></div>
 			<!-- 底部输入框 -->

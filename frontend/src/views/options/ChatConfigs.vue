@@ -16,11 +16,13 @@ import AssistantMessageCard from "@/components/chat/role/AssistantMessageCard.vu
 import UserMessageCard from "@/components/chat/role/UserMessageCard.vue"
 import html2canvas from "html2canvas"
 import Loading from "@/components/Loading.vue"
+import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 
 export default {
 	name: "ChatConfigs",
 	inject: ["$DB", "$log"],
 	components: {
+		CodeBlockRenderer,
 		Loading,
 		SystemMessageCard,
 		AssistantMessageCard,
@@ -442,7 +444,7 @@ export default {
 						content: item.message.content
 					})
 				})
-				this.share.content = JSON.stringify(json, null, 2)
+				this.share.content = JSON.stringify(json, null, 4)
 			} else {
 				this.share.content = SELECTED_MESSAGES.map(item => item.message.content).join("\n\n")
 			}
@@ -612,7 +614,18 @@ export default {
 							:controls="false"/>
 					</div>
 				</div>
-				<pre v-else class="share"><code v-html="share.content"></code></pre>
+				<CodeBlockRenderer
+					v-else-if="share.share.title === 'text'"
+					class="share"
+					:code="decodeURIComponent(share.content)"
+					language="plaintext"
+					:copy="false"/>
+				<CodeBlockRenderer
+					v-else-if="share.share.title === 'json'"
+					class="share"
+					:code="decodeURIComponent(share.content)"
+					language="json"
+					:copy="false"/>
 			</Loading>
 		</div>
 	</transition>
@@ -812,7 +825,7 @@ export default {
 	background-color: var(--background-color);
 	border-radius: 12px;
 	display: grid;
-	grid-template-rows: 1fr auto auto;
+	grid-template-rows: auto auto 1fr;
 	gap: 10px;
 	z-index: 6;
 	overflow: hidden auto;
@@ -826,6 +839,11 @@ export default {
 		flex-direction: column;
 		gap: 30px;
 		user-select: none;
+		font-size: 16px;
+		line-height: 1.5;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		white-space: pre-wrap;
 	}
 
 	.function {
