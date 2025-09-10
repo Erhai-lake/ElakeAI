@@ -359,7 +359,7 @@ export default {
 					</label>
 				</div>
 			</div>
-			<div class="option-group" v-if="singleSelection.optional.length > 0">
+			<div class="option-group" v-if="singleSelection.optional.includes('logs')">
 				<label class="option-item" v-if="singleSelection.optional.includes('logs')">
 					<input type="checkbox" v-model="singleSelection.selected" value="logs"/>
 					<span class="custom-checkbox"></span>
