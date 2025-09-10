@@ -4,12 +4,14 @@ const DB = new Dexie("ElakeAI")
 DB.version(1).stores({
 	// 聊天记录
 	chats: "&key, title, data, timestamp",
+	// 面具
+	masks: "&key, title, data, configs",
+	// 归档
+	archives: "&key, value",
 	// 配置
 	configs: "&item, value",
 	// API密钥
 	apiKeys: "&key, model, value, remark, url, enabled",
-	// 面具
-	masks: "&key, title, data, configs",
 	// 日志
 	logs: "++id, level, component, message, timestamp"
 })

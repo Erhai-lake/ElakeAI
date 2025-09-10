@@ -288,8 +288,8 @@
 				"getLeftMenuTitleError": "Failed to get left menu title",
 				"getLogoImageError": "Failed to get logo image",
 				"errorGettingChatList": "Failed to get chat list",
-				"successDeletingChatList": "Chat list deleted successfully",
-				"errorDeletingChatList": "Failed to delete chat list"
+				"errorArchivesChat": "Failed to archives chat",
+				"errorDeletingChat": "Failed to delete chat"
 			},
 			"function": {
 				"new": "New chat",
@@ -300,6 +300,7 @@
 				"delete": "Delete chat"
 			},
 			"openChat": "Open chat",
+			"archivesChat": "Archives chat",
 			"deleteChat": "Delete chat"
 		},
 		"MessageCard": {
@@ -530,9 +531,20 @@
 			"AboutElakeAIView": {
 				"loading": "Loading..."
 			},
+			"ArchivesChatView": {
+				"toast": {
+					"errorGettingArchivesChatList": "Failed to get archives chat list",
+					"errorOpeningChat": "Failed to open chat",
+					"errorDeletingChat": "Failed to delete chat"
+				},
+				"search": "Search for archives chat",
+				"openChat": "Open chat",
+				"deleteChat": "Delete chat"
+			},
 			"OptionsNotFoundView": "Nothing here, please go back~",
 			"personalization": "Personalization",
 			"chats": "Chats",
+			"archivesChat": "Archives Chat",
 			"import": "Import",
 			"export": "Export",
 			"plugins": "Plugins",

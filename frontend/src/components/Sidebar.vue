@@ -158,6 +158,14 @@ export default {
 					color: "var(--theme-color)",
 					onClick: (key) => this.openChat(key)
 				},
+        {
+          title: this.t("components.Sidebar.archivesChat"),
+          icon: {
+            type: "svg",
+            src: "#icon-file"
+          },
+          onClick: (key) => this.archivesChat(key)
+        },
 				{
 					title: this.t("components.Sidebar.deleteChat"),
 					icon: {
@@ -176,6 +184,25 @@ export default {
 		openChat(key) {
 			this.$router.push(`/chat/${key}`)
 		},
+    /**
+     * 归档聊天
+     * @param key 聊天ID
+     */
+    async archivesChat(key) {
+      try {
+        const CHAT_DATA = await this.$DB.chats.get(key)
+        await this.$DB.archives.add({
+          key: crypto.randomUUID(),
+          value: CHAT_DATA
+        })
+        await this.$DB.chats.delete(key)
+        await this.chatListGet()
+        this.$router.push({name: "OptionsArchivesChat"})
+      } catch (error) {
+        this.$log.error(`[${this.name}] 聊天列表归档失败`, error)
+        toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorArchivesChat")}`)
+      }
+		},
 		/**
 		 * 删除聊天
 		 * @param key 聊天ID
@@ -183,14 +210,13 @@ export default {
 		async deleteChat(key) {
 			try {
 				await this.$DB.chats.delete(key)
-				toastRegistry.success(`[${this.name}] ${this.t("components.Sidebar.toast.successDeletingChatList")}`)
 				await this.chatListGet()
 				if (this.route.params.key === key) {
 					this.$router.push("/")
 				}
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表删除失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorDeletingChatList")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorDeletingChat")}`)
 			}
 		},
 		/**

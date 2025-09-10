@@ -288,8 +288,8 @@
 				"getLeftMenuTitleError": "获取左侧菜单标题失败",
 				"getLogoImageError": "获取logo图片失败",
 				"errorGettingChatList": "获取聊天列表失败",
-				"successDeletingChatList": "删除聊天列表成功",
-				"errorDeletingChatList": "删除聊天列表失败"
+				"errorArchivesChat": "归档聊天失败",
+				"errorDeletingChat": "删除聊天失败"
 			},
 			"function": {
 				"new": "新建对话",
@@ -300,6 +300,7 @@
 				"delete": "删除对话"
 			},
 			"openChat": "打开对话",
+			"archivesChat": "归档对话",
 			"deleteChat": "删除对话"
 		},
 		"MessageCard": {
@@ -530,9 +531,20 @@
 			"AboutElakeAIView": {
 				"loading": "加载中..."
 			},
+			"ArchivesChatView": {
+				"toast": {
+					"errorGettingArchivesChatList": "获取归档对话列表失败",
+					"errorOpeningChat": "打开对话失败",
+					"errorDeletingChat": "删除对话失败"
+				},
+				"search": "搜索归档对话",
+				"openChat": "打开对话",
+				"deleteChat": "删除对话"
+			},
 			"OptionsNotFoundView": "这里什么都没有, 返回吧~",
 			"personalization": "个性化",
 			"chats": "对话",
+			"archivesChat": "归档对话",
 			"import": "导入",
 			"export": "导出",
 			"plugins": "插件",
