@@ -81,7 +81,7 @@ export default {
 				const LOGO_IMAGE_DATA = await this.$DB.configs.get("logoImage")
 				if (LOGO_IMAGE_DATA?.value) {
 					this.logoImage = {
-						enabled:  LOGO_IMAGE_DATA.value.enabled,
+						enabled: LOGO_IMAGE_DATA.value.enabled,
 						url: LOGO_IMAGE_DATA.value.url,
 						blob: null
 					}
@@ -158,14 +158,14 @@ export default {
 					color: "var(--theme-color)",
 					onClick: (key) => this.openChat(key)
 				},
-        {
-          title: this.t("components.Sidebar.archivesChat"),
-          icon: {
-            type: "svg",
-            src: "#icon-file"
-          },
-          onClick: (key) => this.archivesChat(key)
-        },
+				{
+					title: this.t("components.Sidebar.archivesChat"),
+					icon: {
+						type: "svg",
+						src: "#icon-file"
+					},
+					onClick: (key) => this.archivesChat(key)
+				},
 				{
 					title: this.t("components.Sidebar.deleteChat"),
 					icon: {
@@ -184,24 +184,25 @@ export default {
 		openChat(key) {
 			this.$router.push(`/chat/${key}`)
 		},
-    /**
-     * 归档聊天
-     * @param key 聊天ID
-     */
-    async archivesChat(key) {
-      try {
-        const CHAT_DATA = await this.$DB.chats.get(key)
-        await this.$DB.archives.add({
-          key: crypto.randomUUID(),
-          value: CHAT_DATA
-        })
-        await this.$DB.chats.delete(key)
-        await this.chatListGet()
-        this.$router.push({name: "OptionsArchivesChat"})
-      } catch (error) {
-        this.$log.error(`[${this.name}] 聊天列表归档失败`, error)
-        toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorArchivesChat")}`)
-      }
+		/**
+		 * 归档聊天
+		 * @param key 聊天ID
+		 */
+		async archivesChat(key) {
+			try {
+				const CHAT_DATA = await this.$DB.chats.get(key)
+				await this.$DB.archives.add({
+					key: crypto.randomUUID(),
+					value: CHAT_DATA
+				})
+				await this.$DB.chats.delete(key)
+				await this.chatListGet()
+				this.$router.push({name: "OptionsArchivesChat"})
+				EventBus.emit("[update] archivesListUpdate")
+			} catch (error) {
+				this.$log.error(`[${this.name}] 聊天列表归档失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorArchivesChat")}`)
+			}
 		},
 		/**
 		 * 删除聊天
