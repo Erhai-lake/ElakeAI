@@ -20,6 +20,11 @@ export default {
 				selected: [],
 				selectAll: false
 			},
+			archives: {
+				options: [],
+				selected: [],
+				selectAll: false
+			},
 			masks: {
 				options: [],
 				selected: [],
@@ -42,6 +47,9 @@ export default {
 		"chats.selected"(newVal) {
 			this.chats.selectAll = this.chats.options.length > 0 && newVal.length === this.chats.options.length
 		},
+		"archives.selected"(newVal) {
+			this.archives.selectAll = this.archives.options.length > 0 && newVal.length === this.archives.options.length
+		},
 		"masks.selected"(newVal) {
 			this.masks.selectAll = this.masks.options.length > 0 && newVal.length === this.masks.options.length
 		},
@@ -60,6 +68,7 @@ export default {
 		hasDataToImport() {
 			return this.singleSelection.optional.length > 0
 				|| this.chats.options.length > 0
+				|| this.archives.options.length > 0
 				|| this.masks.options.length > 0
 				|| this.configs.options.length > 0
 				|| this.apiKeys.options.length > 0
@@ -94,6 +103,13 @@ export default {
 				if (this.importFileData.chats && this.importFileData.chats.length > 0) {
 					this.chats = {
 						options: this.importFileData.chats,
+						selected: [],
+						selectAll: false
+					}
+				}
+				if (this.importFileData.archives && this.importFileData.archives.length > 0) {
+					this.archives = {
+						options: this.importFileData.archives,
 						selected: [],
 						selectAll: false
 					}
@@ -184,6 +200,14 @@ export default {
 						IMPORT_TASKS.push(this.importChats(SELECTED_CHATS))
 					}
 				}
+				if (this.archives.selected.length > 0 && this.importFileData.archives) {
+					const SELECTED_ARCHIVES = this.importFileData.archives.filter(archive =>
+						this.archives.selected.includes(archive.key)
+					)
+					if (SELECTED_ARCHIVES.length > 0) {
+						IMPORT_TASKS.push(this.importArchives(SELECTED_ARCHIVES))
+					}
+				}
 				if (this.masks.selected.length > 0 && this.importFileData.masks) {
 					const SELECTED_MASKS = this.importFileData.masks.filter(mask =>
 						this.masks.selected.includes(mask.key)
@@ -244,6 +268,28 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 导入chat数据失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
+			}
+		},
+		/**
+		 * 导入archives
+		 * @param archives - 归档
+		 */
+		async importArchives(archives) {
+			try {
+				await this.$DB.transaction("rw", this.$DB.archives, async () => {
+					for (const archive of archives) {
+						// 生成新的key避免冲突
+						const NEW_KEY = crypto.randomUUID()
+						const ARCHIVE = JSON.parse(JSON.stringify(archive))
+						const NEW_ARCHIVE = {key: NEW_KEY, value: ARCHIVE.value}
+						// 添加新归档
+						await this.$DB.archives.add(NEW_ARCHIVE)
+					}
+				})
+				this.$log.debug(`[${this.name}] 成功导入 ${archives.length} 个archive`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 导入archive数据失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ImportView.toast.importFailedSkipped")}`)
 			}
 		},
@@ -370,6 +416,25 @@ export default {
 					</label>
 				</div>
 			</div>
+			<div class="option-group" v-if="archives.options.length > 0">
+				<label class="option-item">
+					<input type="checkbox" v-model="archives.selectAll" @change="toggleAll('archives')"/>
+					<span class="custom-checkbox"></span>
+					<span>{{
+							t("views.OptionsView.ImportView.selectAll", {item: t("views.OptionsView.ImportView.archives")})
+						}}</span>
+				</label>
+				<div class="sub-options" v-if="archives.options.length">
+					<label
+						class="option-item sub-option"
+						v-for="(option, index) in archives.options"
+						:key="'archives-'+index">
+						<input type="checkbox" v-model="archives.selected" :value="option.key"/>
+						<span class="custom-checkbox"></span>
+						<span>[{{ option.key }}] {{ option.value.title }}</span>
+					</label>
+				</div>
+			</div>
 			<div class="option-group" v-if="masks.options.length > 0">
 				<label class="option-item">
 					<input type="checkbox" v-model="masks.selectAll" @change="toggleAll('masks')"/>
@@ -382,7 +447,7 @@ export default {
 					<label
 						class="option-item sub-option"
 						v-for="(option, index) in masks.options"
-						:key="'chats-'+index">
+						:key="'masks-'+index">
 						<input type="checkbox" v-model="masks.selected" :value="option.key"/>
 						<span class="custom-checkbox"></span>
 						<span>[{{ option.key }}] {{ option.title }}</span>

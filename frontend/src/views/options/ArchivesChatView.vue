@@ -90,9 +90,8 @@ export default {
 			try {
 				await this.$DB.chats.add(JSON.parse(JSON.stringify(archive.value)))
 				await this.$DB.archives.delete(archive.key)
-				EventBus.emit("[update] chatListUpdate")
-				await this.getArchivesChats()
 				this.$router.push({name: "ChatKey", params: {key: archive.value.key}})
+				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表打开失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ArchivesChatView.toast.errorOpeningChat")}`)

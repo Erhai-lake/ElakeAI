@@ -18,6 +18,11 @@ export default {
 				selected: [],
 				selectAll: false
 			},
+			archives: {
+				options: [],
+				selected: [],
+				selectAll: false
+			},
 			masks: {
 				options: [],
 				selected: [],
@@ -39,6 +44,9 @@ export default {
 		"chats.selected"(newVal) {
 			this.chats.selectAll = this.chats.options.length > 0 && newVal.length === this.chats.options.length
 		},
+		"archives.selected"(newVal) {
+			this.archives.selectAll = this.archives.options.length > 0 && newVal.length === this.archives.options.length
+		},
 		"masks.selected"(newVal) {
 			this.masks.selectAll = this.masks.options.length > 0 && newVal.length === this.masks.options.length
 		},
@@ -57,6 +65,7 @@ export default {
 		hasDataToExport() {
 			return this.singleSelection.optional.length > 0
 				|| this.chats.options.length > 0
+				|| this.archives.options.length > 0
 				|| this.masks.options.length > 0
 				|| this.configs.options.length > 0
 				|| this.apiKeys.options.length > 0
@@ -91,6 +100,11 @@ export default {
 			try {
 				this.chats = {
 					options: await this.$DB.chats.toArray(),
+					selected: [],
+					selectAll: false
+				}
+				this.archives = {
+					options: await this.$DB.archives.toArray(),
 					selected: [],
 					selectAll: false
 				}
@@ -133,11 +147,13 @@ export default {
 		async handleExport() {
 			const EXPORT_DATA = {}
 			const CHATS = await this.handleExportChats()
+			const ARCHIVES = await this.handleExportArchives()
 			const MASKS = await this.handleExportMasks()
 			const CONFIGS = await this.handleExportConfigs()
 			const API_KEYS = await this.handleExportApiKey()
 			const LOGS = await this.handleExportLogs()
 			if (CHATS) EXPORT_DATA.chats = CHATS
+			if (ARCHIVES) EXPORT_DATA.archives = ARCHIVES
 			if (MASKS) EXPORT_DATA.masks = MASKS
 			if (CONFIGS) EXPORT_DATA.configs = CONFIGS
 			if (API_KEYS) EXPORT_DATA.apiKeys = API_KEYS
@@ -189,6 +205,26 @@ export default {
 				return CHATS
 			} catch (error) {
 				this.$log.error(`[${this.name}] 获取chats数据失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
+				return null
+			}
+		},
+		/**
+		 * 处理导出archives
+		 */
+		async handleExportArchives() {
+			if (this.archives.selected.length === 0) {
+				return null
+			}
+			try {
+				const ARCHIVES_DATA = await this.$DB.archives.toArray()
+				const ARCHIVES = ARCHIVES_DATA.filter(item => this.archives.selected.includes(item.key))
+				if (ARCHIVES.length === 0) {
+					return null
+				}
+				return ARCHIVES
+			} catch (error) {
+				this.$log.error(`[${this.name}] 获取archives数据失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ExportView.toast.failedToGetData")}`)
 				return null
 			}
@@ -302,6 +338,25 @@ export default {
 					</label>
 				</div>
 			</div>
+			<div class="option-group" v-if="archives.options.length > 0">
+				<label class="option-item">
+					<input type="checkbox" v-model="archives.selectAll" @change="toggleAll('archives')"/>
+					<span class="custom-checkbox"></span>
+					<span>{{
+							t("views.OptionsView.ExportView.selectAll", {item: t("views.OptionsView.ExportView.archives")})
+						}}</span>
+				</label>
+				<div class="sub-options" v-if="archives.options.length">
+					<label
+						class="option-item sub-option"
+						v-for="(option, index) in archives.options"
+						:key="'archives-'+index">
+						<input type="checkbox" v-model="archives.selected" :value="option.key"/>
+						<span class="custom-checkbox"></span>
+						<span>[{{ option.key }}] {{ option.value.title }}</span>
+					</label>
+				</div>
+			</div>
 			<div class="option-group" v-if="masks.options.length > 0">
 				<label class="option-item">
 					<input type="checkbox" v-model="masks.selectAll" @change="toggleAll('masks')"/>
@@ -314,7 +369,7 @@ export default {
 					<label
 						class="option-item sub-option"
 						v-for="(option, index) in masks.options"
-						:key="'chats-'+index">
+						:key="'masks-'+index">
 						<input type="checkbox" v-model="masks.selected" :value="option.key"/>
 						<span class="custom-checkbox"></span>
 						<span>[{{ option.key }}] {{ option.title }}</span>
