@@ -607,6 +607,7 @@
 				"errorDeletingChat": "删除对话失败"
 			},
 			"search": "搜索归档对话",
+			"num": "包含 { num } 条预设对话",
 			"openChat": "打开对话",
 			"deleteChat": "删除对话"
 		}

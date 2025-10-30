@@ -128,16 +128,16 @@ export default {
 				@contextmenu.prevent="onRightClick($event, archive)">
 				<div class="left">
 					<p>{{ archive.value.title }}</p>
-					<p>{{ t("views.MaskView.num", {num: archive.value.data ? archive.value.data.length : 0}) }}</p>
+					<p>{{ t("views.ArchivesChatView.num", {num: archive.value.data ? archive.value.data.length : 0}) }}</p>
 				</div>
 				<div class="right">
 					<Button @click="openChat(archive)">
 						<SVGIcon name="#icon-new"/>
-						{{ t("views.MaskView.chat") }}
+						{{ t("views.ArchivesChatView.openChat") }}
 					</Button>
 					<Button @click="deleteChat(archive.key)">
 						<SVGIcon name="#icon-close"/>
-						{{ t("views.MaskView.delete") }}
+						{{ t("views.ArchivesChatView.deleteChat") }}
 					</Button>
 				</div>
 			</div>

@@ -607,6 +607,7 @@
 				"errorDeletingChat": "Failed to delete chat"
 			},
 			"search": "Search for archives chat",
+			"num": "Contains { num } preset dialogues",
 			"openChat": "Open chat",
 			"deleteChat": "Delete chat"
 		}

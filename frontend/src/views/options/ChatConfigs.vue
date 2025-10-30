@@ -1005,7 +1005,6 @@ export default {
 .share {
 	margin-bottom: 20px;
 	width: 100%;
-	background-color: var(--background-color);
 	border-radius: 20px;
 	display: grid;
 	grid-template-columns: repeat(5, auto);

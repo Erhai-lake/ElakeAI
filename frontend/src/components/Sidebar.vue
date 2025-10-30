@@ -197,7 +197,7 @@ export default {
 				})
 				await this.$DB.chats.delete(key)
 				await this.chatListGet()
-				this.$router.push({name: "OptionsArchivesChat"})
+				this.$router.push({name: "ArchivesChat"})
 				EventBus.emit("[update] archivesListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表归档失败`, error)
