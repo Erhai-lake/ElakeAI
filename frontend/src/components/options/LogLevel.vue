@@ -1,9 +1,15 @@
 <script>
-import Selector from "@/components/input/Selector.vue";
+import Selector from "@/components/input/Selector.vue"
 
 export default {
 	name: "LogLevel",
 	inject: ["$DB", "$log"],
+	props: {
+		prefix: {
+			type: Boolean,
+			default: false
+		}
+	},
 	components: {Selector},
 	data() {
 		return {
@@ -37,7 +43,8 @@ export default {
 		/**
 		 * 更新选中的日志级别
 		 * @param selected {Object} - 选中的日志级别
-		 */ async updateSelectedLevel(selected) {
+		 */
+		async updateSelectedLevel(selected) {
 			this.selected = selected.title
 			try {
 				// 保存设置
@@ -58,7 +65,7 @@ export default {
 		class="selector"
 		unique-key="title"
 		:selector-list="logLevel"
-		:selector-selected="{title: selected}"
+		:selector-selected="prefix ? {title: `级别 ${selected}`} : {title: selected}"
 		:num="4"
 		@update:selectorSelected="updateSelectedLevel"/>
 </template>

@@ -180,7 +180,7 @@ export default {
 			<Button @click="keepScrollToBottom">
 				{{ t("components.Options.Log.function.keepScrollToBottom", {is: isKeepScrollToBottom}) }}
 			</Button>
-			<LogLevel/>
+			<LogLevel :prefix="true"/>
 			<span class="log-count">
 				{{ t("components.Options.Log.count", {count: logs.length, level: levelSelector}) }}
 			</span>
