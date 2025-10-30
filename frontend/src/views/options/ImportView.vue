@@ -100,40 +100,30 @@ export default {
 			try {
 				this.importFileData = await this.readJsonFile(FILE)
 				this.$log.info(`[${this.name}] 开始解析数据`)
-				if (this.importFileData.chats && this.importFileData.chats.length > 0) {
-					this.chats = {
-						options: this.importFileData.chats,
-						selected: [],
-						selectAll: false
-					}
+				this.chats = {
+					options: this.importFileData.chats || [],
+					selected: [],
+					selectAll: false
 				}
-				if (this.importFileData.archives && this.importFileData.archives.length > 0) {
-					this.archives = {
-						options: this.importFileData.archives,
-						selected: [],
-						selectAll: false
-					}
+				this.archives = {
+					options: this.importFileData.archives || [],
+					selected: [],
+					selectAll: false
 				}
-				if (this.importFileData.masks && this.importFileData.masks.length > 0) {
-					this.masks = {
-						options: this.importFileData.masks,
-						selected: [],
-						selectAll: false
-					}
+				this.masks = {
+					options: this.importFileData.masks || [],
+					selected: [],
+					selectAll: false
 				}
-				if (this.importFileData.configs && this.importFileData.configs.length > 0) {
-					this.configs = {
-						options: this.importFileData.configs,
-						selected: [],
-						selectAll: false
-					}
+				this.configs = {
+					options: this.importFileData.configs || [],
+					selected: [],
+					selectAll: false
 				}
-				if (this.importFileData.apiKeys && this.importFileData.apiKeys.length > 0) {
-					this.apiKeys = {
-						options: this.importFileData.apiKeys,
-						selected: [],
-						selectAll: false
-					}
+				this.apiKeys = {
+					options: this.importFileData.apiKeys || [],
+					selected: [],
+					selectAll: false
 				}
 				this.singleSelection = {
 					optional: [],
@@ -374,7 +364,7 @@ export default {
 				await this.$DB.transaction("rw", this.$DB.logs, async () => {
 					for (const log of logs) {
 						// 移除原有id字段, 使用数据库自增id
-						const { id, ...NEW_LOG } = log
+						const {id, ...NEW_LOG} = log
 						// 添加新日志
 						await this.$DB.logs.add(NEW_LOG)
 					}

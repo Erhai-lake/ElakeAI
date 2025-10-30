@@ -135,6 +135,7 @@
 				},
 				"confirmOperationTip": "确认执行此操作? 此操作将不可撤销!",
 				"clearChat": "清空所有对话",
+				"clearMask": "清空所有面具",
 				"clearApiKey": "清空所有API Key",
 				"clearConfig": "清空所有设置",
 				"clearLog": "清空所有日志"
@@ -296,6 +297,7 @@
 				"stow": "折叠边栏",
 				"expand": "展开边栏",
 				"mask": "面具",
+				"archivesChat": "归档对话",
 				"options": "设置",
 				"delete": "删除对话"
 			},
@@ -533,20 +535,9 @@
 			"AboutElakeAIView": {
 				"loading": "加载中..."
 			},
-			"ArchivesChatView": {
-				"toast": {
-					"errorGettingArchivesChatList": "获取归档对话列表失败",
-					"errorOpeningChat": "打开对话失败",
-					"errorDeletingChat": "删除对话失败"
-				},
-				"search": "搜索归档对话",
-				"openChat": "打开对话",
-				"deleteChat": "删除对话"
-			},
 			"OptionsNotFoundView": "这里什么都没有, 返回吧~",
 			"personalization": "个性化",
 			"chats": "对话",
-			"archivesChat": "归档对话",
 			"import": "导入",
 			"export": "导出",
 			"plugins": "插件",
@@ -608,6 +599,16 @@
 			"chat": "对话",
 			"config": "配置",
 			"delete": "删除"
+		},
+		"ArchivesChatView": {
+			"toast": {
+				"errorGettingArchivesChatList": "获取归档对话列表失败",
+				"errorOpeningChat": "打开对话失败",
+				"errorDeletingChat": "删除对话失败"
+			},
+			"search": "搜索归档对话",
+			"openChat": "打开对话",
+			"deleteChat": "删除对话"
 		}
 	}
 }

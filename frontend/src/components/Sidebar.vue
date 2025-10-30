@@ -303,22 +303,32 @@ export default {
 				</div>
 			</div>
 		</Loading>
-		<router-link
-			to="/mask"
-			class="sidebar-mask"
-			:title="t('components.Sidebar.function.mask')"
-			:aria-label="t('components.Sidebar.function.mask')">
-			<SVGIcon name="#icon-mask" size="2em"/>
-			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.mask") }}</p>
-		</router-link>
-		<router-link
-			to="/options"
-			class="sidebar-setup"
-			:title="t('components.Sidebar.function.options')"
-			:aria-label="t('components.Sidebar.function.options')">
-			<SVGIcon name="#icon-setup" size="2em"/>
-			<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.options") }}</p>
-		</router-link>
+		<div>
+			<router-link
+				to="/archivesChat"
+				class="sidebar-archives-chat"
+				:title="t('components.Sidebar.function.archivesChat')"
+				:aria-label="t('components.Sidebar.function.archivesChat')">
+				<SVGIcon name="#icon-archiving" size="2em"/>
+				<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.archivesChat") }}</p>
+			</router-link>
+			<router-link
+				to="/mask"
+				class="sidebar-mask"
+				:title="t('components.Sidebar.function.mask')"
+				:aria-label="t('components.Sidebar.function.mask')">
+				<SVGIcon name="#icon-mask" size="2em"/>
+				<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.mask") }}</p>
+			</router-link>
+			<router-link
+				to="/options"
+				class="sidebar-setup"
+				:title="t('components.Sidebar.function.options')"
+				:aria-label="t('components.Sidebar.function.options')">
+				<SVGIcon name="#icon-setup" size="2em"/>
+				<p v-if="sidebarStatus" aria-hidden="true">{{ t("components.Sidebar.function.options") }}</p>
+			</router-link>
+		</div>
 	</div>
 </template>
 
@@ -329,8 +339,7 @@ export default {
 	border-right: 1px solid var(--border-color);
 	overflow: hidden;
 	display: grid;
-	grid-template-columns: 256px;
-	grid-template-rows: auto 1fr auto auto;
+	grid-template-rows: auto 1fr auto;
 	user-select: none;
 	transition: width 0.3s ease-in-out;
 }
@@ -355,7 +364,7 @@ export default {
 	}
 }
 
-.sidebar-mask, .sidebar-setup {
+.sidebar-mask, .sidebar-archives-chat, .sidebar-setup {
 	border-top: 1px solid var(--border-color);
 	display: grid;
 	justify-content: center;
@@ -377,7 +386,7 @@ export default {
 		grid-template-columns: 48px 1fr repeat(2, 32px);
 	}
 
-	.sidebar-mask, .sidebar-setup {
+	.sidebar-mask, .sidebar-archives-chat, .sidebar-setup {
 		padding: 0 8px;
 		grid-template-columns: 48px 1fr;
 		grid-template-rows: 64px;
@@ -394,7 +403,7 @@ export default {
 		gap: 32px;
 	}
 
-	.sidebar-mask, .sidebar-setup {
+	.sidebar-mask, .sidebar-archives-chat, .sidebar-setup {
 		grid-template-rows: 64px;
 	}
 }

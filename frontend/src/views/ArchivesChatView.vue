@@ -50,7 +50,7 @@ export default {
 				this.archives = archives
 			} catch (error) {
 				this.$log.error(`[${this.name}] 归档列表获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ArchivesChatView.toast.errorGettingArchivesChatList")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ArchivesChatView.toast.errorGettingArchivesChatList")}`)
 			}
 		},
 		/**
@@ -63,7 +63,7 @@ export default {
 			event.stopPropagation()
 			this.$refs.menu.show(event.clientX, event.clientY, [
 				{
-					title: this.t("views.OptionsView.ArchivesChatView.openChat"),
+					title: this.t("views.ArchivesChatView.openChat"),
 					icon: {
 						type: "svg",
 						src: "#icon-new"
@@ -72,7 +72,7 @@ export default {
 					onClick: () => this.openChat(item)
 				},
 				{
-					title: this.t("views.OptionsView.ArchivesChatView.deleteChat"),
+					title: this.t("views.ArchivesChatView.deleteChat"),
 					icon: {
 						type: "svg",
 						src: "#icon-close"
@@ -94,7 +94,7 @@ export default {
 				EventBus.emit("[update] chatListUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天列表打开失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ArchivesChatView.toast.errorOpeningChat")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ArchivesChatView.toast.errorOpeningChat")}`)
 			}
 		},
 		/**
@@ -107,7 +107,7 @@ export default {
 				await this.getArchivesChats()
 			} catch (error) {
 				this.$log.error(`[${this.name}] 聊天删除失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.ArchivesChatView.toast.errorDeletingChat")}`)
+				toastRegistry.error(`[${this.name}] ${this.t("views.ArchivesChatView.toast.errorDeletingChat")}`)
 			}
 		}
 	}
@@ -118,7 +118,7 @@ export default {
 	<RightClickMenu ref="menu"/>
 	<div class="archives-chat-view">
 		<div class="header">
-			<InputText :placeholder="t('views.OptionsView.ArchivesChatView.search')" @input="getArchivesChats"/>
+			<InputText :placeholder="t('views.ArchivesChatView.search')" @input="getArchivesChats"/>
 		</div>
 		<div class="container">
 			<div
@@ -147,6 +147,7 @@ export default {
 
 <style scoped lang="less">
 .archives-chat-view {
+	padding: 20px;
 	box-sizing: border-box;
 	height: 100%;
 	display: grid;

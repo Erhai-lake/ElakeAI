@@ -135,6 +135,7 @@
 				},
 				"confirmOperationTip": "Are you sure you want to perform this operation? This action cannot be undone!",
 				"clearChat": "Clear all chats",
+				"clearMask": "Clear all masks",
 				"clearApiKey": "Clear all API Keys",
 				"clearConfig": "Clear all settings",
 				"clearLog": "Clear all logs"
@@ -296,6 +297,7 @@
 				"stow": "Collapse sidebar",
 				"expand": "Expand sidebar",
 				"mask": "Mask",
+				"archivesChat": "Archives chat",
 				"options": "Settings",
 				"delete": "Delete chat"
 			},
@@ -533,20 +535,9 @@
 			"AboutElakeAIView": {
 				"loading": "Loading..."
 			},
-			"ArchivesChatView": {
-				"toast": {
-					"errorGettingArchivesChatList": "Failed to get archives chat list",
-					"errorOpeningChat": "Failed to open chat",
-					"errorDeletingChat": "Failed to delete chat"
-				},
-				"search": "Search for archives chat",
-				"openChat": "Open chat",
-				"deleteChat": "Delete chat"
-			},
 			"OptionsNotFoundView": "Nothing here, please go back~",
 			"personalization": "Personalization",
 			"chats": "Chats",
-			"archivesChat": "Archives Chat",
 			"import": "Import",
 			"export": "Export",
 			"plugins": "Plugins",
@@ -608,6 +599,16 @@
 			"chat": "Chat",
 			"config": "Config",
 			"delete": "Delete"
+		},
+		"ArchivesChatView": {
+			"toast": {
+				"errorGettingArchivesChatList": "Failed to get archives chat list",
+				"errorOpeningChat": "Failed to open chat",
+				"errorDeletingChat": "Failed to delete chat"
+			},
+			"search": "Search for archives chat",
+			"openChat": "Open chat",
+			"deleteChat": "Delete chat"
 		}
 	}
 }

@@ -37,11 +37,6 @@ const routes = [
 				component: () => import("@/views/options/ChatsView.vue")
 			},
 			{
-				path: "archivesChat",
-				name: "OptionsArchivesChat",
-				component: () => import("@/views/options/ArchivesChatView.vue")
-			},
-			{
 				path: "import",
 				name: "OptionsImport",
 				component: () => import("@/views/options/ImportView.vue")
@@ -93,6 +88,11 @@ const routes = [
 		path: "/mask",
 		name: "Mask",
 		component: () => import("@/views/MaskView.vue")
+	},
+	{
+		path: "/archivesChat",
+		name: "ArchivesChat",
+		component: () => import("@/views/ArchivesChatView.vue")
 	},
 	{
 		// 404

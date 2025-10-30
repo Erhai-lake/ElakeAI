@@ -38,6 +38,19 @@ export default {
 			}
 		},
 		/**
+		 * 清除所有面具
+		 */
+		async clearMask() {
+			if (!confirm(this.t("components.Options.HazardousOperations.confirmOperationTip"))) return
+			try {
+				await this.$DB.masks.clear()
+				toastRegistry.success(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationSuccess")}`)
+			} catch (error) {
+				this.$log.error(`[${this.name}] 操作失败`, error)
+				toastRegistry.error(`[${this.name}] ${this.t("components.Options.HazardousOperations.toast.operationFailed")}`)
+			}
+		},
+		/**
 		 * 清除所有API Key
 		 */
 		async clearApiKey() {
@@ -86,6 +99,7 @@ export default {
 <template>
 	<div class="hazardous-operation">
 		<Button @click="clearChat">{{ t("components.Options.HazardousOperations.clearChat") }}</Button>
+		<Button @click="clearMask">{{ t("components.Options.HazardousOperations.clearMask") }}</Button>
 		<Button @click="clearApiKey">{{ t("components.Options.HazardousOperations.clearApiKey") }}</Button>
 		<Button @click="clearConfigs">{{ t("components.Options.HazardousOperations.clearConfig") }}</Button>
 		<Button @click="clearLog">{{ t("components.Options.HazardousOperations.clearLog") }}</Button>

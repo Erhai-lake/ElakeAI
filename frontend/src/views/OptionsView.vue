@@ -14,7 +14,6 @@ export default {
 			menuItems: [
 				"personalization",
 				"chats",
-				"archivesChat",
 				"import",
 				"export",
 				"plugins",
