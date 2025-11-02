@@ -15,12 +15,8 @@ export default {
 	data() {
 		return {
 			name: "ChatAIKey",
-			status: {
-				// 新增表单状态
-				addFormStatus: false,
-				// 编辑表单状态
-				editFormStatus: false
-			},
+			// 表单状态 0: 关闭 1: 新增 2: 编辑
+			formStatus: 0,
 			// 平台列表
 			platformList: [],
 			// 选中的模型
@@ -29,19 +25,13 @@ export default {
 			keyPools: [],
 			// 操作选择
 			operationSelection: [],
-			// 新增表单数据
-			newKey: {
+			// 表单数据
+			formData: {
+				key: "",
 				value: "",
 				remark: "",
 				url: "",
 				enabled: true
-			},
-			// 编辑表单数据
-			editKey: {
-				key: "",
-				value: "",
-				remark: "",
-				url: ""
 			}
 		}
 	},
@@ -56,6 +46,7 @@ export default {
 	},
 	created() {
 		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
+		// 初始化平台
 		this.loadPlatform()
 		// 初始化Key池
 		this.loadKeyPools()
@@ -162,41 +153,74 @@ export default {
 			}
 		},
 		/**
+		 * Key脱敏显示
+		 * @param key {String} - Key
+		 * @returns {*|string} - 脱敏后的Key
+		 */
+		maskKey(key) {
+			if (!key) return ""
+			if (key.length < 8) return key
+			return key.slice(0, 4) + '****' + key.slice(-4)
+		},
+		/**
+		 * 切换新增/编辑表单状态
+		 */
+		async toggleFormStatus(type = 0) {
+			if (type === 1) {
+				this.formData = {
+					key: "",
+					value: "",
+					remark: "",
+					url: "",
+					enabled: true
+				}
+				this.formStatus = 1
+			} else if (type === 2) {
+				// 禁止空编辑
+				if (!this.operationSelection || this.operationSelection.length === 0) {
+					this.$log.warn(`[${this.name}] 编辑Key时未选中任何Key`)
+					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
+					return
+				}
+				// 禁止多选编辑
+				if (this.operationSelection.length > 1) {
+					this.$log.warn(`[${this.name}] 编辑Key时选中了过多的key`)
+					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectAKey")}`)
+					return
+				}
+				try {
+					// 加载编辑数据
+					this.formData = await this.$DB.apiKeys.get(this.operationSelection[0])
+					this.formStatus = 2
+				} catch (error) {
+					this.$log.error(`[${this.name}] 获取Key失败`, error)
+					toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.getKeyError")}`)
+				}
+			} else {
+				this.formData = {
+					key: "",
+					value: "",
+					remark: "",
+					url: "",
+					enabled: true
+				}
+				this.formStatus = 0
+			}
+		},
+		/**
 		 * 新增Key
 		 */
 		async addNewKey() {
-			// 禁止key空
-			if (!this.newKey.value) {
-				this.$log.warn(`[${this.name}] 新建Key时Key为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.keyNull")}`)
+			// 校验表单数据
+			if (!this.verificationForm(1)) {
 				return
-			}
-			// 禁止备注为空
-			if (!this.newKey.remark) {
-				this.$log.warn(`[${this.name}] 新建Key时备注为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkNull")}`)
-				return
-			}
-			// url空则使用默认url
-			if (!this.newKey.url) {
-				this.newKey.url = this.selectedPlatform.url
-			}
-			// 校验url
-			if (!this.isValidUrl(this.newKey.url)) {
-				this.$log.warn(`[${this.name}] 新建Key时URL校验失败`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.invalidUrl")}`)
-				return
-			}
-			// 删除Url末尾的/
-			if (this.newKey.url.endsWith("/")) {
-				this.newKey.url = this.newKey.url.slice(0, -1)
 			}
 			try {
 				// 检查remark是否重复
 				const IS_REMARK_EXIST = await this.$DB.apiKeys
 					.where("remark")
-					.equals(this.newKey.remark)
-					.and(item => item.key !== this.newKey.key)
+					.equals(this.formData.remark)
+					.and(item => item.key !== this.formData.key)
 					.first()
 				if (IS_REMARK_EXIST) {
 					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
@@ -208,14 +232,12 @@ export default {
 				await this.$DB.apiKeys.add({
 					key: NEW_KEY_ID,
 					model: this.selectedPlatform.title,
-					value: this.newKey.value,
-					remark: this.newKey.remark,
-					url: this.newKey.url,
-					enabled: this.newKey.enabled
+					value: this.formData.value,
+					remark: this.formData.remark,
+					url: this.formData.url,
+					enabled: true
 				})
-				// 重置表单
-				this.newKey = {key: "", value: "", remark: "", url: "", enabled: true}
-				this.status.addFormStatus = false
+				await this.toggleFormStatus()
 				toastRegistry.success(this.t("components.Options.ChatAIKey.toast.addKeySuccess"))
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
@@ -224,18 +246,7 @@ export default {
 			}
 		},
 		/**
-		 * Key脱敏显示
-		 * @param key {String} - Key
-		 * @returns {*|string} - 脱敏后的Key
-		 */
-		maskKey(key) {
-			if (!key) return ""
-			if (key.length < 8) return key
-			return key.slice(0, 4) + '****' + key.slice(-4)
-		},
-		/**
 		 * 删除Key(批量)
-		 * @returns {Promise<void>} - 删除Key
 		 */
 		async removeSelectedKeys() {
 			// 禁止空删除
@@ -246,6 +257,9 @@ export default {
 			}
 			try {
 				await this.$DB.apiKeys.bulkDelete(this.operationSelection)
+				if (this.formStatus === 2) {
+					await this.toggleFormStatus()
+				}
 				this.operationSelection = []
 				toastRegistry.success(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.removeKeySuccess")}`)
 				EventBus.emit("[update] keyPoolUpdate")
@@ -255,74 +269,19 @@ export default {
 			}
 		},
 		/**
-		 * 加载Key数据到编辑表单
-		 * @returns {Promise<void>} - 编辑Key
+		 * 更新Key
 		 */
-		async toggleEditSelected() {
-			// 禁止空编辑
-			if (!this.operationSelection || this.operationSelection.length === 0) {
-				this.$log.warn(`[${this.name}] 编辑Key时未选中任何Key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
+		async updateKey() {
+			// 校验表单数据
+			if (!this.verificationForm(2)) {
 				return
-			}
-			// 禁止多选编辑
-			if (this.operationSelection.length > 1) {
-				this.$log.warn(`[${this.name}] 编辑Key时选中了过多的key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectAKey")}`)
-				return
-			}
-			try {
-				// 加载编辑数据
-				const KEY_DATA = await this.$DB.apiKeys.get(this.operationSelection[0])
-				this.editKey = {
-					key: KEY_DATA.key,
-					value: KEY_DATA.value,
-					remark: KEY_DATA.remark,
-					url: KEY_DATA.url
-				}
-				this.status.editFormStatus = !this.status.editFormStatus
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取Key失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.getKeyError")}`)
-			}
-		},
-		/**
-		 * 编辑Key
-		 * @returns {Promise<void>} - 编辑Key
-		 */
-		async editSelectedKeys() {
-			// 禁止空编辑
-			if (!this.editKey.value) {
-				this.$log.warn(`[${this.name}] 编辑Key时选Key为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.keyNull")}`)
-				return
-			}
-			// 禁止备注为空
-			if (!this.editKey.remark) {
-				this.$log.warn(`[${this.name}] 编辑Key时备注为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkNull")}`)
-				return
-			}
-			// url空则使用默认url
-			if (!this.editKey.url) {
-				this.editKey.url = this.selectedPlatform.url
-			}
-			// 校验url
-			if (!this.isValidUrl(this.editKey.url)) {
-				this.$log.warn(`[${this.name}] 删除Key时URL校验失败`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.invalidUrl")}`)
-				return
-			}
-			// 删除Url末尾的/
-			if (this.editKey.url.endsWith("/")) {
-				this.editKey.url = this.editKey.url.slice(0, -1)
 			}
 			try {
 				// 检查remark是否重复
 				const IS_REMARK_EXIST = await this.$DB.apiKeys
 					.where("remark")
-					.equals(this.editKey.remark)
-					.and(item => item.key !== this.editKey.key)
+					.equals(this.formData.remark)
+					.and(item => item.key !== this.formData.key)
 					.first()
 				if (IS_REMARK_EXIST) {
 					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
@@ -330,26 +289,52 @@ export default {
 					return
 				}
 				// 写入数据库
-				await this.$DB.apiKeys.update(this.editKey.key, {
-					value: this.editKey.value,
-					remark: this.editKey.remark,
-					url: this.editKey.url
+				await this.$DB.apiKeys.update(this.formData.key, {
+					value: this.formData.value,
+					remark: this.formData.remark,
+					url: this.formData.url
 				})
-				// 重置表单
-				this.editKey = {
-					key: "",
-					value: "",
-					remark: "",
-					url: "",
-					enabled: true
-				}
-				this.status.editFormStatus = false
+				await this.toggleFormStatus()
 				toastRegistry.success(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.editKeySuccess")}`)
 				EventBus.emit("[update] keyPoolUpdate")
 			} catch (error) {
 				this.$log.error(`[${this.name}] 编辑Key失败`, error)
 				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.editKeyError")}`)
 			}
+		},
+		/**
+		 * 校验表单数据
+		 * @param type {Number} - 校验类型 1:新建 2:编辑
+		 * @returns {boolean} - 是否校验通过
+		 */
+		verificationForm(type = 0) {
+			// 禁止空编辑
+			if (!this.formData.value) {
+				this.$log.warn(`[${this.name}] ${type === 1 ? "新建" : "编辑"}Key时选Key为空`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.keyNull")}`)
+				return false
+			}
+			// 禁止备注为空
+			if (!this.formData.remark) {
+				this.$log.warn(`[${this.name}] ${type === 1 ? "新建" : "编辑"}Key时备注为空`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkNull")}`)
+				return false
+			}
+			// url空则使用默认url
+			if (!this.formData.url) {
+				this.formData.url = this.selectedPlatform.url
+			}
+			// 删除Url末尾的/
+			if (this.formData.url.endsWith("/")) {
+				this.formData.url = this.formData.url.slice(0, -1)
+			}
+			// 校验url
+			if (!this.isValidUrl(this.formData.url)) {
+				this.$log.warn(`[${this.name}] ${type === 1 ? "新建" : "编辑"}Key时URL校验失败`)
+				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.invalidUrl")}`)
+				return false
+			}
+			return true
 		},
 		/**
 		 * 校验url
@@ -367,7 +352,6 @@ export default {
 		/**
 		 * 切换Key启用状态
 		 * @param keyItem {Object} - Key
-		 * @returns {Promise<void>} - 切换Key启用状态
 		 */
 		async toggleKeyEnable(keyItem) {
 			try {
@@ -388,7 +372,6 @@ export default {
 		/**
 		 * 切换Key启用状态(批量)
 		 * @param status {Boolean} - 启用状态
-		 * @returns {Promise<void>} - 切换Key启用状态
 		 */
 		async batchToggleEnable(status) {
 			if (!this.operationSelection || this.operationSelection.length === 0) {
@@ -457,11 +440,11 @@ export default {
 						uniqueKey="title"
 						@update:selectorSelected="updateSelectedModel"/>
 					<!-- 新增按钮 -->
-					<Button @click="status.addFormStatus = !status.addFormStatus">
+					<Button @click="toggleFormStatus(1)">
 						{{ t("components.Options.ChatAIKey.operationButton.add") }}
 					</Button>
 					<!-- 编辑选中 -->
-					<Button @click="toggleEditSelected">
+					<Button @click="toggleFormStatus(2)">
 						{{ t("components.Options.ChatAIKey.operationButton.edit") }}
 					</Button>
 					<!-- 移除选中 -->
@@ -482,58 +465,37 @@ export default {
 					</Button>
 					<div/>
 				</div>
-				<!-- 新增表单 -->
-				<div v-if="status.addFormStatus" class="add-form">
-					<h3>{{ t("components.Options.ChatAIKey.operationButton.add") }}</h3>
+				<!-- 新增/编辑表单 -->
+				<div v-if="formStatus !== 0" class="add-form">
+					<h3>{{
+							t(`components.Options.ChatAIKey.operationButton.${formStatus === 1 ? "add" : "edit"}`)
+						}}</h3>
 					<div class="form-group">
 						<label>{{ t("components.Options.ChatAIKey.form.key") }}</label>
 						<InputText
-							v-model="newKey.value"
+							v-model="formData.value"
 							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKey')"/>
 					</div>
 					<div class="form-group">
 						<label>{{ t("components.Options.ChatAIKey.form.remarks") }}</label>
 						<InputText
-							v-model="newKey.remark"
+							v-model="formData.remark"
 							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
 					</div>
 					<div class="form-group">
 						<label>{{ t("components.Options.ChatAIKey.form.url") }}</label>
 						<InputText
-							v-model="newKey.url"
+							v-model="formData.url"
 							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyUrl')"/>
 					</div>
 					<div class="form-actions">
-						<Button @click="addNewKey">{{ t("components.Options.ChatAIKey.form.save") }}</Button>
-						<Button @click="status.addFormStatus = false">
-							{{ t("components.Options.ChatAIKey.form.cancel") }}
+						<Button v-if="formStatus === 1" @click="addNewKey">
+							{{ t("components.Options.ChatAIKey.form.save") }}
 						</Button>
-					</div>
-				</div>
-				<!-- 编辑表单 -->
-				<div v-if="status.editFormStatus" class="add-form">
-					<h3>{{ t("components.Options.ChatAIKey.operationButton.edit") }}</h3>
-					<div class="form-group">
-						<label>{{ t("components.Options.ChatAIKey.form.key") }}</label>
-						<InputText
-							v-model="editKey.value"
-							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKey')"/>
-					</div>
-					<div class="form-group">
-						<label>{{ t("components.Options.ChatAIKey.form.remarks") }}</label>
-						<InputText
-							v-model="editKey.remark"
-							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
-					</div>
-					<div class="form-group">
-						<label>{{ t("components.Options.ChatAIKey.form.url") }}</label>
-						<InputText
-							v-model="editKey.url"
-							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyUrl')"/>
-					</div>
-					<div class="form-actions">
-						<Button @click="editSelectedKeys">{{ t("components.Options.ChatAIKey.form.save") }}</Button>
-						<Button @click="status.editFormStatus = false">
+						<Button v-else @click="updateKey">
+							{{ t("components.Options.ChatAIKey.form.save") }}
+						</Button>
+						<Button @click="toggleFormStatus">
 							{{ t("components.Options.ChatAIKey.form.cancel") }}
 						</Button>
 					</div>
