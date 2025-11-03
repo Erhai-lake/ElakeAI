@@ -153,7 +153,7 @@ export default {
 				deviceType: DEVICE_TYPE,
 				screen: `${window.screen.width}x${window.screen.height}`,
 				viewport: `${window.innerWidth}x${window.innerHeight}`,
-				language: navigator.language || navigator.userLanguage,
+				language: navigator.language,
 				online: navigator.onLine,
 				cookieEnabled: navigator.cookieEnabled
 			}
