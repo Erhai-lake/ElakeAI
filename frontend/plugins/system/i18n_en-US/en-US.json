@@ -333,19 +333,22 @@
 		"MermaidRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "Mermaid rendering failed! Please check the code or switch to the \"Code\" tab to view the original content",
+			"renderError": "Mermaid rendering failed",
+			"solution": "Please check the Mermaid code or switch to the \"Code\" tab to view the original content",
 			"export": "Export"
 		},
 		"FlowchartRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "Flowchart rendering failed! Please check the code or switch to the \"Code\" tab to view the original content",
+			"renderError": "Flowchart rendering failed",
+			"solution": "Please check the Flowchart code or switch to the \"Code\" tab to view the original content",
 			"export": "Export"
 		},
 		"PlantUMLRenderer": {
 			"preview": "Preview",
 			"code": "Code",
-			"renderError": "PlantUML rendering failed! Please check the code or switch to the \"Code\" tab to view the original content",
+			"renderError": "PlantUML rendering failed",
+			"solution": "Please check the network connection or PlantUML proxy configuration, of course, does not rule out the code problem",
 			"export": "Export"
 		},
 		"DevTools": {

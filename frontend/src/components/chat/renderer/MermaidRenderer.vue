@@ -30,11 +30,6 @@ const props = defineProps({
 const activeTab = ref("preview")
 
 /**
- * Mermaid渲染错误
- */
-const error = ref(null)
-
-/**
  * 导出列表
  */
 const exportList = ref(ExportList())
@@ -83,7 +78,7 @@ const renderMermaid = async () => {
 		try {
 			await MERMAID.parse(props.code)
 		} catch (parseError) {
-			error.value = parseError.message
+			showPlaceholderImage()
 			Logger.error(`[${name}] Mermaid语法错误`, parseError)
 			return
 		}
@@ -121,7 +116,51 @@ const renderMermaid = async () => {
 		initZoom(containerRef.value)
 	} catch (error) {
 		Logger.error(`[${name}] Mermaid渲染失败`, error)
-		error.value = error.message
+		showPlaceholderImage()
+	}
+}
+
+/**
+ * 显示占位图
+ */
+const showPlaceholderImage = () => {
+	const CONTAINER = containerRef.value
+	CONTAINER.innerHTML = ""
+	const WRAPPER = document.createElement("div")
+	WRAPPER.className = "uml-wrapper"
+	const SVG_CONTENT = `
+		<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+			<rect width="100%" height="100%" fill="#f5f5f5"/>
+			<text x="50%" y="45%" text-anchor="middle" dy="0.3em" fill="#999" font-family="Arial, sans-serif">
+				${t("components.MermaidRenderer.renderError")}
+			</text>
+			<text x="50%" y="65%" text-anchor="middle" dy="0.3em" fill="#ccc" font-family="Arial, sans-serif" font-size="12">
+				${t("components.MermaidRenderer.solution")}
+			</text>
+		</svg>
+	`
+	// 将SVG转换为Data URL
+	const SVG_BLOB = new Blob([SVG_CONTENT], { type: "image/svg+xml" })
+	const DATA_URL = URL.createObjectURL(SVG_BLOB)
+	WRAPPER.innerHTML = `<img src="${DATA_URL}" alt="Mermaid" class="uml-image" draggable="false"/>`
+	CONTAINER.appendChild(WRAPPER)
+	const IMG = WRAPPER.querySelector("img")
+	if (!IMG) return
+	// 图片加载后清理URL对象
+	IMG.onload = () => {
+		const MAX_HEIGHT = 400
+		const MIN_HEIGHT = 170
+		IMG.style.maxHeight = `${MAX_HEIGHT}px`
+		if (IMG.clientHeight < MIN_HEIGHT) {
+			IMG.style.height = `${MIN_HEIGHT}px`
+		}
+		initZoom(WRAPPER.parentElement)
+		// 清理URL对象，避免内存泄漏
+		URL.revokeObjectURL(DATA_URL)
+	}
+	// 如果图片加载失败也清理URL
+	IMG.onerror = () => {
+		URL.revokeObjectURL(DATA_URL)
 	}
 }
 
@@ -155,11 +194,6 @@ onMounted(() => {
 			<TabsTab name="preview">
 				<template #label>{{ t("components.MermaidRenderer.preview") }}</template>
 				<div ref="containerRef">
-					<div v-if="error" class="mermaid-error">
-						{{ t("components.MermaidRenderer.renderError") }}
-						<br>
-						{{ error }}
-					</div>
 					<div class="toolbar">
 						<!--第一排-->
 						<div></div>
@@ -203,6 +237,19 @@ onMounted(() => {
 		</Tabs>
 	</div>
 </template>
+
+<style>
+.uml-image {
+	display: block;
+	width: 100%;
+	object-fit: contain;
+	max-height: 600px;
+	min-height: 170px;
+	user-select: none;
+	pointer-events: auto;
+	-webkit-user-drag: none;
+}
+</style>
 
 <style scoped lang="less">
 .mermaid-renderer {
@@ -248,11 +295,6 @@ onMounted(() => {
 		width: 200px;
 		z-index: 1;
 		opacity: 0;
-	}
-
-	.mermaid-error {
-		color: red;
-		font-weight: bold;
 	}
 }
 </style>

@@ -9,6 +9,7 @@ import Button from "@/components/input/Button.vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import SVGIcon from "@/components/SVGIcon.vue"
+import axios from "axios"
 import Dexie from "@/services/Dexie"
 import Logger from "@/services/Logger"
 
@@ -79,25 +80,143 @@ const renderPlantUML = async () => {
 	try {
 		const PLANTUML_ENCODER = (await import("plantuml-encoder")).default
 		const ENCODED = PLANTUML_ENCODER.encode(props.code)
-		url.value = plantumlUrl.replace("{{encoded}}", ENCODED)
-		const CONTAINER = containerRef.value
-		const WRAPPER = document.createElement("div")
-		WRAPPER.className = "uml-wrapper"
-		WRAPPER.innerHTML = `<img src="${url.value}" alt="PlantUML" class="uml-image" draggable="false"/>`
-		CONTAINER.appendChild(WRAPPER)
-		const IMG = WRAPPER.querySelector("img")
-		IMG.onload = async () => {
-			const MAX_HEIGHT = 400
-			const MIN_HEIGHT = 170
-			IMG.style.maxHeight = `${MAX_HEIGHT}px`
-			if (IMG.clientHeight < MIN_HEIGHT) {
-				IMG.style.height = `${MIN_HEIGHT}px`
-			}
-			initZoom(CONTAINER)
+		// 生成缓存键
+		const CACHE_KEY = `plantuml_${btoa(plantumlUrl + "|" + ENCODED).replace(/[+/=]/g, "_")}`
+		// 检查会话存储中是否命中缓存
+		const CACHED_DATA = sessionStorage.getItem(CACHE_KEY)
+		if (CACHED_DATA) {
+			// 使用缓存的图片数据
+			renderFromCache(CACHED_DATA)
+			return
 		}
+		// 没有缓存, 发起请求
+		await fetchAndCachePlantUML(plantumlUrl, ENCODED, CACHE_KEY)
 	} catch (error) {
 		Logger.error(`[${name}] PlantUML渲染失败`, error)
 		error.value = error.message
+		showPlaceholderImage()
+	}
+}
+
+/**
+ * 从缓存渲染PlantUML
+ */
+const renderFromCache = (cachedData) => {
+	try {
+		const CONTAINER = containerRef.value
+		const WRAPPER = document.createElement("div")
+		WRAPPER.className = "uml-wrapper"
+		// 直接使用缓存的图片URL或base64数据
+		WRAPPER.innerHTML = `<img src="${cachedData}" alt="PlantUML" class="uml-image" draggable="false"/>`
+		CONTAINER.appendChild(WRAPPER)
+		initImageHandling(WRAPPER)
+	} catch (error) {
+		Logger.error(`[${name}] 缓存渲染失败`, error)
+		showPlaceholderImage()
+	}
+}
+
+/**
+ * 请求并缓存PlantUML
+ */
+const fetchAndCachePlantUML = async (plantumlUrl, encoded, cacheKey) => {
+	try {
+		const IMAGE_URL = plantumlUrl.replace("{{encoded}}", encoded)
+		url.value = IMAGE_URL
+		const RESPONSE = await axios.get(IMAGE_URL, {
+			responseType: "blob",
+			timeout: 15000,
+			validateStatus: function (status) {
+				return status >= 200 && status < 300
+			}
+		})
+		// 检查内容类型
+		const CONTENT_TYPE = RESPONSE.headers.get("content-type") || ""
+		const IS_IMAGE = CONTENT_TYPE.startsWith("image/")
+		if (!IS_IMAGE) {
+			Logger.warn(`[${name}] 非图片类型: ${CONTENT_TYPE}`)
+			showPlaceholderImage()
+			return
+		}
+		// 将图片转换为base64存储, 避免格式问题
+		const BLOB = RESPONSE.data
+		// 检查blob大小, 避免存储过大的图片
+		// 2MB限制
+		if (BLOB.size > 2 * 1024 * 1024) {
+			Logger.warn(`[${name}] 图片过大, 不进行缓存, 大小: ${BLOB.size} bytes`)
+			showPlaceholderImage()
+			return
+		}
+		const BASE64_DATA = await blobToBase64(BLOB)
+		// 存储到会话缓存
+		sessionStorage.setItem(cacheKey, BASE64_DATA)
+		// 渲染图片
+		const CONTAINER = containerRef.value
+		const WRAPPER = document.createElement("div")
+		WRAPPER.className = "uml-wrapper"
+		WRAPPER.innerHTML = `<img src="${BASE64_DATA}" alt="PlantUML" class="uml-image" draggable="false"/>`
+		CONTAINER.appendChild(WRAPPER)
+		initImageHandling(WRAPPER)
+	} catch (error) {
+		Logger.warn(`[${name}] PlantUML请求失败, 使用占位图`, error)
+		showPlaceholderImage()
+	}
+}
+
+/**
+ * Blob转换为Base64
+ */
+const blobToBase64 = (blob) => {
+	return new Promise((resolve, reject) => {
+		const READER = new FileReader()
+		READER.onload = () => resolve(READER.result)
+		READER.onerror = reject
+		READER.readAsDataURL(blob)
+	})
+}
+
+/**
+ * 显示占位图
+ */
+const showPlaceholderImage = () => {
+	const CONTAINER = containerRef.value
+	CONTAINER.innerHTML = ""
+	const WRAPPER = document.createElement("div")
+	WRAPPER.className = "uml-wrapper"
+	const SVG_CONTENT = `
+		<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+			<rect width="100%" height="100%" fill="#f5f5f5"/>
+			<text x="50%" y="45%" text-anchor="middle" dy="0.3em" fill="#999" font-family="Arial, sans-serif">
+				${t("components.PlantUMLRenderer.renderError")}
+			</text>
+			<text x="50%" y="65%" text-anchor="middle" dy="0.3em" fill="#ccc" font-family="Arial, sans-serif" font-size="12">
+				${t("components.PlantUMLRenderer.solution")}
+			</text>
+		</svg>
+	`
+	// 将SVG转换为Data URL
+	const SVG_BLOB = new Blob([SVG_CONTENT], { type: "image/svg+xml" })
+	const DATA_URL = URL.createObjectURL(SVG_BLOB)
+	WRAPPER.innerHTML = `<img src="${DATA_URL}" alt="PlantUML" class="uml-image" draggable="false"/>`
+	CONTAINER.appendChild(WRAPPER)
+	initImageHandling(WRAPPER)
+}
+
+/**
+ * 初始化图片处理
+ */
+const initImageHandling = (wrapper) => {
+	const IMG = wrapper.querySelector("img")
+	if (!IMG) return
+	// 图片加载后清理URL对象
+	IMG.onload = () => {
+		const MAX_HEIGHT = 400
+		const MIN_HEIGHT = 170
+		IMG.style.maxHeight = `${MAX_HEIGHT}px`
+		if (IMG.clientHeight < MIN_HEIGHT) {
+			IMG.style.height = `${MIN_HEIGHT}px`
+		}
+		initZoom(wrapper.parentElement)
 	}
 }
 
