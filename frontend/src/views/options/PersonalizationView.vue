@@ -6,6 +6,7 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import LeftMenuTitle from "@/components/options/LeftMenuTitle.vue"
 import LogoImage from "@/components/options/LogoImage.vue"
 import BackgroundImage from "@/components/options/BackgroundImage.vue"
+import PlantumlUrl from "@/components/options/PlantumlUrl.vue"
 
 /**
  * 翻译函数
@@ -43,6 +44,10 @@ const t = (key, params = {}) => {
 	<div class="item">
 		{{ t("views.OptionsView.PersonalizationView.backgroundImage") }}
 		<BackgroundImage/>
+	</div>
+	<div class="item">
+		{{ `${t("views.OptionsView.PersonalizationView.plantumlUrl")}\{\{encoded\}\}` }}
+		<PlantumlUrl/>
 	</div>
 </template>
 

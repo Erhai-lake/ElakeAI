@@ -9,6 +9,7 @@ import Button from "@/components/input/Button.vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import SVGIcon from "@/components/SVGIcon.vue"
+import Dexie from "@/services/Dexie"
 import Logger from "@/services/Logger"
 
 const name = "PlantUMLRenderer"
@@ -67,10 +68,18 @@ const t = (key, params = {}) => {
  * 渲染PlantUML
  */
 const renderPlantUML = async () => {
+	let plantumlUrl
+	try {
+		// 读取PlantUML的URL配置
+		plantumlUrl = (await Dexie.configs.get("plantumlUrl")).value || "https://www.plantuml.com/plantuml/svg/{{encoded}}"
+	} catch (error) {
+		Logger.error(`[${name}] PlantUML URL获取失败`, error)
+		plantumlUrl = "https://www.plantuml.com/plantuml/svg/{{encoded}}"
+	}
 	try {
 		const PLANTUML_ENCODER = (await import("plantuml-encoder")).default
 		const ENCODED = PLANTUML_ENCODER.encode(props.code)
-		url.value = `https://www.plantuml.com/plantuml/svg/${ENCODED}`
+		url.value = plantumlUrl.replace("{{encoded}}", ENCODED)
 		const CONTAINER = containerRef.value
 		const WRAPPER = document.createElement("div")
 		WRAPPER.className = "uml-wrapper"

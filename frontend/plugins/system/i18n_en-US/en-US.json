@@ -230,6 +230,16 @@
 					"getPreviewBubblesError": "Failed to get preview bubbles",
 					"applicationPreviewBubblesError": "Failed to apply preview bubbles"
 				}
+			},
+			"PlantumlUrl": {
+				"toast": {
+					"EmptyError": "PlantUML URL cannot be empty",
+					"HeadError": "PlantUML URL must start with https:// or http://",
+					"PlaceholderError": "PlantUML URL must contain placeholder",
+					"InvalidError": "PlantUML proxy address did not respond, may be address error or rate limited",
+					"getError": "Failed to get PlantUML URL",
+					"applyError": "Failed to apply PlantUML URL"
+				}
 			}
 		},
 		"Role": {
@@ -423,7 +433,8 @@
 				"chatThemes": "Chat Themes",
 				"leftMenuTitle": "Left Menu Title",
 				"logoImage": "Logo Image",
-				"backgroundImage": "Background Image"
+				"backgroundImage": "Background Image",
+				"plantumlUrl": "PlantUML proxy address, placeholder: "
 			},
 			"CustomThemeView": {
 				"toast": {

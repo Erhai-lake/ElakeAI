@@ -230,6 +230,16 @@
 					"getPreviewBubblesError": "获取预览气泡失败",
 					"applicationPreviewBubblesError": "应用预览气泡失败"
 				}
+			},
+			"PlantumlUrl": {
+				"toast": {
+					"EmptyError": "PlantUML URL不能为空",
+					"HeadError": "PlantUML URL必须以 https:// 或 http:// 开头",
+					"PlaceholderError": "PlantUML URL必须包含占位符",
+					"InvalidError": "PlantUML代理地址未响应, 可能是地址错误或被限流",
+					"getError": "获取PlantUML URL失败",
+					"applyError": "应用PlantUML URL失败"
+				}
 			}
 		},
 		"Role": {
@@ -423,7 +433,8 @@
 				"chatThemes": "对话主题",
 				"leftMenuTitle": "左侧菜单标题",
 				"logoImage": "logo图片",
-				"backgroundImage": "背景图片"
+				"backgroundImage": "背景图片",
+				"plantumlUrl": "PlantUML代理地址, 占位符: "
 			},
 			"CustomThemeView": {
 				"toast": {

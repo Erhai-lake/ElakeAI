@@ -54,7 +54,8 @@
     * Flowchart代码支持查看复制
     * 导出Flowchart为SVG/PNG/PDF
   * PlantUML
-    * 支持PlantUML流程图(https://www.plantuml.com/plantuml/svg/{encoded})
+    * 支持PlantUML流程图(https://www.plantuml.com/plantuml/svg/{{encoded}})
+    * 支持PlantUML自定义代理地址
     * 支持PlantUML流程图缩放移动
     * PlantUML流程图按需加载
     * PlantUML代码支持查看复制
