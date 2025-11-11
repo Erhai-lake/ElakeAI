@@ -1,13 +1,10 @@
-<script>
-export default {
-	name: "MarkdownBlockRenderer",
-	props: {
-		html: {
-			type: String,
-			required: true
-		}
+<script setup>
+defineProps({
+	html: {
+		type: String,
+		required: true
 	}
-}
+})
 </script>
 
 <template>

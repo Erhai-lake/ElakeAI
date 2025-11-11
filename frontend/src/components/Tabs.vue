@@ -1,35 +1,46 @@
-<script>
-export default {
-	name: "Tabs",
-	props: {
-		modelValue: {
-			type: String,
-			required: true
-		}
-	},
-	emits: ["update:modelValue"],
-	data() {
-		return {
-			tabs: []
-		}
-	},
-	provide() {
-		return {
-			registerTab: this.registerTab,
-			activeName: () => this.modelValue
-		}
-	},
-	methods: {
-		registerTab(tab) {
-			if (!this.tabs.find(t => t.name === tab.name)) {
-				this.tabs.push(tab)
-			}
-		},
-		updateValue(name) {
-			this.$emit("update:modelValue", name)
-		}
+<script setup>
+import {ref, provide} from "vue"
+
+/**
+ * 标签组件属性
+ */
+const props = defineProps({
+	modelValue: {
+		type: String,
+		required: true
+	}
+})
+
+/**
+ * 标签组件事件
+ */
+const emit = defineEmits(["update:modelValue"])
+
+/**
+ * 标签组件数据
+ */
+const tabs = ref([])
+
+/**
+ * 注册标签页
+ * @param tab - 标签页对象
+ */
+const registerTab = (tab) => {
+	if (!tabs.value.find(t => t.name === tab.name)) {
+		tabs.value.push(tab)
 	}
 }
+
+/**
+ * 更新激活的标签页
+ * @param name - 标签页名称
+ */
+const updateValue = (name) => {
+	emit("update:modelValue", name)
+}
+
+provide("registerTab", registerTab)
+provide("activeName", () => props.modelValue)
 </script>
 
 <template>

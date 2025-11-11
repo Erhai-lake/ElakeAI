@@ -1,137 +1,170 @@
-<script>
+<script setup>
+import { nextTick, ref, watch, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import axios from "axios"
 import MarkdownIt from "markdown-it"
 import Loading from "@/components/Loading.vue"
-import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import { i18nRegistry } from "@/services/plugin/api/I18nClass"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "AboutElakeAIView",
-	inject: ["$log"],
-	components: {Loading},
-	data() {
-		return {
-			content: "",
-			loading: true,
-			error: null,
-			isIframe: false,
-			iframeUrl: "",
-			baseUrl: "https://raw.githubusercontent.com/Erhai-lake/ElakeAI/refs/heads/master/"
+/**
+ * 路由服务
+ */
+const route = useRoute()
+const router = useRouter()
+
+/**
+ * 关于 ElakeAI 的内容
+ */
+const content = ref("")
+
+/**
+ * 加载状态
+ */
+const loading = ref(true)
+
+/**
+ * 错误信息
+ */
+const error = ref(null)
+
+/**
+ * 是否是 Iframe
+ */
+const isIframe = ref(false)
+
+/**
+ * 如果是 Iframe, 则存储 Iframe URL
+ */
+const iframeUrl = ref("")
+
+/**
+ * 基础 URL
+ */
+const baseUrl = "https://raw.githubusercontent.com/Erhai-lake/ElakeAI/refs/heads/master/"
+
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 加载 Markdown 文件
+ * @function fetchMarkdown
+ * @param file {string} - Markdown 文件路径
+ */
+const fetchMarkdown = async (file = "README.md") => {
+	loading.value = true
+	error.value = null
+	isIframe.value = false
+	try {
+		const response = await axios.get(baseUrl + file)
+		const md = new MarkdownIt({
+			linkify: true,
+			html: true,
+			breaks: true
+		})
+		content.value = md.render(response.data)
+		// 渲染完成后, 挂载点击事件
+		await nextTick(() => {
+			bindLinkEvents()
+		})
+	} catch (err) {
+		error.value = `加载 ${file} 失败`
+		Logger.error(`[AboutElakeAIView] 加载 ${file} 失败`, err)
+	} finally {
+		loading.value = false
+	}
+}
+
+/**
+ * 给渲染后的 a 标签绑定点击事件
+ * @function bindLinkEvents
+ */
+const bindLinkEvents = () => {
+	const container = document.querySelector(".content")
+	if (!container) return
+	const links = container.querySelectorAll("a")
+	links.forEach(link => {
+		link.addEventListener("click", event => {
+			const href = link.getAttribute("href")
+			event.preventDefault()
+			router.push({ query: { url: href } })
+		})
+	})
+}
+
+/**
+ * 请求任意 md 文件(绝对路径)
+ * @function fetchMarkdownFromUrl
+ * @param fullUrl {string} - 完整的 URL 地址
+ */
+const fetchMarkdownFromUrl = async (fullUrl) => {
+	loading.value = true
+	error.value = null
+	isIframe.value = false
+	try {
+		const response = await axios.get(fullUrl)
+		const md = new MarkdownIt({
+			linkify: true,
+			html: true,
+			breaks: true
+		})
+		content.value = md.render(response.data)
+		await nextTick(() => bindLinkEvents())
+	} catch (err) {
+		error.value = `加载 ${fullUrl} 失败`
+		Logger.error(`[AboutElakeAIView] 加载 ${fullUrl} 失败`, err)
+	} finally {
+		loading.value = false
+	}
+}
+
+/**
+ * 根据路由参数加载内容
+ * @function loadFromRoute
+ */
+const loadFromRoute = () => {
+	const urlParam = route.query.url
+	if (!urlParam) {
+		fetchMarkdown("README.md")
+		return
+	}
+	if (/^https?:\/\//i.test(urlParam)) {
+		// 绝对链接
+		if (/\.md$/i.test(urlParam)) {
+			// http/https 的 md 文件, 直接请求
+			fetchMarkdownFromUrl(urlParam)
+		} else {
+			// 非 md, iframe 打开
+			isIframe.value = true
+			iframeUrl.value = urlParam
 		}
-	},
-	watch: {
-		"$route.query.url": {
-			immediate: true,
-			handler() {
-				this.loadFromRoute()
-			}
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 加载 README.md
-		 */
-		async fetchMarkdown(file = "README.md") {
-			this.loading = true
-			this.error = null
-			this.isIframe = false
-			try {
-				const RES = await axios.get(this.baseUrl + file)
-				const MD = new MarkdownIt({
-					linkify: true,
-					html: true,
-					breaks: true
-				})
-				this.content = MD.render(RES.data)
-				// 渲染完成后, 挂载点击事件
-				await this.$nextTick(() => {
-					this.bindLinkEvents()
-				})
-			} catch (error) {
-				this.error = `加载 ${file} 失败`
-				this.$log.error(`[AboutElakeAIView] 加载 ${file} 失败`, error)
-			} finally {
-				this.loading = false
-			}
-		},
-		/**
-		 * 给渲染后的 a 标签绑定点击事件
-		 */
-		bindLinkEvents() {
-			const CONTAINER = this.$el.querySelector(".content")
-			if (!CONTAINER) return
-			const LINKS = CONTAINER.querySelectorAll("a")
-			LINKS.forEach(LINK => {
-				LINK.addEventListener("click", event => {
-					const HREF = LINK.getAttribute("href")
-					event.preventDefault()
-					this.$router.push({query: {url: HREF}})
-				})
-			})
-		},
-		/**
-		 * 根据路由参数加载内容
-		 */
-		loadFromRoute() {
-			const URL_PARAM = this.$route.query.url
-			if (!URL_PARAM) {
-				this.fetchMarkdown("README.md")
-				return
-			}
-			if (/^https?:\/\//i.test(URL_PARAM)) {
-				// 绝对链接
-				if (/\.md$/i.test(URL_PARAM)) {
-					// http/https 的 md 文件, 直接请求
-					this.fetchMarkdownFromUrl(URL_PARAM)
-				} else {
-					// 非 md, iframe 打开
-					this.isIframe = true
-					this.iframeUrl = URL_PARAM
-				}
-			} else {
-				// 相对 md 文件
-				if (/\.md$/i.test(URL_PARAM)) {
-					this.fetchMarkdown(URL_PARAM)
-				} else {
-					// 其他相对资源, iframe
-					this.isIframe = true
-					this.iframeUrl = this.baseUrl + URL_PARAM
-				}
-			}
-		},
-		/**
-		 * 请求任意 md 文件(绝对路径)
-		 */
-		async fetchMarkdownFromUrl(fullUrl) {
-			this.loading = true
-			this.error = null
-			this.isIframe = false
-			try {
-				const RES = await axios.get(fullUrl)
-				const MD = new MarkdownIt({
-					linkify: true,
-					html: true,
-					breaks: true
-				})
-				this.content = MD.render(RES.data)
-				await this.$nextTick(() => this.bindLinkEvents())
-			} catch (error) {
-				this.error = `加载 ${fullUrl} 失败`
-				this.$log.error(`[AboutElakeAIView] 加载 ${fullUrl} 失败`, error)
-			} finally {
-				this.loading = false
-			}
+	} else {
+		// 相对 md 文件
+		if (/\.md$/i.test(urlParam)) {
+			fetchMarkdown(urlParam)
+		} else {
+			// 其他相对资源, iframe
+			isIframe.value = true
+			iframeUrl.value = baseUrl + urlParam
 		}
 	}
 }
+
+watch(() => route.query.url, () => {
+	loadFromRoute()
+})
+
+onMounted(() => {
+	loadFromRoute()
+})
 </script>
 
 <template>
@@ -140,7 +173,7 @@ export default {
 			<div v-if="error" class="error">{{ error }}</div>
 			<div v-else>
 				<div v-if="isIframe" class="iframe-container">
-					<iframe :src="iframeUrl" frameborder="0"></iframe>
+					<iframe :src="iframeUrl"></iframe>
 				</div>
 				<div v-else class="content" v-html="content"></div>
 			</div>

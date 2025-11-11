@@ -2,11 +2,11 @@ import Dexie from "@/services/Dexie"
 import Logger from "@/services/Logger"
 
 export default {
-	async applyCustomTheme(theme = {}) {
+	async applyCustomTheme(theme = null) {
 		try {
 			let themeData = theme
 			// 如果 themeData 为空对象, 从 Dexie 中获取自定义主题
-			if (themeData) {
+			if (!themeData) {
 				const THEME_DATA = await Dexie.configs.get("customTheme")
 				if (!THEME_DATA && !THEME_DATA.value) {
 					const SYSTEM_THEME_CODE = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"

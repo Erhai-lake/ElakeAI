@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import {onMounted, ref, watch} from "vue"
 import {initZoom} from "@/components/chat/renderer/ZoomManager"
 import {ExportList, fetchSvgElementFromUrl} from "@/components/chat/renderer/ExportHelper"
 import Tabs from "@/components/Tabs.vue"
@@ -8,85 +9,111 @@ import Button from "@/components/input/Button.vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import SVGIcon from "@/components/SVGIcon.vue"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "PlantUMLRenderer",
-	inject: ["$log"],
-	components: {SVGIcon, Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
-	props: {
-		code: {
-			type: String,
-			required: true
-		}
-	},
-	data() {
-		return {
-			activeTab: "preview",
-			url: "",
-			error: null,
-			exportList: ExportList(),
-			selector: {item: "export", title: "i18n:components.PlantUMLRenderer.export"}
-		}
-	},
-	watch: {
-		activeTab(newVal) {
-			if (newVal === "preview") {
-				this.renderPlantUML()
+const name = "PlantUMLRenderer"
+
+const props = defineProps({
+	/**
+	 * PlantUML代码
+	 */
+	code: {
+		type: String,
+		required: true
+	}
+})
+
+/**
+ * 活动标签页
+ */
+const activeTab = ref("preview")
+
+/**
+ * PlantUML渲染URL
+ */
+const url = ref("")
+
+/**
+ * PlantUML渲染错误
+ */
+const error = ref(null)
+
+/**
+ * 导出列表
+ */
+const exportList = ref(ExportList())
+
+/**
+ * 导出选择器
+ */
+const selector = ref({item: "export", title: "i18n:components.PlantUMLRenderer.export"})
+
+/**
+ * 容器引用
+ */
+const containerRef = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 渲染PlantUML
+ */
+const renderPlantUML = async () => {
+	try {
+		const PLANTUML_ENCODER = (await import("plantuml-encoder")).default
+		const ENCODED = PLANTUML_ENCODER.encode(props.code)
+		url.value = `https://www.plantuml.com/plantuml/svg/${ENCODED}`
+		const CONTAINER = containerRef.value
+		const WRAPPER = document.createElement("div")
+		WRAPPER.className = "uml-wrapper"
+		WRAPPER.innerHTML = `<img src="${url.value}" alt="PlantUML" class="uml-image" draggable="false"/>`
+		CONTAINER.appendChild(WRAPPER)
+		const IMG = WRAPPER.querySelector("img")
+		IMG.onload = async () => {
+			const MAX_HEIGHT = 400
+			const MIN_HEIGHT = 170
+			IMG.style.maxHeight = `${MAX_HEIGHT}px`
+			if (IMG.clientHeight < MIN_HEIGHT) {
+				IMG.style.height = `${MIN_HEIGHT}px`
 			}
+			initZoom(CONTAINER)
 		}
-	},
-	created() {
-		this.renderPlantUML()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 渲染PlantUML
-		 */
-		async renderPlantUML() {
-			try {
-				const PLANTUML_ENCODER = (await import("plantuml-encoder")).default
-				const ENCODED = PLANTUML_ENCODER.encode(this.code)
-				this.url = `https://www.plantuml.com/plantuml/svg/${ENCODED}`
-				const CONTAINER = this.$refs.containerRef
-				const WRAPPER = document.createElement("div")
-				WRAPPER.className = "uml-wrapper"
-				WRAPPER.innerHTML = `<img src="${this.url}" alt="PlantUML" class="uml-image" draggable="false"/>`
-				CONTAINER.appendChild(WRAPPER)
-				const IMG = WRAPPER.querySelector("img")
-				IMG.onload = async () => {
-					const MAX_HEIGHT = 400
-					const MIN_HEIGHT = 170
-					IMG.style.maxHeight = `${MAX_HEIGHT}px`
-					if (IMG.clientHeight < MIN_HEIGHT) {
-						IMG.style.height = `${MIN_HEIGHT}px`
-					}
-					initZoom(this.$refs.containerRef)
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] PlantUML渲染失败`, error)
-				this.error = error.message
-			}
-		},
-		/**
-		 * 导出为指定类型
-		 * @param item 导出类型
-		 */
-		async updateSelected(item) {
-			const SVG_ELEMENT = await fetchSvgElementFromUrl(this.url)
-			if (!SVG_ELEMENT) return
-			item.action(SVG_ELEMENT)
-		}
+	} catch (error) {
+		Logger.error(`[${name}] PlantUML渲染失败`, error)
+		error.value = error.message
 	}
 }
+
+/**
+ * 导出为指定类型
+ * @param item 导出类型
+ */
+const updateSelected = async (item) => {
+	const SVG_ELEMENT = await fetchSvgElementFromUrl(url.value)
+	if (!SVG_ELEMENT) return
+	item.action(SVG_ELEMENT)
+}
+
+/**
+ * 监听活动标签页变化
+ */
+watch(activeTab, (newVal) => {
+	if (newVal === "preview") {
+		renderPlantUML()
+	}
+})
+
+onMounted(() => {
+	renderPlantUML()
+})
 </script>
 
 <template>

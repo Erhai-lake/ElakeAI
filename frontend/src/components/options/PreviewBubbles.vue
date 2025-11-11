@@ -1,38 +1,60 @@
-<script>
-import {toastRegistry} from "@/services/plugin/api/ToastClass";
+<script setup>
+import {ref, onMounted} from "vue"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "PreviewBubbles",
-	inject: ["$DB", "$log"],
-	data() {
-		return {
-			previewBubbles: true
-		}
-	},
-	async created() {
-		try {
-			const PREVIEW_BUBBLES_DATA = await this.$DB.configs.get("previewBubbles")
-			this.previewBubbles = PREVIEW_BUBBLES_DATA ? PREVIEW_BUBBLES_DATA.value : true
-		} catch (error) {
-			this.$log.error(`[${this.name}] 预览气泡获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.Options.PreviewBubbles.toast.getPreviewBubblesError")}`)
-		}
-	},
-	methods: {
-		async toggleAllSelection() {
-			try {
-				// 保存设置
-				await this.$DB.configs.put({
-					item: "previewBubbles",
-					value: !this.previewBubbles
-				})
-			} catch (error) {
-				this.$log.error(`[${this.name}] 预览气泡应用失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.PreviewBubbles.toast.applicationPreviewBubblesError")}`)
-			}
-		}
+const name = "PreviewBubbles"
+
+/**
+ * 预览气泡状态
+ */
+const previewBubbles = ref(true)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 切换预览气泡状态
+ */
+const toggleAllSelection = async () => {
+	try {
+		// 保存设置
+		await Dexie.configs.put({
+			item: "previewBubbles",
+			value: !previewBubbles.value
+		})
+		previewBubbles.value = !previewBubbles.value
+	} catch (error) {
+		Logger.error(`[${name}] 预览气泡应用失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.PreviewBubbles.toast.applicationPreviewBubblesError")}`)
 	}
 }
+
+/**
+ * 初始化预览气泡状态
+ */
+const initPreviewBubbles = async () => {
+	try {
+		const PREVIEW_BUBBLES_DATA = await Dexie.configs.get("previewBubbles")
+		previewBubbles.value = PREVIEW_BUBBLES_DATA ? PREVIEW_BUBBLES_DATA.value : true
+	} catch (error) {
+		Logger.error(`[${name}] 预览气泡获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.PreviewBubbles.toast.getPreviewBubblesError")}`)
+	}
+}
+
+onMounted(() => {
+	initPreviewBubbles()
+})
 </script>
 
 <template>

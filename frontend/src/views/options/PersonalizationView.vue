@@ -1,4 +1,4 @@
-<script>
+<script setup>
 import ThemeSelect from "@/components/options/ThemeSwitch.vue"
 import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
@@ -7,20 +7,15 @@ import LeftMenuTitle from "@/components/options/LeftMenuTitle.vue"
 import LogoImage from "@/components/options/LogoImage.vue"
 import BackgroundImage from "@/components/options/BackgroundImage.vue"
 
-export default {
-	name: "PersonalizationView",
-	components: {LeftMenuTitle, LogoImage, BackgroundImage, LanguageSelect, ThemeSelect, ChatThemesSelect},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		}
-	}
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
 }
 </script>
 

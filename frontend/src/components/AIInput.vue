@@ -1,323 +1,361 @@
-<script>
-import {defineComponent, ref} from "vue"
+<script setup>
+import {nextTick, onMounted, onUnmounted, ref, watch} from "vue"
+import {useRoute, useRouter} from "vue-router"
 import EventBus from "@/services/EventBus"
 import SVGIcon from "@/components/SVGIcon.vue"
-import Selector from "@/components/input/Selector.vue"
-import {useRoute} from "vue-router"
 import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default defineComponent({
-	name: "AIInput",
-	components: {SVGIcon, DefaultChatSettings, Selector},
-	inject: ["$DB", "$log"],
-	data() {
-		return {
-			name: "AIInput",
-			route: useRoute(),
-			// 平台
-			platformSelected: null,
-			// Key
-			keyPoolsSelected: null,
-			// 模型
-			modelSelected: null,
-			// 输入框
-			chatInput: "",
-			oldChatInput: "",
-			// 联网搜索状态
-			enableWebSearch: false,
-			// 停止
-			stopStatus: false
-		}
-	},
-	watch: {
-		// 监听路由变化
-		"route.path"() {
-			this.focusInput()
-		},
-		chatInput() {
-			EventBus.emit("[update] inputChange", this.chatInput)
-		}
-	},
-	beforeDestroy() {
-		this.cancelAllRequests()
-	},
-	setup() {
-		const textareaRef = ref(null)
-		return {textareaRef}
-	},
-	mounted() {
-		if (this.textareaRef) {
-			this.adjustTextareaHeight()
-			this.textareaRef.addEventListener("input", this.adjustTextareaHeight)
-			this.focusInput()
-		}
-	},
-	beforeUnmount() {
-		EventBus.off("[stream] streamComplete", this.streamComplete)
-		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
-		EventBus.off("[update] stopStatusUpdate", this.stopStatusUpdate)
-		if (this.textareaRef) {
-			this.textareaRef.removeEventListener("input", this.adjustTextareaHeight)
-		}
-	},
-	created() {
-		EventBus.on("[stream] streamComplete", this.streamComplete)
-		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
-		EventBus.on("[update] stopStatusUpdate", this.stopStatusUpdate)
-		this.restoreSettings()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 获取设置
-		 */
-		async restoreSettings() {
-			try {
-				const DEFAULT_CHAT_SETTINGS_DATA = await this.$DB.configs.get("DefaultChatSettings")
-				if (DEFAULT_CHAT_SETTINGS_DATA) {
-					this.platformSelected = {title: DEFAULT_CHAT_SETTINGS_DATA.value.platform}
-					const KEY_DATA = await this.$DB.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
-					if (!KEY_DATA) {
-						this.keyPoolsSelected = null
-						this.modelSelected = null
-						return
-					}
-					this.keyPoolsSelected = {key: KEY_DATA.key, title: KEY_DATA.remark}
-					this.modelSelected = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
-				} else {
-					this.platformSelected = null
-					this.keyPoolsSelected = null
-					this.modelSelected = null
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 默认设置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.getDefaultSettingsError")}`)
+const name = "AIInput"
+
+/**
+ * 路由服务
+ */
+const route = useRoute()
+const router = useRouter()
+
+/**
+ * 平台选择
+ */
+const platformSelected = ref(null)
+
+/**
+ * Key池选择
+ */
+const keyPoolsSelected = ref(null)
+
+/**
+ * 模型选择
+ */
+const modelSelected = ref(null)
+
+/**
+ * 输入框内容
+ */
+const chatInput = ref("")
+
+/**
+ * 旧输入框内容
+ */
+const oldChatInput = ref("")
+
+/**
+ * 联网搜索状态
+ */
+const enableWebSearch = ref(false)
+
+/**
+ * 停止状态
+ */
+const stopStatus = ref(false)
+
+/**
+ * 输入框引用
+ */
+const textareaRef = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 监听路由变化
+ */
+watch(() => route.path, (newPath, oldPath) => {
+	if (newPath !== oldPath) {
+		focusInput()
+	}
+})
+
+/**
+ * 监听输入框内容变化
+ */
+watch(chatInput, (newValue, oldValue) => {
+	if (newValue !== oldValue) {
+		EventBus.emit("[update] inputChange", newValue)
+	}
+})
+
+/**
+ * 获取设置
+ */
+const restoreSettings = async () => {
+	try {
+		const DEFAULT_CHAT_SETTINGS_DATA = await Dexie.configs.get("DefaultChatSettings")
+		if (DEFAULT_CHAT_SETTINGS_DATA) {
+			platformSelected.value = {title: DEFAULT_CHAT_SETTINGS_DATA.value.platform}
+			const KEY_DATA = await Dexie.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
+			if (!KEY_DATA) {
+				keyPoolsSelected.value = null
+				modelSelected.value = null
+				return
 			}
-		},
-		/**
-		 * 更新平台所选项
-		 * @param newVal {Object} - 新的平台选项
-		 */
-		updateSelectedPlatformList(newVal) {
-			this.platformSelected = newVal
-		},
-		/**
-		 * 更新Key所选项
-		 * @param newVal {Object} - 新的Key选项
-		 */
-		updateSelectedKey(newVal) {
-			this.keyPoolsSelected = newVal
-		},
-		/**
-		 * 更新模型所选项
-		 * @param newVal {Object} - 新的模型选项
-		 */
-		updateSelectedModel(newVal) {
-			this.modelSelected = newVal
-		},
-		/**
-		 * 输入框获取焦点
-		 */
-		focusInput() {
-			this.$nextTick(() => {
-				if (this.textareaRef) {
-					this.textareaRef.focus()
-				}
+			keyPoolsSelected.value = {key: KEY_DATA.key, title: KEY_DATA.remark}
+			modelSelected.value = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
+		} else {
+			platformSelected.value = null
+			keyPoolsSelected.value = null
+			modelSelected.value = null
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 默认设置获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.AIInput.toast.getDefaultSettingsError")}`)
+	}
+}
+
+/**
+ * 更新平台所选项
+ * @param newVal {Object} - 新的平台选项
+ */
+const updateSelectedPlatformList = (newVal) => {
+	platformSelected.value = newVal
+}
+
+/**
+ * 更新Key所选项
+ * @param newVal {Object} - 新的Key选项
+ */
+const updateSelectedKey = (newVal) => {
+	keyPoolsSelected.value = newVal
+}
+
+/**
+ * 更新模型所选项
+ * @param newVal {Object} - 新的模型选项
+ */
+const updateSelectedModel = (newVal) => {
+	modelSelected.value = newVal
+}
+
+/**
+ * 输入框获取焦点
+ */
+const focusInput = () => {
+	nextTick(() => {
+		if (textareaRef.value) {
+			textareaRef.value.focus()
+		}
+	})
+}
+
+/**
+ * 调整输入框高度
+ */
+const adjustTextareaHeight = () => {
+	if (!textareaRef.value) return
+	textareaRef.value.style.height = "auto"
+	const newHeight = Math.min(textareaRef.value.scrollHeight, 600)
+	textareaRef.value.style.height = `${Math.max(newHeight, 50)}px`
+}
+
+/**
+ * 发送消息
+ */
+const send = async () => {
+	// 检查输入框是否为空
+	if (chatInput.value === "") return
+	stopStatus.value = true
+	oldChatInput.value = chatInput.value
+	chatInput.value = ""
+	// 更新输入框高度
+	await nextTick(() => {
+		adjustTextareaHeight()
+	})
+	// 判断是否存在聊天, 否则新建
+	const CHAT_KEY = route.params.key ? route.params.key : await newChat(oldChatInput.value)
+	// 请求开始
+	const DIALOGUE_ID = crypto.randomUUID()
+	const USER_DIALOGUE_ID = crypto.randomUUID()
+	// 发送消息
+	const INSTANCE = platformRegistry.getPlatform(platformSelected.value.title)
+	try {
+		const RESPONSE = INSTANCE.api.chat({
+			dialogueId: DIALOGUE_ID,
+			userDialogueId: USER_DIALOGUE_ID,
+			apiKey: keyPoolsSelected.value.key,
+			chatKey: CHAT_KEY,
+			content: oldChatInput.value,
+			model: modelSelected.value.title,
+		})
+		if (RESPONSE.error) {
+			chatInput.value = oldChatInput.value
+			await nextTick(() => {
+				adjustTextareaHeight()
 			})
-		},
-		/**
-		 * 调整输入框高度
-		 */
-		adjustTextareaHeight() {
-			if (!this.textareaRef) return
-			this.textareaRef.style.height = "auto"
-			const newHeight = Math.min(this.textareaRef.scrollHeight, 600)
-			this.textareaRef.style.height = `${Math.max(newHeight, 50)}px`
-		},
-		/**
-		 * 发送消息
-		 */
-		async send() {
-			// 检查输入框是否为空
-			if (this.chatInput.trim() === "") return
-			this.stopStatus = true
-			this.oldChatInput = this.chatInput.trim()
-			this.chatInput = ""
-			// 更新输入框高度
-			await this.$nextTick(() => {
-				this.adjustTextareaHeight()
-			})
-			// 判断是否存在聊天, 否则新建
-			const CHAT_KEY = this.route.params.key ? this.route.params.key : await this.newChat(this.oldChatInput)
-			// 请求开始
-			const DIALOGUE_ID = crypto.randomUUID()
-			const USER_DIALOGUE_ID = crypto.randomUUID()
-			// 发送消息
-			const INSTANCE = platformRegistry.getPlatform(this.platformSelected.title)
-			try {
-				const RESPONSE = INSTANCE.api.chat({
-					dialogueId: DIALOGUE_ID,
-					userDialogueId: USER_DIALOGUE_ID,
-					apiKey: this.keyPoolsSelected.key,
-					chatKey: CHAT_KEY,
-					content: this.oldChatInput,
-					model: this.modelSelected.title,
-				})
-				if (RESPONSE.error) {
-					this.chatInput = this.oldChatInput
-					await this.$nextTick(() => {
-						this.adjustTextareaHeight()
-					})
-					this.$log.error(`[${this.name}] 发送消息失败`, RESPONSE)
-					toastRegistry.error(`[${this.name}] ${this.t(RESPONSE.error)}`)
-					EventBus.emit("[stream] streamComplete", {chatKey: CHAT_KEY})
-				}
-			} catch (error) {
-				this.chatInput = this.oldChatInput
-				await this.$nextTick(() => {
-					this.adjustTextareaHeight()
-				})
-				this.$log.error(`[${this.name}] 发送消息失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.sendMessageError")}`)
-			} finally {
-				this.$router.push(`/chat/${CHAT_KEY}`)
-				EventBus.emit("[update] chatListUpdate")
-			}
-		},
-		/**
-		 * 新的聊天
-		 */
-		async newChat(content) {
-			// 加载全局配置
-			let globalConfig = null
-			try {
-				const GLOBAL_CONFIG = await this.$DB.configs.get("chatConfigs")
-				if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
-					globalConfig = GLOBAL_CONFIG.value
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取全局配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.getGlobalConfigError")}`)
-			}
-			// 加载系统提示词
-			let systemPrompt = null
-			try {
-				const SYSTEM_PROMPT = await this.$DB.configs.get("systemPrompt")
-				if (SYSTEM_PROMPT && SYSTEM_PROMPT.value) {
-					systemPrompt = SYSTEM_PROMPT.value
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取系统提示词失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.getSystemPromptError")}`)
-			}
-			try {
-				const NEW_CHAT_KEY = crypto.randomUUID()
-				await this.$DB.chats.add({
-					key: NEW_CHAT_KEY,
-					title: this.t("components.AIInput.newChat"),
+			Logger.error(`[${name}] 发送消息失败`, RESPONSE)
+			toastRegistry.error(`[${name}] ${t(RESPONSE.error)}`)
+			EventBus.emit("[stream] streamComplete", {chatKey: CHAT_KEY})
+		}
+	} catch (error) {
+		chatInput.value = oldChatInput.value
+		await nextTick(() => {
+			adjustTextareaHeight()
+		})
+		Logger.error(`[${name}] 发送消息失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.AIInput.toast.sendMessageError")}`)
+	} finally {
+		await router.push(`/chat/${CHAT_KEY}`)
+		EventBus.emit("[update] chatListUpdate")
+	}
+}
+
+/**
+ * 新的聊天
+ */
+const newChat = async (content) => {
+	// 加载全局配置
+	let globalConfig = null
+	try {
+		const GLOBAL_CONFIG = await Dexie.configs.get("chatConfigs")
+		if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
+			globalConfig = GLOBAL_CONFIG.value
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 获取全局配置失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.AIInput.toast.getGlobalConfigError")}`)
+	}
+	// 加载系统提示词
+	let systemPrompt = null
+	try {
+		const SYSTEM_PROMPT = await Dexie.configs.get("systemPrompt")
+		if (SYSTEM_PROMPT && SYSTEM_PROMPT.value) {
+			systemPrompt = SYSTEM_PROMPT.value
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 获取系统提示词失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.AIInput.toast.getSystemPromptError")}`)
+	}
+	try {
+		const NEW_CHAT_KEY = crypto.randomUUID()
+		await Dexie.chats.add({
+			key: NEW_CHAT_KEY,
+			title: t("components.AIInput.newChat"),
+			timestamp: Date.now(),
+			data: [
+				{
+					id: crypto.randomUUID(),
+					message: {
+						role: "system",
+						content: systemPrompt
+					},
 					timestamp: Date.now(),
-					data: [
-						{
-							id: crypto.randomUUID(),
-							message: {
-								role: "system",
-								content: systemPrompt
-							},
-							timestamp: Date.now(),
-							status: "done"
-						}
-					],
-					configs: globalConfig
-				})
-				return NEW_CHAT_KEY
-			} catch (error) {
-				this.chatInput = content
-				await this.$nextTick(() => {
-					this.adjustTextareaHeight()
-				})
-				this.$log.error(`[${this.name}] 创建新聊天失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.createNewChatError")}`)
-			}
-		},
-		/**
-		 * 消息流完成
-		 */
-		streamComplete() {
-			this.stopStatus = false
-		},
-		/**
-		 * 停止
-		 */
-		async stop() {
-			const INSTANCE = platformRegistry.getPlatform(this.platformSelected.title)
-			try {
-				await INSTANCE.api.chatStop()
-				this.stopStatus = false
-				this.chatInput = this.oldChatInput
-				// 更新输入框高度
-				await this.$nextTick(() => {
-					this.adjustTextareaHeight()
-				})
-			} catch (error) {
-				this.stopStatus = true
-				this.$log.error(`[${this.name}] 停止失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.AIInput.toast.stopError")}`)
-			}
-		},
-		/**
-		 * 停止状态更新
-		 * @param status {boolean} - 停止状态
-		 */
-		stopStatusUpdate(status) {
-			this.stopStatus = status
-		},
-		/**
-		 * 处理换行
-		 * @param event {Event} - 事件对象
-		 */
-		handleNewLine(event) {
-			event.preventDefault()
-			const textarea = event.target
-			const cursorPos = textarea.selectionStart
-			const currentValue = this.chatInput
+					status: "done"
+				}
+			],
+			configs: globalConfig
+		})
+		return NEW_CHAT_KEY
+	} catch (error) {
+		chatInput.value = content
+		await nextTick(() => {
+			adjustTextareaHeight()
+		})
+		Logger.error(`[${name}] 创建新聊天失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.AIInput.toast.createNewChatError")}`)
+	}
+}
 
-			// 获取当前行的缩进
-			const lineStart = currentValue.lastIndexOf("\n", cursorPos - 1) + 1
-			const currentLine = currentValue.substring(lineStart, cursorPos)
-			const indent = currentLine.match(/^\s*/)[0]
+/**
+ * 消息流完成
+ */
+const streamComplete = () => {
+	stopStatus.value = false
+}
 
-			// 插入换行符和缩进
-			this.chatInput = currentValue.substring(0, cursorPos) + "\n" + indent + currentValue.substring(cursorPos)
+/**
+ * 停止
+ */
+const stop = async () => {
+	const INSTANCE = platformRegistry.getPlatform(platformSelected.value.title)
+	try {
+		await INSTANCE.api.chatStop()
+		stopStatus.value = false
+		chatInput.value = oldChatInput.value
+		// 更新输入框高度
+		await nextTick(() => {
+			adjustTextareaHeight()
+		})
+	} catch (error) {
+		stopStatus.value = true
+		Logger.error(`[${name}] 停止失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.AIInput.toast.stopError")}`)
+	}
+}
 
-			this.$nextTick(() => {
-				this.adjustTextareaHeight()
-				// 设置光标位置到新行的缩进后面
-				textarea.selectionStart = cursorPos + 1 + indent.length
-				textarea.selectionEnd = cursorPos + 1 + indent.length
-				textarea.focus()
-			})
-		},
-		/**
-		 * 显示设置
-		 */
-		showSetup() {
-			if (this.route.params.key) {
-				EventBus.emit("[function] showSetup", true)
-			} else {
-				toastRegistry.warning(this.t("components.AIInput.toast.noChatKey"))
-			}
-		}
+/**
+ * 停止状态更新
+ * @param status {boolean} - 停止状态
+ */
+const stopStatusUpdate = (status) => {
+	stopStatus.value = status
+}
+
+/**
+ * 处理换行
+ * @param event {Event} - 事件对象
+ */
+const handleNewLine = (event) => {
+	event.preventDefault()
+	const textarea = event.target
+	const cursorPos = textarea.selectionStart
+	const currentValue = chatInput.value
+
+	// 获取当前行的缩进
+	const lineStart = currentValue.lastIndexOf("\n", cursorPos - 1) + 1
+	const currentLine = currentValue.substring(lineStart, cursorPos)
+	const indent = currentLine.match(/^\s*/)[0]
+
+	// 插入换行符和缩进
+	chatInput.value = currentValue.substring(0, cursorPos) + "\n" + indent + currentValue.substring(cursorPos)
+
+	nextTick(() => {
+		adjustTextareaHeight()
+		// 设置光标位置到新行的缩进后面
+		textarea.selectionStart = cursorPos + 1 + indent.length
+		textarea.selectionEnd = cursorPos + 1 + indent.length
+		textarea.focus()
+	})
+}
+
+/**
+ * 显示设置
+ */
+const showSetup = () => {
+	if (route.params.key) {
+		EventBus.emit("[function] showSetup", true)
+	} else {
+		toastRegistry.warning(t("components.AIInput.toast.noChatKey"))
+	}
+}
+
+onMounted(() => {
+	if (textareaRef.value) {
+		adjustTextareaHeight()
+		textareaRef.value.addEventListener("input", adjustTextareaHeight)
+		focusInput()
+	}
+	EventBus.on("[stream] streamComplete", streamComplete)
+	EventBus.on("[update] keyPoolUpdate", restoreSettings)
+	EventBus.on("[update] stopStatusUpdate", stopStatusUpdate)
+	restoreSettings()
+})
+
+onUnmounted(() => {
+	EventBus.off("[stream] streamComplete", streamComplete)
+	EventBus.off("[update] keyPoolUpdate", restoreSettings)
+	EventBus.off("[update] stopStatusUpdate", stopStatusUpdate)
+	if (textareaRef.value) {
+		textareaRef.value.removeEventListener("input", adjustTextareaHeight)
 	}
 })
 </script>

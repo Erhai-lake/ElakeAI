@@ -1,41 +1,47 @@
-<script>
+<script setup>
+import { ref, watch } from "vue"
 import SVGIcon from "@/components/SVGIcon.vue"
 
-export default {
-	name: "FoldingPanel",
-	components: {SVGIcon},
-	props: {
-		Height: {
-			type: Number,
-			default: 300
-		},
-		is: {
-			type: Boolean,
-			default: false
-		}
+const props = defineProps({
+	Height: {
+		type: Number,
+		default: 300
 	},
-	watch: {
-		Height(newVal) {
-			this.contentHeight = newVal
-		},
-		is(newVal) {
-			this.isExpand = newVal
-		}
-	},
-	data() {
-		return {
-			contentHeight: this.Height,
-			isExpand: this.is
-		}
-	},
-	methods: {
-		/**
-		 * 切换折叠状态
-		 */
-		toggleFolding() {
-			this.isExpand = !this.isExpand
-		}
+	is: {
+		type: Boolean,
+		default: false
 	}
+})
+
+/**
+ * 折叠面板高度
+ */
+const contentHeight = ref(props.Height)
+
+/**
+ * 是否展开
+ */
+const isExpand = ref(props.is)
+
+/**
+ * 监听 props 变化
+ */
+watch(() => props.Height, (newVal) => {
+	contentHeight.value = newVal
+})
+
+/**
+ * 监听 props.is 变化
+ */
+watch(() => props.is, (newVal) => {
+	isExpand.value = newVal
+})
+
+/**
+ * 切换折叠状态
+ */
+const toggleFolding = () => {
+	isExpand.value = !isExpand.value
 }
 </script>
 

@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import {ref, computed, onMounted, watch} from "vue"
 import InputText from "@/components/input/InputText.vue"
 import InputNumber from "@/components/input/InputNumber.vue"
 import Button from "@/components/input/Button.vue"
@@ -6,131 +7,170 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "BackgroundImage",
-	inject: ["$DB", "$log"],
-	components: {Button, InputText, InputNumber},
-	data() {
-		return {
-			name: "BackgroundImage",
-			backgroundImage: {
-				enabled: false,
-				url: "https://www.loliapi.com/acg",
+const name = "BackgroundImage"
+
+/**
+ * 背景图片配置
+ */
+const backgroundImage = ref({
+	enabled: false,
+	url: "https://www.loliapi.com/acg",
+	blob: null,
+	opacity: 50,
+	mask: 50
+})
+
+/**
+ * 文件输入框引用
+ */
+const fileInput = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 显示URL的计算属性
+ */
+const displayUrl = computed({
+	get: () => {
+		if (backgroundImage.value.blob) {
+			return t("components.Options.BackgroundImage.localPlaceholder")
+		}
+		return backgroundImage.value.url || ""
+	},
+	set: (val) => {
+		if (!val.startsWith(t("components.Options.BackgroundImage.localPlaceholder"))) {
+			backgroundImage.value.url = val
+			backgroundImage.value.blob = null
+		}
+	}
+})
+
+/**
+ * 读取配置
+ */
+const read = async () => {
+	try {
+		const BACKGROUND_IMAGE_DATA = await Dexie.configs.get("backgroundImage")
+		if (BACKGROUND_IMAGE_DATA?.value) {
+			backgroundImage.value = {
+				enabled: BACKGROUND_IMAGE_DATA.value.enabled,
+				url: BACKGROUND_IMAGE_DATA.value.url,
 				blob: null,
-				opacity: 50,
-				mask: 50
+				opacity: BACKGROUND_IMAGE_DATA.value.opacity,
+				mask: BACKGROUND_IMAGE_DATA.value.mask
+			}
+			if (BACKGROUND_IMAGE_DATA.value.blob) {
+				backgroundImage.value.blob = new Blob([BACKGROUND_IMAGE_DATA.value.blob])
 			}
 		}
-	},
-	computed: {
-		displayUrl: {
-			get() {
-				if (this.backgroundImage.blob) {
-					return this.t("components.Options.BackgroundImage.localPlaceholder")
-				}
-				return this.backgroundImage.url || ""
-			},
-			set(val) {
-				if (!val.startsWith(this.t("components.Options.BackgroundImage.localPlaceholder"))) {
-					this.backgroundImage.url = val
-					this.backgroundImage.blob = null
-				}
-			}
-		}
-	},
-	created() {
-		this.read()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 读取
-		 */
-		async read() {
-			try {
-				const BACKGROUND_IMAGE_DATA = await this.$DB.configs.get("backgroundImage")
-				if (BACKGROUND_IMAGE_DATA?.value) {
-					this.backgroundImage = {
-						enabled:  BACKGROUND_IMAGE_DATA.value.enabled,
-						url: BACKGROUND_IMAGE_DATA.value.url,
-						blob: null,
-						opacity: BACKGROUND_IMAGE_DATA.value.opacity,
-						mask: BACKGROUND_IMAGE_DATA.value.mask
-					}
-					if (BACKGROUND_IMAGE_DATA.value.blob) {
-						this.backgroundImage.blob = new Blob([BACKGROUND_IMAGE_DATA.value.blob])
-					}
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 背景图片配置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.getBackgroundImageError")}`)
-			}
-		},
-		/**
-		 * 上传
-		 */
-		async upload() {
-			this.$refs.fileInput.click()
-		},
-		/**
-		 * 处理文件选择
-		 */
-		handleFileChange(event) {
-			const FILE = event.target.files[0]
-			if (!FILE) return
-			this.backgroundImage.blob = FILE
-			this.backgroundImage.url = ""
-			event.target.value = ""
-			this.apply()
-		},
-		/**
-		 * 应用
-		 */
-		apply: publicRegistry.debounce(async function () {
-			try {
-				let value = {
-					enabled: this.backgroundImage.enabled,
-					url: this.backgroundImage.url,
-					blob: null,
-					opacity: this.backgroundImage.opacity,
-					mask: this.backgroundImage.mask
-				}
-				if (this.backgroundImage.blob) {
-					const BUFFER = await this.backgroundImage.blob.arrayBuffer()
-					value.blob = new Uint8Array(BUFFER)
-				}
-				await this.$DB.configs.put({ item: "backgroundImage", value })
-				EventBus.emit("[function] configInitialization")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 背景图片配置应用失败`, {
-					backgroundImage: this.backgroundImage,
-					error
-				})
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.BackgroundImage.toast.applyBackgroundImageError")}`)
-			}
-		}, 500)
+	} catch (error) {
+		Logger.error(`[${name}] 背景图片配置获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.BackgroundImage.toast.getBackgroundImageError")}`)
 	}
 }
+
+/**
+ * 上传文件
+ */
+const upload = () => {
+	fileInput.value?.click()
+}
+
+/**
+ * 处理文件选择
+ */
+const handleFileChange = (event) => {
+	const FILE = event.target.files[0]
+	if (!FILE) return
+	backgroundImage.value.blob = FILE
+	backgroundImage.value.url = ""
+	event.target.value = ""
+	apply()
+}
+
+/**
+ * 应用配置
+ */
+const apply = publicRegistry.debounce(async () => {
+	try {
+		let value = {
+			enabled: backgroundImage.value.enabled,
+			url: backgroundImage.value.url,
+			blob: null,
+			opacity: backgroundImage.value.opacity,
+			mask: backgroundImage.value.mask
+		}
+		if (backgroundImage.value.blob) {
+			const BUFFER = await backgroundImage.value.blob.arrayBuffer()
+			value.blob = new Uint8Array(BUFFER)
+		}
+		await Dexie.configs.put({item: "backgroundImage", value})
+		EventBus.emit("[function] configInitialization")
+	} catch (error) {
+		Logger.error(`[${name}] 背景图片配置应用失败`, {
+			backgroundImage: backgroundImage.value,
+			error
+		})
+		toastRegistry.error(`[${name}] ${t("components.Options.BackgroundImage.toast.applyBackgroundImageError")}`)
+	}
+}, 500)
+
+/**
+ * 处理复选框变化
+ */
+const handleCheckboxChange = () => {
+	apply()
+}
+
+/**
+ * 处理数字输入变化
+ */
+const handleNumberChange = () => {
+	apply()
+}
+
+/**
+ * 监听显示URL变化
+ */
+watch(displayUrl, () => {
+	apply()
+})
+
+/**
+ * 监听不透明度和遮罩变化
+ */
+watch(
+	() => [backgroundImage.value.opacity, backgroundImage.value.mask],
+	() => {
+		apply()
+	}
+)
+
+onMounted(() => {
+	read()
+})
 </script>
 
 <template>
 	<div class="background-image">
 		<label class="switch">
-			<input type="checkbox" v-model="backgroundImage.enabled" @change="apply"/>
+			<input type="checkbox" v-model="backgroundImage.enabled" @change="handleCheckboxChange"/>
 			<span class="custom-checkbox"></span>
 		</label>
 		<input type="file" ref="fileInput" style="display: none;" accept="image/*" @change="handleFileChange">
 		<Button @click="upload" :disabled="!backgroundImage.enabled">
-			{{t('components.Options.BackgroundImage.upload') }}
+			{{ t('components.Options.BackgroundImage.upload') }}
 		</Button>
 		<InputText
 			class="text"
@@ -147,7 +187,7 @@ export default {
 			:title="t('components.Options.BackgroundImage.backgroundImageOpacity')"
 			:disabled="!backgroundImage.enabled"
 			v-model="backgroundImage.opacity"
-			@input="apply"/>
+			@input="handleNumberChange"/>
 		<InputNumber
 			class="number"
 			mode="slider"
@@ -156,7 +196,7 @@ export default {
 			:title="t('components.Options.BackgroundImage.backgroundImageMask')"
 			:disabled="!backgroundImage.enabled"
 			v-model="backgroundImage.mask"
-			@input="apply"/>
+			@input="handleNumberChange"/>
 	</div>
 </template>
 

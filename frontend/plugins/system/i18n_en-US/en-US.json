@@ -363,6 +363,14 @@
 			"delete": "Delete",
 			"plugins": "Plugins",
 			"log": "Log"
+		},
+		"VersionButton": {
+			"info1": "What are you ordering 🤔",
+			"info2": "You found the hidden egg 🎉",
+			"info3": "I will change more ⚡",
+			"info4": "Egg mode 🌈",
+			"info5": "Egg mode activated! 🌈",
+			"info6": "So idle? Play games!"
 		}
 	},
 	"views": {

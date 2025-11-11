@@ -1,121 +1,144 @@
-<script>
+<script setup>
+import {ref, computed, onMounted, watch} from "vue"
 import InputText from "@/components/input/InputText.vue"
 import Button from "@/components/input/Button.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "LogoImage",
-	inject: ["$DB", "$log"],
-	components: {Button, InputText},
-	data() {
-		return {
-			name: "LogoImage",
-			logoImage: {
-				enabled: false,
-				url: "",
+const name = "LogoImage"
+
+/**
+ * logo图片配置
+ */
+const logoImage = ref({
+	enabled: false,
+	url: "",
+	blob: null
+})
+
+/**
+ * 文件输入框引用
+ */
+const fileInput = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 显示URL的计算属性
+ */
+const displayUrl = computed({
+	get: () => {
+		if (logoImage.value.blob) {
+			return t("components.Options.LogoImage.localPlaceholder")
+		}
+		return logoImage.value.url || ""
+	},
+	set: (val) => {
+		if (!val.startsWith(t("components.Options.LogoImage.localPlaceholder"))) {
+			logoImage.value.url = val
+			logoImage.value.blob = null
+		}
+	}
+})
+
+/**
+ * 读取配置
+ */
+const read = async () => {
+	try {
+		const LOGO_IMAGE_DATA = await Dexie.configs.get("logoImage")
+		if (LOGO_IMAGE_DATA?.value) {
+			logoImage.value = {
+				enabled: LOGO_IMAGE_DATA.value.enabled,
+				url: LOGO_IMAGE_DATA.value.url,
 				blob: null
 			}
-		}
-	},
-	computed: {
-		displayUrl: {
-			get() {
-				if (this.logoImage.blob) {
-					return this.t("components.Options.LogoImage.localPlaceholder")
-				}
-				return this.logoImage.url || ""
-			},
-			set(val) {
-				if (!val.startsWith(this.t("components.Options.LogoImage.localPlaceholder"))) {
-					this.logoImage.url = val
-					this.logoImage.blob = null
-				}
+			if (LOGO_IMAGE_DATA.value.blob) {
+				logoImage.value.blob = new Blob([LOGO_IMAGE_DATA.value.blob])
 			}
 		}
-	},
-	created() {
-		this.read()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 读取
-		 */
-		async read() {
-			try {
-				const LOGO_IMAGE_DATA = await this.$DB.configs.get("logoImage")
-				if (LOGO_IMAGE_DATA?.value) {
-					this.logoImage = {
-						enabled:  LOGO_IMAGE_DATA.value.enabled,
-						url: LOGO_IMAGE_DATA.value.url,
-						blob: null
-					}
-					if (LOGO_IMAGE_DATA.value.blob) {
-						this.logoImage.blob = new Blob([LOGO_IMAGE_DATA.value.blob])
-					}
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] logo图片配置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.getLogoImageError")}`)
-			}
-		},
-		/**
-		 * 上传
-		 */
-		async upload() {
-			this.$refs.fileInput.click()
-		},
-		/**
-		 * 处理文件选择
-		 */
-		handleFileChange(event) {
-			const FILE = event.target.files[0]
-			if (!FILE) return
-			this.logoImage.blob = FILE
-			this.logoImage.url = ""
-			event.target.value = ""
-			this.apply()
-		},
-		/**
-		 * 应用
-		 */
-		apply: publicRegistry.debounce(async function () {
-			try {
-				let value = {
-					enabled: this.logoImage.enabled,
-					url: this.logoImage.url,
-					blob: null
-				}
-				if (this.logoImage.blob) {
-					const BUFFER = await this.logoImage.blob.arrayBuffer()
-					value.blob = new Uint8Array(BUFFER)
-				}
-				await this.$DB.configs.put({ item: "logoImage", value })
-				EventBus.emit("[update] logoImageApply")
-			} catch (error) {
-				this.$log.error(`[${this.name}] logo图片配置应用失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LogoImage.toast.applyLogoImageError")}`)
-			}
-		}, 500)
+	} catch (error) {
+		Logger.error(`[${name}] logo图片配置获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.LogoImage.toast.getLogoImageError")}`)
 	}
 }
+
+/**
+ * 上传文件
+ */
+const upload = () => {
+	fileInput.value?.click()
+}
+
+/**
+ * 处理文件选择
+ */
+const handleFileChange = (event) => {
+	const FILE = event.target.files[0]
+	if (!FILE) return
+	logoImage.value.blob = FILE
+	logoImage.value.url = ""
+	event.target.value = ""
+	apply()
+}
+
+/**
+ * 应用配置
+ */
+const apply = publicRegistry.debounce(async () => {
+	try {
+		let value = {
+			enabled: logoImage.value.enabled,
+			url: logoImage.value.url,
+			blob: null
+		}
+		if (logoImage.value.blob) {
+			const BUFFER = await logoImage.value.blob.arrayBuffer()
+			value.blob = new Uint8Array(BUFFER)
+		}
+		await Dexie.configs.put({item: "logoImage", value})
+		EventBus.emit("[update] logoImageApply")
+	} catch (error) {
+		Logger.error(`[${name}] logo图片配置应用失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.LogoImage.toast.applyLogoImageError")}`)
+	}
+}, 500)
+
+/**
+ * 处理复选框变化
+ */
+const handleCheckboxChange = () => {
+	apply()
+}
+
+/**
+ * 监听显示URL变化
+ */
+watch(displayUrl, () => {
+	apply()
+})
+
+onMounted(() => {
+	read()
+})
 </script>
 
 <template>
 	<div class="logo-image">
 		<label class="switch">
-			<input type="checkbox" v-model="logoImage.enabled" @change="apply"/>
+			<input type="checkbox" v-model="logoImage.enabled" @change="handleCheckboxChange"/>
 			<span class="custom-checkbox"></span>
 		</label>
 		<input type="file" ref="fileInput" style="display: none;" accept="image/*" @change="handleFileChange">

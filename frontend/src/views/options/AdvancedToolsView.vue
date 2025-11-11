@@ -1,24 +1,19 @@
-<script>
+<script setup>
 import Button from "@/components/input/Button.vue"
 import HazardousOperations from "@/components/options/HazardousOperations.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import LogLevel from "@/components/options/LogLevel.vue"
 import DevToolsSuspensionWindow from "@/components/options/DevToolsSuspensionWindow.vue"
 
-export default {
-	name: "AdvancedToolsView",
-	components: {LogLevel, DevToolsSuspensionWindow, Button, HazardousOperations},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		}
-	}
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
 }
 </script>
 

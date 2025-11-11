@@ -90,15 +90,23 @@ const routes = [
 		component: () => import("@/views/MaskView.vue")
 	},
 	{
+		// 归档聊天
 		path: "/archivesChat",
 		name: "ArchivesChat",
-		component: () => import("@/views/ArchivesChatView.vue")
+		component: () => import("@/views/ArchivesView.vue")
 	},
 	{
 		// 404
 		path: "/:pathMatch(.*)*",
 		name: "NotFound",
 		component: () => import("@/views/NotFoundView.vue")
+	},
+	{
+
+		// test
+		path: "/test",
+		name: "Test",
+		component: () => import("@/views/Test.vue")
 	}
 ]
 

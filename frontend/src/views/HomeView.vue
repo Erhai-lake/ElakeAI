@@ -1,11 +1,5 @@
-<script>
-import {defineComponent} from "vue"
+<script setup>
 import AIInput from "@/components/AIInput.vue"
-
-export default defineComponent({
-    name: "HomeView",
-    components: {AIInput}
-})
 </script>
 
 <template>

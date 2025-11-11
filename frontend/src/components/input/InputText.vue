@@ -1,26 +1,23 @@
-<script>
-export default {
-	name: "InputText",
-	props: {
-		modelValue: {
-			type: String,
-			default: ""
-		},
-		placeholder: {
-			type: String,
-			default: ""
-		}
+<script setup>
+defineProps({
+	modelValue: {
+		type: String,
+		default: ""
 	},
-	emits: ["update:modelValue", "input"],
-	methods: {
-		onInput(event) {
-			const VALUE = event.target.value
-			// v-model
-			this.$emit("update:modelValue", VALUE)
-			// 回调
-			this.$emit("input", VALUE)
-		}
+	placeholder: {
+		type: String,
+		default: ""
 	}
+})
+
+const emit = defineEmits(["update:modelValue", "input"])
+
+const onInput = (event) => {
+	const value = event.target.value
+	// v-model
+	emit("update:modelValue", value)
+	// 回调
+	emit("input", value)
 }
 </script>
 

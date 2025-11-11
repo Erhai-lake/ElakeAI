@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import {computed, onMounted, onUnmounted, ref, watch} from "vue"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import Button from "@/components/input/Button.vue"
@@ -7,422 +8,454 @@ import {platformRegistry} from "@/services/plugin/api/PlatformClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import InputText from "@/components/input/InputText.vue"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "ChatAIKey",
-	components: {InputText, Selector, Button, FoldingPanel},
-	inject: ["$DB", "$log"],
-	data() {
-		return {
-			name: "ChatAIKey",
-			// 表单状态 0: 关闭 1: 新增 2: 编辑
-			formStatus: 0,
-			// 平台列表
-			platformList: [],
-			// 选中的模型
-			selectedPlatform: {},
-			// Key池
-			keyPools: [],
-			// 操作选择
-			operationSelection: [],
-			// 表单数据
-			formData: {
-				key: "",
-				value: "",
-				remark: "",
-				url: "",
-				enabled: true
-			}
+const name = "ChatAIKey"
+
+/**
+ * 表单状态 0: 关闭 1: 新增 2: 编辑
+ */
+const formStatus = ref(0)
+
+/**
+ * 平台列表
+ */
+const platformList = ref([])
+
+/**
+ * 选中的平台
+ */
+const selectedPlatform = ref({})
+
+/**
+ * Key池
+ */
+const keyPools = ref([])
+
+/**
+ * 操作选择
+ */
+const operationSelection = ref([])
+
+/**
+ * 表单数据
+ */
+const formData = ref({
+	key: "",
+	value: "",
+	remark: "",
+	url: "",
+	enabled: true
+})
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 更新选中模型
+ * @param newVal {Object} - 选中的模型
+ */
+const updateSelectedModel = (newVal) => {
+	selectedPlatform.value = newVal
+}
+
+/**
+ * 选择模型
+ * @param selectModel {Object} - 选中的模型
+ */
+const selectModel = (selectModel) => {
+	if (!selectModel) return
+	if (selectModel === selectedPlatform.value.title) return
+	selectedPlatform.value = selectModel
+	operationSelection.value = []
+	loadKeyPools()
+}
+
+/**
+ * 加载平台
+ */
+const loadPlatform = async () => {
+	const PLATFORMS = platformRegistry.getAllPlatforms()
+	platformList.value = PLATFORMS.reduce((acc, item) => {
+		try {
+			acc.push({
+				title: item.api.info.name,
+				images: item.api.info.image,
+				url: item.api.info.url
+			})
+		} catch (error) {
+			Logger.error(`[${name}] 加载平台 ${item.api.info.name} 失败`, error)
 		}
-	},
-	watch: {
-		// 监听模型变化
-		selectedPlatform(newVal) {
-			this.selectModel(newVal)
-		}
-	},
-	beforeUnmount() {
-		EventBus.off("[update] keyPoolUpdate", this.loadKeyPools)
-	},
-	created() {
-		EventBus.on("[update] keyPoolUpdate", this.loadKeyPools)
-		// 初始化平台
-		this.loadPlatform()
-		// 初始化Key池
-		this.loadKeyPools()
-	},
-	computed: {
-		// 是否全选
-		isAllSelected() {
-			return this.keyPools.length > 0 &&
-				this.keyPools.every(item =>
-					this.operationSelection.includes(item.key)
-				)
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 更新选中模型
-		 * @param newVal {Object} - 选中的模型
-		 */
-		updateSelectedModel(newVal) {
-			this.selectedPlatform = newVal
-		},
-		/**
-		 * 选择模型
-		 * @param selectModel {Object} - 选中的模型
-		 */
-		selectModel(selectModel) {
-			if (!selectModel) return
-			if (selectModel === this.selectedPlatform.title) return
-			this.selectedPlatform = selectModel
-			this.operationSelection = []
-			this.loadKeyPools()
-		},
-		/**
-		 * 加载平台
-		 */
-		async loadPlatform() {
-			const PLATFORMS = platformRegistry.getAllPlatforms()
-			this.platformList = PLATFORMS.reduce((acc, item) => {
-				try {
-					acc.push({
-						title: item.api.info.name,
-						images: item.api.info.image,
-						url: item.api.info.url
-					})
-				} catch (error) {
-					this.$log.error(`[${this.name}] 加载平台 ${item.api.info.name} 失败`, error)
-				}
-				return acc
-			}, [])
-			// 初始化选中模型
-			if (this.platformList.length > 0) {
-				this.selectedPlatform = this.platformList[0]
-			}
-		},
-		/**
-		 * 加载Key池
-		 */
-		async loadKeyPools() {
-			if (!this.selectedPlatform.title) {
-				this.$log.warn(`[${this.name}] 加载Key池时模型为空`)
-				return
-			}
-			try {
-				this.keyPools = await this.$DB.apiKeys.where("model").equals(this.selectedPlatform.title).toArray()
-				for (const item of this.keyPools) {
-					if (!item.enabled) {
-						item.balance = "NULL"
-						continue
-					}
-					item.balance = await this.getKeyBalance(item.key)
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 加载Key池失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.loadKeyPoolError")}`)
-			}
-		},
-		/**
-		 * 获取Key余额
-		 * @param key {String} - Key
-		 * @returns {Promise<null|boolean>} - Key余额
-		 */
-		async getKeyBalance(key) {
-			try {
-				const INSTANCE = platformRegistry.getPlatform(this.selectedPlatform.title)
-				const RESPONSE = await INSTANCE.api.balance({apiKey: key})
-				if (RESPONSE.error) {
-					this.$log.error(`[${this.name}] 获取Key余额失败`, RESPONSE)
-					toastRegistry.error(`[${this.name}] ${this.t(RESPONSE.error)}`)
-					return RESPONSE.data
-				}
-				return RESPONSE.data
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取Key余额失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.errorObtainingKeyBalance")}`)
-			}
-		},
-		/**
-		 * Key脱敏显示
-		 * @param key {String} - Key
-		 * @returns {*|string} - 脱敏后的Key
-		 */
-		maskKey(key) {
-			if (!key) return ""
-			if (key.length < 8) return key
-			return key.slice(0, 4) + '****' + key.slice(-4)
-		},
-		/**
-		 * 切换新增/编辑表单状态
-		 */
-		async toggleFormStatus(type = 0) {
-			if (type === 1) {
-				this.formData = {
-					key: "",
-					value: "",
-					remark: "",
-					url: "",
-					enabled: true
-				}
-				this.formStatus = 1
-			} else if (type === 2) {
-				// 禁止空编辑
-				if (!this.operationSelection || this.operationSelection.length === 0) {
-					this.$log.warn(`[${this.name}] 编辑Key时未选中任何Key`)
-					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
-					return
-				}
-				// 禁止多选编辑
-				if (this.operationSelection.length > 1) {
-					this.$log.warn(`[${this.name}] 编辑Key时选中了过多的key`)
-					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectAKey")}`)
-					return
-				}
-				try {
-					// 加载编辑数据
-					this.formData = await this.$DB.apiKeys.get(this.operationSelection[0])
-					this.formStatus = 2
-				} catch (error) {
-					this.$log.error(`[${this.name}] 获取Key失败`, error)
-					toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.getKeyError")}`)
-				}
-			} else {
-				this.formData = {
-					key: "",
-					value: "",
-					remark: "",
-					url: "",
-					enabled: true
-				}
-				this.formStatus = 0
-			}
-		},
-		/**
-		 * 新增Key
-		 */
-		async addNewKey() {
-			// 校验表单数据
-			if (!this.verificationForm(1)) {
-				return
-			}
-			try {
-				// 检查remark是否重复
-				const IS_REMARK_EXIST = await this.$DB.apiKeys
-					.where("remark")
-					.equals(this.formData.remark)
-					.and(item => item.key !== this.formData.key)
-					.first()
-				if (IS_REMARK_EXIST) {
-					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
-					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
-					return
-				}
-				const NEW_KEY_ID = crypto.randomUUID()
-				// 写入数据库
-				await this.$DB.apiKeys.add({
-					key: NEW_KEY_ID,
-					model: this.selectedPlatform.title,
-					value: this.formData.value,
-					remark: this.formData.remark,
-					url: this.formData.url,
-					enabled: true
-				})
-				await this.toggleFormStatus()
-				toastRegistry.success(this.t("components.Options.ChatAIKey.toast.addKeySuccess"))
-				EventBus.emit("[update] keyPoolUpdate")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 添加Key失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.addKeyError")}`)
-			}
-		},
-		/**
-		 * 删除Key(批量)
-		 */
-		async removeSelectedKeys() {
-			// 禁止空删除
-			if (!this.operationSelection || this.operationSelection.length === 0) {
-				this.$log.warn(`[${this.name}] 删除Key时未选中任何Key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
-				return
-			}
-			try {
-				await this.$DB.apiKeys.bulkDelete(this.operationSelection)
-				if (this.formStatus === 2) {
-					await this.toggleFormStatus()
-				}
-				this.operationSelection = []
-				toastRegistry.success(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.removeKeySuccess")}`)
-				EventBus.emit("[update] keyPoolUpdate")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 移除Keys失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.removeKeysError")}`)
-			}
-		},
-		/**
-		 * 更新Key
-		 */
-		async updateKey() {
-			// 校验表单数据
-			if (!this.verificationForm(2)) {
-				return
-			}
-			try {
-				// 检查remark是否重复
-				const IS_REMARK_EXIST = await this.$DB.apiKeys
-					.where("remark")
-					.equals(this.formData.remark)
-					.and(item => item.key !== this.formData.key)
-					.first()
-				if (IS_REMARK_EXIST) {
-					this.$log.warn(`[${this.name}] 编辑Key时备注重复`)
-					toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
-					return
-				}
-				// 写入数据库
-				await this.$DB.apiKeys.update(this.formData.key, {
-					value: this.formData.value,
-					remark: this.formData.remark,
-					url: this.formData.url
-				})
-				await this.toggleFormStatus()
-				toastRegistry.success(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.editKeySuccess")}`)
-				EventBus.emit("[update] keyPoolUpdate")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 编辑Key失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.editKeyError")}`)
-			}
-		},
-		/**
-		 * 校验表单数据
-		 * @param type {Number} - 校验类型 1:新建 2:编辑
-		 * @returns {boolean} - 是否校验通过
-		 */
-		verificationForm(type = 0) {
-			// 禁止空编辑
-			if (!this.formData.value) {
-				this.$log.warn(`[${this.name}] ${type === 1 ? "新建" : "编辑"}Key时选Key为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.keyNull")}`)
-				return false
-			}
-			// 禁止备注为空
-			if (!this.formData.remark) {
-				this.$log.warn(`[${this.name}] ${type === 1 ? "新建" : "编辑"}Key时备注为空`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.remarkNull")}`)
-				return false
-			}
-			// url空则使用默认url
-			if (!this.formData.url) {
-				this.formData.url = this.selectedPlatform.url
-			}
-			// 删除Url末尾的/
-			if (this.formData.url.endsWith("/")) {
-				this.formData.url = this.formData.url.slice(0, -1)
-			}
-			// 校验url
-			if (!this.isValidUrl(this.formData.url)) {
-				this.$log.warn(`[${this.name}] ${type === 1 ? "新建" : "编辑"}Key时URL校验失败`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.invalidUrl")}`)
-				return false
-			}
-			return true
-		},
-		/**
-		 * 校验url
-		 * @param url {String} - url
-		 * @returns {boolean} - 是否为url
-		 */
-		isValidUrl(url) {
-			try {
-				new URL(url)
-				return true
-			} catch (error) {
-				return false
-			}
-		},
-		/**
-		 * 切换Key启用状态
-		 * @param keyItem {Object} - Key
-		 */
-		async toggleKeyEnable(keyItem) {
-			try {
-				const NEW_STATUS = !keyItem.enabled
-				await this.$DB.apiKeys.update(keyItem.key, {enabled: NEW_STATUS})
-				if (keyItem.enabled) {
-					keyItem.balance = await this.getKeyBalance(keyItem.key)
-				} else {
-					keyItem.balance = "NULL"
-				}
-				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
-				EventBus.emit("[update] keyPoolUpdate")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 状态更新失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.statusUpdateError")}`)
-			}
-		},
-		/**
-		 * 切换Key启用状态(批量)
-		 * @param status {Boolean} - 启用状态
-		 */
-		async batchToggleEnable(status) {
-			if (!this.operationSelection || this.operationSelection.length === 0) {
-				this.$log.warn(`[${this.name}] 切换Key启用状态时未选中任何key`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
-				return
-			}
-			try {
-				const UPDATES = this.operationSelection.map(key => ({
-					key: key,
-					changes: {enabled: status}
-				}))
-				await this.$DB.apiKeys.bulkUpdate(UPDATES)
-				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
-				EventBus.emit("[update] keyPoolUpdate")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 状态更新失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.ChatAIKey.toast.statusUpdateError")}`)
-			}
-		},
-		/**
-		 * 查看Key
-		 */
-		viewKeys() {
-			const PLATFORM = platformRegistry.getAllPlatforms().find(item => item.name === this.selectedPlatform.title)
-			window.open(PLATFORM.api.info.keyViewUrl)
-		},
-		/**
-		 * 切换全选状态
-		 */
-		toggleAllSelection() {
-			if (this.isAllSelected) {
-				this.operationSelection = []
-			} else {
-				this.operationSelection = this.keyPools.map(item => item.key)
-			}
-		},
-		/**
-		 * 切换行选择状态
-		 * @param key {String} - Key
-		 */
-		toggleRowSelection(key) {
-			const INDEX = this.operationSelection.indexOf(key)
-			if (INDEX === -1) {
-				this.operationSelection.push(key)
-			} else {
-				this.operationSelection.splice(INDEX, 1)
-			}
-		}
+		return acc
+	}, [])
+	// 初始化选中模型
+	if (platformList.value.length > 0) {
+		selectedPlatform.value = platformList.value[0]
 	}
 }
+
+/**
+ * 加载Key池
+ */
+const loadKeyPools = async () => {
+	if (!selectedPlatform.value.title) {
+		Logger.warn(`[${name}] 加载Key池时模型为空`)
+		return
+	}
+	try {
+		keyPools.value = await Dexie.apiKeys.where("model").equals(selectedPlatform.value.title).toArray()
+		for (const item of keyPools.value) {
+			if (!item.enabled) {
+				item.balance = "NULL"
+				continue
+			}
+			item.balance = await getKeyBalance(item.key)
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 加载Key池失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.loadKeyPoolError")}`)
+	}
+}
+
+/**
+ * 获取Key余额
+ * @param key {String} - Key
+ * @returns {Promise<null|boolean>} - Key余额
+ */
+const getKeyBalance = async (key) => {
+	try {
+		const INSTANCE = platformRegistry.getPlatform(selectedPlatform.value.title)
+		const RESPONSE = await INSTANCE.api.balance({apiKey: key})
+		if (RESPONSE.error) {
+			Logger.error(`[${name}] 获取Key余额失败`, RESPONSE)
+			toastRegistry.error(`[${name}] ${t(RESPONSE.error)}`)
+			return RESPONSE.data
+		}
+		return RESPONSE.data
+	} catch (error) {
+		Logger.error(`[${name}] 获取Key余额失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.errorObtainingKeyBalance")}`)
+	}
+}
+
+/**
+ * Key脱敏显示
+ * @param key {String} - Key
+ * @returns {*|string} - 脱敏后的Key
+ */
+const maskKey = (key) => {
+	if (!key) return ""
+	if (key.length < 8) return key
+	return key.slice(0, 4) + '****' + key.slice(-4)
+}
+
+/**
+ * 切换新增/编辑表单状态
+ */
+const toggleFormStatus = async (type = 0) => {
+	if (type === 1) {
+		formData.value = {
+			key: "",
+			value: "",
+			remark: "",
+			url: "",
+			enabled: true
+		}
+		formStatus.value = 1
+	} else if (type === 2) {
+		// 禁止空编辑
+		if (!operationSelection.value || operationSelection.value.length === 0) {
+			Logger.warn(`[${name}] 编辑Key时未选中任何Key`)
+			toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
+			return
+		}
+		// 禁止多选编辑
+		if (operationSelection.value.length > 1) {
+			Logger.warn(`[${name}] 编辑Key时选中了过多的key`)
+			toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.selectAKey")}`)
+			return
+		}
+		try {
+			// 加载编辑数据
+			formData.value = await Dexie.apiKeys.get(operationSelection.value[0])
+			formStatus.value = 2
+		} catch (error) {
+			Logger.error(`[${name}] 获取Key失败`, error)
+			toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.getKeyError")}`)
+		}
+	} else {
+		formData.value = {
+			key: "",
+			value: "",
+			remark: "",
+			url: "",
+			enabled: true
+		}
+		formStatus.value = 0
+	}
+}
+
+/**
+ * 新增Key
+ */
+const addNewKey = async () => {
+	// 校验表单数据
+	if (!verificationForm(1)) {
+		return
+	}
+	try {
+		// 检查remark是否重复
+		const IS_REMARK_EXIST = await Dexie.apiKeys
+			.where("remark")
+			.equals(formData.value.remark)
+			.and(item => item.key !== formData.value.key)
+			.first()
+		if (IS_REMARK_EXIST) {
+			Logger.warn(`[${name}] 编辑Key时备注重复`)
+			toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
+			return
+		}
+		const NEW_KEY_ID = crypto.randomUUID()
+		// 写入数据库
+		await Dexie.apiKeys.add({
+			key: NEW_KEY_ID,
+			model: selectedPlatform.value.title,
+			value: formData.value.value,
+			remark: formData.value.remark,
+			url: formData.value.url,
+			enabled: true
+		})
+		await toggleFormStatus()
+		toastRegistry.success(t("components.Options.ChatAIKey.toast.addKeySuccess"))
+		EventBus.emit("[update] keyPoolUpdate")
+	} catch (error) {
+		Logger.error(`[${name}] 添加Key失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.addKeyError")}`)
+	}
+}
+
+/**
+ * 删除Key(批量)
+ */
+const removeSelectedKeys = async () => {
+	// 禁止空删除
+	if (!operationSelection.value || operationSelection.value.length === 0) {
+		Logger.warn(`[${name}] 删除Key时未选中任何Key`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
+		return
+	}
+	try {
+		await Dexie.apiKeys.bulkDelete(operationSelection.value)
+		if (formStatus.value === 2) {
+			await toggleFormStatus()
+		}
+		operationSelection.value = []
+		toastRegistry.success(`[${name}] ${t("components.Options.ChatAIKey.toast.removeKeySuccess")}`)
+		EventBus.emit("[update] keyPoolUpdate")
+	} catch (error) {
+		Logger.error(`[${name}] 移除Keys失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.removeKeysError")}`)
+	}
+}
+
+/**
+ * 更新Key
+ */
+const updateKey = async () => {
+	// 校验表单数据
+	if (!verificationForm(2)) {
+		return
+	}
+	try {
+		// 检查remark是否重复
+		const IS_REMARK_EXIST = await Dexie.apiKeys
+			.where("remark")
+			.equals(formData.value.remark)
+			.and(item => item.key !== formData.value.key)
+			.first()
+		if (IS_REMARK_EXIST) {
+			Logger.warn(`[${name}] 编辑Key时备注重复`)
+			toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
+			return
+		}
+		// 写入数据库
+		await Dexie.apiKeys.update(formData.value.key, {
+			value: formData.value.value,
+			remark: formData.value.remark,
+			url: formData.value.url
+		})
+		await toggleFormStatus()
+		toastRegistry.success(`[${name}] ${t("components.Options.ChatAIKey.toast.editKeySuccess")}`)
+		EventBus.emit("[update] keyPoolUpdate")
+	} catch (error) {
+		Logger.error(`[${name}] 编辑Key失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.editKeyError")}`)
+	}
+}
+
+/**
+ * 校验表单数据
+ * @param type {Number} - 校验类型 1:新建 2:编辑
+ * @returns {boolean} - 是否校验通过
+ */
+const verificationForm = (type = 0) => {
+	// 禁止空编辑
+	if (!formData.value.value) {
+		Logger.warn(`[${name}] ${type === 1 ? "新建" : "编辑"}Key时选Key为空`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.keyNull")}`)
+		return false
+	}
+	// 禁止备注为空
+	if (!formData.value.remark) {
+		Logger.warn(`[${name}] ${type === 1 ? "新建" : "编辑"}Key时备注为空`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.remarkNull")}`)
+		return false
+	}
+	// url空则使用默认url
+	if (!formData.value.url) {
+		formData.value.url = selectedPlatform.value.url
+	}
+	// 删除Url末尾的/
+	if (formData.value.url.endsWith("/")) {
+		formData.value.url = formData.value.url.slice(0, -1)
+	}
+	// 校验url
+	if (!isValidUrl(formData.value.url)) {
+		Logger.warn(`[${name}] ${type === 1 ? "新建" : "编辑"}Key时URL校验失败`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.invalidUrl")}`)
+		return false
+	}
+	return true
+}
+
+/**
+ * 校验url
+ * @param url {String} - url
+ * @returns {boolean} - 是否为url
+ */
+const isValidUrl = (url) => {
+	try {
+		new URL(url)
+		return true
+	} catch (error) {
+		return false
+	}
+}
+
+/**
+ * 切换Key启用状态
+ * @param keyItem {Object} - Key
+ */
+const toggleKeyEnable = async (keyItem) => {
+	try {
+		const NEW_STATUS = !keyItem.enabled
+		await Dexie.apiKeys.update(keyItem.key, {enabled: NEW_STATUS})
+		if (keyItem.enabled) {
+			keyItem.balance = await getKeyBalance(keyItem.key)
+		} else {
+			keyItem.balance = "NULL"
+		}
+		toastRegistry.success(`[${name}] ${t(`components.Options.ChatAIKey.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
+		EventBus.emit("[update] keyPoolUpdate")
+	} catch (error) {
+		Logger.error(`[${name}] 状态更新失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.statusUpdateError")}`)
+	}
+}
+
+/**
+ * 切换Key启用状态(批量)
+ * @param status {Boolean} - 启用状态
+ */
+const batchToggleEnable = async (status) => {
+	if (!operationSelection.value || operationSelection.value.length === 0) {
+		Logger.warn(`[${name}] 切换Key启用状态时未选中任何key`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.selectKeysOperate")}`)
+		return
+	}
+	try {
+		const UPDATES = operationSelection.value.map(key => ({
+			key: key,
+			changes: {enabled: status}
+		}))
+		await Dexie.apiKeys.bulkUpdate(UPDATES)
+		toastRegistry.success(`[${name}] ${t(`components.Options.ChatAIKey.toast.batch${status ? "Enable" : "Disable"}Success`)}`)
+		EventBus.emit("[update] keyPoolUpdate")
+	} catch (error) {
+		Logger.error(`[${name}] 状态更新失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.ChatAIKey.toast.statusUpdateError")}`)
+	}
+}
+
+/**
+ * 查看Key
+ */
+const viewKeys = () => {
+	const PLATFORM = platformRegistry.getAllPlatforms().find(item => item.name === selectedPlatform.value.title)
+	window.open(PLATFORM.api.info.keyViewUrl)
+}
+
+/**
+ * 切换全选状态
+ */
+const toggleAllSelection = () => {
+	if (isAllSelected.value) {
+		operationSelection.value = []
+	} else {
+		operationSelection.value = keyPools.value.map(item => item.key)
+	}
+}
+
+/**
+ * 切换行选择状态
+ * @param key {String} - Key
+ */
+const toggleRowSelection = (key) => {
+	const INDEX = operationSelection.value.indexOf(key)
+	if (INDEX === -1) {
+		operationSelection.value.push(key)
+	} else {
+		operationSelection.value.splice(INDEX, 1)
+	}
+}
+
+/**
+ * 是否全选
+ */
+const isAllSelected = computed(() => {
+	return keyPools.value.length > 0 &&
+		keyPools.value.every(item =>
+			operationSelection.value.includes(item.key)
+		)
+})
+
+/**
+ * 选择模型
+ * @param newVal {Object} - 选中的模型
+ */
+watch(selectedPlatform, (newVal) => {
+	selectModel(newVal)
+})
+
+onMounted(() => {
+	EventBus.on("[update] keyPoolUpdate", loadKeyPools)
+	// 初始化平台
+	loadPlatform()
+	// 初始化Key池
+	loadKeyPools()
+})
+
+onUnmounted(() => {
+	EventBus.off("[update] keyPoolUpdate", loadKeyPools)
+})
 </script>
 
 <template>

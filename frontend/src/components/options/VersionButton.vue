@@ -1,143 +1,195 @@
-<script>
+<script setup>
+import {ref, nextTick} from "vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import Button from "@/components/input/Button.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {SnakeGame} from "@/services/Game"
 
-export default {
-	name: "VersionButton",
-	components: {Button},
-	data() {
-		return {
-			version: __APP_VERSION__,
-			clickCount: 0,
-			resetTimer: null,
-			isShaking: false,
-			isColorful: false,
-			isCrazy: false,
-			isGame: false,
-			game: null,
-			paused: false
-		}
-	},
-	// mounted() {
-	// 	this.openGame()
-	// },
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 版本按钮点击事件
-		 */
-		async onVersionClick() {
-			this.clickCount++
-			// 清理之前的定时器
-			if (this.resetTimer) {
-				clearTimeout(this.resetTimer)
-			}
-			// 1 秒没点就重置
-			if (this.clickCount < 65) {
-				this.resetTimer = setTimeout(() => {
-					this.clickCount = 0
-					this.version = __APP_VERSION__
-					this.isShaking = false
-					this.isColorful = false
-					this.isCrazy = false
-					this.closeGame()
-				}, 1000)
-			}
+/**
+ * 版本号
+ */
+const version = ref(__APP_VERSION__)
 
-			if (this.clickCount === 5) {
-				toastRegistry.info("你在点什么呢 🤔")
-			}
-			if (this.clickCount === 15) {
-				toastRegistry.success("你发现了隐藏彩蛋 🎉")
-				this.triggerShake()
-			}
-			if (this.clickCount === 30) {
-				toastRegistry.warning("再点我会变身哦 ⚡")
-				this.triggerShake()
-			}
-			if (this.clickCount > 15 && this.clickCount < 50) {
-				this.version = this.clickCount
-			}
-			if (this.clickCount === 50) {
-				this.version = "彩蛋模式 🌈"
-				this.isColorful = true
-				this.triggerShake()
-				toastRegistry.success("彩蛋模式已激活!")
-			}
-			if (this.clickCount > 65) {
-				this.version = this.clickCount
-				this.isShaking = true
-				this.isCrazy = true
-			}
-			if (this.clickCount === 100) {
-				toastRegistry.success("这么闲? 玩游戏吧!")
-				this.clickCount = 0
-				this.version = __APP_VERSION__
-				this.isShaking = false
-				this.isColorful = false
-				this.isCrazy = false
-				this.openGame()
-			}
-		},
-		/**
-		 * 震动
-		 */
-		triggerShake() {
-			this.isShaking = true
-			setTimeout(() => {
-				this.isShaking = false
-			}, 600)
-		},
-		/**
-		 * 打开游戏
-		 */
-		openGame() {
-			this.isGame = true
-			this.$nextTick(() => {
-				const ELEMENT_SCORE = this.$refs.score
-				const ELEMENT_STAGE = this.$refs.stage
-				const ELEMENT_HIGH_SCORE = this.$refs.highScore
-				this.game = new SnakeGame(ELEMENT_SCORE, ELEMENT_STAGE, ELEMENT_HIGH_SCORE)
-				this.game.start()
-			})
-		},
-		/**
-		 * 关闭游戏
-		 */
-		closeGame() {
-			this.isGame = false
-			this.game.destroy()
-		},
-		/**
-		 * 暂停游戏
-		 */
-		pauseGame() {
-			if (!this.game) return
-			this.paused = !this.paused
-			if (this.paused) {
-				this.game.pause()
-				this.$refs.pauseBtn.style.backgroundColor = "#FFA500"
-			} else {
-				this.game.resume()
-				this.$refs.pauseBtn.style.backgroundColor = "#E9FFF3"
-			}
-		},
-		/**
-		 * AI 自动游戏
-		 */
-		aiGame() {
-			this.game.toggleAI()
+/**
+ * 点击次数
+ */
+const clickCount = ref(0)
+
+/**
+ * 重置定时器
+ */
+const resetTimer = ref(null)
+
+/**
+ * 是否抖动
+ */
+const isShaking = ref(false)
+
+/**
+ * 是否彩色
+ */
+const isColorful = ref(false)
+
+/**
+ * 是否疯狂
+ */
+const isCrazy = ref(false)
+
+/**
+ * 是否游戏中
+ */
+const isGame = ref(false)
+
+/**
+ * 游戏实例
+ */
+const game = ref(null)
+
+/**
+ * 是否暂停
+ */
+const paused = ref(false)
+
+/**
+ * 游戏得分元素
+ */
+const score = ref(null)
+
+/**
+ * 游戏舞台元素
+ */
+const stage = ref(null)
+
+/**
+ * 游戏最高分元素
+ */
+const highScore = ref(null)
+
+/**
+ * 暂停按钮元素
+ */
+const pauseBtn = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 版本按钮点击事件
+ */
+const onVersionClick = async () => {
+	clickCount.value++
+	// 清理之前的定时器
+	if (resetTimer.value) {
+		clearTimeout(resetTimer.value)
+	}
+	// 1 秒没点就重置
+	resetTimer.value = setTimeout(() => {
+		clickCount.value = 0
+		version.value = __APP_VERSION__
+		isShaking.value = false
+		isColorful.value = false
+		isCrazy.value = false
+	}, 1000)
+
+	if (clickCount.value === 5) {
+		toastRegistry.info(t("components.VersionButton.info1"))
+	}
+	if (clickCount.value === 15) {
+		toastRegistry.success(t("components.VersionButton.info2"))
+		triggerShake()
+	}
+	if (clickCount.value === 30) {
+		toastRegistry.warning(t("components.VersionButton.info3"))
+		triggerShake()
+	}
+	if (clickCount.value > 15 && clickCount.value < 50) {
+		version.value = clickCount.value
+	}
+	if (clickCount.value === 50) {
+		version.value = t("components.VersionButton.info4")
+		isColorful.value = true
+		triggerShake()
+		toastRegistry.success(t("components.VersionButton.info5"))
+	}
+	if (clickCount.value > 65) {
+		version.value = clickCount.value
+		isShaking.value = true
+		isCrazy.value = true
+	}
+	if (clickCount.value === 100) {
+		toastRegistry.success(t("components.VersionButton.info6"))
+		clickCount.value = 0
+		version.value = __APP_VERSION__
+		isShaking.value = false
+		isColorful.value = false
+		isCrazy.value = false
+		openGame()
+	}
+}
+
+/**
+ * 震动
+ */
+const triggerShake = () => {
+	isShaking.value = true
+	setTimeout(() => {
+		isShaking.value = false
+	}, 600)
+}
+
+/**
+ * 打开游戏
+ */
+const openGame = () => {
+	isGame.value = true
+	nextTick(() => {
+		game.value = new SnakeGame(score.value, stage.value, highScore.value)
+		game.value.start()
+	})
+}
+
+/**
+ * 关闭游戏
+ */
+const closeGame = () => {
+	isGame.value = false
+	if (game.value) {
+		game.value.destroy()
+	}
+}
+
+/**
+ * 暂停游戏
+ */
+const pauseGame = () => {
+	if (!game.value) return
+	paused.value = !paused.value
+	if (paused.value) {
+		game.value.pause()
+		if (pauseBtn.value) {
+			pauseBtn.value.style.backgroundColor = "#FFA500"
 		}
+	} else {
+		game.value.resume()
+		if (pauseBtn.value) {
+			pauseBtn.value.style.backgroundColor = "#E9FFF3"
+		}
+	}
+}
+
+/**
+ * AI 自动游戏
+ */
+const aiGame = () => {
+	if (game.value) {
+		game.value.toggleAI()
 	}
 }
 </script>
@@ -218,7 +270,7 @@ export default {
 					transition: background-color 0.3s ease-in-out;
 				}
 
-				.ai{
+				.ai {
 					border: 1px solid #F7A623;
 					background-color: #FFF7D3;
 
@@ -285,13 +337,13 @@ export default {
 /* 狂暴模式：渐变彩虹不停滚动 */
 @keyframes rainbow {
 	0% {
-		background-position: 0% 50%;
+		background-position: 0 50%;
 	}
 	50% {
 		background-position: 100% 50%;
 	}
 	100% {
-		background-position: 0% 50%;
+		background-position: 0 50%;
 	}
 }
 

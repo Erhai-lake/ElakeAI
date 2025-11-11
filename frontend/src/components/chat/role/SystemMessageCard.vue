@@ -1,149 +1,177 @@
-<script>
+<script setup>
+import {nextTick, ref} from "vue"
+import {encode} from "gpt-tokenizer"
 import Button from "@/components/input/Button.vue"
 import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import {encode} from "gpt-tokenizer"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 
-export default {
-	name: "SystemMessageCard",
-	components: {RightClickMenu, Button},
-	props: {
-		message: {
-			type: Object,
-			required: true
-		},
-		currentMessageId: {
-			type: String,
-			default: ""
-		},
-		controls: {
-			type: Boolean,
-			default: true
-		}
+const props = defineProps({
+	/**
+	 * 消息
+	 */
+	message: {
+		type: Object,
+		required: true
 	},
-	data() {
-		return {
-			editingContent: {
-				show: false,
-				value: ""
-			}
-		}
+	/**
+	 * 当前消息ID
+	 */
+	currentMessageId: {
+		type: String,
+		default: ""
 	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 格式化信息
-		 * @returns {String} - 格式化后的信息
-		 */
-		formattingMessage() {
-			return this.message.message.content.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")
-		},
-		/**
-		 * 格式化时间戳
-		 * @returns {string} 格式化后的时间字符串
-		 */
-		formatTimestamp() {
-			const DATE = new Date(this.message.timestamp)
-			const YEAR = DATE.getFullYear()
-			const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
-			const DAY = String(DATE.getDate()).padStart(2, "0")
-			const HOURS = String(DATE.getHours()).padStart(2, "0")
-			const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
-			const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
-			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
-		},
-		/**
-		 * 计算tokens
-		 */
-		tokens() {
-			return encode(this.message.message.content).length
-		},
-		/**
-		 * 右键点击
-		 * @param event 事件
-		 * @param item 项
-		 */
-		onRightClick(event, item) {
-			event.preventDefault()
-			event.stopPropagation()
-			this.$refs.menu.show(event.clientX, event.clientY, [
-				{
-					title: this.t("components.MessageCard.editMessage"),
-					icon: {
-						type: "svg",
-						src: "#icon-inputBox"
-					},
-					color: "var(--theme-color)",
-					onClick: () => this.editInput()
-				},
-				{
-					title: this.t("components.MessageCard.removeMessage"),
-					icon: {
-						type: "svg",
-						src: "#icon-delete"
-					},
-					color: "red",
-					onClick: () => this.remove()
-				}
-			], item.id)
-		},
-		/**
-		 * 显示输入框
-		 */
-		editInput() {
-			this.editingContent.value = this.message.message.content
-			this.editingContent.show = true
-			this.$nextTick(() => {
-				this.$refs.textarea.focus()
-				this.adjustTextareaHeight()
-			})
-		},
-		/**
-		 * 保存消息
-		 */
-		saveContent() {
-			if (this.editingContent.value === this.message.message.content) return
-			if (this.editingContent.value.trim() === "") return
-			EventBus.emit("[function] editMessage", this.message.id, this.editingContent.value)
-			this.editingContent.show = false
-		},
-		/**
-		 * 调整 textarea 高度
-		 */
-		adjustTextareaHeight() {
-			const TEXTAREA = this.$refs.textarea
-			if (TEXTAREA) {
-				TEXTAREA.style.height = "auto"
-				// 获取滚动高度
-				const scrollHeight = TEXTAREA.scrollHeight
-				// 设置最大高度为 600px
-				TEXTAREA.style.height = Math.min(scrollHeight, 600) + "px"
-			}
-		},
-		/**
-		 * 当 textarea 失去焦点时隐藏输入框
-		 */
-		handleTextareaBlur() {
-			setTimeout(() => {
-				this.editingContent.show = false
-			}, 200)
-		},
-		/**
-		 * 移除消息
-		 */
-		remove() {
-			EventBus.emit("[function] removeMessage", this.message.id)
-		}
+	/**
+	 * 控制
+	 */
+	controls: {
+		type: Boolean,
+		default: true
 	}
+})
+
+/**
+ * 编辑内容
+ */
+const editingContent = ref({
+	show: false,
+	value: ""
+})
+
+/**
+ * 右键菜单
+ */
+const menu = ref(null)
+
+/**
+ * 文本域
+ */
+const textarea = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 格式化信息
+ * @param content - 原始内容
+ * @returns {String} - 格式化后的信息
+ */
+const formattingMessage = (content) => {
+	return content.replace(/\n/g, "<br>").replace(/ /g, "&nbsp;")
+}
+
+/**
+ * 格式化时间戳
+ * @param timestamp - 时间戳
+ * @returns {string} 格式化后的时间字符串
+ */
+const formatTimestamp = (timestamp) => {
+	const DATE = new Date(timestamp)
+	const YEAR = DATE.getFullYear()
+	const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
+	const DAY = String(DATE.getDate()).padStart(2, "0")
+	const HOURS = String(DATE.getHours()).padStart(2, "0")
+	const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
+	const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
+	const MILLISECONDS = String(DATE.getMilliseconds()).padStart(3, "0")
+	return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}.${MILLISECONDS}`
+}
+
+/**
+ * 计算tokens
+ * @param content - 内容
+ * @returns {number} - tokens数量
+ */
+const tokens = (content) => {
+	return encode(content).length
+}
+
+/**
+ * 右键点击
+ * @param event 事件
+ * @param item 项
+ */
+const onRightClick = (event, item) => {
+	event.preventDefault()
+	event.stopPropagation()
+	menu.value?.show(event.clientX, event.clientY, [
+		{
+			title: t("components.MessageCard.editMessage"),
+			icon: {
+				type: "svg",
+				src: "#icon-inputBox"
+			},
+			color: "var(--theme-color)",
+			onClick: () => editInput()
+		},
+		{
+			title: t("components.MessageCard.removeMessage"),
+			icon: {
+				type: "svg",
+				src: "#icon-delete"
+			},
+			color: "red",
+			onClick: () => remove()
+		}
+	], item.id)
+}
+
+/**
+ * 显示输入框
+ */
+const editInput = () => {
+	editingContent.value.value = props.message.message.content
+	editingContent.value.show = true
+	nextTick(() => {
+		textarea.value.focus()
+		adjustTextareaHeight()
+	})
+}
+
+/**
+ * 保存消息
+ */
+const saveContent = () => {
+	if (editingContent.value.value === props.message.message.content) return
+	if (editingContent.value.value.trim() === "") return
+	EventBus.emit("[function] editMessage", props.message.id, editingContent.value.value)
+	editingContent.value.show = false
+}
+/**
+ * 调整 textarea 高度
+ */
+const adjustTextareaHeight = () => {
+	const TEXTAREA = textarea.value
+	if (TEXTAREA) {
+		TEXTAREA.style.height = "auto"
+		// 获取滚动高度
+		const scrollHeight = TEXTAREA.scrollHeight
+		// 设置最大高度为 600px
+		TEXTAREA.style.height = Math.min(scrollHeight, 600) + "px"
+	}
+}
+
+/**
+ * 当 textarea 失去焦点时隐藏输入框
+ */
+const handleTextareaBlur = () => {
+	setTimeout(() => {
+		editingContent.value.show = false
+	}, 200)
+}
+
+/**
+ * 移除消息
+ */
+const remove = () => {
+	EventBus.emit("[function] removeMessage", props.message.id)
 }
 </script>
 
@@ -153,7 +181,7 @@ export default {
 		:class="['system-message-card', currentMessageId === message.id ? 'current' : '']"
 		@contextmenu.prevent="onRightClick($event, message)">
 		<div class="message-content">
-			<div v-if="!editingContent.show" v-html="formattingMessage()"></div>
+			<div v-if="!editingContent.show" v-html="formattingMessage(message.message.content)"></div>
 			<textarea
 				v-else
 				spellcheck="false"
@@ -185,9 +213,9 @@ export default {
 					-
 					{{ t("components.Role.SystemMessageCard.systemPrompt") }}
 					-
-					{{ formatTimestamp() }}
+					{{ formatTimestamp(message.timestamp) }}
 				</div>
-				<div>{{ message.id }} - {{ tokens() }} tokens</div>
+				<div>{{ message.id }} - {{ tokens(message.message.content) }} tokens</div>
 			</div>
 		</div>
 	</div>

@@ -1,161 +1,192 @@
-<script>
+<script setup>
+import {onMounted, onUnmounted, ref} from "vue"
+import {useRouter} from "vue-router"
 import Button from "@/components/input/Button.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 import ChatConfigs from "@/views/options/ChatConfigs.vue"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import InputText from "@/components/input/InputText.vue"
 import EventBus from "@/services/EventBus"
 
-export default {
-	name: "MaskView",
-	inject: ["$DB", "$log"],
-	components: {InputText, ChatConfigs, SVGIcon, Button, RightClickMenu},
-	data() {
-		return {
-			name: "MaskView",
-			masks: [],
-			maskConfigKey: null,
-			showSetup: false
+const name = "MaskView"
+
+/**
+ * 路由服务
+ */
+const router = useRouter()
+
+/**
+ * 面具列表
+ */
+const masks = ref([])
+
+/**
+ * 面具配置键
+ */
+const maskConfigKey = ref(null)
+
+/**
+ * 是否显示设置弹窗
+ */
+const showSetup = ref(false)
+
+/**
+ * 右键点击菜单
+ */
+const menu = ref(null)
+
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 获取面具列表
+ * @function getMasks
+ * @param search {String} - 搜索关键词
+ */
+const getMasks = async (search = "") => {
+	try {
+		let masksData = await Dexie.masks.toArray()
+		// 如果有搜索词, 进行本地过滤
+		if (search && search.trim() !== "") {
+			const KEYWORD = search.trim().toLowerCase()
+			masksData = masksData.filter(mask =>
+				(mask.title && mask.title.toLowerCase().includes(KEYWORD))
+			)
 		}
-	},
-	beforeUnmount() {
-		EventBus.off("[update] maskListUpdate", this.getMasks)
-	},
-	created() {
-		EventBus.on("[update] maskListUpdate", this.getMasks)
-		this.getMasks()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 获取面具列表
-		 * @param search {String} - 搜索关键词
-		 */
-		async getMasks(search = "") {
-			try {
-				let masks = await this.$DB.masks.toArray()
-				// 如果有搜索词, 进行本地过滤
-				if (search && search.trim() !== "") {
-					const KEYWORD = search.trim().toLowerCase()
-					masks = masks.filter(mask =>
-						(mask.title && mask.title.toLowerCase().includes(KEYWORD))
-					)
-				}
-				this.masks = masks
-			} catch (error) {
-				this.$log.error(`[${this.name}] 面具列表获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.MaskView.toast.errorGettingMaskList")}`)
-			}
-		},
-		/**
-		 * 右键点击
-		 * @param event 事件
-		 * @param item 项
-		 */
-		onRightClick(event, item) {
-			event.preventDefault()
-			event.stopPropagation()
-			this.$refs.menu.show(event.clientX, event.clientY, [
-				{
-					title: this.t("views.MaskView.chat"),
-					icon: {
-						type: "svg",
-						src: "#icon-new"
-					},
-					color: "var(--theme-color)",
-					onClick: () => this.chatMask(item)
-				},
-				{
-					title: this.t("views.MaskView.config"),
-					icon: {
-						type: "svg",
-						src: "#icon-setup"
-					},
-					onClick: (key) => this.configMask(key)
-				},
-				{
-					title: this.t("views.MaskView.delete"),
-					icon: {
-						type: "svg",
-						src: "#icon-close"
-					},
-					color: "red",
-					onClick: (key) => this.deleteMask(key)
-				}
-			], item.key)
-		},
-		/**
-		 * 新建面具
-		 */
-		async newMask() {
-			try {
-				const NEW_KEY = crypto.randomUUID()
-				await this.$DB.masks.add({
-					key: NEW_KEY,
-					title: this.t("components.AIInput.newChat"),
-					data: []
-				})
-				await this.getMasks()
-				this.configMask(NEW_KEY)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 新建面具失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.MaskView.toast.errorNewMask")}`)
-			}
-		},
-		/**
-		 * 聊天面具
-		 * @param mask {Object} - 面具
-		 */
-		async chatMask(mask) {
-			try {
-				const NEW_KEY = crypto.randomUUID()
-				await this.$DB.chats.add({
-					key: NEW_KEY,
-					title: mask.title,
-					data: JSON.parse(JSON.stringify(mask.data || [])),
-					configs: JSON.parse(JSON.stringify(mask.configs || {})),
-					timestamp: Date.now()
-				})
-				EventBus.emit("[update] chatListUpdate")
-				this.$router.push({name: "ChatKey", params: {key: NEW_KEY}})
-			} catch (error) {
-				this.$log.error(`[${this.name}] 面具聊天失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.MaskView.toast.errorChattingMask")}`)
-			}
-		},
-		/**
-		 * 配置面具
-		 * @param key {String} - 面具键
-		 */
-		configMask(key) {
-			this.maskConfigKey = key
-			this.showSetup = true
-		},
-		/**
-		 * 删除面具
-		 * @param key {String} - 面具键
-		 */
-		async deleteMask(key) {
-			try {
-				await this.$DB.masks.delete(key)
-				await this.getMasks()
-			} catch (error) {
-				this.$log.error(`[${this.name}] 面具删除失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.MaskView.toast.errorDeletingMask")}`)
-			}
-		}
+		masks.value = masksData
+	} catch (error) {
+		Logger.error(`[${name}] 面具列表获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorGettingMaskList")}`)
 	}
 }
+
+/**
+ * 右键点击
+ * @function onRightClick
+ * @param event 事件
+ * @param item 项
+ */
+const onRightClick = (event, item) => {
+	event.preventDefault()
+	event.stopPropagation()
+	menu.value.show(event.clientX, event.clientY, [
+		{
+			title: t("views.MaskView.chat"),
+			icon: {
+				type: "svg",
+				src: "#icon-new"
+			},
+			color: "var(--theme-color)",
+			onClick: () => chatMask(item)
+		},
+		{
+			title: t("views.MaskView.config"),
+			icon: {
+				type: "svg",
+				src: "#icon-setup"
+			},
+			onClick: () => configMask(item.key)
+		},
+		{
+			title: t("views.MaskView.delete"),
+			icon: {
+				type: "svg",
+				src: "#icon-close"
+			},
+			color: "red",
+			onClick: () => deleteMask(item.key)
+		}
+	], item.key)
+}
+
+/**
+ * 新建面具
+ * @function newMask
+ */
+const newMask = async () => {
+	try {
+		const NEW_KEY = crypto.randomUUID()
+		await Dexie.masks.add({
+			key: NEW_KEY,
+			title: t("components.AIInput.newChat"),
+			data: []
+		})
+		await getMasks()
+		configMask(NEW_KEY)
+	} catch (error) {
+		Logger.error(`[${name}] 新建面具失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorNewMask")}`)
+	}
+}
+
+/**
+ * 聊天面具
+ * @function chatMask
+ * @param mask {Object} - 面具
+ */
+const chatMask = async (mask) => {
+	try {
+		const NEW_KEY = crypto.randomUUID()
+		await Dexie.chats.add({
+			key: NEW_KEY,
+			title: mask.title,
+			data: JSON.parse(JSON.stringify(mask.data || [])),
+			configs: JSON.parse(JSON.stringify(mask.configs || {})),
+			timestamp: Date.now()
+		})
+		EventBus.emit("[update] chatListUpdate")
+		await router.push({name: "ChatKey", params: {key: NEW_KEY}})
+	} catch (error) {
+		Logger.error(`[${name}] 面具聊天失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorChattingMask")}`)
+	}
+}
+
+/**
+ * 配置面具
+ * @function configMask
+ * @param key {String} - 面具键
+ */
+const configMask = (key) => {
+	maskConfigKey.value = key
+	showSetup.value = true
+}
+
+/**
+ * 删除面具
+ * @function deleteMask
+ * @param key {String} - 面具键
+ */
+const deleteMask = async (key) => {
+	try {
+		await Dexie.masks.delete(key)
+		await getMasks()
+	} catch (error) {
+		Logger.error(`[${name}] 面具删除失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorDeletingMask")}`)
+	}
+}
+
+onMounted(() => {
+	EventBus.on("[update] maskListUpdate", getMasks)
+	getMasks()
+})
+
+onUnmounted(() => {
+	EventBus.off("[update] maskListUpdate", getMasks)
+})
 </script>
 
 <template>

@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import {onMounted, ref, watch} from "vue"
 import {initZoom} from "@/components/chat/renderer/ZoomManager"
 import {ExportList} from "@/components/chat/renderer/ExportHelper"
 import Tabs from "@/components/Tabs.vue"
@@ -8,94 +9,119 @@ import Button from "@/components/input/Button.vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import SVGIcon from "@/components/SVGIcon.vue"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "FlowchartRenderer",
-	inject: ["$log"],
-	components: {SVGIcon, Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
-	props: {
-		code: {
-			type: String,
-			required: true
+const name = "FlowchartRenderer"
+
+const props = defineProps({
+	/**
+	 * Flowchart代码
+	 */
+	code: {
+		type: String,
+		required: true
+	}
+})
+
+/**
+ * 活动标签页
+ */
+const activeTab = ref("preview")
+
+/**
+ * Flowchart渲染错误
+ */
+const error = ref(null)
+
+/**
+ * 导出列表
+ */
+const exportList = ref(ExportList())
+
+/**
+ * 导出选择器
+ */
+const selector = ref({item: "export", title: "i18n:components.FlowchartRenderer.export"})
+
+/**
+ * 容器引用
+ */
+const containerRef = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 渲染Flowchart
+ */
+const renderFlowchart = async () => {
+	try {
+		const FLOWCHART = (await import("flowchart.js")).default
+		const ID = "flowchart-" + Math.random().toString(36).slice(2, 11)
+		const CONTAINER = containerRef.value
+		const WRAPPER = document.createElement("div")
+		WRAPPER.innerHTML = `<div id="${ID}"></div>`
+		CONTAINER.appendChild(WRAPPER.firstElementChild)
+		const CHART = FLOWCHART.parse(props.code)
+		CHART.drawSVG(ID)
+		const TARGET = CONTAINER.querySelector(`#${ID}`)
+		const SVG_ELEMENT = TARGET.querySelector("svg")
+		if (SVG_ELEMENT) {
+			SVG_ELEMENT.removeAttribute("width")
+			SVG_ELEMENT.removeAttribute("height")
+			SVG_ELEMENT.style.width = "100%"
+			SVG_ELEMENT.style.display = "block"
+			SVG_ELEMENT.style.maxWidth = "none"
+			SVG_ELEMENT.style.maxHeight = "none"
+			SVG_ELEMENT.style.minWidth = "0"
+			SVG_ELEMENT.style.minHeight = "0"
+			const BBOX = SVG_ELEMENT.getBBox()
+			const MAX_HEIGHT = 400
+			const MIN_HEIGHT = 170
+			const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
+			const PADDING = 50
+			const WIDTH_WITH_PADDING = BBOX.width + PADDING * 2
+			const HEIGHT_WITH_PADDING = BBOX.height + PADDING * 2
+			const FINAL_HEIGHT = Math.max(HEIGHT_WITH_PADDING * SCALE, MIN_HEIGHT)
+			SVG_ELEMENT.setAttribute("viewBox", `${BBOX.x - PADDING} ${BBOX.y - PADDING} ${WIDTH_WITH_PADDING} ${HEIGHT_WITH_PADDING}`)
+			SVG_ELEMENT.style.height = `${FINAL_HEIGHT}px`
 		}
-	},
-	data() {
-		return {
-			name: "FlowchartRenderer",
-			activeTab: "preview",
-			error: null,
-			exportList: ExportList(),
-			selector: {item: "export", title: "i18n:components.FlowchartRenderer.export"}
-		}
-	},
-	watch: {
-		activeTab(newVal) {
-			if (newVal === "preview") {
-				this.renderFlowchartw()
-			}
-		}
-	},
-	created() {
-		this.renderFlowchartw()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 渲染Flowchart
-		 */
-		async renderFlowchartw() {
-			try {
-				const FLOWCHART = (await import("flowchart.js")).default
-				const ID = "flowchart-" + Math.random().toString(36).slice(2, 11)
-				const CONTAINER = this.$refs.containerRef
-				const WRAPPER = document.createElement("div")
-				WRAPPER.innerHTML = `<div id="${ID}"></div>`
-				CONTAINER.appendChild(WRAPPER.firstElementChild)
-				const CHART = FLOWCHART.parse(this.code)
-				CHART.drawSVG(ID)
-				const TARGET = CONTAINER.querySelector(`#${ID}`)
-				const SVG_ELEMENT = TARGET.querySelector("svg")
-				if (SVG_ELEMENT) {
-					SVG_ELEMENT.removeAttribute("width")
-					SVG_ELEMENT.removeAttribute("height")
-					SVG_ELEMENT.style.width = "100%"
-					SVG_ELEMENT.style.display = "block"
-					const BBOX = SVG_ELEMENT.getBBox()
-					const MAX_HEIGHT = 400
-					const MIN_HEIGHT = 170
-					const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
-					const PADDING = 50
-					const WIDTH_WITH_PADDING = BBOX.width + PADDING * 2
-					const HEIGHT_WITH_PADDING = BBOX.height + PADDING * 2
-					const FINAL_HEIGHT = Math.max(HEIGHT_WITH_PADDING * SCALE, MIN_HEIGHT)
-					SVG_ELEMENT.setAttribute("viewBox", `${BBOX.x - PADDING} ${BBOX.y - PADDING} ${WIDTH_WITH_PADDING} ${HEIGHT_WITH_PADDING}`)
-					SVG_ELEMENT.style.height = `${FINAL_HEIGHT}px`
-				}
-				initZoom(this.$refs.containerRef)
-			} catch (error) {
-				this.$log.error(`[${this.name}] Flowchart渲染失败`, error)
-				this.error = error.message
-			}
-		},
-		/**
-		 * 导出为指定类型
-		 * @param item 导出类型
-		 */
-		updateSelected(item) {
-			const SVG_ELEMENT = this.$refs.containerRef?.querySelector("svg:not(.icon)")
-			if (!SVG_ELEMENT) return
-			item.action(SVG_ELEMENT)
-		}
+		initZoom(containerRef.value)
+	} catch (error) {
+		Logger.error(`[${name}] Flowchart渲染失败`, error)
+		error.value = error.message
 	}
 }
+
+/**
+ * 导出为指定类型
+ * @param item 导出类型
+ */
+const updateSelected = async (item) => {
+	const SVG_ELEMENT = containerRef.value?.querySelector("svg:not(.icon)")
+	if (!SVG_ELEMENT) return
+	item.action(SVG_ELEMENT)
+}
+
+/**
+ * 监听活动标签页变化
+ */
+watch(activeTab, (newVal) => {
+	if (newVal === "preview") {
+		renderFlowchart()
+	}
+})
+
+onMounted(() => {
+	renderFlowchart()
+})
 </script>
 
 <template>

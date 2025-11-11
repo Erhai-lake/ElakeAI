@@ -1,17 +1,14 @@
-<script>
-export default {
-	name: "SVGIcon",
-	props: {
-		name: {
-			type: String,
-			default: ""
-		},
-		size: {
-			type: String,
-			default: "1em"
-		}
+<script setup>
+defineProps({
+	name: {
+		type: String,
+		default: ""
+	},
+	size: {
+		type: String,
+		default: "1em"
 	}
-}
+})
 </script>
 
 <template>

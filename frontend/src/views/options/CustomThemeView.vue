@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import {ref, watch, onMounted} from "vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import CustomTheme from "@/services/CustomTheme"
 import {ColorPicker} from "vue3-colorpicker"
@@ -7,155 +8,195 @@ import Button from "@/components/input/Button.vue"
 import Selector from "@/components/input/Selector.vue"
 import {ThemeRegistry} from "@/services/plugin/api/ThemeClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "CustomThemeView",
-	components: {Selector, Button, ColorPicker},
-	inject: ["$DB", "$log"],
-	data() {
-		return {
-			themeList: [],
-			selectedTheme: null,
-			theme: null,
-			themeJson: ""
-		}
-	},
-	watch: {
-		theme: {
-			handler(newVal) {
-				this.themeJson = JSON.stringify(newVal, null, 2)
-				this.applyCustomTheme()
-			},
-			deep: true
-		},
-		themeJson(newVal) {
-			if (!newVal) return
-			try {
-				this.theme = JSON.parse(newVal)
-			} catch (error) {
-				this.$log.error(`[${this.name}] JSON 解析失败`, error)
-			}
-		}
-	},
-	created() {
-		// 初始化主题列表
-		this.loadTheme()
-		this.resetTheme()
-		this.initCustomTheme()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 更新选中的主题
-		 * @param newVal {Object} - 选中主题
-		 */
-		updateSelectedTheme(newVal) {
-			this.selectedTheme = newVal
-		},
-		/**
-		 * 获取全部主题
-		 */
-		loadTheme() {
-			const THEMES = ThemeRegistry.getAllThemes()
-			this.themeList = [...THEMES.map(item => ({
-				code: item.code,
-				title: `i18n:${item.name}`,
-				images: item.icon
-			}))]
-			// 初始化选中模型
-			if (this.themeList.length > 0) {
-				this.selectedTheme = this.themeList[0]
-			}
-		},
-		/**
-		 * 重置自定义主题
-		 */
-		resetTheme() {
-			const THEMES = ThemeRegistry.getTheme(this.selectedTheme.code)
-			this.theme = JSON.parse(JSON.stringify(THEMES.info.theme))
-		},
-		/**
-		 * 导出
-		 */
-		exportTheme() {
-			const JSON_STRING = JSON.stringify(this.theme, null, 2)
-			const BLOB = new Blob([JSON_STRING], {type: "application/json"})
-			const DOWNLOAD_URL = URL.createObjectURL(BLOB)
-			const DOWNLOAD_A = document.createElement("a")
-			DOWNLOAD_A.href = DOWNLOAD_URL
-			DOWNLOAD_A.download = "custom-theme.json"
-			DOWNLOAD_A.click()
-			DOWNLOAD_A.remove()
-			URL.revokeObjectURL(DOWNLOAD_URL)
-		},
-		/**
-		 * 导入
-		 */
-		async importTheme() {
-			this.$refs.fileInput.click()
-		},
-		/**
-		 * 处理文件选择
-		 */
-		handleFileChange(event) {
-			const FILE = event.target.files[0]
-			if (!FILE) return
-			const READER = new FileReader()
-			READER.onload = (readerEvent) => {
-				this.theme = JSON.parse(readerEvent.target.result)
-			}
-			READER.onerror = (readerEvent) => {
-				this.$log.error(`[${this.name}] 自定义主题上传失败`, readerEvent)
-				toastRegistry.error(`[${this.name}] ${this.t("views.OptionsView.CustomThemeView.toast.uploadError")}`)
-			}
-			READER.readAsText(FILE)
-			event.target.value = ""
-			this.applyCustomTheme()
-		},
-		/**
-		 * 初始化自定义主题
-		 */
-		async initCustomTheme() {
-			try {
-				// 加载自定义主题
-				const CUSTOM_THEME = await this.$DB.configs.get("customTheme")
-				if (CUSTOM_THEME) {
-					this.theme = CUSTOM_THEME.value
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 自定义主题初始化失败`, error)
-			}
-		},
-		/**
-		 * 应用自定义主题
-		 */
-		async applyCustomTheme() {
-			// 保存设置
-			try {
-				await this.$DB.configs.put({
-					item: "customTheme",
-					value: JSON.parse(JSON.stringify(this.theme))
-				})
-				// 判断是否是自定义主题
-				const THEME = await this.$DB.configs.get("theme")
-				if (THEME && THEME.value === "custom") {
-					// 应用自定义主题
-					await CustomTheme.applyCustomTheme(this.theme)
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 自定义主题应用失败`, error)
-			}
-		}
+const name = "CustomThemeView"
+
+/**
+ * 自定义主题列表
+ */
+const themeList = ref([])
+
+/**
+ * 选中的主题
+ */
+const selectedTheme = ref(null)
+
+/**
+ * 自定义主题
+ */
+const theme = ref({})
+
+/**
+ * 自定义主题 JSON 字符串
+ */
+const themeJson = ref("")
+
+/**
+ * 文件输入框引用
+ */
+const fileInput = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 更新选中的主题
+ * @param newVal {Object} - 选中主题
+ */
+const updateSelectedTheme = (newVal) => {
+	selectedTheme.value = newVal
+}
+
+/**
+ * 获取全部主题
+ */
+const loadTheme = () => {
+	const THEMES = ThemeRegistry.getAllThemes()
+	themeList.value = [...THEMES.map(item => ({
+		code: item.code,
+		title: `i18n:${item.name}`,
+		images: item.icon
+	}))]
+	// 初始化选中模型
+	if (themeList.value.length > 0) {
+		selectedTheme.value = themeList.value[0]
 	}
 }
+
+/**
+ * 重置自定义主题
+ */
+const resetTheme = () => {
+	if (!selectedTheme.value) return
+	const THEMES = ThemeRegistry.getTheme(selectedTheme.value.code)
+	if (THEMES && THEMES.info && THEMES.info.theme) {
+		theme.value = JSON.parse(JSON.stringify(THEMES.info.theme))
+	}
+}
+
+/**
+ * 导出
+ */
+const exportTheme = () => {
+	const JSON_STRING = JSON.stringify(theme.value, null, 2)
+	const BLOB = new Blob([JSON_STRING], {type: "application/json"})
+	const DOWNLOAD_URL = URL.createObjectURL(BLOB)
+	const DOWNLOAD_A = document.createElement("a")
+	DOWNLOAD_A.href = DOWNLOAD_URL
+	DOWNLOAD_A.download = "custom-theme.json"
+	DOWNLOAD_A.click()
+	DOWNLOAD_A.remove()
+	URL.revokeObjectURL(DOWNLOAD_URL)
+}
+
+/**
+ * 导入
+ */
+const importTheme = () => {
+	fileInput.value?.click()
+}
+
+/**
+ * 处理文件选择
+ */
+const handleFileChange = (event) => {
+	const FILE = event.target.files[0]
+	if (!FILE) return
+	const READER = new FileReader()
+	READER.onload = (readerEvent) => {
+		try {
+			theme.value = JSON.parse(readerEvent.target.result)
+			if (parsedTheme && typeof parsedTheme === "object") {
+				theme.value = parsedTheme
+			}
+		} catch (error) {
+			Logger.error(`[${name}] JSON 解析失败`, error)
+			toastRegistry.error(`[${name}] ${t("views.OptionsView.CustomThemeView.toast.uploadError")}`)
+		}
+	}
+	READER.onerror = (readerEvent) => {
+		Logger.error(`[${name}] 自定义主题上传失败`, readerEvent)
+		toastRegistry.error(`[${name}] ${t("views.OptionsView.CustomThemeView.toast.uploadError")}`)
+	}
+	READER.readAsText(FILE)
+	event.target.value = ""
+}
+
+/**
+ * 初始化自定义主题
+ */
+const initCustomTheme = async () => {
+	try {
+		// 加载自定义主题
+		const CUSTOM_THEME = await Dexie.configs.get("customTheme")
+		if (CUSTOM_THEME && CUSTOM_THEME.value) {
+			theme.value = CUSTOM_THEME.value
+		} else {
+			resetTheme()
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 自定义主题初始化失败`, error)
+		resetTheme()
+	}
+}
+
+/**
+ * 应用自定义主题
+ */
+const applyCustomTheme = async () => {
+	// 保存设置
+	try {
+		await Dexie.configs.put({
+			item: "customTheme",
+			value: JSON.parse(JSON.stringify(theme.value))
+		})
+		// 判断是否是自定义主题
+		const THEME = await Dexie.configs.get("theme")
+		if (THEME && THEME.value === "custom") {
+			// 应用自定义主题
+			await CustomTheme.applyCustomTheme(theme.value)
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 自定义主题应用失败`, error)
+	}
+}
+
+/**
+ * 监听自定义主题变化
+ */
+watch(theme, (newVal) => {
+	if (!newVal) return
+	themeJson.value = JSON.stringify(newVal, null, 2)
+	applyCustomTheme()
+}, {deep: true})
+
+/**
+ * 监听自定义主题 JSON 变化
+ */
+watch(themeJson, (newVal) => {
+	if (!newVal) return
+	try {
+		theme.value = JSON.parse(newVal)
+	} catch (error) {
+		Logger.error(`[${name}] JSON 解析失败`, error)
+	}
+})
+
+onMounted(() => {
+	// 初始化主题列表
+	loadTheme()
+	resetTheme()
+	initCustomTheme()
+})
 </script>
 
 <template>
@@ -667,7 +708,7 @@ export default {
 		gap: 10px;
 	}
 
-	textarea{
+	textarea {
 		padding: 10px;
 		box-sizing: border-box;
 		width: 100%;

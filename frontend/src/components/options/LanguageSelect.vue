@@ -1,104 +1,118 @@
-<script>
+<script setup>
+import {onMounted, ref, watch} from "vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "LanguageSelect",
-	components: {Selector},
-	inject: ["$DB", "$log"],
-	data() {
-		return {
-			name: "LanguageSelect",
-			languages: null,
-			selectedLang: null
+const name = "LanguageSelect"
+
+/**
+ * 语言列表
+ */
+const languages = ref([])
+
+/**
+ * 选中的语言
+ */
+const selectedLang = ref(null)
+
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 更新选中的语言
+ * @param newVal {Object} - 选中语言
+ */
+const updateSelectedLang = (newVal) => {
+	selectedLang.value = newVal
+}
+
+/**
+ * 加载语言列表
+ */
+const loadLanguages = async () => {
+	const langList = [
+		{
+			code: "system",
+			title: "i18n:components.Options.LanguageSelect.system",
+			images: "https://openmoji.org/data/color/svg/2699.svg"
 		}
-	},
-	watch: {
-		// 监听语言变化
-		selectedLang(newVal) {
-			this.selectLanguage(newVal)
+	]
+	const I18N = i18nRegistry.getAll()
+	languages.value = [...langList, ...I18N.map(item => ({
+		code: item.info.code,
+		title: item.info.title,
+		images: item.info.image
+	}))]
+
+	// 初始化选中语言
+	try {
+		const LANGUAGE_DATA = await Dexie.configs.get("language")
+		const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "system"
+		const foundLang = languages.value.find(lang => lang.code === LANGUAGE)
+		if (foundLang) {
+			selectedLang.value = {
+				code: foundLang.code,
+				title: foundLang.title,
+				images: foundLang.images
+			}
+		} else if (languages.value.length > 0) {
+			selectedLang.value = languages.value[0]
 		}
-	},
-	async created() {
-		// 初始化语言列表
-		this.loadLanguages()
-		// 获取语言
-		try {
-			const LANGUAGE_DATA = await this.$DB.configs.get("language")
-			const LANGUAGE = LANGUAGE_DATA ? LANGUAGE_DATA.value : "system"
-			this.selectedLang = {
-				code: LANGUAGE,
-				title: this.languages.find(lang => lang.code === LANGUAGE).title,
-				images: this.languages.find(lang => lang.code === LANGUAGE).images
-			}
-		} catch (error) {
-			this.$log.error(`[${this.name}] 语言获取失败`, error)
-			toastRegistry.error(`[${this.name}] ${this.t("components.Options.LanguageSelect.toast.getLanguageError")}`)
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 更新选中的语言
-		 * @param newVal {Object} - 新的选中语言
-		 */
-		updateSelectedLang(newVal) {
-			this.selectedLang = newVal
-		},
-		/**
-		 * 加载语言列表
-		 */
-		loadLanguages() {
-			this.languages = [
-				{
-					code: "system",
-					title: "i18n:components.Options.LanguageSelect.system",
-					images: "https://openmoji.org/data/color/svg/2699.svg"
-				}
-			]
-			const I18N = i18nRegistry.getAll()
-			this.languages = [...this.languages, ...I18N.map(item => ({
-				code: item.info.code,
-				title: item.info.title,
-				images: item.info.image
-			}))]
-			// 初始化选中模型
-			if (this.languages.length > 0) {
-				this.selectedLang = this.languages[0]
-			}
-		},
-		/**
-		 * 选择语言
-		 * @param selectLang {Object} - 选中的语言
-		 */
-		async selectLanguage(selectLang) {
-			try {
-				if (!selectLang) return
-				if (selectLang.code === "system") {
-					i18nRegistry.locale(navigator.language || this.languages[0].code)
-				} else {
-					i18nRegistry.locale(selectLang.code)
-				}
-				await this.$DB.configs.put({
-					item: "language",
-					value: selectLang.code
-				})
-			} catch (error) {
-				this.$log.error(`[${this.name}] 语言应用失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LanguageSelect.toast.applicationLanguageError")}`)
-			}
+	} catch (error) {
+		Logger.error(`[${name}] 语言获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.LanguageSelect.toast.getLanguageError")}`)
+		// 设置默认值
+		if (languages.value.length > 0) {
+			selectedLang.value = languages.value[0]
 		}
 	}
 }
+
+/**
+ * 选择语言
+ * @param selectLang {Object} - 选中的语言
+ */
+const selectLanguage = async (selectLang) => {
+	try {
+		if (!selectLang) return
+		if (selectLang.code === "system") {
+			i18nRegistry.locale(navigator.language || "zh-CN")
+		} else {
+			i18nRegistry.locale(selectLang.code)
+		}
+		await Dexie.configs.put({
+			item: "language",
+			value: selectLang.code
+		})
+	} catch (error) {
+		Logger.error(`[${name}] 语言应用失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.LanguageSelect.toast.applicationLanguageError")}`)
+	}
+}
+
+/**
+ * 监听主题变化
+ */
+watch(selectedLang, (newVal) => {
+	if (newVal) {
+		selectLanguage(newVal)
+	}
+})
+
+onMounted(() => {
+	loadLanguages()
+})
 </script>
 
 <template>

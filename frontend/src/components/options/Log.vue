@@ -1,167 +1,188 @@
-<script>
+<script setup>
+import {nextTick, onMounted, onUnmounted, ref} from "vue"
 import Button from "@/components/input/Button.vue"
 import EventBus from "@/services/EventBus"
-import {nextTick} from "vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 import LogLevel from "@/components/options/LogLevel.vue"
 
-export default {
-	name: "Log",
-	inject: ["$DB", "$log"],
-	components: {LogLevel, Selector, Button},
-	data() {
-		return {
-			name: "Log",
-			levelList: [
-				{
-					title: "all"
-				},
-				{
-					title: "debug"
-				},
-				{
-					title: "info"
-				},
-				{
-					title: "warn"
-				},
-				{
-					title: "error"
-				},
-			],
-			levelSelector: "error",
-			logs: [],
-			isKeepScrollToBottom: true,
-			isLogSuspensionWindow: false,
+const name = "Log"
+
+/**
+ * 日志级别列表
+ */
+const levelList = ref([
+	{
+		title: "all"
+	},
+	{
+		title: "debug"
+	},
+	{
+		title: "info"
+	},
+	{
+		title: "warn"
+	},
+	{
+		title: "error"
+	}
+])
+
+/**
+ * 日志级别选择器
+ */
+const levelSelector = ref("error")
+
+/**
+ * 日志列表
+ */
+const logs = ref([])
+
+/**
+ * 是否保持滚动到底部
+ */
+const isKeepScrollToBottom = ref(true)
+
+/**
+ * 日志列表容器
+ */
+const logList = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 加载日志
+ */
+const loadLogs = async () => {
+	try {
+		const LOGS_DATA = await Dexie.logs.toArray()
+		logs.value = LOGS_DATA.filter(log => {
+			if (levelSelector.value === "all") return true
+			return log.level === levelSelector.value
+		})
+	} catch (error) {
+		Logger.error(`[${name}] 加载日志失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.Log.toast.loadError")}`)
+	}
+	if (isKeepScrollToBottom.value) scrollToBottom()
+}
+
+/**
+ * 更新选择器
+ * @param {Object} value - 选择器值
+ */
+const updateSelectedLevel = (value) => {
+	levelSelector.value = value.title
+	loadLogs()
+}
+
+/**
+ * 清空日志
+ */
+const clearLogs = async () => {
+	try {
+		await Dexie.logs.clear()
+		EventBus.emit("[update] logUpdate")
+	} catch (error) {
+		Logger.error(`[${name}] 清空日志失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.Log.toast.clearError")}`)
+	}
+	if (isKeepScrollToBottom.value) scrollToBottom()
+}
+
+/**
+ * 格式化时间戳
+ * @param timestamp - 时间戳
+ * @returns {string} 格式化后的时间字符串
+ */
+const formatTimestamp = (timestamp) => {
+	const DATE = new Date(timestamp)
+	const YEAR = DATE.getFullYear()
+	const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
+	const DAY = String(DATE.getDate()).padStart(2, "0")
+	const HOURS = String(DATE.getHours()).padStart(2, "0")
+	const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
+	const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
+	const MILLISECONDS = String(DATE.getMilliseconds()).padStart(3, "0")
+	return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}.${MILLISECONDS}`
+}
+
+/**
+ * 滚动到最底部
+ */
+const scrollToBottom = () => {
+	nextTick(() => {
+		const CONTAINER = logList.value
+		if (CONTAINER) {
+			CONTAINER.scrollTop = CONTAINER.scrollHeight
 		}
-	},
-	beforeUnmount() {
-		EventBus.off("[update] logUpdate", this.loadLogs)
-	},
-	async created() {
-		EventBus.on("[update] logUpdate", this.loadLogs)
-		// 加载日志
-		await this.loadLogs()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 加载日志
-		 */
-		async loadLogs() {
-			try {
-				const LOGS_DATA = await this.$DB.logs.toArray()
-				this.logs = LOGS_DATA.filter(log => {
-					if (this.levelSelector === "all") return true
-					return log.level === this.levelSelector
-				})
-			} catch (error) {
-				this.$log.error(`[${this.name}] 加载日志失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Log.toast.loadError")}`)
-			}
-			if (this.keepScrollToBottom) this.scrollToBottom()
-		},
-		/**
-		 * 更新选择器
-		 * @param {Object} value - 选择器值
-		 */
-		updateSelectedLevel(value) {
-			this.levelSelector = value.title
-			this.loadLogs()
-		},
-		/**
-		 * 清空日志
-		 */
-		async clearLogs() {
-			try {
-				await this.$DB.logs.clear()
-				EventBus.emit("[update] logUpdate")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 清空日志失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Log.toast.clearError")}`)
-			}
-			if (this.keepScrollToBottom) this.scrollToBottom()
-		},
-		/**
-		 * 格式化时间戳
-		 * @param {number} timestamp 时间戳
-		 * @returns {string} 格式化后的时间字符串
-		 */
-		formatTimestamp(timestamp) {
-			const DATE = new Date(timestamp)
-			const YEAR = DATE.getFullYear()
-			const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
-			const DAY = String(DATE.getDate()).padStart(2, "0")
-			const HOURS = String(DATE.getHours()).padStart(2, "0")
-			const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
-			const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
-			const MILLISECONDS = String(DATE.getMilliseconds()).padStart(3, "0")
-			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}.${MILLISECONDS}`
-		},
-		/**
-		 * 滚动到最底部
-		 */
-		scrollToBottom() {
-			nextTick(() => {
-				const CONTAINER = this.$refs.logList
-				if (CONTAINER) {
-					CONTAINER.scrollTop = CONTAINER.scrollHeight
-				}
-			})
-		},
-		/**
-		 * 保持滚动到底部
-		 */
-		keepScrollToBottom() {
-			this.isKeepScrollToBottom = !this.isKeepScrollToBottom
-			if (this.isKeepScrollToBottom) {
-				this.scrollToBottom()
-			}
-		},
-		/**
-		 * 导出日志
-		 */
-		exportLogs() {
-			try {
-				// 构造日志内容
-				const LOG_CONTENT = this.logs.map(log => {
-					return `[${this.formatTimestamp(log.timestamp)}] [${log.level.toUpperCase()}] [${log.component || "Global"}] ${log.message}`
-				}).join("\n")
-				// 创建Blob对象
-				const BLOB = new Blob([LOG_CONTENT], {type: "text/plain"})
-				// 创建下载链接
-				const DOWNLOAD_URL = URL.createObjectURL(BLOB)
-				const DOWNLOAD_LINK = document.createElement("a")
-				DOWNLOAD_LINK.href = DOWNLOAD_URL
-				// 设置文件名(包含当前时间)
-				const NOW = new Date()
-				DOWNLOAD_LINK.download = `elakeai-logs-${NOW.getFullYear()}${String(NOW.getMonth() + 1).padStart(2, "0")}${String(NOW.getDate()).padStart(2, "0")}-${String(NOW.getHours()).padStart(2, "0")}${String(NOW.getMinutes()).padStart(2, "0")}${String(NOW.getSeconds()).padStart(2, "0")}.log`
-				// 触发下载
-				document.body.appendChild(DOWNLOAD_LINK)
-				DOWNLOAD_LINK.click()
-				// 清理
-				setTimeout(() => {
-					document.body.removeChild(DOWNLOAD_LINK)
-					URL.revokeObjectURL(DOWNLOAD_URL)
-				}, 100)
-				toastRegistry.success(`[${this.name}] ${this.t("components.Options.Log.toast.exportSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 导出日志失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Log.toast.exportError")}`)
-			}
-		}
+	})
+}
+
+/**
+ * 保持滚动到底部
+ */
+const keepScrollToBottom = () => {
+	isKeepScrollToBottom.value = !isKeepScrollToBottom.value
+	if (isKeepScrollToBottom.value) {
+		scrollToBottom()
 	}
 }
+
+/**
+ * 导出日志
+ */
+const exportLogs = () => {
+	try {
+		// 构造日志内容
+		const LOG_CONTENT = logs.value.map(log => {
+			return `[${formatTimestamp(log.timestamp)}] [${log.level.toUpperCase()}] [${log.component || "Global"}] ${log.message}`
+		}).join("\n")
+		// 创建Blob对象
+		const BLOB = new Blob([LOG_CONTENT], {type: "text/plain"})
+		// 创建下载链接
+		const DOWNLOAD_URL = URL.createObjectURL(BLOB)
+		const DOWNLOAD_LINK = document.createElement("a")
+		DOWNLOAD_LINK.href = DOWNLOAD_URL
+		// 设置文件名(包含当前时间)
+		const NOW = new Date()
+		DOWNLOAD_LINK.download = `elakeai-logs-${NOW.getFullYear()}${String(NOW.getMonth() + 1).padStart(2, "0")}${String(NOW.getDate()).padStart(2, "0")}-${String(NOW.getHours()).padStart(2, "0")}${String(NOW.getMinutes()).padStart(2, "0")}${String(NOW.getSeconds()).padStart(2, "0")}.log`
+		// 触发下载
+		document.body.appendChild(DOWNLOAD_LINK)
+		DOWNLOAD_LINK.click()
+		// 清理
+		setTimeout(() => {
+			document.body.removeChild(DOWNLOAD_LINK)
+			URL.revokeObjectURL(DOWNLOAD_URL)
+		}, 100)
+		toastRegistry.success(`[${name}] ${t("components.Options.Log.toast.exportSuccess")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 导出日志失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.Log.toast.exportError")}`)
+	}
+}
+
+onMounted(() => {
+	EventBus.on("[update] logUpdate", loadLogs)
+	// 加载日志
+	loadLogs()
+})
+
+onUnmounted(() => {
+	EventBus.off("[update] logUpdate", loadLogs)
+})
 </script>
 
 <template>
@@ -226,7 +247,6 @@ export default {
 	overflow-y: auto;
 	padding: 5px;
 	border-top: 1px solid var(--border-color);
-	background-color: var(--background-color);
 
 	.log-item {
 		margin-bottom: 5px;

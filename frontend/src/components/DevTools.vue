@@ -1,4 +1,6 @@
-<script>
+<script setup>
+import {onMounted, ref} from "vue"
+import {useRouter} from "vue-router"
 import Tabs from "@/components/Tabs.vue"
 import TabsTab from "@/components/TabsTab.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
@@ -8,9 +10,10 @@ import LanguageSelect from "@/components/options/LanguageSelect.vue"
 import DefaultChatSettings from "@/components/options/DefaultChatSettings.vue"
 import ChatAIKey from "@/components/options/ChatsAIKey.vue"
 import Plugins from "@/components/options/Plugins.vue"
-import router from "@/router"
 import Button from "@/components/input/Button.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 import EventBus from "@/services/EventBus"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import InputText from "@/components/input/InputText.vue"
@@ -20,275 +23,301 @@ import BackgroundImage from "@/components/options/BackgroundImage.vue"
 import LogoImage from "@/components/options/LogoImage.vue";
 import LeftMenuTitle from "@/components/options/LeftMenuTitle.vue";
 
-export default {
-	name: "DevTools",
-	inject: ["$DB", "$log"],
-	components: {
-		LeftMenuTitle, LogoImage,
-		BackgroundImage,
-		ChatBatchSize,
-		ChatThemesSelect,
-		InputText,
-		FoldingPanel,
-		Plugins, ChatAIKey, DefaultChatSettings, LanguageSelect, ThemeSelect, Log, TabsTab, Tabs, Button
-	},
-	data() {
-		return {
-			name: "DevTools",
-			activeTab: "router",
-			allRoutes: [],
-			chats: [],
-			masks: [],
-			configs: [],
-			apiKeys: [],
-			eventBus: []
+const name = "DevTools"
+
+/**
+ * 路由服务
+ */
+const router = useRouter()
+
+/**
+ * 活动标签页
+ */
+const activeTab = ref("router")
+
+/**
+ * 所有路由
+ */
+const allRoutes = ref([])
+
+/**
+ * 聊天
+ */
+const chats = ref([])
+
+/**
+ * 面具
+ */
+const masks = ref([])
+
+/**
+ * 配置
+ */
+const configs = ref([])
+
+/**
+ * API密钥
+ */
+const apiKeys = ref([])
+
+/**
+ * 事件总线
+ */
+const eventBus = ref([])
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 递归获取路由
+ * @param routes {Array} - 路由数组
+ * @param basePath {String} - 基础路径
+ * @returns {Array} - 路由数组
+ */
+const flattenRoutes = (routes, basePath = "") => {
+	return routes.flatMap(route => {
+		const FULL_PATH = route.path.startsWith("/") ? route.path : `${basePath.replace(/\/$/, "")}/${route.path}`
+		const current = {
+			name: route.name || "(no name)",
+			path: FULL_PATH
 		}
-	},
-	created() {
-		this.allRoutes = this.flattenRoutes(router.options.routes)
-		this.getDBData()
-		this.getEventBus()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 递归获取路由
-		 * @param routes {Array} - 路由数组
-		 * @param basePath {String} - 基础路径
-		 * @returns {Array} - 路由数组
-		 */
-		flattenRoutes(routes, basePath = "") {
-			return routes.flatMap(route => {
-				const FULL_PATH = route.path.startsWith("/") ? route.path : `${basePath.replace(/\/$/, "")}/${route.path}`
-				const current = {
-					name: route.name || "(no name)",
-					path: FULL_PATH
-				}
-				if (route.children && route.children.length) {
-					return [current, ...this.flattenRoutes(route.children, FULL_PATH)]
-				}
-				return [current]
-			})
-		},
-		/**
-		 * 跳转路由
-		 * @param path {String} - 路由路径
-		 */
-		goTo(path) {
-			router.push(path)
-		},
-		/**
-		 * 获取数据库数据
-		 */
-		async getDBData() {
-			this.chats = await this.getDBAll("chats")
-			this.masks = await this.getDBAll("masks")
-			this.configs = await this.getDBAll("configs")
-			this.apiKeys = await this.getDBAll("apiKeys")
-		},
-		/**
-		 * 获取所有数据库表数据
-		 * @param tableName {String} - 表名
-		 */
-		getDBAll(tableName) {
-			try {
-				return this.$DB[tableName].toArray()
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取 ${tableName} 数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.DevTools.toast.failedToGetData")}`, tableName)
-				return []
-			}
-		},
-		/**
-		 * 生成DEBUG聊天
-		 */
-		async generateDebugChat() {
-			if (!confirm(this.t("components.DevTools.toast.areYouSureToGenerateDebugChat"))) return
-			const DEBUG_CHAT = [
-				{
-					title: "各种标题测试",
-					content: "# 你好!\n\n## 你好!!\n\n### 你好!!!\n\n#### 你好!!!!\n\n##### 你好!!!!!\n\n###### 你好!!!!!!",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "文字属性测试",
-					content: "加粗: **加粗**\n\n斜体: *斜体*\n\n删除线: ~~删除线~~",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "段落测试",
-					content: "123\n456\n\n489\n123\n\n456\n\n489",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "引用测试",
-					content: "单行引用:\n\n> 单行引用\n\n多行引用:\n\n> 多行引用\n> 多行引用\n> 多行引用\n\n嵌套引用:\n\n> 嵌套引用\n> > 嵌套引用\n> > > 嵌套引用",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "列表测试",
-					content: "无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n嵌套列表\n\n* 11111\n    * 2222",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "代码行测试",
-					content: "右边的代码: `print(\"你好, 世界!\")` 这个是Python!",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "代码块测试",
-					content: "代码块测试\n\n```js\nfunction hello() {\n  console.log(\"Hello, world!\")\n}\n```\n\n这是一段JavaScript代码, lang属性写的是js",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "分割行测试",
-					content: "分割行测试\n\n***\n\n123456789",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "链接测试",
-					content: "[Markdown语法](https://markdown.com.cn \"最好的markdown教程\")\n\n<https://markdown.com.cn>",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "图片测试",
-					content: "![图片](https://flagcdn.com/cn.svg \"中国国旗\")\n\n![图片](https://img.loliapi.com/i/pc/img462.webp \"二次元\")",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "表格测试",
-					content: "| Syntax      | Description | Test Text     |\n| :---        |    :----:   |          ---: |\n| Header      | Title       | Here's this   |\n| Paragraph   | Text        | And more      |",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "任务列表测试",
-					content: "- [x] Write the press release\n- [ ] Update the website\n- [ ] Contact the media",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "Emoji测试",
-					content: "去露营了！ :tent: 很快回来。",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "数学公式测试",
-					content: "假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$\n\nKaTeX:\n\n$$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$\n\nMathJax3:\n\n$$ \\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				},
-				{
-					title: "流程图测试",
-					content: "Mermaid\n\n```mermaid\nflowchart TD;A[Christmas] -->|Get money| B(Go shopping);B --> C{Let me think};C -->|One| D[Laptop];C -->|Two| E[iPhone];C -->|Three| F[fa:fa-car Car];C --> D((This is the <br  />text<br  /> in the circle))\n```\n\n```mermaid\ngraph TD; A[开始] --> B{是否登录？}; B -- 是 --> C[进入系统]; B -- 否 --> D[跳转登录页]; D --> E[登录后返回]; E --> C\n```\n\nFlowchart\n\n```flow\nst=>start: 开始\ne=>end: 结束\nop=>operation: 输入用户名和密码\ncond=>condition: 验证成功？\nerr=>operation: 提示错误\nlogin=>operation: 跳转首页\n\nst->op->cond\ncond(yes)->login->e\ncond(no)->err->op\n```\n\n```flow\nst=>start: 开始\ne=>end: 结束\nop=>operation: 输入用户名和密码\ncond=>condition: 验证成功？\nerr=>operation: 提示错误\nlogin=>operation: 跳转首页\n\nst->op->cond\ncond(yes)->login->e\ncond(no)->err->op\n```\n\nPlantUML\n\n```plantuml\n@startuml\nskinparam backgroundColor #EEEBDC\n\nskinparam sequenceArrowColor DeepSkyBlue\nskinparam sequenceActorBorderColor DeepSkyBlueskinparam sequenceActorBorderColor DeepSkyBlue\nskinparam sequenceLifeLineBorderColor blue\nskinparam sequenceLifeLineBackgroundColor #A9DCDF\nskinparam sequenceParticipantBorderColor DeepSkyBlue\nskinparam sequenceParticipantBackgroundColor DodgerBlue\nskinparam sequenceParticipantFontName Impact\nskinparam sequenceParticipantFontSize 17\nskinparam sequenceParticipantFontColor #A9DCDF\nskinparam sequenceActorBackgroundColor aqua\nskinparam sequenceActorFontColor DeepSkyBlue\nskinparam sequenceActorFontSize 17\nskinparam sequenceActorFontName Aapex\n\nactor User\nparticipant \"First Class\" as ParticipantA\nparticipant \"Second Class\" as ParticipantB\nparticipant \"Last Class\" as ParticipantC\n\nUser -> ParticipantA: DoWork\nactivate ParticipantA\n\nParticipantA -> ParticipantB: Create Request\nactivate ParticipantBv\nParticipantB -> ParticipantC: DoWork\nactivate ParticipantC\nParticipantC --> ParticipantB: WorkDone\ndestroy ParticipantC\nParticipantB --> ParticipantA: Request Created\ndeactivate ParticipantB\n\nParticipantA --> User: Done\ndeactivate ParticipantA\n@enduml",
-					model: {"platform": "OpenAI", "model": "gpt-4o"}
-				}
-			]
-			for (const chat of DEBUG_CHAT) {
-				await this.$DB.chats.add({
-					key: crypto.randomUUID(),
-					title: chat.title,
-					timestamp: Date.now(),
-					data: [
-						{
-							id: crypto.randomUUID(),
-							message: {content: chat.title, role: "user"},
-							timestamp: Date.now()
-						},
-						{
-							id: crypto.randomUUID(),
-							model: chat.model,
-							message: {reasoning: chat.content, content: chat.content, role: "assistant"},
-							timestamp: Date.now()
-						}
-					]
-				})
-			}
-			EventBus.emit("[update] chatListUpdate")
-			await this.getDBData()
-			toastRegistry.success(this.t("components.DevTools.toast.generateDebugChatSuccess"))
-		},
-		/**
-		 * 清空数据库表数据
-		 * @param tableName {String} - 表名
-		 */
-		async clearDB(tableName) {
-			if (!confirm(`确定要清空 ${tableName} 数据吗?`)) return
-			try {
-				await this.$DB[tableName].clear()
-				EventBus.emit("[update] chatListUpdate")
-				this.$log.debug(`[${this.name}] 清空 ${tableName} 数据成功`)
-				toastRegistry.success(`[${this.name}] ${this.t("components.DevTools.toast.clearSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 清空 ${tableName} 数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.DevTools.toast.clearError")}`)
-			}
-			await this.getDBData()
-		},
-		/**
-		 * 删除数据库表数据
-		 * @param tableName {String} - 表名
-		 * @param key {String} - 键
-		 * @param filterKey {String} - 过滤键
-		 */
-		async deleteByKey(tableName, key, filterKey) {
-			if (!confirm(`确定要删除 ${tableName} 数据吗?`)) return
-			try {
-				await this.$DB[tableName].delete(key)
-				EventBus.emit("[update] chatListUpdate")
-				this.$log.debug(`[${this.name}] 删除 ${tableName} 数据成功`, {key, filterKey})
-				toastRegistry.success(`[${this.name}] ${this.t("components.DevTools.toast.deleteSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 删除 ${tableName} 数据失败`, {key, filterKey, error})
-				toastRegistry.error(`[${this.name}] ${this.t("components.DevTools.toast.deleteError")}`)
-			}
-			await this.getDBData()
-		},
-		/**
-		 * 更新数据库表数据
-		 * @param tableName {String} - 表名
-		 * @param key {String} - 键
-		 * @param data {Object} - 数据
-		 */
-		async updateByKey(tableName, key, data) {
-			try {
-				// 先获取数据判断是否一致, 不一致在更新
-				const OLD_DATA = await this.$DB[tableName].get(key)
-				if (JSON.stringify(OLD_DATA) === JSON.stringify(data)) {
-					this.$log.debug(`[${this.name}] 更新 ${tableName} 数据失败, 数据未改变`, {key, data})
-					toastRegistry.info(`[${this.name}] ${this.t("components.DevTools.toast.updateSameData")}`)
-					return
-				}
-				await this.$DB[tableName].update(key, data)
-				EventBus.emit("[update] chatListUpdate")
-				this.$log.debug(`[${this.name}] 更新 ${tableName} 数据成功`, {key, data})
-				toastRegistry.success(`[${this.name}] ${this.t("components.DevTools.toast.updateSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 更新 ${tableName} 数据失败`, {key, data, error})
-				toastRegistry.error(`[${this.name}] ${this.t("components.DevTools.toast.updateError")}`)
-			}
-			await this.getDBData()
-		},
-		/**
-		 * 获取通信列表
-		 */
-		async getEventBus() {
-			this.eventBus = EventBus.getAllEvents()
-		},
-		/**
-		 * 触发事件
-		 * @param eventName {String} - 事件名
-		 */
-		async emit(eventName) {
-			EventBus.emit(eventName)
+		if (route.children && route.children.length) {
+			return [current, ...flattenRoutes(route.children, FULL_PATH)]
 		}
+		return [current]
+	})
+}
+
+/**
+ * 跳转路由
+ * @param path {String} - 路由路径
+ */
+const goTo = (path) => {
+	router.push(path)
+}
+
+/**
+ * 获取数据库数据
+ */
+const getDBData = async () => {
+	chats.value = await getDBAll("chats")
+	masks.value = await getDBAll("masks")
+	configs.value = await getDBAll("configs")
+	apiKeys.value = await getDBAll("apiKeys")
+}
+
+/**
+ * 获取所有数据库表数据
+ * @param tableName {String} - 表名
+ */
+const getDBAll = async (tableName) => {
+	try {
+		return Dexie[tableName].toArray()
+	} catch (error) {
+		Logger.error(`[${name}] 获取 ${tableName} 数据失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.DevTools.toast.failedToGetData")}`, tableName)
+		return []
 	}
 }
+
+/**
+ * 生成DEBUG聊天
+ */
+const generateDebugChat = async () => {
+	if (!confirm(t("components.DevTools.toast.areYouSureToGenerateDebugChat"))) return
+	const DEBUG_CHAT = [
+		{
+			title: "各种标题测试",
+			content: "# 你好!\n\n## 你好!!\n\n### 你好!!!\n\n#### 你好!!!!\n\n##### 你好!!!!!\n\n###### 你好!!!!!!",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "文字属性测试",
+			content: "加粗: **加粗**\n\n斜体: *斜体*\n\n删除线: ~~删除线~~",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "段落测试",
+			content: "123\n456\n\n489\n123\n\n456\n\n489",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "引用测试",
+			content: "单行引用:\n\n> 单行引用\n\n多行引用:\n\n> 多行引用\n> 多行引用\n> 多行引用\n\n嵌套引用:\n\n> 嵌套引用\n> > 嵌套引用\n> > > 嵌套引用",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "列表测试",
+			content: "无序列表\n\n* 11111\n* 22222\n* 33333\n* 44444\n* 55555\n\n有序列表\n\n1. 11111\n2. 22222\n3. 33333\n4. 44444\n5. 55555\n\n嵌套列表\n\n* 11111\n    * 2222",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "代码行测试",
+			content: "右边的代码: `print(\"你好, 世界!\")` 这个是Python!",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "代码块测试",
+			content: "代码块测试\n\n```js\nfunction hello() {\n  console.log(\"Hello, world!\")\n}\n```\n\n这是一段JavaScript代码, lang属性写的是js",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "分割行测试",
+			content: "分割行测试\n\n***\n\n123456789",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "链接测试",
+			content: "[Markdown语法](https://markdown.com.cn \"最好的markdown教程\")\n\n<https://markdown.com.cn>",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "图片测试",
+			content: "![图片](https://flagcdn.com/cn.svg \"中国国旗\")\n\n![图片](https://img.loliapi.com/i/pc/img462.webp \"二次元\")",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "表格测试",
+			content: "| Syntax      | Description | Test Text     |\n| :---        |    :----:   |          ---: |\n| Header      | Title       | Here's this   |\n| Paragraph   | Text        | And more      |",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "任务列表测试",
+			content: "- [x] Write the press release\n- [ ] Update the website\n- [ ] Contact the media",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "Emoji测试",
+			content: "去露营了！ :tent: 很快回来。",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "数学公式测试",
+			content: "假设$x=2$, 那么$x^2=?$\n\n$$\n\\frac{\\mathrm{d}}{\\mathrm{d}x}\\cos x=-\\sin x\n$$\n\nKaTeX:\n\n$$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$\n\nMathJax3:\n\n$$ \\int_{0}^{\\infty} e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}$$",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		},
+		{
+			title: "流程图测试",
+			content: "Mermaid\n\n```mermaid\nflowchart TD;A[Christmas] -->|Get money| B(Go shopping);B --> C{Let me think};C -->|One| D[Laptop];C -->|Two| E[iPhone];C -->|Three| F[fa:fa-car Car];C --> D((This is the <br  />text<br  /> in the circle))\n```\n\n```mermaid\ngraph TD; A[开始] --> B{是否登录？}; B -- 是 --> C[进入系统]; B -- 否 --> D[跳转登录页]; D --> E[登录后返回]; E --> C\n```\n\nFlowchart\n\n```flow\nst=>start: 开始\ne=>end: 结束\nop=>operation: 输入用户名和密码\ncond=>condition: 验证成功？\nerr=>operation: 提示错误\nlogin=>operation: 跳转首页\n\nst->op->cond\ncond(yes)->login->e\ncond(no)->err->op\n```\n\n```flow\nst=>start: 开始\ne=>end: 结束\nop=>operation: 输入用户名和密码\ncond=>condition: 验证成功？\nerr=>operation: 提示错误\nlogin=>operation: 跳转首页\n\nst->op->cond\ncond(yes)->login->e\ncond(no)->err->op\n```\n\nPlantUML\n\n```plantuml\n@startuml\nskinparam backgroundColor #EEEBDC\n\nskinparam sequenceArrowColor DeepSkyBlue\nskinparam sequenceActorBorderColor DeepSkyBlueskinparam sequenceActorBorderColor DeepSkyBlue\nskinparam sequenceLifeLineBorderColor blue\nskinparam sequenceLifeLineBackgroundColor #A9DCDF\nskinparam sequenceParticipantBorderColor DeepSkyBlue\nskinparam sequenceParticipantBackgroundColor DodgerBlue\nskinparam sequenceParticipantFontName Impact\nskinparam sequenceParticipantFontSize 17\nskinparam sequenceParticipantFontColor #A9DCDF\nskinparam sequenceActorBackgroundColor aqua\nskinparam sequenceActorFontColor DeepSkyBlue\nskinparam sequenceActorFontSize 17\nskinparam sequenceActorFontName Aapex\n\nactor User\nparticipant \"First Class\" as ParticipantA\nparticipant \"Second Class\" as ParticipantB\nparticipant \"Last Class\" as ParticipantC\n\nUser -> ParticipantA: DoWork\nactivate ParticipantA\n\nParticipantA -> ParticipantB: Create Request\nactivate ParticipantBv\nParticipantB -> ParticipantC: DoWork\nactivate ParticipantC\nParticipantC --> ParticipantB: WorkDone\ndestroy ParticipantC\nParticipantB --> ParticipantA: Request Created\ndeactivate ParticipantB\n\nParticipantA --> User: Done\ndeactivate ParticipantA\n@enduml",
+			model: {"platform": "OpenAI", "model": "gpt-4o"}
+		}
+	]
+	for (const chat of DEBUG_CHAT) {
+		await Dexie.chats.add({
+			key: crypto.randomUUID(),
+			title: chat.title,
+			timestamp: Date.now(),
+			data: [
+				{
+					id: crypto.randomUUID(),
+					message: {content: chat.title, role: "user"},
+					timestamp: Date.now()
+				},
+				{
+					id: crypto.randomUUID(),
+					model: chat.model,
+					message: {reasoning: chat.content, content: chat.content, role: "assistant"},
+					timestamp: Date.now()
+				}
+			]
+		})
+	}
+	EventBus.emit("[update] chatListUpdate")
+	await getDBData()
+	toastRegistry.success(t("components.DevTools.toast.generateDebugChatSuccess"))
+}
+
+/**
+ * 清空数据库表数据
+ * @param tableName {String} - 表名
+ */
+const clearDB = async (tableName) => {
+	if (!confirm(`确定要清空 ${tableName} 数据吗?`)) return
+	try {
+		await Dexie[tableName].clear()
+		EventBus.emit("[update] chatListUpdate")
+		Logger.debug(`[${name}] 清空 ${tableName} 数据成功`)
+		toastRegistry.success(`[${name}] ${t("components.DevTools.toast.clearSuccess")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 清空 ${tableName} 数据失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.DevTools.toast.clearError")}`)
+	}
+	await getDBData()
+}
+
+/**
+ * 删除数据库表数据
+ * @param tableName {String} - 表名
+ * @param key {String} - 键
+ * @param filterKey {String} - 过滤键
+ */
+const deleteByKey = async (tableName, key, filterKey) => {
+	if (!confirm(`确定要删除 ${tableName} 数据吗?`)) return
+	try {
+		await Dexie[tableName].delete(key)
+		EventBus.emit("[update] chatListUpdate")
+		Logger.debug(`[${name}] 删除 ${tableName} 数据成功`, {key, filterKey})
+		toastRegistry.success(`[${name}] ${t("components.DevTools.toast.deleteSuccess")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 删除 ${tableName} 数据失败`, {key, filterKey, error})
+		toastRegistry.error(`[${name}] ${t("components.DevTools.toast.deleteError")}`)
+	}
+	await getDBData()
+}
+
+/**
+ * 更新数据库表数据
+ * @param tableName {String} - 表名
+ * @param key {String} - 键
+ * @param data {Object} - 数据
+ */
+const updateByKey = async (tableName, key, data) => {
+	try {
+		// 先获取数据判断是否一致, 不一致在更新
+		const OLD_DATA = await Dexie[tableName].get(key)
+		if (JSON.stringify(OLD_DATA) === JSON.stringify(data)) {
+			Logger.debug(`[${name}] 更新 ${tableName} 数据失败, 数据未改变`, {key, data})
+			toastRegistry.info(`[${name}] ${t("components.DevTools.toast.updateSameData")}`)
+			return
+		}
+		await Dexie[tableName].update(key, data)
+		EventBus.emit("[update] chatListUpdate")
+		Logger.debug(`[${name}] 更新 ${tableName} 数据成功`, {key, data})
+		toastRegistry.success(`[${name}] ${t("components.DevTools.toast.updateSuccess")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 更新 ${tableName} 数据失败`, {key, data, error})
+		toastRegistry.error(`[${name}] ${t("components.DevTools.toast.updateError")}`)
+	}
+	await getDBData()
+}
+
+/**
+ * 获取通信列表
+ */
+const getEventBus = () => {
+	eventBus.value = EventBus.getAllEvents()
+}
+
+/**
+ * 触发事件
+ * @param eventName {String} - 事件名
+ */
+const emit = (eventName) => {
+	EventBus.emit(eventName)
+}
+
+onMounted(() => {
+	allRoutes.value = flattenRoutes(router.options.routes)
+	getDBData()
+	getEventBus()
+})
 </script>
 
 <template>

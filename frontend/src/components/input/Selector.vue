@@ -1,137 +1,173 @@
-<script>
+<script setup>
+import {ref, computed, onMounted, onUnmounted} from "vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
-export default {
-	name: "Selector",
-	props: {
-		selectorSelected: {
-			type: Object,
-			required: true
-		},
-		selectorList: {
-			type: Array,
-			required: true,
-			default: () => []
-		},
-		uniqueKey: {
-			type: String,
-			required: true
-		},
-		num: {
-			type: Number,
-			default: 3
-		},
-		loading: {
-			type: Boolean,
-			default: false
-		}
+/**
+ * 选择器组件
+ */
+const props = defineProps({
+	selectorSelected: {
+		type: Object,
+		required: true
 	},
-	data() {
-		return {
-			isOpen: false,
-			dropdownDirection: "bottom",
-			isLoading: false
-		}
+	selectorList: {
+		type: Array,
+		required: true,
+		default: () => []
 	},
-	mounted() {
-		document.addEventListener("click", this.handleClickOutside)
+	uniqueKey: {
+		type: String,
+		required: true
 	},
-	beforeUnmount() {
-		document.removeEventListener("click", this.handleClickOutside)
+	num: {
+		type: Number,
+		default: 3
 	},
-	computed: {
-		showLoading() {
-			return this.loading || this.isLoading
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 切换列表
-		 */
-		toggleList() {
-			if (this.showLoading) return
-			if (!this.isOpen) {
-				this.calculateDropdownDirection()
-			}
-			this.isOpen = !this.isOpen
-		},
-		/**
-		 * 计算下拉框的方向
-		 */
-		calculateDropdownDirection() {
-			const DROPDOWN_HEIGHT = this.num * 44
-			const DROPDOWN_RECT = this.$el.getBoundingClientRect()
-			const DROPDOWN_BOTTOM = DROPDOWN_RECT.bottom + DROPDOWN_HEIGHT
-			const WINDOW_HEIGHT = window.innerHeight
-			this.dropdownDirection = DROPDOWN_BOTTOM > WINDOW_HEIGHT ? "top" : "bottom"
-		},
-		/**
-		 * 处理点击事件
-		 * @param e {Event} - 事件对象
-		 */
-		handleClickOutside(e) {
-			if (!this.$el.contains(e.target)) {
-				this.isOpen = false
-			}
-		},
-		/**
-		 * 选择项
-		 * @param item {Object} - 选择项
-		 */
-		selectItem(item) {
-			if (this.showLoading) return
-			this.isOpen = false
-			this.$emit("update:selectorSelected", item)
-			this.$emit("select", item)
-		},
-		/**
-		 * 标题
-		 * @param title {String} - 标题
-		 * @returns {String} - 标题
-		 */
-		getTitle(title) {
-			if (!title) return ""
-			if (title.startsWith("i18n:")) {
-				const I18N_KEY = title.slice(5)
-				return this.t(I18N_KEY)
-			}
-			return title
-		},
-		/**
-		 * 开始加载
-		 */
-		startLoading() {
-			this.isLoading = true
-			this.isOpen = false
-		},
-		/**
-		 * 停止加载
-		 */
-		stopLoading() {
-			this.isLoading = false
-		}
+	loading: {
+		type: Boolean,
+		default: false
+	}
+})
+
+/**
+ * 选择器组件事件
+ */
+const emit = defineEmits(["update:selectorSelected", "select"])
+
+/**
+ * 是否打开选择器列表
+ */
+const isOpen = ref(false)
+
+/**
+ * 下拉框方向
+ */
+const dropdownDirection = ref("bottom")
+
+/**
+ * 是否正在加载
+ */
+const isLoading = ref(false)
+
+/**
+ * 选择器元素
+ */
+const selectorElement = ref(null)
+
+/**
+ * 是否显示加载状态
+ */
+const showLoading = computed(() => props.loading || isLoading.value)
+
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 切换列表
+ */
+const toggleList = () => {
+	if (showLoading.value) return
+	if (!isOpen.value) {
+		calculateDropdownDirection()
+	}
+	isOpen.value = !isOpen.value
+}
+
+/**
+ * 计算下拉框的方向
+ */
+const calculateDropdownDirection = () => {
+	const DROPDOWN_HEIGHT = props.num * 44
+	const DROPDOWN_RECT = selectorElement.value.getBoundingClientRect()
+	const DROPDOWN_BOTTOM = DROPDOWN_RECT.bottom + DROPDOWN_HEIGHT
+	const WINDOW_HEIGHT = window.innerHeight
+	dropdownDirection.value = DROPDOWN_BOTTOM > WINDOW_HEIGHT ? "top" : "bottom"
+}
+
+/**
+ * 处理点击事件
+ * @param e {Event} - 事件对象
+ */
+const handleClickOutside = (e) => {
+	if (!selectorElement.value.contains(e.target)) {
+		isOpen.value = false
 	}
 }
+
+/**
+ * 选择项
+ * @param item {Object} - 选择项
+ */
+const selectItem = (item) => {
+	if (showLoading.value) return
+	isOpen.value = false
+	emit("update:selectorSelected", item)
+	emit("select", item)
+}
+
+/**
+ * 标题
+ * @param title {String} - 标题
+ * @returns {String} - 标题
+ */
+const getTitle = (title) => {
+	if (!title) return ""
+	if (title.startsWith("i18n:")) {
+		const I18N_KEY = title.slice(5)
+		return t(I18N_KEY)
+	}
+	return title
+}
+
+/**
+ * 开始加载
+ */
+const startLoading = () => {
+	isLoading.value = true
+	isOpen.value = false
+}
+
+/**
+ * 停止加载
+ */
+const stopLoading = () => {
+	isLoading.value = false
+}
+
+onMounted(() => {
+	document.addEventListener("click", handleClickOutside)
+})
+
+onUnmounted(() => {
+	document.removeEventListener("click", handleClickOutside)
+})
+
+defineExpose({
+	startLoading,
+	stopLoading
+})
 </script>
 
 <template>
-	<div class="selector">
+	<div class="selector" ref="selectorElement">
 		<div
 			class="selector-selected"
 			:class="{'open-bottom': isOpen && dropdownDirection === 'bottom', 'open-top': isOpen && dropdownDirection === 'top', 'loading': showLoading}"
 			@click="toggleList">
 			<template v-if="!showLoading">
-				<img class="images" :src="selectorSelected.images" :alt="getTitle(selectorSelected.title)"
-					 v-if="selectorSelected.images">
+				<img
+					class="images"
+					:src="selectorSelected.images"
+					:alt="getTitle(selectorSelected.title)"
+					v-if="selectorSelected.images">
 				<span class="selector-option">{{ getTitle(selectorSelected.title) }}</span>
 			</template>
 			<div v-else class="loading-indicator">

@@ -1,17 +1,14 @@
-<script>
-export default {
-	name: "Loading",
-	props: {
-		loading: {
-			type: Boolean,
-			default: false
-		},
-		text: {
-			type: String,
-			default: ""
-		}
+<script setup>
+defineProps({
+	loading: {
+		type: Boolean,
+		default: false
 	},
-}
+	text: {
+		type: String,
+		default: ""
+	}
+})
 </script>
 
 <template>

@@ -1,184 +1,205 @@
-<script>
+<script setup>
+import {computed, onMounted, ref, watch} from "vue"
 import {getAllPlugins, updatePluginEnabled} from "@/services/plugin/PluginManager"
 import {initPlugin} from "@/services/plugin/RegisterPlugins"
 import FoldingPanel from "@/components/FoldingPanel.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {unloadPlugin} from "@/services/plugin/UnloadALlPlugins"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "Plugins",
-	inject: ["$log"],
-	components: {FoldingPanel},
-	data() {
-		return {
-			name: "Plugins",
-			isWails: !!window.go,
-			system: {
-				activeTab: "all",
-				plugins: [],
-				operationSelection: []
-			},
-			thirdParty: {
-				activeTab: "all",
-				plugins: [],
-				operationSelection: []
-			}
+const name = "Plugins"
+
+/**
+ * 是否是 Wails 环境
+ */
+const isWails = ref(!!window.go)
+
+/**
+ * 系统插件
+ */
+const system = ref({
+	activeTab: "all",
+	plugins: [],
+	operationSelection: []
+})
+
+/**
+ * 第三方插件
+ */
+const thirdParty = ref({
+	activeTab: "all",
+	plugins: [],
+	operationSelection: []
+})
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 加载插件列表
+ * @param type {String} - 类型, 可选值: "all", "platform", "theme", "i18n", "other"
+ * @param category {String} - 分类, 可选值: "all", "system", "thirdParty"
+ */
+const loadPlugInList = async (type = "all", category = "all") => {
+	const KNOWN_TYPES = ["platform", "i18n"]
+	const ALL_PLUGINS = await getAllPlugins()
+	// 类型过滤
+	let filtered = ALL_PLUGINS.filter(plugin => {
+		const TYPES = Array.isArray(plugin.type) ? plugin.type : []
+		if (type === "all") return true
+		if (type === "other") {
+			return TYPES.length === 0 || !TYPES.some(t => KNOWN_TYPES.includes(t))
 		}
-	},
-	watch: {
-		"system.activeTab"(newVal) {
-			this.loadPlugInList(newVal, "system")
-		},
-		"thirdParty.activeTab"(newVal) {
-			this.loadPlugInList(newVal, "thirdParty")
+		return TYPES.includes(type)
+	})
+	if (category === "all") {
+		system.value.plugins = []
+		thirdParty.value.plugins = []
+	}
+	if (category === "system") system.value.plugins = []
+	if (category === "thirdParty") thirdParty.value.plugins = []
+	// 分类过滤 + 分配到对应列表
+	for (const plugin of filtered) {
+		if (category === "all" || category === "system") {
+			if (plugin.system) system.value.plugins.push(plugin)
 		}
-	},
-	created() {
-		this.loadPlugInList("all", "all")
-	},
-	computed: {
-		// 是否全选(系统插件)
-		isAllSelectedSystem() {
-			const AVAILABLE_PLUGINS = this.system.plugins.filter(plugin => !plugin.disabled)
-			return AVAILABLE_PLUGINS.length > 0 &&
-				AVAILABLE_PLUGINS.every(item =>
-					this.system.operationSelection.includes(item.uuid)
-				)
-		},
-		// 是否全选(第三方插件)
-		isAllSelectedThirdParty() {
-			const AVAILABLE_PLUGINS = this.thirdParty.plugins.filter(plugin => !plugin.disabled)
-			return AVAILABLE_PLUGINS.length > 0 &&
-				AVAILABLE_PLUGINS.every(item =>
-					this.thirdParty.operationSelection.includes(item.uuid)
-				)
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 加载插件列表
-		 * @param type {String} - 类型, 可选值: "all", "platform", "theme", "i18n", "other"
-		 * @param category {String} - 分类, 可选值: "all", "system", "thirdParty"
-		 */
-		async loadPlugInList(type = "all", category = "all") {
-			const KNOWN_TYPES = ["platform", "i18n"]
-			const ALL_PLUGINS = await getAllPlugins()
-			// 类型过滤
-			let filtered = ALL_PLUGINS.filter(plugin => {
-				const TYPES = Array.isArray(plugin.type) ? plugin.type : []
-				if (type === "all") return true
-				if (type === "other") {
-					return TYPES.length === 0 || !TYPES.some(t => KNOWN_TYPES.includes(t))
-				}
-				return TYPES.includes(type)
-			})
-			if (category === "all") {
-				this.system.plugins = []
-				this.thirdParty.plugins = []
-			}
-			if (category === "system") this.system.plugins = []
-			if (category === "thirdParty") this.thirdParty.plugins = []
-			// 分类过滤 + 分配到对应列表
-			for (const plugin of filtered) {
-				if (category === "all" || category === "system") {
-					if (plugin.system) this.system.plugins.push(plugin)
-				}
-				if (category === "all" || category === "thirdParty") {
-					if (!plugin.system) this.thirdParty.plugins.push(plugin)
-				}
-			}
-		},
-		/**
-		 * 切换全选状态(系统插件)
-		 */
-		toggleAllSelectionSystem() {
-			if (this.isAllSelectedSystem) {
-				this.system.operationSelection = []
-			} else {
-				this.system.operationSelection = this.system.plugins
-					.filter(plugin => !plugin.disabled)
-					.map(item => item.uuid)
-			}
-		},
-		/**
-		 * 切换全选状态(第三方插件)
-		 */
-		toggleAllSelectionThirdParty() {
-			if (this.isAllSelectedThirdParty) {
-				this.thirdParty.operationSelection = []
-			} else {
-				this.thirdParty.operationSelection = this.thirdParty.plugins
-					.filter(plugin => !plugin.disabled)
-					.map(item => item.uuid)
-			}
-		},
-		/**
-		 * 切换行选择状态(系统插件)
-		 * @param uuid {String} - uuid
-		 */
-		toggleRowSelectionSystem(uuid) {
-			const INDEX = this.system.operationSelection.indexOf(uuid)
-			if (INDEX === -1) {
-				this.system.operationSelection.push(uuid)
-			} else {
-				this.system.operationSelection.splice(INDEX, 1)
-			}
-		},
-		/**
-		 * 切换行选择状态(第三方插件)
-		 * @param uuid {String} - uuid
-		 */
-		toggleRowSelectionThirdParty(uuid) {
-			const INDEX = this.thirdParty.operationSelection.indexOf(uuid)
-			if (INDEX === -1) {
-				this.thirdParty.operationSelection.push(uuid)
-			} else {
-				this.thirdParty.operationSelection.splice(INDEX, 1)
-			}
-		},
-		/**
-		 * 切换插件启用状态
-		 * @param plugin
-		 */
-		async togglePluginEnable(plugin) {
-			if (plugin.disabled) {
-				this.$log.warn(`[${this.name}] 标记为 disabled 的插件被禁止启用! ${plugin.name}`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.Plugins.toast.disabledTip")}`)
-				return
-			}
-			if (plugin.required) {
-				this.$log.warn(`[${this.name}] 标记为 required 的插件不能被禁用! ${plugin.name}`)
-				toastRegistry.warning(`[${this.name}] ${this.t("components.Options.Plugins.toast.requiredTip")}`)
-				return
-			}
-			try {
-				const NEW_STATUS = !plugin.enabled
-				await updatePluginEnabled(plugin.uuid, NEW_STATUS)
-				if (NEW_STATUS) {
-					await initPlugin(plugin.uuid, this.$root)
-				} else {
-					await unloadPlugin(plugin.uuid)
-				}
-				toastRegistry.success(`[${this.name}] ${this.t(`components.Options.Plugins.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
-				await this.loadPlugInList(this.system.activeTab, "system")
-				await this.loadPlugInList(this.thirdParty.activeTab, "thirdParty")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 状态更新失败 ${plugin.name}`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.Plugins.toast.statusUpdateError")}`)
-			}
+		if (category === "all" || category === "thirdParty") {
+			if (!plugin.system) thirdParty.value.plugins.push(plugin)
 		}
 	}
 }
+
+/**
+ * 切换全选状态(系统插件)
+ */
+const toggleAllSelectionSystem = () => {
+	if (isAllSelectedSystem.value) {
+		system.value.operationSelection = []
+	} else {
+		system.value.operationSelection = system.value.plugins
+			.filter(plugin => !plugin.disabled)
+			.map(item => item.uuid)
+	}
+}
+
+/**
+ * 切换全选状态(第三方插件)
+ */
+const toggleAllSelectionThirdParty = () => {
+	if (isAllSelectedThirdParty.value) {
+		thirdParty.value.operationSelection = []
+	} else {
+		thirdParty.value.operationSelection = thirdParty.value.plugins
+			.filter(plugin => !plugin.disabled)
+			.map(item => item.uuid)
+	}
+}
+
+/**
+ * 切换行选择状态(系统插件)
+ * @param uuid {String} - uuid
+ */
+const toggleRowSelectionSystem = (uuid) => {
+	const INDEX = system.value.operationSelection.indexOf(uuid)
+	if (INDEX === -1) {
+		system.value.operationSelection.push(uuid)
+	} else {
+		system.value.operationSelection.splice(INDEX, 1)
+	}
+}
+
+/**
+ * 切换行选择状态(第三方插件)
+ * @param uuid {String} - uuid
+ */
+const toggleRowSelectionThirdParty = (uuid) => {
+	const INDEX = thirdParty.value.operationSelection.indexOf(uuid)
+	if (INDEX === -1) {
+		thirdParty.value.operationSelection.push(uuid)
+	} else {
+		thirdParty.value.operationSelection.splice(INDEX, 1)
+	}
+}
+
+/**
+ * 切换插件启用状态
+ * @param plugin
+ */
+const togglePluginEnable = async (plugin) => {
+	if (plugin.disabled) {
+		Logger.warn(`[${name}] 标记为 disabled 的插件被禁止启用! ${plugin.name}`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.Plugins.toast.disabledTip")}`)
+		return
+	}
+	if (plugin.required) {
+		Logger.warn(`[${name}] 标记为 required 的插件不能被禁用! ${plugin.name}`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.Plugins.toast.requiredTip")}`)
+		return
+	}
+	try {
+		const NEW_STATUS = !plugin.enabled
+		await updatePluginEnabled(plugin.uuid, NEW_STATUS)
+		if (NEW_STATUS) {
+			await initPlugin(plugin.uuid)
+		} else {
+			await unloadPlugin(plugin.uuid)
+		}
+		toastRegistry.success(`[${name}] ${t(`components.Options.Plugins.toast.${NEW_STATUS ? "enable" : "disable"}Success`)}`)
+		await loadPlugInList(system.value.activeTab, "system")
+		await loadPlugInList(thirdParty.value.activeTab, "thirdParty")
+	} catch (error) {
+		Logger.error(`[${name}] 状态更新失败 ${plugin.name}`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.Plugins.toast.statusUpdateError")}`)
+	}
+}
+
+/**
+ * 监听系统插件分类切换
+ */
+watch(() => system.value.activeTab, (newVal) => {
+	loadPlugInList(newVal, "system")
+})
+
+/**
+ * 监听第三方插件分类切换
+ */
+watch(() => thirdParty.value.activeTab, (newVal) => {
+	loadPlugInList(newVal, "thirdParty")
+})
+
+/**
+ * 是否全选(系统插件)
+ */
+const isAllSelectedSystem = computed(() => {
+	const AVAILABLE_PLUGINS = system.value.plugins.filter(plugin => !plugin.disabled)
+	return AVAILABLE_PLUGINS.length > 0 &&
+		AVAILABLE_PLUGINS.every(item =>
+			system.value.operationSelection.includes(item.uuid)
+		)
+})
+
+/**
+ * 是否全选(第三方插件)
+ */
+const isAllSelectedThirdParty = computed(() => {
+	const AVAILABLE_PLUGINS = thirdParty.value.plugins.filter(plugin => !plugin.disabled)
+	return AVAILABLE_PLUGINS.length > 0 &&
+		AVAILABLE_PLUGINS.every(item =>
+			thirdParty.value.operationSelection.includes(item.uuid)
+		)
+})
+
+onMounted(() => {
+		loadPlugInList("all", "all")
+})
 </script>
 
 <template>

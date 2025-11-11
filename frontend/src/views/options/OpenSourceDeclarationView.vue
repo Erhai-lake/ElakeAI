@@ -1,36 +1,33 @@
-<script>
+<script setup>
+import {computed} from 'vue'
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import Button from "@/components/input/Button.vue"
 import OpenSourceDeclaration from "@/assets/data/OpenSourceDeclaration.json"
 
-export default {
-	name: "OpenSourceDeclarationView",
-	components: {Button},
-	data() {
-		return {
-			data: OpenSourceDeclaration
-		}
-	},
-	computed: {
-		grouped() {
-			// 按 category 分组
-			return this.data.reduce((acc, item) => {
-				(acc[item.category] ||= []).push(item)
-				return acc
-			}, {})
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		}
-	}
+/**
+ * 开源声明数据
+ */
+const data = OpenSourceDeclaration
+
+/**
+ * 按 category 分组
+ */
+const grouped = computed(() => {
+	return data.reduce((acc, item) => {
+		(acc[item.category] ||= []).push(item)
+		return acc
+	}, {})
+})
+
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
 }
 </script>
 
@@ -75,7 +72,7 @@ export default {
 	white-space: nowrap;
 	transition: background-color 0.3s ease-in-out;
 
-	&:hover{
+	&:hover {
 		background-color: var(--active-background-color);
 	}
 }

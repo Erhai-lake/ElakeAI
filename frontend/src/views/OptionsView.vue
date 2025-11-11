@@ -1,39 +1,29 @@
-<script>
-import HazardousOperations from "@/components/options/HazardousOperations.vue"
-import Plugins from "@/components/options/Plugins.vue"
+<script setup>
+import {ref} from "vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 
-export default {
-	name: "OptionsView",
-	components: {
-		HazardousOperations,
-		Plugins
-	},
-	data() {
-		return {
-			menuItems: [
-				"personalization",
-				"chats",
-				"import",
-				"export",
-				"plugins",
-				"advancedTools",
-				"about"
-			],
-			activeKey: "personalization"
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		}
-	}
+/**
+ * 选项卡菜单
+ */
+const menuItems = ref([
+	"personalization",
+	"chats",
+	"import",
+	"export",
+	"plugins",
+	"advancedTools",
+	"about"
+])
+
+/**
+ * 翻译函数
+ * @function t
+ * @param {string} key - 翻译键值
+ * @param {Object} params - 翻译参数
+ * @returns {string} - 翻译后的字符串
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
 }
 </script>
 

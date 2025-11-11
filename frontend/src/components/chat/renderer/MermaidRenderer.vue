@@ -1,4 +1,5 @@
-<script>
+<script setup>
+import {onMounted, ref, watch} from "vue"
 import {initZoom} from "@/components/chat/renderer/ZoomManager"
 import {ExportList} from "@/components/chat/renderer/ExportHelper"
 import Tabs from "@/components/Tabs.vue"
@@ -8,118 +9,144 @@ import Button from "@/components/input/Button.vue"
 import Selector from "@/components/input/Selector.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import SVGIcon from "@/components/SVGIcon.vue"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "MermaidRenderer",
-	components: {SVGIcon, Selector, Button, CodeBlockRenderer, TabsTab, Tabs},
-	inject: ["$DB", "$log"],
-	props: {
-		code: {
-			type: String,
-			required: true
+const name = "MermaidRenderer"
+
+const props = defineProps({
+	/**
+	 * Mermaid代码
+	 */
+	code: {
+		type: String,
+		required: true
+	}
+})
+
+/**
+ * 活动标签页
+ */
+const activeTab = ref("preview")
+
+/**
+ * Mermaid渲染错误
+ */
+const error = ref(null)
+
+/**
+ * 导出列表
+ */
+const exportList = ref(ExportList())
+
+/**
+ * 导出选择器
+ */
+const selector = ref({item: "export", title: "i18n:components.MermaidRenderer.export"})
+
+/**
+ * 容器引用
+ */
+const containerRef = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 渲染Mermaid
+ */
+const renderMermaid = async () => {
+	try {
+		const MERMAID = (await import("mermaid")).default
+		try {
+			// 读取主题配置
+			const THEME_DATA = (await Dexie.configs.get("theme")).value
+			MERMAID.initialize({
+				startOnLoad: true,
+				theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"
+			})
+		} catch (error) {
+			Logger.error(`[${name}] Mermaid主题初始化失败`, error)
+			MERMAID.initialize({
+				startOnLoad: true,
+				theme: "default"
+			})
 		}
-	},
-	data() {
-		return {
-			name: "MermaidRenderer",
-			activeTab: "preview",
-			error: null,
-			exportList: ExportList(),
-			selector: {item: "export", title: "i18n:components.MermaidRenderer.export"}
+		// 阻止这个玩意画炸弹, nnd
+		try {
+			await MERMAID.parse(props.code)
+		} catch (parseError) {
+			error.value = parseError.message
+			Logger.error(`[${name}] Mermaid语法错误`, parseError)
+			return
 		}
-	},
-	watch: {
-		activeTab(newVal) {
-			if (newVal === "preview") {
-				this.renderMermaid()
+		const ID = "mermaid-" + Math.random().toString(36).slice(2, 11)
+		const {svg} = await MERMAID.render(ID, props.code)
+		const CONTAINER = containerRef.value
+		const WRAPPER = document.createElement("div")
+		WRAPPER.innerHTML = svg
+		CONTAINER.appendChild(WRAPPER.firstElementChild)
+		const SVG_ELEMENT = CONTAINER.querySelector("svg:not(.icon)")
+		if (SVG_ELEMENT) {
+			SVG_ELEMENT.removeAttribute("width")
+			SVG_ELEMENT.removeAttribute("height")
+			SVG_ELEMENT.style.width = "100%"
+			SVG_ELEMENT.style.display = "block"
+			SVG_ELEMENT.style.maxWidth = "none"
+			SVG_ELEMENT.style.maxHeight = "none"
+			SVG_ELEMENT.style.minWidth = "0"
+			SVG_ELEMENT.style.minHeight = "0"
+			// 获取实际内容高度
+			const G_ELEMENT = SVG_ELEMENT.querySelector("g")
+			if (G_ELEMENT) {
+				const BBOX = G_ELEMENT.getBBox()
+				const MAX_HEIGHT = 400
+				const MIN_HEIGHT = 170
+				const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
+				const PADDING = 50
+				const WIDTH_WITH_PADDING = BBOX.width + PADDING * 2
+				const HEIGHT_WITH_PADDING = BBOX.height + PADDING * 2
+				const FINAL_HEIGHT = Math.max(HEIGHT_WITH_PADDING * SCALE, MIN_HEIGHT)
+				SVG_ELEMENT.setAttribute("viewBox", `${BBOX.x - PADDING} ${BBOX.y - PADDING} ${WIDTH_WITH_PADDING} ${HEIGHT_WITH_PADDING}`)
+				SVG_ELEMENT.style.height = `${FINAL_HEIGHT}px`
 			}
 		}
-	},
-	created() {
-		this.renderMermaid()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 渲染Mermaid
-		 */
-		async renderMermaid() {
-			try {
-				const MERMAID = (await import("mermaid")).default
-				try {
-					// 读取主题配置
-					const THEME_DATA = (await this.$DB.configs.get("theme")).value
-					MERMAID.initialize({
-						startOnLoad: true,
-						theme: THEME_DATA === "System" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default") : THEME_DATA === "Dark" ? "dark" : "default"
-					})
-				} catch (error) {
-					this.$log.error(`[${this.name}] Mermaid主题初始化失败`, error)
-					MERMAID.initialize({
-						startOnLoad: true,
-						theme: "default"
-					})
-				}
-				// 阻止这个玩意画炸弹, nnd
-				try {
-					await MERMAID.parse(this.code)
-				} catch (parseError) {
-					this.error = parseError.message
-					this.$log.error(`[${this.name}] Mermaid语法错误`, parseError)
-					return
-				}
-				const ID = "mermaid-" + Math.random().toString(36).slice(2, 11)
-				const {svg} = await MERMAID.render(ID, this.code)
-				const CONTAINER = this.$refs.containerRef
-				const WRAPPER = document.createElement("div")
-				WRAPPER.innerHTML = svg
-				CONTAINER.appendChild(WRAPPER.firstElementChild)
-				const SVG_ELEMENT = CONTAINER.querySelector("svg:not(.icon)")
-				if (SVG_ELEMENT) {
-					SVG_ELEMENT.removeAttribute("width")
-					SVG_ELEMENT.removeAttribute("height")
-					SVG_ELEMENT.style.width = "100%"
-					SVG_ELEMENT.style.display = "block"
-					// 获取实际内容高度
-					const G_ELEMENT = SVG_ELEMENT.querySelector("g")
-					if (G_ELEMENT) {
-						const BBOX = G_ELEMENT.getBBox()
-						const MAX_HEIGHT = 400
-						const MIN_HEIGHT = 170
-						const SCALE = BBOX.height > MAX_HEIGHT ? MAX_HEIGHT / BBOX.height : 1
-						const PADDING = 50
-						const WIDTH_WITH_PADDING = BBOX.width + PADDING * 2
-						const HEIGHT_WITH_PADDING = BBOX.height + PADDING * 2
-						const FINAL_HEIGHT = Math.max(HEIGHT_WITH_PADDING * SCALE, MIN_HEIGHT)
-						SVG_ELEMENT.setAttribute("viewBox", `${BBOX.x - PADDING} ${BBOX.y - PADDING} ${WIDTH_WITH_PADDING} ${HEIGHT_WITH_PADDING}`)
-						SVG_ELEMENT.style.height = `${FINAL_HEIGHT}px`
-					}
-				}
-				initZoom(this.$refs.containerRef)
-			} catch (error) {
-				this.$log.error(`[${this.name}] Mermaid渲染失败`, error)
-				this.error = error.message
-			}
-		},
-		/**
-		 * 导出为指定类型
-		 * @param item 导出类型
-		 */
-		updateSelected(item) {
-			const SVG_ELEMENT = this.$refs.containerRef?.querySelector("svg:not(.icon)")
-			if (!SVG_ELEMENT) return
-			item.action(SVG_ELEMENT)
-		}
+		initZoom(containerRef.value)
+	} catch (error) {
+		Logger.error(`[${name}] Mermaid渲染失败`, error)
+		error.value = error.message
 	}
 }
+
+/**
+ * 导出为指定类型
+ * @param item 导出类型
+ */
+const updateSelected = async (item) => {
+	const SVG_ELEMENT = containerRef.value?.querySelector("svg:not(.icon)")
+	if (!SVG_ELEMENT) return
+	item.action(SVG_ELEMENT)
+}
+
+/**
+ * 监听活动标签页变化
+ */
+watch(activeTab, (newVal) => {
+	if (newVal === "preview") {
+		renderMermaid()
+	}
+})
+
+onMounted(() => {
+	renderMermaid()
+})
 </script>
 
 <template>

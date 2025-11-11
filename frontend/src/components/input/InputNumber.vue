@@ -1,89 +1,99 @@
-<script>
-export default {
-	name: "InputNumber",
-	props: {
-		// "input" 或 "slider"
-		mode: {
-			type: String,
-			default: "input"
-		},
-		modelValue: {
-			type: [Number, String],
-			default: ""
-		},
-		placeholder: {
-			type: String,
-			default: ""
-		},
-		min: {
-			type: Number,
-			default: -Infinity
-		},
-		max: {
-			type: Number,
-			default: Infinity
-		},
-		step: {
-			type: Number,
-			default: 1
-		},
-		disabled: {
-			type: Boolean,
-			default: false
-		}
+<script setup>
+import { ref, nextTick } from "vue"
+
+const props = defineProps({
+	// "input" 或 "slider"
+	mode: {
+		type: String,
+		default: "input"
 	},
-	emits: ["update:modelValue", "input"],
-	data() {
-		return {
-			isEditingValue: false
-		}
+	modelValue: {
+		type: [Number, String],
+		default: ""
 	},
-	methods: {
-		/**
-		 * 输入框模式
-		 * @param event 输入事件
-		 */
-		onInput(event) {
-			let value = event.target.value
-			// 空值允许
-			if (value === "") {
-				this.$emit("update:modelValue", "")
-				this.$emit("input", "")
-				return
-			}
-			// 转数字
-			value = Number(value)
-			// 非数字直接忽略
-			if (isNaN(value)) return
-			// 限制边界
-			if (value < this.min) value = this.min
-			if (value > this.max) value = this.max
-			// 更新
-			this.$emit("update:modelValue", value)
-			this.$emit("input", value)
-		},
-		/**
-		 * 启用编辑
-		 */
-		enableEdit() {
-			if (this.disabled) return
-			this.isEditingValue = true
-			// 自动聚焦输入框
-			this.$nextTick(() => {
-				// 自动聚焦输入框
-				const INPUT = this.$refs.valueInput
-				INPUT && INPUT.focus()
-				// 自动全选
-				INPUT && INPUT.select()
-			})
-		},
-		/**
-		 * 禁用编辑
-		 */
-		disableEdit() {
-			this.isEditingValue = false
-		}
+	placeholder: {
+		type: String,
+		default: ""
+	},
+	min: {
+		type: Number,
+		default: -Infinity
+	},
+	max: {
+		type: Number,
+		default: Infinity
+	},
+	step: {
+		type: Number,
+		default: 1
+	},
+	disabled: {
+		type: Boolean,
+		default: false
 	}
+})
+
+/**
+ * 回调事件
+ */
+const emit = defineEmits(["update:modelValue", "input"])
+
+/**
+ * 是否正在编辑值
+ */
+const isEditingValue = ref(false)
+
+/**
+ * 输入框值
+ */
+const valueInput = ref(null)
+
+/**
+ * 输入框模式
+ * @param event 输入事件
+ */
+const onInput = (event) => {
+	let value = event.target.value
+	// 空值允许
+	if (value === "") {
+		emit("update:modelValue", "")
+		emit("input", "")
+		return
+	}
+	// 转数字
+	value = Number(value)
+	// 非数字直接忽略
+	if (isNaN(value)) return
+	// 限制边界
+	if (value < props.min) value = props.min
+	if (value > props.max) value = props.max
+	// 更新
+	emit("update:modelValue", value)
+	emit("input", value)
+}
+
+/**
+ * 启用编辑
+ */
+const enableEdit = () => {
+	if (props.disabled) return
+	isEditingValue.value = true
+	// 自动聚焦输入框
+	nextTick(() => {
+		// 自动聚焦输入框
+		if (valueInput.value) {
+			valueInput.value.focus()
+			// 自动全选
+			valueInput.value.select()
+		}
+	})
+}
+
+/**
+ * 禁用编辑
+ */
+const disableEdit = () => {
+	isEditingValue.value = false
 }
 </script>
 
@@ -211,7 +221,6 @@ input[type="number"] {
 		align-items: center;
 
 		input[type="range"] {
-			-webkit-appearance: none;
 			width: 100%;
 			height: 6px;
 			background: var(--border-color);

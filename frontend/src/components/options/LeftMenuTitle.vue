@@ -1,79 +1,88 @@
-<script>
+<script setup>
+import {ref, watch, onMounted} from "vue"
 import InputText from "@/components/input/InputText.vue"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
 import EventBus from "@/services/EventBus"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "LeftMenuTitle",
-	inject: ["$DB", "$log"],
-	components: {InputText},
-	data() {
-		return {
-			name: "LeftMenuTitle",
-			leftMenuTitle: {
-				enabled: false,
-				title: "ElakeAI"
-			}
-		}
-	},
-	watch: {
-		"leftMenuTitle.title" () {
-			this.apply()
-		}
-	},
-	created() {
-		this.read()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 读取
-		 */
-		async read() {
-			try {
-				const LEFT_MENU_TITLE_DATA = await this.$DB.configs.get("leftMenuTitle")
-				this.leftMenuTitle = LEFT_MENU_TITLE_DATA ? LEFT_MENU_TITLE_DATA.value : this.leftMenuTitle
-			} catch (error) {
-				this.$log.error(`[${this.name}] 左侧菜单标题配置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LeftMenuTitle.toast.getLeftMenuTitleError")}`)
-			}
-		},
-		/**
-		 * 应用
-		 */
-		apply: publicRegistry.debounce(async function () {
-			try {
-				await this.$DB.configs.put({
-					item: "leftMenuTitle",
-					value: JSON.parse(JSON.stringify(this.leftMenuTitle))
-				})
-				EventBus.emit("[update] leftMenuTitleApply")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 左侧菜单标题配置应用失败`, {
-					leftMenuTitle: this.leftMenuTitle,
-					error
-				})
-				toastRegistry.error(`[${this.name}] ${this.t("components.Options.LeftMenuTitle.toast.applyLeftMenuTitleError")}`)
-			}
-		}, 500)
+const name = "LeftMenuTitle"
+
+/**
+ * 左侧菜单标题配置
+ */
+const leftMenuTitle = ref({
+	enabled: false,
+	title: "ElakeAI"
+})
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 读取配置
+ */
+const read = async () => {
+	try {
+		const LEFT_MENU_TITLE_DATA = await Dexie.configs.get("leftMenuTitle")
+		leftMenuTitle.value = LEFT_MENU_TITLE_DATA ? LEFT_MENU_TITLE_DATA.value : leftMenuTitle.value
+	} catch (error) {
+		Logger.error(`[${name}] 左侧菜单标题配置获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Options.LeftMenuTitle.toast.getLeftMenuTitleError")}`)
 	}
 }
+
+/**
+ * 应用配置
+ */
+const apply = publicRegistry.debounce(async () => {
+	try {
+		await Dexie.configs.put({
+			item: "leftMenuTitle",
+			value: JSON.parse(JSON.stringify(leftMenuTitle.value))
+		})
+		EventBus.emit("[update] leftMenuTitleApply")
+	} catch (error) {
+		Logger.error(`[${name}] 左侧菜单标题配置应用失败`, {
+			leftMenuTitle: leftMenuTitle.value,
+			error
+		})
+		toastRegistry.error(`[${name}] ${t("components.Options.LeftMenuTitle.toast.applyLeftMenuTitleError")}`)
+	}
+}, 500)
+
+/**
+ * 处理复选框变化
+ */
+const handleCheckboxChange = () => {
+	apply()
+}
+
+/**
+ * 监听标题变化
+ */
+watch(() => leftMenuTitle.value.title, () => {
+	apply()
+})
+
+onMounted(() => {
+	read()
+})
 </script>
 
 <template>
 	<div class="left-menu-title">
 		<label class="switch">
-			<input type="checkbox" v-model="leftMenuTitle.enabled" @change="apply"/>
+			<input type="checkbox" v-model="leftMenuTitle.enabled" @change="handleCheckboxChange"/>
 			<span class="custom-checkbox"></span>
 		</label>
 		<InputText class="text" v-model="leftMenuTitle.title" :disabled="!leftMenuTitle.enabled"/>

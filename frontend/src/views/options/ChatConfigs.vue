@@ -1,12 +1,14 @@
-<script>
+<script setup>
+import {computed, onMounted, ref, watch} from "vue"
 import Button from "@/components/input/Button.vue"
 import InputNumber from "@/components/input/InputNumber.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 import Selector from "@/components/input/Selector.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
 import EventBus from "@/services/EventBus"
-import FoldingPanel from "@/components/FoldingPanel.vue"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
 import InputText from "@/components/input/InputText.vue"
 import draggable from "vuedraggable"
@@ -18,568 +20,622 @@ import html2canvas from "html2canvas"
 import Loading from "@/components/Loading.vue"
 import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
 
-export default {
-	name: "ChatConfigs",
-	inject: ["$DB", "$log"],
-	components: {
-		CodeBlockRenderer,
-		Loading,
-		SystemMessageCard,
-		AssistantMessageCard,
-		ChatTitle,
-		InputText,
-		FoldingPanel,
-		SVGIcon,
-		Selector,
-		InputNumber,
-		Button,
-		draggable,
-		UserMessageCard
+const name = "ChatConfigs"
+
+const props = defineProps({
+	/**
+	 * 聊天ID
+	 */
+	chatKey: {
+		type: String,
+		default: null
 	},
-	props: {
-		chatKey: {
-			type: String,
-			default: null
-		},
-		modelValue: {
-			type: Boolean,
-			default: false
-		},
-		type: {
-			type: String,
-			default: "chat"
-		}
+	/**
+	 * 是否显示配置弹窗
+	 */
+	modelValue: {
+		type: Boolean,
+		default: false
 	},
-	emits: ["update:modelValue"],
-	data() {
-		return {
-			name: "ChatConfigs",
-			chatTitle: "",
-			configs: {
-				temperature: 1,
-				frequency_penalty: 0,
-				top_p: 1,
-				max_tokens: 2048,
-				presence_penalty: 0
-			},
-			originalChatData: [],
-			chatData: [],
-			chatRecords: [],
-			page: 1,
-			totalPages: 0,
-			orderList: [
-				{
-					key: "asc",
-					title: "i18n:views.ChatConfigs.asc"
-				},
-				{
-					key: "desc",
-					title: "i18n:views.ChatConfigs.desc"
-				}
-			],
-			order: {
-				key: "asc",
-				title: "i18n:views.ChatConfigs.asc"
-			},
-			roleList: [
-				{
-					title: "user"
-				},
-				{
-					title: "assistant"
-				},
-				{
-					title: "system"
-				}
-			],
-			share: {
-				shareChoice: [],
-				shareTitle: "",
-				shareList: [
-					{
-						title: "png"
-					},
-					{
-						title: "text"
-					},
-					{
-						title: "json"
-					}
-				],
-				share: {
-					title: "png"
-				},
-				sharePreview: false,
-				content: null,
-				loading: false
-			}
-		}
+	/**
+	 * 配置类型
+	 */
+	type: {
+		type: String,
+		default: "chat"
+	}
+})
+
+/**
+ * 触发更新弹窗显示状态的事件
+ */
+const emit = defineEmits(["update:modelValue"])
+
+/**
+ * 聊天标题
+ */
+const chatTitle = ref("")
+
+/**
+ * 聊天配置
+ */
+const configs = ref({
+	temperature: 1,
+	frequency_penalty: 0,
+	top_p: 1,
+	max_tokens: 2048,
+	presence_penalty: 0
+})
+
+/**
+ * 原始聊天数据
+ */
+const originalChatData = ref([])
+
+/**
+ * 聊天数据
+ */
+const chatData = ref([])
+
+/**
+ * 聊天记录
+ */
+const chatRecords = ref([])
+
+/**
+ * 分页
+ */
+const page = ref(1)
+
+/**
+ * 总页数
+ */
+const totalPages = ref(0)
+
+/**
+ * 排序方式
+ */
+const orderList = ref([
+	{
+		key: "asc",
+		title: "i18n:views.ChatConfigs.asc"
 	},
-	watch: {
-		async modelValue(newVal) {
-			if (newVal) {
-				await this.init()
-			}
-		}
+	{
+		key: "desc",
+		title: "i18n:views.ChatConfigs.desc"
+	}
+])
+
+/**
+ * 选择的排序方式
+ */
+const order = ref({
+	key: "asc",
+	title: "i18n:views.ChatConfigs.asc"
+})
+
+/**
+ * 角色列表
+ */
+const roleList = ref([
+	{
+		title: "user"
 	},
-	computed: {
-		/**
-		 * 计算可见页码
-		 */
-		visiblePages() {
-			const PAGES = []
-			const LEFT = Math.max(2, this.page - 2)
-			const RIGHT = Math.min(this.totalPages, this.page + 2)
-			// 首页
-			PAGES.push(1)
-			if (LEFT > 2) PAGES.push("...")
-			// 中间页
-			for (let i = LEFT; i <= RIGHT; i++) {
-				PAGES.push(i)
-			}
-			// 尾页
-			if (RIGHT < this.totalPages - 1) PAGES.push("...")
-			if (this.totalPages > 1) PAGES.push(this.totalPages)
-			return PAGES
-		}
+	{
+		title: "assistant"
 	},
-	async created() {
-		if (this.chatKey) {
-			await this.init()
-		}
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 初始化组件
-		 */
-		async init() {
-			this.share.shareChoice = []
-			await this.loadChatData()
-			await this.loadChatConfig()
-			this.page = 1
-			this.getChatRecords(this.page, "asc")
-		},
-		/**
-		 * 更新选中角色
-		 * @param role {Object} - 角色
-		 * @param id {String} - 消息ID
-		 */
-		updateRoleSelected(role, id) {
-			const MESSAGE = this.chatData.find(item => item.id === id)
-			if (!MESSAGE) return
-			MESSAGE.message.role = role
-			const ORIGINAL = this.originalChatData.find(item => item.id === id)
-			// 处理 model
-			if (role === "user" || role === "system") {
-				// 移除 model
-				delete MESSAGE.model
-			} else if (role === "assistant") {
-				if (ORIGINAL && ORIGINAL.model) {
-					// 原本有 model, 恢复
-					MESSAGE.model = {...ORIGINAL.model}
-				} else if (!MESSAGE.model) {
-					// 原本没有, 新建
-					MESSAGE.model = {platform: "", model: ""}
-				}
-			}
-			const RECORD = this.chatRecords.find(item => item.id === id)
-			if (RECORD) {
-				RECORD.message.role = MESSAGE.message.role
-				RECORD.model = MESSAGE.model
-			}
-		},
-		/**
-		 * 更新排序类型
-		 * @param order {Object} - 排序类型
-		 */
-		updateOrderSelected(order) {
-			this.order = order
-			this.getChatRecords(this.page)
-		},
-		/**
-		 * 更新分享类型
-		 * @param share {Object} - 分享类型
-		 */
-		updateShareSelected(share) {
-			this.share.share = share
-			this.share.content = ""
-		},
-		/**
-		 * 加载全局配置
-		 */
-		async loadGlobalConfig() {
-			try {
-				const GLOBAL_CONFIG = await this.$DB.configs.get("chatConfigs")
-				if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
-					this.configs = GLOBAL_CONFIG.value
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取全局配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
-			}
-		},
-		/**
-		 * 加载聊天配置
-		 */
-		async loadChatConfig() {
-			await this.loadGlobalConfig()
-			try {
-				let chatData = null
-				if (this.type === "chat") {
-					chatData = await this.$DB.chats.get(this.chatKey)
-				} else if (this.type === "mask") {
-					chatData = await this.$DB.masks.get(this.chatKey)
-				}
-				if (chatData && chatData.configs) {
-					this.chatTitle = chatData.title
-					this.share.shareTitle = chatData.title
-					this.configs = chatData.configs
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取聊天配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
-			}
-		},
-		/**
-		 * 加载聊天数据
-		 */
-		async loadChatData() {
-			try {
-				let chatData = null
-				if (this.type === "chat") {
-					chatData = await this.$DB.chats.get(this.chatKey)
-				} else if (this.type === "mask") {
-					chatData = await this.$DB.masks.get(this.chatKey)
-				}
-				if (chatData && chatData.data) {
-					this.chatData = chatData.data
-					this.originalChatData = JSON.parse(JSON.stringify(this.chatData))
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 获取聊天数据失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.getError")}`)
-			}
-		},
-		/**
-		 * 分页获取聊天记录
-		 * @param page {Number} - 页码
-		 */
-		getChatRecords: publicRegistry.debounce(function (page = 1) {
-			const PAGE_SIZE = 10
-			const OFFSET = (page - 1) * PAGE_SIZE
-			let records = this.chatData.slice()
-			if (this.order.key === "desc") {
-				records.reverse()
-			}
-			this.page = page
-			this.totalPages = Math.ceil(records.length / PAGE_SIZE)
-			this.chatRecords = records.slice(OFFSET, OFFSET + PAGE_SIZE)
-		}, 100),
-		/**
-		 * 新增聊天记录
-		 */
-		addChatRecord() {
-			const MESSAGE = {
-				id: crypto.randomUUID(),
-				message: {
-					role: "user",
-					content: ""
-				},
-				status: "done",
-				timestamp: Date.now()
-			}
-			this.chatData.push(MESSAGE)
-			const PAGE_SIZE = 10
-			this.totalPages = Math.ceil(this.chatData.length / PAGE_SIZE)
-			this.order.key === "asc" ? this.getChatRecords(this.totalPages) : this.getChatRecords(1)
-		},
-		/**
-		 * 移除消息
-		 * @param id {String} - 消息ID
-		 */
-		remove(id) {
-			this.chatRecords = this.chatRecords.filter(item => item.id !== id)
-			this.chatData = this.chatData.filter(item => item.id !== id)
-		},
-		/**
-		 * 拖动结束
-		 */
-		onDragEnd() {
-			// 重新拼接 chatData
-			const PAGE_SIZE = 10
-			let records = this.chatData.slice()
-			if (this.order.key === "desc") {
-				records.reverse()
-			}
-			// 替换掉当前页的数据
-			const OFFSET = (this.page - 1) * PAGE_SIZE
-			records.splice(OFFSET, this.chatRecords.length, ...this.chatRecords)
-			// 再反转回去
-			if (this.order.key === "desc") {
-				records.reverse()
-			}
-			this.chatData = records
-		},
-		/**
-		 * 移动
-		 * @param id {String} - 消息ID
-		 * @param type {String} - 移动类型
-		 */
-		move(id, type) {
-			const PAGE_SIZE = 10
-			const INDEX_ALL = this.chatData.findIndex(item => item.id === id)
-			if (INDEX_ALL === -1) return
-			let newIndex = INDEX_ALL
-			const IS_DESC = this.order.key === "desc"
-			// 移动数据
-			if (type === "up") {
-				if (IS_DESC && INDEX_ALL < this.chatData.length - 1) {
-					[this.chatData[INDEX_ALL], this.chatData[INDEX_ALL + 1]] = [this.chatData[INDEX_ALL + 1], this.chatData[INDEX_ALL]]
-					newIndex = INDEX_ALL + 1
-				} else if (!IS_DESC && INDEX_ALL > 0) {
-					[this.chatData[INDEX_ALL - 1], this.chatData[INDEX_ALL]] = [this.chatData[INDEX_ALL], this.chatData[INDEX_ALL - 1]]
-					newIndex = INDEX_ALL - 1
-				} else return
-			} else if (type === "down") {
-				if (IS_DESC && INDEX_ALL > 0) {
-					[this.chatData[INDEX_ALL - 1], this.chatData[INDEX_ALL]] = [this.chatData[INDEX_ALL], this.chatData[INDEX_ALL - 1]]
-					newIndex = INDEX_ALL - 1
-				} else if (!IS_DESC && INDEX_ALL < this.chatData.length - 1) {
-					[this.chatData[INDEX_ALL], this.chatData[INDEX_ALL + 1]] = [this.chatData[INDEX_ALL + 1], this.chatData[INDEX_ALL]]
-					newIndex = INDEX_ALL + 1
-				} else return
-			}
-			// 当前页索引范围
-			const PAGE_START = IS_DESC
-				? this.chatData.length - this.page * PAGE_SIZE
-				: (this.page - 1) * PAGE_SIZE
-			const PAGE_END = PAGE_START + PAGE_SIZE - 1
-			// 判断是否需要翻页
-			if (!IS_DESC) {
-				if (newIndex < PAGE_START && this.page > 1) {
-					this.page--
-				} else if (newIndex > PAGE_END && this.page < this.totalPages) {
-					this.page++
-				}
-			} else {
-				if (newIndex < PAGE_START && this.page < this.totalPages) {
-					this.page++
-				} else if (newIndex > PAGE_END && this.page > 1) {
-					this.page--
-				}
-			}
-			// 更新当前页显示
-			this.getChatRecords(this.page)
-		},
-		/**
-		 * 选择分享
-		 */
-		selectShare(element) {
-			if (this.share.shareChoice.includes(element.id)) {
-				this.share.shareChoice = this.share.shareChoice.filter(item => item !== element.id)
-			} else {
-				this.share.shareChoice.push(element.id)
-			}
-		},
-		/**
-		 * 选择所有
-		 */
-		selectAll() {
-			if (this.share.shareChoice.length === this.chatData.length) {
-				this.share.shareChoice = []
-			} else {
-				this.share.shareChoice = this.chatData.map(item => item.id)
-			}
-		},
-		/**
-		 * 选择当前页
-		 */
-		selectPage() {
-			const CURRENT_PAGE_IDS = this.chatRecords.map(item => item.id)
-			const ALL_SELECTED = CURRENT_PAGE_IDS.every(id => this.share.shareChoice.includes(id))
-			if (ALL_SELECTED) {
-				this.share.shareChoice = this.share.shareChoice.filter(id => !CURRENT_PAGE_IDS.includes(id))
-			} else {
-				this.share.shareChoice = [...new Set([...this.share.shareChoice, ...CURRENT_PAGE_IDS])];
-			}
-		},
-		/**
-		 * 预览
-		 */
-		preview() {
-			if (this.share.shareChoice.length === 0) {
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.shareIsEmpty")}`)
-				return
-			}
-			this.share.sharePreview = true
-			const SELECTED_MESSAGES = this.chatData.filter(item => this.share.shareChoice.includes(item.id))
-			if (this.share.share.title === "png") {
-				this.share.content = SELECTED_MESSAGES
-			} else if (this.share.share.title === "text") {
-				let text = `# ${this.share.shareTitle}\n\n`
-				SELECTED_MESSAGES.forEach(item => {
-					text += `## ${item.message.role}`
-					if (item.model) {
-						text += ` [${item.model.platform}] [${item.model.model}]`
-					}
-					text += `:\n${item.message.content}\n\n`
-				})
-				this.share.content = text
-			} else if (this.share.share.title === "json") {
-				let json = {
-					message: []
-				}
-				SELECTED_MESSAGES.forEach(item => {
-					json.message.push({
-						role: item.message.role,
-						content: item.message.content
-					})
-				})
-				this.share.content = JSON.stringify(json, null, 4)
-			} else {
-				this.share.content = SELECTED_MESSAGES.map(item => item.message.content).join("\n\n")
-			}
-		},
-		/**
-		 * 复制
-		 */
-		async copy() {
-			this.share.loading = true
-			try {
-				if (this.share.share.title === "png") {
-					const EL = this.$refs.sharePng
-					if (!EL) return
-					const CANVAS = await html2canvas(EL, {
-						backgroundColor: null,
-						useCORS: true,
-						scale: 2
-					})
-					CANVAS.toBlob(async (blob) => {
-						if (!blob) return
-						await navigator.clipboard.write([
-							new ClipboardItem({"image/png": blob})
-						])
-					})
-				} else if (this.share.share.title === "text") {
-					await navigator.clipboard.writeText(this.share.content)
-				} else if (this.share.share.title === "json") {
-					await navigator.clipboard.writeText(JSON.stringify(JSON.parse(this.share.content)))
-				}
-				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.writeToClipboard")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 复制失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.copyError")}`)
-			} finally {
-				this.share.loading = false
-			}
-		},
-		/**
-		 * 下载
-		 */
-		async download() {
-			this.share.loading = true
-			try {
-				const DOWNLOAD_A = document.createElement("a")
-				let blob = null
-				let fileName = ""
-				if (this.share.share.title === "png") {
-					const EL = this.$refs.sharePng
-					if (!EL) return
-					const CANVAS = await html2canvas(EL, {
-						backgroundColor: null,
-						useCORS: true,
-						scale: 2
-					})
-					blob = await new Promise((resolve) => CANVAS.toBlob((b) => resolve(b), "image/png"))
-					fileName = `${this.share.shareTitle}.png`
-				} else if (this.share.share.title === "text") {
-					blob = new Blob([this.share.content], {type: "text/plain;charset=utf-8"})
-					fileName = `${this.share.shareTitle}.txt`
-				} else if (this.share.share.title === "json") {
-					blob = new Blob([JSON.stringify(JSON.parse(this.share.content))], {type: "application/json;charset=utf-8"})
-					fileName = `${this.share.shareTitle}.json`
-				}
-				DOWNLOAD_A.href = URL.createObjectURL(blob)
-				DOWNLOAD_A.download = fileName
-				DOWNLOAD_A.click()
-				URL.revokeObjectURL(DOWNLOAD_A.href)
-				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.downloadSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 下载失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.downloadError")}`)
-			} finally {
-				this.share.loading = false
-			}
-		},
-		/**
-		 * 保存聊天配置
-		 */
-		async save() {
-			try {
-				// 检查标题是否为空
-				if (!this.chatTitle.trim()) {
-					this.chatTitle = this.t("components.AIInput.newChat")
-				}
-				// 检查是否为面具
-				if (this.type === "chat") {
-					await this.$DB.chats.update(this.chatKey, {
-						title: this.chatTitle,
-						data: JSON.parse(JSON.stringify(this.chatData)),
-						configs: JSON.parse(JSON.stringify(this.configs))
-					})
-					EventBus.emit("[update] initChatView")
-					EventBus.emit("[update] chatListUpdate")
-				} else if (this.type === "mask") {
-					await this.$DB.masks.update(this.chatKey, {
-						title: this.chatTitle,
-						data: JSON.parse(JSON.stringify(this.chatData)),
-						configs: JSON.parse(JSON.stringify(this.configs))
-					})
-					EventBus.emit("[update] maskListUpdate")
-				}
-				this.close()
-				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 保存聊天配置失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveError")}`)
-			}
-		},
-		/**
-		 * 关闭
-		 */
-		close() {
-			this.share.sharePreview = false
-			this.$emit("update:modelValue", false)
-		},
-		/**
-		 * 保存到面具
-		 */
-		async saveMask() {
-			try {
-				await this.$DB.masks.add({
-					key: crypto.randomUUID(),
-					title: this.chatTitle,
-					data: JSON.parse(JSON.stringify(this.chatData)),
-					configs: JSON.parse(JSON.stringify(this.configs))
-				})
-				EventBus.emit("[update] maskListUpdate")
-				toastRegistry.success(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveMaskSuccess")}`)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 保存面具失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("views.ChatConfigs.toast.saveMaskError")}`)
-			}
+	{
+		title: "system"
+	}
+])
+
+/**
+ * 分享配置
+ */
+const share = ref({
+	shareChoice: [],
+	shareTitle: "",
+	shareList: [
+		{title: "png"},
+		{title: "text"},
+		{title: "json"}
+	],
+	share: {title: "png"},
+	sharePreview: false,
+	content: "",
+	loading: false
+})
+
+/**
+ * 分享图片元素
+ */
+const sharePng = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 初始化组件
+ */
+const init = async () => {
+	share.value.shareChoice = []
+	await loadChatData()
+	await loadChatConfig()
+	page.value = 1
+	getChatRecords(page.value, "asc")
+}
+
+/**
+ * 更新选中角色
+ * @param role {Object} - 角色
+ * @param id {String} - 消息ID
+ */
+const updateRoleSelected = (role, id) => {
+	const MESSAGE = chatData.value.find(item => item.id === id)
+	if (!MESSAGE) return
+	MESSAGE.message.role = role
+	const ORIGINAL = originalChatData.value.find(item => item.id === id)
+	// 处理 model
+	if (role === "user" || role === "system") {
+		// 移除 model
+		delete MESSAGE.model
+	} else if (role === "assistant") {
+		if (ORIGINAL && ORIGINAL.model) {
+			// 原本有 model, 恢复
+			MESSAGE.model = {...ORIGINAL.model}
+		} else if (!MESSAGE.model) {
+			// 原本没有, 新建
+			MESSAGE.model = {platform: "", model: ""}
 		}
 	}
+	const RECORD = chatRecords.value.find(item => item.id === id)
+	if (RECORD) {
+		RECORD.message.role = MESSAGE.message.role
+		RECORD.model = MESSAGE.model
+	}
 }
+
+/**
+ * 更新排序类型
+ * @param orderItem {Object} - 排序类型
+ */
+const updateOrderSelected = (orderItem) => {
+	order.value = orderItem
+	getChatRecords(page.value, order.value.key)
+}
+
+/**
+ * 更新分享类型
+ * @param shareType {Object} - 分享类型
+ */
+const updateShareSelected = (shareType) => {
+	share.value.share = shareType
+	share.value.content = ""
+}
+
+/**
+ * 加载全局配置
+ */
+const loadGlobalConfig = async () => {
+	try {
+		const GLOBAL_CONFIG = await Dexie.configs.get("chatConfigs")
+		if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
+			configs.value = GLOBAL_CONFIG.value
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 获取全局配置失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.getError")}`)
+	}
+}
+
+/**
+ * 加载聊天配置
+ */
+const loadChatConfig = async () => {
+	await loadGlobalConfig()
+	try {
+		let getChatData = null
+		if (props.type === "chat") {
+			getChatData = await Dexie.chats.get(props.chatKey)
+		} else if (props.type === "mask") {
+			getChatData = await Dexie.masks.get(props.chatKey)
+		}
+		if (getChatData && getChatData.configs) {
+			chatTitle.value = getChatData.title
+			share.value.shareTitle = getChatData.title
+			configs.value = getChatData.configs
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 获取聊天配置失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.getError")}`)
+	}
+}
+
+/**
+ * 计算可见页码
+ */
+const visiblePages = computed(() => {
+	const PAGES = []
+	const LEFT = Math.max(2, page.value - 2)
+	const RIGHT = Math.min(totalPages.value, page.value + 2)
+	// 首页
+	PAGES.push(1)
+	if (LEFT > 2) PAGES.push("...")
+	// 中间页
+	for (let i = LEFT; i <= RIGHT; i++) {
+		PAGES.push(i)
+	}
+	// 尾页
+	if (RIGHT < totalPages.value - 1) PAGES.push("...")
+	if (totalPages.value > 1) PAGES.push(totalPages.value)
+	return PAGES
+})
+
+/**
+ * 加载聊天数据
+ */
+const loadChatData = async () => {
+	try {
+		let getChatData = null
+		if (props.type === "chat") {
+			getChatData = await Dexie.chats.get(props.chatKey)
+		} else if (props.type === "mask") {
+			getChatData = await Dexie.masks.get(props.chatKey)
+		}
+		if (getChatData && getChatData.data) {
+			chatData.value = getChatData.data
+			originalChatData.value = JSON.parse(JSON.stringify(chatData.value))
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 获取聊天数据失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.getError")}`)
+	}
+}
+
+/**
+ * 分页获取聊天记录
+ * @param pageItem {Number} - 页码
+ */
+const getChatRecords = publicRegistry.debounce((pageItem = 1) => {
+	const PAGE_SIZE = 10
+	const OFFSET = (pageItem - 1) * PAGE_SIZE
+	let records = chatData.value.slice()
+	if (order.value.key === "desc") {
+		records.reverse()
+	}
+	page.value = pageItem
+	totalPages.value = Math.ceil(records.length / PAGE_SIZE)
+	chatRecords.value = records.slice(OFFSET, OFFSET + PAGE_SIZE)
+}, 100)
+
+/**
+ * 新增聊天记录
+ */
+const addChatRecord = () => {
+	const MESSAGE = {
+		id: crypto.randomUUID(),
+		message: {
+			role: "user",
+			content: ""
+		},
+		status: "done",
+		timestamp: Date.now()
+	}
+	chatData.value.push(MESSAGE)
+	const PAGE_SIZE = 10
+	totalPages.value = Math.ceil(chatData.value.length / PAGE_SIZE)
+	order.value.key === "asc" ? getChatRecords(totalPages.value) : getChatRecords(1)
+}
+
+/**
+ * 移除消息
+ * @param id {String} - 消息ID
+ */
+const remove = (id) => {
+	chatRecords.value = chatRecords.value.filter(item => item.id !== id)
+	chatData.value = chatData.value.filter(item => item.id !== id)
+}
+
+/**
+ * 拖动结束
+ */
+const onDragEnd = () => {
+	// 重新拼接 chatData
+	const PAGE_SIZE = 10
+	let records = chatData.value.slice()
+	if (order.value.key === "desc") {
+		records.reverse()
+	}
+	// 替换掉当前页的数据
+	const OFFSET = (page.value - 1) * PAGE_SIZE
+	records.splice(OFFSET, chatRecords.value.length, ...chatRecords.value)
+	// 再反转回去
+	if (order.value.key === "desc") {
+		records.reverse()
+	}
+	chatData.value = records
+}
+
+/**
+ * 移动
+ * @param id {String} - 消息ID
+ * @param type {String} - 移动类型
+ */
+const move = (id, type) => {
+	const PAGE_SIZE = 10
+	const INDEX_ALL = chatData.value.findIndex(item => item.id === id)
+	if (INDEX_ALL === -1) return
+	let newIndex = INDEX_ALL
+	const IS_DESC = order.value.key === "desc"
+	// 移动数据
+	if (type === "up") {
+		if (IS_DESC && INDEX_ALL < chatData.value.length - 1) {
+			[chatData.value[INDEX_ALL], chatData.value[INDEX_ALL + 1]] = [chatData.value[INDEX_ALL + 1], chatData.value[INDEX_ALL]]
+			newIndex = INDEX_ALL + 1
+		} else if (!IS_DESC && INDEX_ALL > 0) {
+			[chatData.value[INDEX_ALL - 1], chatData.value[INDEX_ALL]] = [chatData.value[INDEX_ALL], chatData.value[INDEX_ALL - 1]]
+			newIndex = INDEX_ALL - 1
+		} else return
+	} else if (type === "down") {
+		if (IS_DESC && INDEX_ALL > 0) {
+			[chatData.value[INDEX_ALL - 1], chatData.value[INDEX_ALL]] = [chatData.value[INDEX_ALL], chatData.value[INDEX_ALL - 1]]
+			newIndex = INDEX_ALL - 1
+		} else if (!IS_DESC && INDEX_ALL < chatData.value.length - 1) {
+			[chatData.value[INDEX_ALL], chatData.value[INDEX_ALL + 1]] = [chatData.value[INDEX_ALL + 1], chatData.value[INDEX_ALL]]
+			newIndex = INDEX_ALL + 1
+		} else return
+	}
+	// 当前页索引范围
+	const PAGE_START = IS_DESC
+		? chatData.value.length - page.value * PAGE_SIZE
+		: (page.value - 1) * PAGE_SIZE
+	const PAGE_END = PAGE_START + PAGE_SIZE - 1
+	// 判断是否需要翻页
+	if (!IS_DESC) {
+		if (newIndex < PAGE_START && page.value > 1) {
+			page.value--
+		} else if (newIndex > PAGE_END && page.value < totalPages.value) {
+			page.value++
+		}
+	} else {
+		if (newIndex < PAGE_START && page.value < totalPages.value) {
+			page.value++
+		} else if (newIndex > PAGE_END && page.value > 1) {
+			page.value--
+		}
+	}
+	// 更新当前页显示
+	getChatRecords(page.value)
+}
+
+/**
+ * 选择分享
+ */
+const selectShare = (element) => {
+	if (share.value.shareChoice.includes(element.id)) {
+		share.value.shareChoice = share.value.shareChoice.filter(item => item !== element.id)
+	} else {
+		share.value.shareChoice.push(element.id)
+	}
+}
+
+/**
+ * 选择所有
+ */
+const selectAll = () => {
+	if (share.value.shareChoice.length === chatData.value.length) {
+		share.value.shareChoice = []
+	} else {
+		share.value.shareChoice = chatData.value.map(item => item.id)
+	}
+}
+
+/**
+ * 选择当前页
+ */
+const selectPage = () => {
+	const CURRENT_PAGE_IDS = chatRecords.value.map(item => item.id)
+	const ALL_SELECTED = CURRENT_PAGE_IDS.every(id => share.value.shareChoice.includes(id))
+	if (ALL_SELECTED) {
+		share.value.shareChoice = share.value.shareChoice.filter(id => !CURRENT_PAGE_IDS.includes(id))
+	} else {
+		share.value.shareChoice = [...new Set([...share.value.shareChoice, ...CURRENT_PAGE_IDS])]
+	}
+}
+
+/**
+ * 预览
+ */
+const preview = () => {
+	if (share.value.shareChoice.length === 0) {
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.shareIsEmpty")}`)
+		return
+	}
+	share.value.sharePreview = true
+	const SELECTED_MESSAGES = chatData.value.filter(item => share.value.shareChoice.includes(item.id))
+	if (share.value.share.title === "png") {
+		share.value.content = SELECTED_MESSAGES
+	} else if (share.value.share.title === "text") {
+		let text = `# ${share.value.shareTitle}\n\n`
+		SELECTED_MESSAGES.forEach(item => {
+			text += `## ${item.message.role}`
+			if (item.model) {
+				text += ` [${item.model.platform}] [${item.model.model}]`
+			}
+			text += `:\n${item.message.content}\n\n`
+		})
+		share.value.content = text
+	} else if (share.value.share.title === "json") {
+		let json = {
+			message: []
+		}
+		SELECTED_MESSAGES.forEach(item => {
+			json.message.push({
+				role: item.message.role,
+				content: item.message.content
+			})
+		})
+		share.value.content = JSON.stringify(json, null, 4)
+	} else {
+		share.value.content = SELECTED_MESSAGES.map(item => item.message.content).join("\n\n")
+	}
+}
+
+/**
+ * 复制
+ */
+const copy = async () => {
+	share.value.loading = true
+	try {
+		if (share.value.share.title === "png") {
+			const EL = sharePng.value
+			if (!EL) return
+			const CANVAS = await html2canvas(EL, {
+				backgroundColor: null,
+				useCORS: true,
+				scale: 2
+			})
+			CANVAS.toBlob(async (blob) => {
+				if (!blob) return
+				await navigator.clipboard.write([
+					new ClipboardItem({"image/png": blob})
+				])
+			})
+		} else if (share.value.share.title === "text") {
+			await navigator.clipboard.writeText(share.value.content)
+		} else if (share.value.share.title === "json") {
+			await navigator.clipboard.writeText(JSON.stringify(JSON.parse(share.value.content)))
+		}
+		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.writeToClipboard")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 复制失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.copyError")}`)
+	} finally {
+		share.value.loading = false
+	}
+}
+
+/**
+ * 下载
+ */
+const download = async () => {
+	share.value.loading = true
+	try {
+		const DOWNLOAD_A = document.createElement("a")
+		let blob = null
+		let fileName = ""
+		if (share.value.share.title === "png") {
+			const EL = sharePng.value
+			if (!EL) return
+			const CANVAS = await html2canvas(EL, {
+				backgroundColor: null,
+				useCORS: true,
+				scale: 2
+			})
+			blob = await new Promise((resolve) => CANVAS.toBlob((b) => resolve(b), "image/png"))
+			fileName = `${share.value.shareTitle}.png`
+		} else if (share.value.share.title === "text") {
+			blob = new Blob([share.value.content], {type: "text/plain;charset=utf-8"})
+			fileName = `${share.value.shareTitle}.txt`
+		} else if (share.value.share.title === "json") {
+			blob = new Blob([JSON.stringify(JSON.parse(share.value.content))], {type: "application/json;charset=utf-8"})
+			fileName = `${share.value.shareTitle}.json`
+		}
+		DOWNLOAD_A.href = URL.createObjectURL(blob)
+		DOWNLOAD_A.download = fileName
+		DOWNLOAD_A.click()
+		URL.revokeObjectURL(DOWNLOAD_A.href)
+		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.downloadSuccess")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 下载失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.downloadError")}`)
+	} finally {
+		share.value.loading = false
+	}
+}
+
+/**
+ * 保存聊天配置
+ */
+const save = async () => {
+	try {
+		// 检查标题是否为空
+		if (!chatTitle.value) {
+			chatTitle.value = t("components.AIInput.newChat")
+		}
+		// 检查是否为面具
+		if (props.type === "chat") {
+			await Dexie.chats.update(props.chatKey, {
+				title: chatTitle.value,
+				data: JSON.parse(JSON.stringify(chatData.value)),
+				configs: JSON.parse(JSON.stringify(configs.value))
+			})
+			EventBus.emit("[update] initChatView")
+			EventBus.emit("[update] chatListUpdate")
+		} else if (props.type === "mask") {
+			await Dexie.masks.update(props.chatKey, {
+				title: chatTitle.value,
+				data: JSON.parse(JSON.stringify(chatData.value)),
+				configs: JSON.parse(JSON.stringify(configs.value))
+			})
+			EventBus.emit("[update] maskListUpdate")
+		}
+		close()
+		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.saveSuccess")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 保存聊天配置失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.saveError")}`)
+	}
+}
+
+/**
+ * 关闭
+ */
+const close = () => {
+	share.value.sharePreview = false
+	emit("update:modelValue", false)
+}
+
+/**
+ * 保存到面具
+ */
+const saveMask = async () => {
+	try {
+		await Dexie.masks.add({
+			key: crypto.randomUUID(),
+			title: chatTitle.value,
+			data: JSON.parse(JSON.stringify(chatData.value)),
+			configs: JSON.parse(JSON.stringify(configs.value))
+		})
+		EventBus.emit("[update] maskListUpdate")
+		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.saveMaskSuccess")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 保存面具失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.saveMaskError")}`)
+	}
+}
+
+/**
+ * 监听modelValue变化
+ */
+watch(() => props.modelValue, async (newVal) => {
+	if (newVal) {
+		await init()
+	}
+})
+
+onMounted(async () => {
+	if (props.chatKey) {
+		await init()
+	}
+})
 </script>
 
 <template>
@@ -594,9 +650,9 @@ export default {
 				<div v-if="share.share.title === 'png'" class="share" ref="sharePng">
 					<div class="head">
 						<p class="title">{{ share.shareTitle }}</p>
-						<p class="time">{{
-								t("views.ChatConfigs.numberOfConversations", {num: share.content.length})
-							}}</p>
+						<p class="time">
+							{{ t("views.ChatConfigs.numberOfConversations", {num: share.content.length}) }}
+						</p>
 					</div>
 					<div
 						v-for="message in share.content"
@@ -638,12 +694,12 @@ export default {
 	<transition name="fade">
 		<div class="chat-configs" v-if="modelValue" @click="close">
 			<div class="chat-configs-content" @click.stop>
-				<h2>{{ t(`views.ChatConfigs.${this.type}Setup`) }}</h2>
+				<h2>{{ t(`views.ChatConfigs.${props.type}Setup`) }}</h2>
 				<div class="chat-configs-content-container">
 					<div class="container">
 						<div class="item" style="grid-template-columns: 1fr 40%">
 							<p>{{ t("views.ChatConfigs.chatTitle") }}</p>
-							<ChatTitle :chatTitle="chatTitle" :chatKey="chatKey"/>
+							<ChatTitle :chatTitle="chatTitle" :chatKey="chatKey" :type="type"/>
 						</div>
 					</div>
 					<div class="container">
@@ -655,7 +711,7 @@ export default {
 							</Button>
 							<Button @click="selectPage">
 								{{
-									t(`views.ChatConfigs.${this.chatRecords.map(item => item.id).every(id => this.share.shareChoice.includes(id)) ? 'cancelSelectPage' : 'selectPage'}`)
+									t(`views.ChatConfigs.${chatRecords.map(item => item.id).every(id => share.shareChoice.includes(id)) ? 'cancelSelectPage' : 'selectPage'}`)
 								}}
 							</Button>
 							<InputText
@@ -790,8 +846,8 @@ export default {
 								:step="0.1"/>
 						</div>
 					</div>
-					<div class="container">
-					</div>
+<!--					<div class="container">-->
+<!--					</div>-->
 				</div>
 				<div class="but">
 					<Button @click="close">{{ t("views.ChatConfigs.close") }}</Button>

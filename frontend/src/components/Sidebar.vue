@@ -1,244 +1,272 @@
-<script>
+<script setup>
+import {ref, onMounted, onUnmounted, computed} from "vue"
+import {useRoute, useRouter} from "vue-router"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
-import {useRoute} from "vue-router"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import EventBus from "@/services/EventBus"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
 import Loading from "@/components/Loading.vue"
+import Dexie from "@/services/Dexie"
+import Logger from "@/services/Logger"
 
-export default {
-	name: "Sidebar",
-	components: {SVGIcon, RightClickMenu, Loading},
-	inject: ["$DB", "$log"],
-	data() {
-		return {
-			name: "Sidebar",
-			route: useRoute(),
-			leftMenuTitle: null,
-			logoImage: {
-				enabled: false,
-				url: "",
-				blob: null
-			},
-			sidebarStatus: true,
-			chatList: [],
-			conversationListLoading: false,
-			inProgress: []
-		}
-	},
-	beforeUnmount() {
-		EventBus.off("[update] leftMenuTitleApply", this.leftMenuTitleApply)
-		EventBus.off("[update] logoImageApply", this.logoImageApply)
-		EventBus.off("[update] chatListUpdate", this.chatListGet)
-		EventBus.off("[stream] userMessage", this.userMessage)
-		EventBus.off("[stream] streamComplete", this.streamComplete)
-	},
-	created() {
-		EventBus.on("[update] leftMenuTitleApply", this.leftMenuTitleApply)
-		EventBus.on("[update] logoImageApply", this.logoImageApply)
-		EventBus.on("[update] chatListUpdate", this.chatListGet)
-		EventBus.on("[stream] userMessage", this.userMessage)
-		EventBus.on("[stream] streamComplete", this.streamComplete)
-		// 判断是否为移动端
-		if (window.innerWidth < 768) {
-			this.sidebarStatus = false
-		}
-		// 初始化时获取左侧菜单标题
-		this.leftMenuTitleApply()
-		// 初始化时获取logo图片
-		this.logoImageApply()
-		// 初始化时获取聊天列表
-		this.chatListGet()
-	},
-	methods: {
-		/**
-		 * 翻译
-		 * @param key {String} - 键
-		 * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
-		 * @returns {String} - 翻译后的文本
-		 */
-		t(key, params = {}) {
-			return i18nRegistry.translate(key, params)
-		},
-		/**
-		 * 左侧菜单标题应用
-		 */
-		async leftMenuTitleApply() {
-			try {
-				const LEFT_MENU_TITLE_DATA = await this.$DB.configs.get("leftMenuTitle")
-				this.leftMenuTitle = LEFT_MENU_TITLE_DATA ? LEFT_MENU_TITLE_DATA.value : this.leftMenuTitle
-			} catch (error) {
-				this.$log.error(`[${this.name}] 左侧菜单标题配置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.getLeftMenuTitleError")}`)
-			}
-		},
-		/**
-		 * logo图片应用
-		 */
-		async logoImageApply() {
-			try {
-				const LOGO_IMAGE_DATA = await this.$DB.configs.get("logoImage")
-				if (LOGO_IMAGE_DATA?.value) {
-					this.logoImage = {
-						enabled: LOGO_IMAGE_DATA.value.enabled,
-						url: LOGO_IMAGE_DATA.value.url,
-						blob: null
-					}
-					if (LOGO_IMAGE_DATA.value.blob) {
-						this.logoImage.blob = new Blob([LOGO_IMAGE_DATA.value.blob])
-						this.logoImage.url = URL.createObjectURL(this.logoImage.blob)
-					}
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] logo图片配置获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.getLogoImageError")}`)
-			}
-		},
-		/**
-		 * 侧边栏展开收起, 展开时获取聊天列表
-		 */
-		async sidebarSwitch() {
-			this.sidebarStatus = !this.sidebarStatus
-			if (this.sidebarStatus) await this.chatListGet()
-		},
-		/**
-		 * 获取聊天列表
-		 */
-		async chatListGet() {
-			this.conversationListLoading = true
-			try {
-				const CHAT_LIST = await this.$DB.chats.toArray()
-				this.chatList = CHAT_LIST.map(ITEM => {
-					const lastMsg = ITEM.data.at(-1)
-					return {
-						key: String(ITEM.key),
-						title: ITEM.title,
-						length: ITEM.data.length,
-						timestamp: lastMsg?.timestamp || ITEM.timestamp,
-					}
-				}).sort((a, b) => b.timestamp - a.timestamp)
-			} catch (error) {
-				this.$log.error(`[${this.name}] 聊天列表获取失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorGettingChatList")}`)
-			} finally {
-				this.conversationListLoading = false
-			}
-		},
-		/**
-		 * 格式化时间戳
-		 * @param {number} timestamp 时间戳
-		 * @returns {string} 格式化后的时间字符串
-		 */
-		formatTimestamp(timestamp) {
-			const DATE = new Date(timestamp)
-			const YEAR = DATE.getFullYear()
-			const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
-			const DAY = String(DATE.getDate()).padStart(2, "0")
-			const HOURS = String(DATE.getHours()).padStart(2, "0")
-			const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
-			const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
-			return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
-		},
-		/**
-		 * 右键点击
-		 * @param event 事件
-		 * @param item 项
-		 */
-		onRightClick(event, item) {
-			event.preventDefault()
-			event.stopPropagation()
-			this.$refs.menu.show(event.clientX, event.clientY, [
-				{
-					title: this.t("components.Sidebar.openChat"),
-					icon: {
-						type: "svg",
-						src: "#icon-new"
-					},
-					color: "var(--theme-color)",
-					onClick: (key) => this.openChat(key)
-				},
-				{
-					title: this.t("components.Sidebar.archivesChat"),
-					icon: {
-						type: "svg",
-						src: "#icon-file"
-					},
-					onClick: (key) => this.archivesChat(key)
-				},
-				{
-					title: this.t("components.Sidebar.deleteChat"),
-					icon: {
-						type: "svg",
-						src: "#icon-delete"
-					},
-					color: "red",
-					onClick: (key) => this.deleteChat(key)
-				}
-			], item.key)
-		},
-		/**
-		 * 打开聊天
-		 * @param key 聊天ID
-		 */
-		openChat(key) {
-			this.$router.push(`/chat/${key}`)
-		},
-		/**
-		 * 归档聊天
-		 * @param key 聊天ID
-		 */
-		async archivesChat(key) {
-			try {
-				const CHAT_DATA = await this.$DB.chats.get(key)
-				await this.$DB.archives.add({
-					key: crypto.randomUUID(),
-					value: CHAT_DATA
-				})
-				await this.$DB.chats.delete(key)
-				await this.chatListGet()
-				this.$router.push({name: "ArchivesChat"})
-				EventBus.emit("[update] archivesListUpdate")
-			} catch (error) {
-				this.$log.error(`[${this.name}] 聊天列表归档失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorArchivesChat")}`)
-			}
-		},
-		/**
-		 * 删除聊天
-		 * @param key 聊天ID
-		 */
-		async deleteChat(key) {
-			try {
-				await this.$DB.chats.delete(key)
-				await this.chatListGet()
-				if (this.route.params.key === key) {
-					this.$router.push("/")
-				}
-			} catch (error) {
-				this.$log.error(`[${this.name}] 聊天列表删除失败`, error)
-				toastRegistry.error(`[${this.name}] ${this.t("components.Sidebar.toast.errorDeletingChat")}`)
-			}
-		},
-		/**
-		 * 用户消息
-		 * @param message {Object} - 消息
-		 */
-		userMessage(message) {
-			this.inProgress.push(message.chatKey)
-		},
-		/**
-		 * 流完成
-		 * @param message {Object} - 消息
-		 */
-		streamComplete(message) {
-			const INDEX = this.inProgress.indexOf(message.chatKey)
-			if (INDEX !== -1) {
-				this.inProgress.splice(INDEX, 1)
-			}
-		}
+const name = "Sidebar"
+
+// 路由和路由实例
+const route = useRoute()
+const router = useRouter()
+
+// 响应式数据
+const leftMenuTitle = ref(null)
+const logoImage = ref({
+	enabled: false,
+	url: "",
+	blob: null
+})
+const sidebarStatus = ref(true)
+const chatList = ref([])
+const conversationListLoading = ref(false)
+const inProgress = ref([])
+const menu = ref(null)
+
+/**
+ * 翻译
+ * @param key {String} - 键
+ * @param {Object} [params] - 插值参数, 例如 { name: "洱海" }
+ * @returns {String} - 翻译后的文本
+ */
+const t = (key, params = {}) => {
+	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 左侧菜单标题应用
+ */
+const leftMenuTitleApply = async () => {
+	try {
+		const LEFT_MENU_TITLE_DATA = await Dexie.configs.get("leftMenuTitle")
+		leftMenuTitle.value = LEFT_MENU_TITLE_DATA ? LEFT_MENU_TITLE_DATA.value : leftMenuTitle.value
+	} catch (error) {
+		Logger.error(`[${name}] 左侧菜单标题配置获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Sidebar.toast.getLeftMenuTitleError")}`)
 	}
 }
+
+/**
+ * logo图片应用
+ */
+const logoImageApply = async () => {
+	try {
+		const LOGO_IMAGE_DATA = await Dexie.configs.get("logoImage")
+		if (LOGO_IMAGE_DATA?.value) {
+			logoImage.value = {
+				enabled: LOGO_IMAGE_DATA.value.enabled,
+				url: LOGO_IMAGE_DATA.value.url,
+				blob: null
+			}
+			if (LOGO_IMAGE_DATA.value.blob) {
+				logoImage.value.blob = new Blob([LOGO_IMAGE_DATA.value.blob])
+				logoImage.value.url = URL.createObjectURL(logoImage.value.blob)
+			}
+		}
+	} catch (error) {
+		Logger.error(`[${name}] logo图片配置获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Sidebar.toast.getLogoImageError")}`)
+	}
+}
+
+/**
+ * 侧边栏展开收起, 展开时获取聊天列表
+ */
+const sidebarSwitch = async () => {
+	sidebarStatus.value = !sidebarStatus.value
+	if (sidebarStatus.value) await chatListGet()
+}
+
+/**
+ * 获取聊天列表
+ */
+const chatListGet = async () => {
+	conversationListLoading.value = true
+	try {
+		const CHAT_LIST = await Dexie.chats.toArray()
+		chatList.value = CHAT_LIST.map(ITEM => {
+			const lastMsg = ITEM.data.at(-1)
+			return {
+				key: String(ITEM.key),
+				title: ITEM.title,
+				length: ITEM.data.length,
+				timestamp: lastMsg?.timestamp || ITEM.timestamp,
+			}
+		}).sort((a, b) => b.timestamp - a.timestamp)
+	} catch (error) {
+		Logger.error(`[${name}] 聊天列表获取失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Sidebar.toast.errorGettingChatList")}`)
+	} finally {
+		conversationListLoading.value = false
+	}
+}
+
+/**
+ * 格式化时间戳
+ * @param {number} timestamp 时间戳
+ * @returns {string} 格式化后的时间字符串
+ */
+const formatTimestamp = (timestamp) => {
+	const DATE = new Date(timestamp)
+	const YEAR = DATE.getFullYear()
+	const MONTH = String(DATE.getMonth() + 1).padStart(2, "0")
+	const DAY = String(DATE.getDate()).padStart(2, "0")
+	const HOURS = String(DATE.getHours()).padStart(2, "0")
+	const MINUTES = String(DATE.getMinutes()).padStart(2, "0")
+	const SECONDS = String(DATE.getSeconds()).padStart(2, "0")
+	return `${YEAR}-${MONTH}-${DAY} ${HOURS}:${MINUTES}:${SECONDS}`
+}
+
+/**
+ * 右键点击
+ * @param event 事件
+ * @param item 项
+ */
+const onRightClick = (event, item) => {
+	event.preventDefault()
+	event.stopPropagation()
+	menu.value?.show(event.clientX, event.clientY, [
+		{
+			title: t("components.Sidebar.openChat"),
+			icon: {
+				type: "svg",
+				src: "#icon-new"
+			},
+			color: "var(--theme-color)",
+			onClick: (key) => openChat(key)
+		},
+		{
+			title: t("components.Sidebar.archivesChat"),
+			icon: {
+				type: "svg",
+				src: "#icon-file"
+			},
+			onClick: (key) => archivesChat(key)
+		},
+		{
+			title: t("components.Sidebar.deleteChat"),
+			icon: {
+				type: "svg",
+				src: "#icon-delete"
+			},
+			color: "red",
+			onClick: (key) => deleteChat(key)
+		}
+	], item.key)
+}
+
+/**
+ * 打开聊天
+ * @param key 聊天ID
+ */
+const openChat = (key) => {
+	router.push(`/chat/${key}`)
+}
+
+/**
+ * 归档聊天
+ * @param key 聊天ID
+ */
+const archivesChat = async (key) => {
+	try {
+		const CHAT_DATA = await Dexie.chats.get(key)
+		await Dexie.archives.add({
+			key: crypto.randomUUID(),
+			value: CHAT_DATA
+		})
+		await Dexie.chats.delete(key)
+		await chatListGet()
+		await router.push({name: "ArchivesChat"})
+		EventBus.emit("[update] archivesListUpdate")
+	} catch (error) {
+		Logger.error(`[${name}] 聊天列表归档失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Sidebar.toast.errorArchivesChat")}`)
+	}
+}
+
+/**
+ * 删除聊天
+ * @param key 聊天ID
+ */
+const deleteChat = async (key) => {
+	try {
+		await Dexie.chats.delete(key)
+		await chatListGet()
+		if (route.params.key === key) {
+			await router.push("/")
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 聊天列表删除失败`, error)
+		toastRegistry.error(`[${name}] ${t("components.Sidebar.toast.errorDeletingChat")}`)
+	}
+}
+
+/**
+ * 用户消息
+ * @param message {Object} - 消息
+ */
+const userMessage = (message) => {
+	inProgress.value.push(message.chatKey)
+}
+
+/**
+ * 流完成
+ * @param message {Object} - 消息
+ */
+const streamComplete = (message) => {
+	const INDEX = inProgress.value.indexOf(message.chatKey)
+	if (INDEX !== -1) {
+		inProgress.value.splice(INDEX, 1)
+	}
+}
+
+/**
+ * 计算 logo URL
+ */
+const logoUrl = computed(() => {
+	return logoImage.value?.enabled && logoImage.value?.url ? logoImage.value.url : '/images/logo.svg'
+})
+
+/**
+ * 计算显示标题
+ */
+const displayTitle = computed(() => {
+	return leftMenuTitle.value?.enabled && leftMenuTitle.value?.title ? leftMenuTitle.value.title : "ElakeAI"
+})
+
+onMounted(() => {
+	// 判断是否为移动端
+	if (window.innerWidth < 768) {
+		sidebarStatus.value = false
+	}
+
+	EventBus.on("[update] leftMenuTitleApply", leftMenuTitleApply)
+	EventBus.on("[update] logoImageApply", logoImageApply)
+	EventBus.on("[update] chatListUpdate", chatListGet)
+	EventBus.on("[stream] userMessage", userMessage)
+	EventBus.on("[stream] streamComplete", streamComplete)
+
+	// 初始化时获取左侧菜单标题
+	leftMenuTitleApply()
+	// 初始化时获取logo图片
+	logoImageApply()
+	// 初始化时获取聊天列表
+	chatListGet()
+})
+
+onUnmounted(() => {
+	EventBus.off("[update] leftMenuTitleApply", leftMenuTitleApply)
+	EventBus.off("[update] logoImageApply", logoImageApply)
+	EventBus.off("[update] chatListUpdate", chatListGet)
+	EventBus.off("[stream] userMessage", userMessage)
+	EventBus.off("[stream] streamComplete", streamComplete)
+})
 </script>
 
 <template>
@@ -250,10 +278,10 @@ export default {
 		<div class="sidebar-top">
 			<div
 				class="sidebar-top-logo"
-				:style="{ backgroundImage: `url(${logoImage?.enabled && logoImage?.url ? logoImage.url : '/images/logo.svg'})` }"
+				:style="{ backgroundImage: `url(${logoUrl})` }"
 				aria-hidden="true"></div>
 			<h1 v-if="sidebarStatus" aria-label="ElakeAI">
-				{{ leftMenuTitle?.enabled && leftMenuTitle?.title ? leftMenuTitle.title : "ElakeAI" }}
+				{{ displayTitle }}
 			</h1>
 			<router-link
 				to="/"
