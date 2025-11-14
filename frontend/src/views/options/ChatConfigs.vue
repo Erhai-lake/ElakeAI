@@ -167,7 +167,6 @@ const t = (key, params = {}) => {
 const init = async () => {
 	share.value.shareChoice = []
 	await loadChatData()
-	await loadChatConfig()
 	page.value = 1
 	getChatRecords(page.value, "asc")
 }
@@ -236,29 +235,6 @@ const loadGlobalConfig = async () => {
 }
 
 /**
- * 加载聊天配置
- */
-const loadChatConfig = async () => {
-	await loadGlobalConfig()
-	try {
-		let getChatData = null
-		if (props.type === "chat") {
-			getChatData = await Dexie.chats.get(props.chatKey)
-		} else if (props.type === "mask") {
-			getChatData = await Dexie.masks.get(props.chatKey)
-		}
-		if (getChatData && getChatData.configs) {
-			chatTitle.value = getChatData.title
-			share.value.shareTitle = getChatData.title
-			configs.value = getChatData.configs
-		}
-	} catch (error) {
-		Logger.error(`[${name}] 获取聊天配置失败`, error)
-		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.getError")}`)
-	}
-}
-
-/**
  * 计算可见页码
  */
 const visiblePages = computed(() => {
@@ -282,6 +258,7 @@ const visiblePages = computed(() => {
  * 加载聊天数据
  */
 const loadChatData = async () => {
+	await loadGlobalConfig()
 	try {
 		let getChatData = null
 		if (props.type === "chat") {
@@ -292,6 +269,11 @@ const loadChatData = async () => {
 		if (getChatData && getChatData.data) {
 			chatData.value = getChatData.data
 			originalChatData.value = JSON.parse(JSON.stringify(chatData.value))
+		}
+		if (getChatData && getChatData.configs) {
+			chatTitle.value = getChatData.title
+			share.value.shareTitle = getChatData.title
+			configs.value = getChatData.configs
 		}
 	} catch (error) {
 		Logger.error(`[${name}] 获取聊天数据失败`, error)
@@ -566,14 +548,9 @@ const download = async () => {
  */
 const save = async () => {
 	try {
-		// 检查标题是否为空
-		if (!chatTitle.value) {
-			chatTitle.value = t("components.AIInput.newChat")
-		}
 		// 检查是否为面具
 		if (props.type === "chat") {
 			await Dexie.chats.update(props.chatKey, {
-				title: chatTitle.value,
 				data: JSON.parse(JSON.stringify(chatData.value)),
 				configs: JSON.parse(JSON.stringify(configs.value))
 			})
@@ -581,7 +558,6 @@ const save = async () => {
 			EventBus.emit("[update] chatListUpdate")
 		} else if (props.type === "mask") {
 			await Dexie.masks.update(props.chatKey, {
-				title: chatTitle.value,
 				data: JSON.parse(JSON.stringify(chatData.value)),
 				configs: JSON.parse(JSON.stringify(configs.value))
 			})
