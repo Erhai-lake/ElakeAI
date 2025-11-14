@@ -8,8 +8,7 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 const menuItems = ref([
 	"personalization",
 	"chats",
-	"import",
-	"export",
+	"backup",
 	"plugins",
 	"advancedTools",
 	"about"

@@ -495,47 +495,25 @@
 				"previewBubbles": "Preview Bubbles",
 				"systemPrompt": "System Prompt"
 			},
-			"ImportView": {
+			"BackupView": {
 				"toast": {
-					"parsingFailed": "Parsing failed",
+					"errorReadFile": "Failed to read file",
 					"invalidJsonFormat": "Invalid JSON format",
-					"fileReadError": "Failed to read file",
-					"importFailed": "Import failed",
-					"importFailedSkipped": "Import failed, skipped",
-					"noDataToImport": "No data to import",
-					"confirmImportTip": "Confirm import? Data will be merged after import!"
+					"errorReadTable": "Failed to read table [${table}]",
+					"errorWriteTable": "Failed to write table [${table}]",
+					"errorImport": "Failed to import backup",
+					"errorExport": "Failed to export selected items",
+					"importSuccess": "Import successful",
+					"exportSuccess": "Export successful"
 				},
-				"selectImportedConfiguration": "Select the configuration to import",
-				"importTip": "Data will be merged after import!",
+				"importBackup": "Import Backup",
 				"import": "Import",
-				"confirmImport": "Confirm import",
-				"selectAll": "Select all {item}",
-				"chats": "Chats",
-				"archives": "Archive Chats",
-				"masks": "Masks",
-				"configs": "Configurations",
-				"apiKeys": "API Keys",
-				"logs": "Logs"
-			},
-			"ExportView": {
-				"toast": {
-					"failedToLoadSubOptions": "Failed to load sub-options",
-					"failedToGetData": "Failed to get data",
-					"noDataToExport": "No data to export",
-					"exportSuccess": "Export successful",
-					"exportFailed": "Export failed"
-				},
-				"loadExportData": "Load export data",
-				"loading": "Loading",
-				"selectAll": "Select all {item}",
-				"chats": "Chats",
-				"archives": "Archive Chats",
-				"masks": "Masks",
-				"configs": "Configurations",
-				"apiKeys": "API Keys",
-				"logs": "Logs",
-				"exportTip": "Export selected data?",
-				"export": "Export"
+				"exportBackup": "Export Backup",
+				"export": "Export",
+				"loading": "Loading...",
+				"confirmImportTip": "Confirm import? Imported data will be merged or added to the current data!",
+				"confirmExportTip": "Confirm export? Exported data will be exported or exported to the current data!",
+				"confirm": "Confirm"
 			},
 			"AdvancedToolsView": {
 				"logView": "Log View",
@@ -562,6 +540,7 @@
 			"chats": "Chats",
 			"import": "Import",
 			"export": "Export",
+			"backup": "Backup",
 			"plugins": "Plugins",
 			"advancedTools": "Advanced tools",
 			"about": "About"

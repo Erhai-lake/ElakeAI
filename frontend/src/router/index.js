@@ -37,14 +37,9 @@ const routes = [
 				component: () => import("@/views/options/ChatsView.vue")
 			},
 			{
-				path: "import",
-				name: "OptionsImport",
-				component: () => import("@/views/options/ImportView.vue")
-			},
-			{
-				path: "export",
-				name: "OptionsExport",
-				component: () => import("@/views/options/ExportView.vue")
+				path: "backup",
+				name: "OptionsBackup",
+				component: () => import("@/views/options/BackupView.vue")
 			},
 			{
 				path: "plugins",
@@ -100,13 +95,6 @@ const routes = [
 		path: "/:pathMatch(.*)*",
 		name: "NotFound",
 		component: () => import("@/views/NotFoundView.vue")
-	},
-	{
-
-		// test
-		path: "/test",
-		name: "Test",
-		component: () => import("@/views/Test.vue")
 	}
 ]
 
