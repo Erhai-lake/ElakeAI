@@ -134,11 +134,7 @@
 					"operationFailed": "操作失败"
 				},
 				"confirmOperationTip": "确认执行此操作? 此操作将不可撤销!",
-				"clearChat": "清空所有对话",
-				"clearMask": "清空所有面具",
-				"clearApiKey": "清空所有API Key",
-				"clearConfig": "清空所有设置",
-				"clearLog": "清空所有日志"
+				"prefix": "清空"
 			},
 			"LanguageSelect": {
 				"toast": {

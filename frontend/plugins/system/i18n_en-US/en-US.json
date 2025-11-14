@@ -134,11 +134,7 @@
 					"operationFailed": "Operation failed"
 				},
 				"confirmOperationTip": "Are you sure you want to perform this operation? This action cannot be undone!",
-				"clearChat": "Clear all chats",
-				"clearMask": "Clear all masks",
-				"clearApiKey": "Clear all API Keys",
-				"clearConfig": "Clear all settings",
-				"clearLog": "Clear all logs"
+				"prefix": "Empty"
 			},
 			"LanguageSelect": {
 				"toast": {

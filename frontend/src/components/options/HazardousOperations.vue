@@ -1,6 +1,5 @@
 <script setup>
 import Button from "@/components/input/Button.vue"
-import EventBus from "@/services/EventBus"
 import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import Dexie from "@/services/Dexie"
@@ -19,72 +18,20 @@ const t = (key, params = {}) => {
 }
 
 /**
- * 清除所有聊天记录
+ * 所有表名
  */
-const clearChat = async () => {
-	if (!confirm(t("components.Options.HazardousOperations.confirmOperationTip"))) return
-	try {
-		await Dexie.chats.clear()
-		toastRegistry.success(`[${name}] ${t("components.Options.HazardousOperations.toast.operationSuccess")}`)
-		EventBus.emit("[update] chatListUpdate")
-	} catch (error) {
-		Logger.error(`[${name}] 操作失败`, error)
-		toastRegistry.error(`[${name}] ${t("components.Options.HazardousOperations.toast.operationFailed")}`)
-	}
-}
-/**
- * 清除所有面具
- */
-const clearMask = async () => {
-	if (!confirm(t("components.Options.HazardousOperations.confirmOperationTip"))) return
-	try {
-		await Dexie.masks.clear()
-		toastRegistry.success(`[${name}] ${t("components.Options.HazardousOperations.toast.operationSuccess")}`)
-	} catch (error) {
-		Logger.error(`[${name}] 操作失败`, error)
-		toastRegistry.error(`[${name}] ${t("components.Options.HazardousOperations.toast.operationFailed")}`)
-	}
-}
+const TABLE_NAMES = Dexie.tables.map(table => table.name)
 
 /**
- * 清除所有API Key
+ * 清除指定表数据
+ * @param table {String} - 表名
  */
-const clearApiKey = async () => {
+const clearTable = async (table) => {
 	if (!confirm(t("components.Options.HazardousOperations.confirmOperationTip"))) return
 	try {
-		await Dexie.apiKeys.clear()
+		await Dexie[table].clear()
+		location.reload()
 		toastRegistry.success(`[${name}] ${t("components.Options.HazardousOperations.toast.operationSuccess")}`)
-		EventBus.emit("[update] keyPoolUpdate")
-	} catch (error) {
-		Logger.error(`[${name}] 操作失败`, error)
-		toastRegistry.error(`[${name}] ${t("components.Options.HazardousOperations.toast.operationFailed")}`)
-	}
-}
-
-/**
- * 清除所有配置项
- */
-const clearConfigs = async () => {
-	if (!confirm(t("components.Options.HazardousOperations.confirmOperationTip"))) return
-	try {
-		await Dexie.configs.clear()
-		toastRegistry.success(`[${name}] ${t("components.Options.HazardousOperations.toast.operationSuccess")}`)
-		EventBus.emit("[function] configInitialization")
-	} catch (error) {
-		Logger.error(`[${name}] 操作失败`, error)
-		toastRegistry.error(`[${name}] ${t("components.Options.HazardousOperations.toast.operationFailed")}`)
-	}
-}
-
-/**
- * 清除所有日志
- */
-const clearLog = async () => {
-	if (!confirm(t("components.Options.HazardousOperations.confirmOperationTip"))) return
-	try {
-		await Dexie.logs.clear()
-		toastRegistry.success(`[${name}] ${t("components.Options.HazardousOperations.toast.operationSuccess")}`)
-		EventBus.emit("[update] logUpdate")
 	} catch (error) {
 		Logger.error(`[${name}] 操作失败`, error)
 		toastRegistry.error(`[${name}] ${t("components.Options.HazardousOperations.toast.operationFailed")}`)
@@ -94,11 +41,9 @@ const clearLog = async () => {
 
 <template>
 	<div class="hazardous-operation">
-		<Button @click="clearChat">{{ t("components.Options.HazardousOperations.clearChat") }}</Button>
-		<Button @click="clearMask">{{ t("components.Options.HazardousOperations.clearMask") }}</Button>
-		<Button @click="clearApiKey">{{ t("components.Options.HazardousOperations.clearApiKey") }}</Button>
-		<Button @click="clearConfigs">{{ t("components.Options.HazardousOperations.clearConfig") }}</Button>
-		<Button @click="clearLog">{{ t("components.Options.HazardousOperations.clearLog") }}</Button>
+		<Button v-for="table in TABLE_NAMES" :key="table" @click="clearTable(table)">
+			{{ t("components.Options.HazardousOperations.prefix") + table }}
+		</Button>
 	</div>
 </template>
 
