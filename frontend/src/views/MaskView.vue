@@ -212,15 +212,15 @@ onUnmounted(() => {
 					<p>{{ t("views.MaskView.num", {num: mask.data ? mask.data.length : 0}) }}</p>
 				</div>
 				<div class="right">
-					<Button @click="chatMask(mask)">
+					<Button @click="chatMask(mask)" @click.stop>
 						<SVGIcon name="#icon-new"/>
 						{{ t("views.MaskView.chat") }}
 					</Button>
-					<Button @click="configMask(mask.key)">
+					<Button @click="configMask(mask.key)" @click.stop>
 						<SVGIcon name="#icon-setup"/>
 						{{ t("views.MaskView.config") }}
 					</Button>
-					<Button @click="deleteMask(mask.key)">
+					<Button @click="deleteMask(mask.key)" @click.stop>
 						<SVGIcon name="#icon-close"/>
 						{{ t("views.MaskView.delete") }}
 					</Button>
