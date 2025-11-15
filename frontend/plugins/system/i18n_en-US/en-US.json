@@ -587,12 +587,15 @@
 			"toast": {
 				"errorGettingMaskList": "Failed to get mask list",
 				"errorNewMask": "Failed to create new mask",
+				"invalidJsonFormat": "Invalid JSON format",
+				"errorReadFile": "Failed to read file",
 				"errorChattingMask": "Failed to chat mask",
 				"errorDeletingMask": "Failed to delete mask"
 			},
 			"search": "Search for role masks",
 			"num": "Contains { num } preset dialogues",
 			"newMask": "New Mask",
+			"jsonNewMask": "New Mask via JSON",
 			"chat": "Chat",
 			"config": "Config",
 			"delete": "Delete"

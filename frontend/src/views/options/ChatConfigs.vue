@@ -532,7 +532,8 @@ const preview = () => {
 		SELECTED_MESSAGES.forEach(item => {
 			json.message.push({
 				role: item.message.role,
-				content: item.message.content
+				content: item.message.content,
+				model: item.model
 			})
 		})
 		share.value.content = JSON.stringify(json, null, 4)

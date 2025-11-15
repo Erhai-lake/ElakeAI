@@ -434,6 +434,7 @@ const information = () => {
  * @param data - 聊天配置弹窗数据
  */
 const showChatSetup = (data) => {
+	if (!data) return
 	chatSetup.value = data
 }
 

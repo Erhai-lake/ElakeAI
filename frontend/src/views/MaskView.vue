@@ -29,6 +29,11 @@ const masks = ref([])
 const menu = ref(null)
 
 /**
+ * 文件输入框
+ */
+const fileInput = ref(null)
+
+/**
  * 翻译函数
  * @function t
  * @param {string} key - 翻译键值
@@ -106,17 +111,102 @@ const onRightClick = (event, item) => {
  */
 const newMask = async () => {
 	try {
+		const SYSTEM_PROMPT = (await Dexie.configs.get("systemPrompt")).value || ""
+		let data = [{
+			id: crypto.randomUUID(),
+			message: {
+				role: "system",
+				content: SYSTEM_PROMPT
+			},
+			status: "done",
+			timestamp: Date.now()
+		}]
 		const NEW_KEY = crypto.randomUUID()
 		await Dexie.masks.add({
 			key: NEW_KEY,
 			title: t("components.AIInput.newChat"),
-			data: []
+			data: data
 		})
 		await getMasks()
 		configMask(NEW_KEY)
 	} catch (error) {
 		Logger.error(`[${name}] 新建面具失败`, error)
 		toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorNewMask")}`)
+	}
+}
+
+/**
+ * 通过JSON文件新建面具
+ */
+const jsonNewMask = async () => {
+	fileInput.value.click()
+}
+
+/**
+ * 处理文件导入回调
+ * @param event - 文件选择事件
+ */
+const handleFileChange = async (event) => {
+	const FILE = event.target.files[0]
+	const FILE_NAME = FILE.name.replace(/\.\w+$/, "")
+	if (!FILE) return
+	try {
+		// 读取文件内容并解析JSON
+		const JSON_DATA = await new Promise((resolve, reject) => {
+			const READER = new FileReader()
+			READER.onload = (returnData) => {
+				try {
+					resolve(JSON.parse(returnData.target.result))
+				} catch (error) {
+					Logger.error(`[${name}] 无效的JSON格式`, error)
+					toastRegistry.error(`[${name}] ${t("views.MaskView.toast.invalidJsonFormat")}`)
+					reject(new Error(t("views.MaskView.toast.invalidJsonFormat")))
+				}
+			}
+			READER.onerror = () => {
+				Logger.error(`[${name}] 读取文件失败`, READER.error)
+				toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorReadFile")}`)
+				reject(new Error(t("views.MaskView.toast.errorReadFile")))
+			}
+			READER.readAsText(FILE)
+		})
+		if (!JSON_DATA.message || JSON_DATA.message.length === 0) {
+			Logger.error(`[${name}] 无效的JSON格式`, JSON_DATA)
+			toastRegistry.error(`[${name}] ${t("views.MaskView.toast.invalidJsonFormat")}`)
+			return
+		}
+		try {
+			let data = []
+			for (const item of JSON_DATA.message) {
+				data.push({
+					id: crypto.randomUUID(),
+					message: {
+						role: item.role,
+						content: item.content
+					},
+					model: item.model,
+					status: "done",
+					timestamp: Date.now()
+				})
+			}
+			const NEW_KEY = crypto.randomUUID()
+			await Dexie.masks.add({
+				key: NEW_KEY,
+				title: FILE_NAME || t("components.AIInput.newChat"),
+				data: data
+			})
+			await getMasks()
+			configMask(NEW_KEY)
+		} catch (error) {
+			Logger.error(`[${name}] 新建面具失败`, error)
+			toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorNewMask")}`)
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 读取文件失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.MaskView.toast.errorReadFile")}`)
+	} finally {
+		// 重置文件输入, 允许再次选择同一个文件
+		event.target.value = ""
 	}
 }
 
@@ -190,6 +280,16 @@ onUnmounted(() => {
 				<SVGIcon name="#icon-new"/>
 				{{ t("views.MaskView.newMask") }}
 			</Button>
+			<Button @click="jsonNewMask">
+				<SVGIcon name="#icon-new"/>
+				{{ t("views.MaskView.jsonNewMask") }}
+			</Button>
+			<input
+				type="file"
+				ref="fileInput"
+				@change="handleFileChange"
+				style="display: none;"
+				accept=".json"/>
 		</div>
 		<div class="container">
 			<div
@@ -232,9 +332,12 @@ onUnmounted(() => {
 }
 
 .header {
-	display: grid;
-	grid-template-columns: 1fr auto;
+	display: flex;
 	gap: 10px;
+
+	input {
+		flex: 1;
+	}
 }
 
 .container {
