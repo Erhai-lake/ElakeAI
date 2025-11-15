@@ -33,7 +33,7 @@ const METADATA = ref([
 		name: "apiKeys",
 		displayName: "apiKeys",
 		primaryKey: "key",
-		displayField: "remark",
+		displayField: "title",
 		subDisplayField: "model",
 		eventBus: null,
 		importStrategy: "regenerateId",

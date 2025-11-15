@@ -11,7 +11,7 @@ DB.version(1).stores({
 	// 配置
 	configs: "&item, value",
 	// API密钥
-	apiKeys: "&key, model, value, remark, url, enabled",
+	apiKeys: "&key, model, value, title, url, enabled",
 	// 日志
 	logs: "++id, level, component, message, timestamp"
 })

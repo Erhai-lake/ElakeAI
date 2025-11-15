@@ -458,7 +458,7 @@ onMounted(() => {
 					<Button @click="clearDB('apiKeys')">{{ t("components.DevTools.clear") }}</Button>
 					<div class="database-list">
 						<div class="database-item" v-for="item in apiKeys" :key="item.key">
-							<span class="database-title">{{ item.remark }}</span>
+							<span class="database-title">{{ item.title }}</span>
 							<span class="database-key">{{ item.model }}</span>
 							<span class="database-key">{{ item.key }}</span>
 							<InputText

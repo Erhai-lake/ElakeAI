@@ -44,7 +44,7 @@ const operationSelection = ref([])
 const formData = ref({
 	key: "",
 	value: "",
-	remark: "",
+	title: "",
 	url: "",
 	enabled: true
 })
@@ -165,7 +165,7 @@ const toggleFormStatus = async (type = 0) => {
 		formData.value = {
 			key: "",
 			value: "",
-			remark: "",
+			title: "",
 			url: "",
 			enabled: true
 		}
@@ -195,7 +195,7 @@ const toggleFormStatus = async (type = 0) => {
 		formData.value = {
 			key: "",
 			value: "",
-			remark: "",
+			title: "",
 			url: "",
 			enabled: true
 		}
@@ -218,7 +218,7 @@ const addNewKey = async () => {
 			key: NEW_KEY_ID,
 			model: selectedPlatform.value.title,
 			value: formData.value.value,
-			remark: formData.value.remark,
+			title: formData.value.title,
 			url: formData.value.url,
 			enabled: true
 		})
@@ -267,7 +267,7 @@ const updateKey = async () => {
 		// 写入数据库
 		await Dexie.apiKeys.update(formData.value.key, {
 			value: formData.value.value,
-			remark: formData.value.remark,
+			title: formData.value.title,
 			url: formData.value.url
 		})
 		await toggleFormStatus()
@@ -291,10 +291,10 @@ const verificationForm = (type = 0) => {
 		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.keyNull")}`)
 		return false
 	}
-	// 禁止备注为空
-	if (!formData.value.remark) {
-		Logger.warn(`[${name}] ${type === 1 ? "新建" : "编辑"}Key时备注为空`)
-		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.remarkNull")}`)
+	// 禁止名称为空
+	if (!formData.value.title) {
+		Logger.warn(`[${name}] ${type === 1 ? "新建" : "编辑"}Key时名称为空`)
+		toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.titleNull")}`)
 		return false
 	}
 	// url空则使用默认url
@@ -488,10 +488,10 @@ onUnmounted(() => {
 							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKey')"/>
 					</div>
 					<div class="form-group">
-						<label>{{ t("components.Options.ChatAIKey.form.remarks") }}</label>
+						<label>{{ t("components.Options.ChatAIKey.form.title") }}</label>
 						<InputText
-							v-model="formData.remark"
-							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyRemarks')"/>
+							v-model="formData.title"
+							:placeholder="t('components.Options.ChatAIKey.form.pleaseEnterKeyTitle')"/>
 					</div>
 					<div class="form-group">
 						<label>{{ t("components.Options.ChatAIKey.form.url") }}</label>
@@ -527,7 +527,7 @@ onUnmounted(() => {
 								</th>
 								<th>{{ t("components.Options.ChatAIKey.form.enable") }}</th>
 								<th>{{ t("components.Options.ChatAIKey.form.key") }}</th>
-								<th>{{ t("components.Options.ChatAIKey.form.remarks") }}</th>
+								<th>{{ t("components.Options.ChatAIKey.form.title") }}</th>
 								<th>{{ t("components.Options.ChatAIKey.form.url") }}</th>
 								<th>{{ t("components.Options.ChatAIKey.form.balance") }}</th>
 							</tr>
@@ -557,7 +557,7 @@ onUnmounted(() => {
 									</label>
 								</td>
 								<td :title="keyItem.value">{{ maskKey(keyItem.value) }}</td>
-								<td :title="keyItem.remark">{{ keyItem.remark }}</td>
+								<td :title="keyItem.title">{{ keyItem.title }}</td>
 								<td :title="keyItem.url">{{ keyItem.url }}</td>
 								<td :title="keyItem.balance">{{ keyItem.balance }}</td>
 							</tr>

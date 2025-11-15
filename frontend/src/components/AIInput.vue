@@ -100,7 +100,7 @@ const restoreSettings = async () => {
 				modelSelected.value = null
 				return
 			}
-			keyPoolsSelected.value = {key: KEY_DATA.key, title: KEY_DATA.remark}
+			keyPoolsSelected.value = {key: KEY_DATA.key, title: KEY_DATA.title}
 			modelSelected.value = {title: DEFAULT_CHAT_SETTINGS_DATA.value.model}
 		} else {
 			platformSelected.value = null

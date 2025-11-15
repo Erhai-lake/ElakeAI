@@ -124,7 +124,7 @@ const loadKeyPools = async (skipSelection = false) => {
 		// 检查是否还是当前有效的请求
 		if (currentKeyPoolRequest.value !== currentRequestId) return
 		keyPools.value.list = [
-			...KEYS_DATA.map(key => ({key: key.key, title: key.remark})) || []
+			...KEYS_DATA.map(key => ({key: key.key, title: key.title})) || []
 		]
 		if (keyPools.value.list.length === 0) return
 		// 如果 skipSelection 为 true 且已有选中项，则不覆盖
@@ -263,7 +263,7 @@ const fetchKeysForModel = async (modelName) => {
 
 	return KEYS.map(key => ({
 		key: key.key,
-		title: key.remark || key.key
+		title: key.title || key.key
 	}))
 }
 
@@ -303,7 +303,7 @@ const restoreSettings = async () => {
 			// 获取 Key 数据
 			const KEY_DATA = await Dexie.apiKeys.get(DEFAULT_CHAT_SETTINGS_DATA.value.key)
 			if (KEY_DATA) {
-				keyPools.value.selected = {key: KEY_DATA.key, title: KEY_DATA.remark || KEY_DATA.key}
+				keyPools.value.selected = {key: KEY_DATA.key, title: KEY_DATA.title || KEY_DATA.key}
 			} else {
 				keyPools.value.selected = null
 				Logger.warn(`[${name}] 未找到对应的 Key 数据: ${DEFAULT_CHAT_SETTINGS_DATA.value.key}`)
