@@ -101,29 +101,29 @@ const onVersionClick = async () => {
 	if (clickCount.value === 5) {
 		toastRegistry.info(t("components.VersionButton.info1"))
 	}
-	if (clickCount.value === 15) {
+	if (clickCount.value === 10) {
 		toastRegistry.success(t("components.VersionButton.info2"))
 		triggerShake()
 	}
-	if (clickCount.value === 30) {
+	if (clickCount.value === 15) {
 		toastRegistry.warning(t("components.VersionButton.info3"))
 		triggerShake()
 	}
-	if (clickCount.value > 15 && clickCount.value < 50) {
+	if (clickCount.value > 20 && clickCount.value < 25) {
 		version.value = clickCount.value
 	}
-	if (clickCount.value === 50) {
+	if (clickCount.value === 25) {
 		version.value = t("components.VersionButton.info4")
 		isColorful.value = true
 		triggerShake()
 		toastRegistry.success(t("components.VersionButton.info5"))
 	}
-	if (clickCount.value > 65) {
+	if (clickCount.value > 30) {
 		version.value = clickCount.value
 		isShaking.value = true
 		isCrazy.value = true
 	}
-	if (clickCount.value === 100) {
+	if (clickCount.value === 50) {
 		toastRegistry.success(t("components.VersionButton.info6"))
 		clickCount.value = 0
 		version.value = __APP_VERSION__
