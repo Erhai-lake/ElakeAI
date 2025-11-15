@@ -110,7 +110,6 @@ export async function initAllPlugins(appContext) {
 			Logger.warn(`[registerPlugins] 插件注册失败: ${PLUGIN.name}`, error)
 		}
 	}
-	EventBus.emit("[update] pluginReady")
 }
 
 /**

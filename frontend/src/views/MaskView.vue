@@ -7,7 +7,6 @@ import {i18nRegistry} from "@/services/plugin/api/I18nClass"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import Dexie from "@/services/Dexie"
 import Logger from "@/services/Logger"
-import ChatConfigs from "@/views/options/ChatConfigs.vue"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import InputText from "@/components/input/InputText.vue"
 import EventBus from "@/services/EventBus"
@@ -23,16 +22,6 @@ const router = useRouter()
  * 面具列表
  */
 const masks = ref([])
-
-/**
- * 面具配置键
- */
-const maskConfigKey = ref(null)
-
-/**
- * 是否显示设置弹窗
- */
-const showSetup = ref(false)
 
 /**
  * 右键点击菜单
@@ -160,8 +149,11 @@ const chatMask = async (mask) => {
  * @param key {String} - 面具键
  */
 const configMask = (key) => {
-	maskConfigKey.value = key
-	showSetup.value = true
+	EventBus.emit("[function] showChatSetup", {
+		chatKey: key,
+		display: true,
+		type: "mask"
+	})
 }
 
 /**
@@ -190,7 +182,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<ChatConfigs v-model="showSetup" :chatKey="maskConfigKey" type="mask"/>
 	<RightClickMenu ref="menu"/>
 	<div class="mask-view">
 		<div class="header">

@@ -13,6 +13,7 @@ import {initAllPlugins} from "@/services/plugin/RegisterPlugins"
 import Loading from "@/components/Loading.vue"
 import CustomTheme from "@/services/CustomTheme"
 import {ThemeRegistry} from "@/services/plugin/api/ThemeClass"
+import ChatConfigs from "@/views/options/ChatConfigs.vue"
 
 const name = "App"
 
@@ -24,6 +25,15 @@ const name = "App"
 const loading = reactive({
 	status: true,
 	loadingMessage: "正在加载插件系统..."
+})
+
+/**
+ * 聊天配置弹窗状态
+ */
+const chatSetup = ref({
+	chatKey: "",
+	display: false,
+	type: ""
 })
 
 /**
@@ -399,32 +409,6 @@ const stopResize = () => {
 	document.removeEventListener("mouseup", stopResize)
 }
 
-onMounted(async () => {
-	document.addEventListener("contextmenu", event => event.preventDefault())
-
-	// 事件监听
-	EventBus.on("[update] devToolsSuspensionWindowUpdate", devToolsSuspensionWindow)
-	EventBus.on("[function] configInitialization", configInitialization)
-	EventBus.on("[update] pluginReady", () => {
-		// 在 Vue3 中，全局属性的设置方式不同
-		// 你可能需要在 main.js 中设置
-	})
-
-	// 初始化流程
-	updateMessage()
-	information()
-	await loadPluginSystem()
-	await configInitialization()
-	await setupLogCleanup()
-	setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
-})
-
-onUnmounted(() => {
-	EventBus.off("[update] devToolsSuspensionWindowUpdate", devToolsSuspensionWindow)
-	EventBus.off("[function] configInitialization", configInitialization)
-	EventBus.off("[update] pluginReady")
-})
-
 /**
  * 检查环境信息
  */
@@ -444,6 +428,37 @@ const information = () => {
 		toastRegistry.error(`[App] ${t("app.iDBTransactionNotSupported")}`)
 	}
 }
+
+/**
+ * 显示聊天配置弹窗
+ * @param data - 聊天配置弹窗数据
+ */
+const showChatSetup = (data) => {
+	chatSetup.value = data
+	console.log(chatSetup.value)
+}
+
+onMounted(async () => {
+	document.addEventListener("contextmenu", event => event.preventDefault())
+	// 事件监听
+	EventBus.on("[update] devToolsSuspensionWindowUpdate", devToolsSuspensionWindow)
+	EventBus.on("[function] configInitialization", configInitialization)
+	EventBus.on("[function] showChatSetup", showChatSetup)
+
+	// 初始化流程
+	updateMessage()
+	information()
+	await loadPluginSystem()
+	await configInitialization()
+	await setupLogCleanup()
+	setInterval(setupLogCleanup, 24 * 60 * 60 * 1000)
+})
+
+onUnmounted(() => {
+	EventBus.off("[update] devToolsSuspensionWindowUpdate", devToolsSuspensionWindow)
+	EventBus.off("[function] configInitialization", configInitialization)
+	EventBus.off("[function] showChatSetup", showChatSetup)
+})
 </script>
 
 <template>
@@ -454,6 +469,7 @@ const information = () => {
 		<template v-if="!loading.status">
 			<Sidebar/>
 			<div class="RouterView">
+				<ChatConfigs :chat-key="chatSetup.chatKey" :display="chatSetup.display" :type="chatSetup.type"/>
 				<router-view/>
 			</div>
 			<Button

@@ -33,7 +33,7 @@ const props = defineProps({
 	/**
 	 * 是否显示配置弹窗
 	 */
-	modelValue: {
+	display: {
 		type: Boolean,
 		default: false
 	},
@@ -45,11 +45,6 @@ const props = defineProps({
 		default: "chat"
 	}
 })
-
-/**
- * 触发更新弹窗显示状态的事件
- */
-const emit = defineEmits(["update:modelValue"])
 
 /**
  * 聊天标题
@@ -165,6 +160,7 @@ const t = (key, params = {}) => {
  * 初始化组件
  */
 const init = async () => {
+	console.log(props)
 	share.value.shareChoice = []
 	await loadChatData()
 	page.value = 1
@@ -576,7 +572,11 @@ const save = async () => {
  */
 const close = () => {
 	share.value.sharePreview = false
-	emit("update:modelValue", false)
+	EventBus.emit("[function] showChatSetup", {
+		chatKey: null,
+		display: false,
+		type: null
+	})
 }
 
 /**
@@ -599,16 +599,10 @@ const saveMask = async () => {
 }
 
 /**
- * 监听modelValue变化
+ * 监听display变化
  */
-watch(() => props.modelValue, async (newVal) => {
+watch(() => props.display, async (newVal) => {
 	if (newVal) {
-		await init()
-	}
-})
-
-onMounted(async () => {
-	if (props.chatKey) {
 		await init()
 	}
 })
@@ -668,9 +662,9 @@ onMounted(async () => {
 		</div>
 	</transition>
 	<transition name="fade">
-		<div class="chat-configs" v-if="modelValue" @click="close">
+		<div class="chat-configs" v-show="display" @click="close">
 			<div class="chat-configs-content" @click.stop>
-				<h2>{{ t(`views.ChatConfigs.${props.type}Setup`) }}</h2>
+				<h2>{{ t(`views.ChatConfigs.${props.type || "chat"}Setup`) }}</h2>
 				<div class="chat-configs-content-container">
 					<div class="container">
 						<div class="item" style="grid-template-columns: 1fr 40%">
@@ -822,8 +816,8 @@ onMounted(async () => {
 								:step="0.1"/>
 						</div>
 					</div>
-<!--					<div class="container">-->
-<!--					</div>-->
+					<!--					<div class="container">-->
+					<!--					</div>-->
 				</div>
 				<div class="but">
 					<Button @click="close">{{ t("views.ChatConfigs.close") }}</Button>

@@ -332,7 +332,11 @@ const handleNewLine = (event) => {
  */
 const showSetup = () => {
 	if (route.params.key) {
-		EventBus.emit("[function] showSetup", true)
+		EventBus.emit("[function] showChatSetup", {
+			chatKey: route.params.key,
+			display: true,
+			type: "chat"
+		})
 	} else {
 		toastRegistry.warning(t("components.AIInput.toast.noChatKey"))
 	}

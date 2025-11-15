@@ -8,7 +8,6 @@ import { i18nRegistry } from "@/services/plugin/api/I18nClass"
 import { toastRegistry } from "@/services/plugin/api/ToastClass"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
-import ChatConfigs from "@/views/options/ChatConfigs.vue"
 import Dexie from "@/services/Dexie"
 import Logger from "@/services/Logger"
 
@@ -39,15 +38,6 @@ const totalMessages = ref(0)
 const currentMessageId = ref(null)
 
 /**
- * 打字效果
- */
-const typingEffect = ref({
-	active: false,
-	cursorVisible: true,
-	currentMessageIndex: -1
-})
-
-/**
  * 消息组件映射
  */
 const messageComponentMap = ref(null)
@@ -66,11 +56,6 @@ const data = ref({
  * 是否显示输入框
  */
 const showInputBox = ref(true)
-
-/**
- * 是否显示设置
- */
-const showSetup = ref(false)
 
 /**
  * 聊天输入框
@@ -529,18 +514,10 @@ const removeMessage = async (id) => {
 	}
 }
 
-/**
- * 显示设置
- */
-const setup = (status) => {
-	showSetup.value = status
-}
-
 // 监听器
 watch(() => route.params.key, (newKey) => {
 	initChatView(newKey)
 	checkLastMessage()
-	showSetup.value = false
 })
 
 onMounted(async () => {
@@ -551,7 +528,6 @@ onMounted(async () => {
 	EventBus.on("[stream] streamComplete", streamComplete)
 	EventBus.on("[function] removeMessage", removeMessage)
 	EventBus.on("[function] editMessage", editMessage)
-	EventBus.on("[function] showSetup", setup)
 	EventBus.on("[update] inputChange", inputChange)
 
 	roleToComponent()
@@ -574,7 +550,6 @@ onUnmounted(() => {
 	EventBus.off("[stream] streamComplete", streamComplete)
 	EventBus.off("[function] removeMessage", removeMessage)
 	EventBus.off("[function] editMessage", editMessage)
-	EventBus.off("[function] showSetup", setup)
 	EventBus.off("[update] inputChange", inputChange)
 })
 </script>
@@ -582,8 +557,7 @@ onUnmounted(() => {
 <template>
 	<Loading
 		:loading="isLoading"
-		:text="t('views.ChatView.loading', {loadedMessages: loadedMessages, totalMessages: totalMessages})">
-		<ChatConfigs v-model="showSetup" :chatKey="data.key" type="chat"/>
+		:text="t('views.ChatView.loading', {loadedMessages, totalMessages})">
 		<div class="chat-view">
 			<!-- 顶部标题 -->
 			<div class="head">
