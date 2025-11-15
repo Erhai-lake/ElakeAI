@@ -80,8 +80,7 @@
 					"disableSuccess": "Key disabled successfully",
 					"batchEnableSuccess": "Batch enable successful",
 					"batchDisableSuccess": "Batch disable successful",
-					"statusUpdateError": "Failed to update status",
-					"remarkDuplicate": "Remark is duplicated"
+					"statusUpdateError": "Failed to update status"
 				},
 				"form": {
 					"enable": "Enable",

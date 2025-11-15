@@ -212,17 +212,6 @@ const addNewKey = async () => {
 		return
 	}
 	try {
-		// 检查remark是否重复
-		const IS_REMARK_EXIST = await Dexie.apiKeys
-			.where("remark")
-			.equals(formData.value.remark)
-			.and(item => item.key !== formData.value.key)
-			.first()
-		if (IS_REMARK_EXIST) {
-			Logger.warn(`[${name}] 编辑Key时备注重复`)
-			toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
-			return
-		}
 		const NEW_KEY_ID = crypto.randomUUID()
 		// 写入数据库
 		await Dexie.apiKeys.add({
@@ -275,17 +264,6 @@ const updateKey = async () => {
 		return
 	}
 	try {
-		// 检查remark是否重复
-		const IS_REMARK_EXIST = await Dexie.apiKeys
-			.where("remark")
-			.equals(formData.value.remark)
-			.and(item => item.key !== formData.value.key)
-			.first()
-		if (IS_REMARK_EXIST) {
-			Logger.warn(`[${name}] 编辑Key时备注重复`)
-			toastRegistry.warning(`[${name}] ${t("components.Options.ChatAIKey.toast.remarkDuplicate")}`)
-			return
-		}
 		// 写入数据库
 		await Dexie.apiKeys.update(formData.value.key, {
 			value: formData.value.value,
