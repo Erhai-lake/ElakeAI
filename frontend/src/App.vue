@@ -435,7 +435,6 @@ const information = () => {
  */
 const showChatSetup = (data) => {
 	chatSetup.value = data
-	console.log(chatSetup.value)
 }
 
 onMounted(async () => {

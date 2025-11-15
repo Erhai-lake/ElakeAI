@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref, watch} from "vue"
+import {computed, nextTick, onMounted, ref, watch} from "vue"
 import Button from "@/components/input/Button.vue"
 import InputNumber from "@/components/input/InputNumber.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
@@ -12,7 +12,6 @@ import EventBus from "@/services/EventBus"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
 import InputText from "@/components/input/InputText.vue"
 import draggable from "vuedraggable"
-import ChatTitle from "@/components/chat/ChatTitle.vue"
 import SystemMessageCard from "@/components/chat/role/SystemMessageCard.vue"
 import AssistantMessageCard from "@/components/chat/role/AssistantMessageCard.vue"
 import UserMessageCard from "@/components/chat/role/UserMessageCard.vue"
@@ -50,6 +49,14 @@ const props = defineProps({
  * 聊天标题
  */
 const chatTitle = ref("")
+
+/**
+ * 编辑标题
+ */
+const editingTitle = ref({
+	show: false,
+	value: ""
+})
 
 /**
  * 聊天配置
@@ -160,7 +167,6 @@ const t = (key, params = {}) => {
  * 初始化组件
  */
 const init = async () => {
-	console.log(props)
 	share.value.shareChoice = []
 	await loadChatData()
 	page.value = 1
@@ -267,14 +273,83 @@ const loadChatData = async () => {
 			originalChatData.value = JSON.parse(JSON.stringify(chatData.value))
 		}
 		if (getChatData && getChatData.configs) {
-			chatTitle.value = getChatData.title
-			share.value.shareTitle = getChatData.title
+			chatTitle.value = getChatData.title || t("components.AIInput.newChat")
+			share.value.shareTitle = getChatData.title || t("components.AIInput.newChat")
 			configs.value = getChatData.configs
 		}
 	} catch (error) {
 		Logger.error(`[${name}] 获取聊天数据失败`, error)
 		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.getError")}`)
 	}
+}
+
+/**
+ * 显示标题输入框
+ */
+const titleInput = () => {
+	editingTitle.value.value = chatTitle.value
+	editingTitle.value.show = true
+	nextTick(() => {
+		const INPUT = document.querySelector(".top-title input")
+		if (INPUT) {
+			INPUT.focus()
+		}
+	})
+}
+
+/**
+ * 处理标题框键盘事件
+ * @param event {KeyboardEvent} - 键盘事件
+ */
+const handleTitleKeydown = (event) => {
+	if (event.key === "Enter") {
+		saveTitle()
+	} else if (event.key === "Escape") {
+		cancelEditTitle()
+	}
+}
+
+/**
+ * 保存标题
+ * @returns {Promise<void>} - 保存标题的Promise
+ */
+const saveTitle = async () => {
+	// 检查标题是否重复
+	if (editingTitle.value.value === chatTitle.value) {
+		editingTitle.value.show = false
+		return
+	}
+	// 检查标题是否为空
+	if (!editingTitle.value.value) {
+		editingTitle.value.value = t("components.AIInput.newChat")
+	}
+	try {
+		const NEW_TITLE = editingTitle.value.value
+		chatTitle.value = NEW_TITLE
+		if (props.type === "chat") {
+			await Dexie.chats.update(props.chatKey, {title: NEW_TITLE})
+			EventBus.emit("[update] chatListUpdate")
+			EventBus.emit("[update] chatTitle", NEW_TITLE)
+		} else if (props.type === "mask") {
+			await Dexie.masks.update(props.chatKey, {title: NEW_TITLE})
+			EventBus.emit("[update] maskListUpdate")
+		}
+		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.titleUpdated")}`)
+	} catch (error) {
+		Logger.error(`[${name}] 标题更新失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.titleUpdateError")}`)
+		editingTitle.value.value = chatTitle.value
+	} finally {
+		editingTitle.value.show = false
+	}
+}
+
+/**
+ * 取消编辑标题
+ */
+const cancelEditTitle = () => {
+	editingTitle.value.show = false
+	editingTitle.value.value = chatTitle.value
 }
 
 /**
@@ -606,6 +681,10 @@ watch(() => props.display, async (newVal) => {
 		await init()
 	}
 })
+
+onMounted(async () => {
+	if (props.chatKey) await init()
+})
 </script>
 
 <template>
@@ -669,7 +748,16 @@ watch(() => props.display, async (newVal) => {
 					<div class="container">
 						<div class="item" style="grid-template-columns: 1fr 40%">
 							<p>{{ t("views.ChatConfigs.chatTitle") }}</p>
-							<ChatTitle :chatTitle="chatTitle" :chatKey="chatKey" :type="type"/>
+							<div class="top-title">
+								<p v-show="!editingTitle.show" @click="titleInput" :title="chatTitle">{{ chatTitle }}</p>
+								<input
+									type="text"
+									v-show="editingTitle.show"
+									v-model="editingTitle.value"
+									@blur="saveTitle"
+									@keydown="handleTitleKeydown"
+									class="title-input">
+							</div>
 						</div>
 					</div>
 					<div class="container">
@@ -923,6 +1011,39 @@ watch(() => props.display, async (newVal) => {
 	.chat-configs-content-container {
 		padding: 0 20px;
 		overflow: hidden auto;
+
+		.top-title {
+			width: 100%;
+			height: 39px;
+			display: flex;
+			align-items: center;
+			justify-content: end;
+
+			p {
+				font-size: 18px;
+				font-weight: bold;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				cursor: pointer;
+			}
+
+			.title-input {
+				padding: 8px 12px;
+				width: 100%;
+				border: 1px solid var(--border-color);
+				border-radius: 4px;
+				background-color: var(--background-color);
+				color: var(--text-color);
+				font-size: 18px;
+				font-weight: bold;
+				text-align: center;
+
+				&:focus {
+					outline: none;
+				}
+			}
+		}
 	}
 }
 

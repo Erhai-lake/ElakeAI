@@ -308,6 +308,7 @@
 			},
 			"openChat": "Open chat",
 			"archivesChat": "Archives chat",
+			"chatOptions": "Chat settings",
 			"deleteChat": "Delete chat"
 		},
 		"MessageCard": {
@@ -405,8 +406,6 @@
 				"getChatLogError": "Failed to get chat log",
 				"mermaidRenderingError": "Mermaid rendering failed",
 				"mermaidInitializationError": "Mermaid initialization failed",
-				"titleUpdated": "Title updated successfully",
-				"titleUpdateError": "Failed to update title",
 				"removeMessageSuccess": "Message removed successfully",
 				"removeMessageError": "Failed to remove message",
 				"editMessageSuccess": "Message edited successfully",
@@ -543,6 +542,8 @@
 		"ChatConfigs": {
 			"toast": {
 				"getGlobalConfigError": "Failed to get global config",
+				"titleUpdated": "Title updated successfully",
+				"titleUpdateError": "Failed to update title",
 				"writeToClipboard": "Written to clipboard",
 				"copyError": "Copy failed",
 				"downloadSuccess": "Download successful",

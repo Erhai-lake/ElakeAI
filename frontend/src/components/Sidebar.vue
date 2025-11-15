@@ -150,6 +150,14 @@ const onRightClick = (event, item) => {
 			onClick: (key) => archivesChat(key)
 		},
 		{
+			title: t("components.Sidebar.chatOptions"),
+			icon: {
+				type: "svg",
+				src: "#icon-setup"
+			},
+			onClick: (key) => EventBus.emit("[function] showChatSetup", {chatKey: key, display: true, type: "chat"})
+		},
+		{
 			title: t("components.Sidebar.deleteChat"),
 			icon: {
 				type: "svg",

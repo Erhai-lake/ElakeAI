@@ -308,6 +308,7 @@
 			},
 			"openChat": "打开对话",
 			"archivesChat": "归档对话",
+			"chatOptions": "对话设置",
 			"deleteChat": "删除对话"
 		},
 		"MessageCard": {
@@ -405,8 +406,6 @@
 				"getChatLogError": "获取聊天记录失败",
 				"mermaidRenderingError": "Mermaid渲染失败",
 				"mermaidInitializationError": "Mermaid初始化失败",
-				"titleUpdated": "标题更新成功",
-				"titleUpdateError": "标题更新失败",
 				"removeMessageSuccess": "移除消息成功",
 				"removeMessageError": "移除消息失败",
 				"editMessageSuccess": "编辑消息成功",
@@ -543,6 +542,8 @@
 		"ChatConfigs": {
 			"toast": {
 				"getGlobalConfigError": "获取全局配置失败",
+				"titleUpdated": "标题更新成功",
+				"titleUpdateError": "标题更新失败",
 				"writeToClipboard": "已写入到剪贴板",
 				"copyError": "复制失败",
 				"downloadSuccess": "下载成功",
