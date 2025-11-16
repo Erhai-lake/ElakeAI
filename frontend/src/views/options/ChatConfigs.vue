@@ -46,6 +46,11 @@ const props = defineProps({
 })
 
 /**
+ * 全屏
+ */
+const fullscreen = ref(80)
+
+/**
  * 聊天标题
  */
 const chatTitle = ref("")
@@ -164,16 +169,6 @@ const t = (key, params = {}) => {
 }
 
 /**
- * 初始化组件
- */
-const init = async () => {
-	share.value.shareChoice = []
-	await loadChatData()
-	page.value = 1
-	getChatRecords(page.value, "asc")
-}
-
-/**
  * 更新选中角色
  * @param role {Object} - 角色
  * @param id {String} - 消息ID
@@ -222,17 +217,29 @@ const updateShareSelected = (shareType) => {
 }
 
 /**
- * 加载全局配置
+ * 初始化组件
  */
-const loadGlobalConfig = async () => {
-	try {
-		const GLOBAL_CONFIG = await Dexie.configs.get("chatConfigs")
-		if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
-			configs.value = GLOBAL_CONFIG.value
-		}
-	} catch (error) {
-		Logger.error(`[${name}] 获取全局配置失败`, error)
-		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.getError")}`)
+const init = async () => {
+	chatTitle.value = t("components.AIInput.newChat")
+	editingTitle.value = {
+		show: false,
+		value: ""
+	}
+	await loadGlobalConfig()
+	originalChatData.value = []
+	chatData.value = []
+	chatRecords.value = []
+	page.value = 1
+	totalPages.value = 0
+	order.value = orderList.value[0]
+	share.value = {
+		shareChoice: [],
+		shareTitle: t("components.AIInput.newChat"),
+		shareList: share.value.shareList,
+		share: {title: "png"},
+		sharePreview: false,
+		content: "",
+		loading: false
 	}
 }
 
@@ -257,10 +264,24 @@ const visiblePages = computed(() => {
 })
 
 /**
+ * 加载全局配置
+ */
+const loadGlobalConfig = async () => {
+	try {
+		const GLOBAL_CONFIG = await Dexie.configs.get("chatConfigs")
+		if (GLOBAL_CONFIG && GLOBAL_CONFIG.value) {
+			configs.value = GLOBAL_CONFIG.value
+		}
+	} catch (error) {
+		Logger.error(`[${name}] 获取全局配置失败`, error)
+		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.getGlobalConfigError")}`)
+	}
+}
+
+/**
  * 加载聊天数据
  */
 const loadChatData = async () => {
-	await loadGlobalConfig()
 	try {
 		let getChatData = null
 		if (props.type === "chat") {
@@ -272,10 +293,10 @@ const loadChatData = async () => {
 			chatData.value = getChatData.data
 			originalChatData.value = JSON.parse(JSON.stringify(chatData.value))
 		}
-		if (getChatData && getChatData.configs) {
+		if (getChatData) {
 			chatTitle.value = getChatData.title || t("components.AIInput.newChat")
 			share.value.shareTitle = getChatData.title || t("components.AIInput.newChat")
-			configs.value = getChatData.configs
+			if (getChatData.configs) configs.value = getChatData.configs
 		}
 	} catch (error) {
 		Logger.error(`[${name}] 获取聊天数据失败`, error)
@@ -646,8 +667,8 @@ const save = async () => {
 /**
  * 关闭
  */
-const close = () => {
-	share.value.sharePreview = false
+const close = async () => {
+	await init()
 	EventBus.emit("[function] showChatSetup", {
 		chatKey: null,
 		display: false,
@@ -678,13 +699,21 @@ const saveMask = async () => {
  * 监听display变化
  */
 watch(() => props.display, async (newVal) => {
+	await init()
 	if (newVal) {
-		await init()
+		await loadChatData()
+		page.value = 1
+		getChatRecords(page.value, "asc")
 	}
 })
 
 onMounted(async () => {
-	if (props.chatKey) await init()
+	await init()
+	if (props.chatKey) {
+		await loadChatData()
+		page.value = 1
+		getChatRecords(page.value, "asc")
+	}
 })
 </script>
 
@@ -743,14 +772,21 @@ onMounted(async () => {
 	</transition>
 	<transition name="fade">
 		<div class="chat-configs" v-show="display" @click="close">
-			<div class="chat-configs-content" @click.stop>
-				<h2>{{ t(`views.ChatConfigs.${props.type || "chat"}Setup`) }}</h2>
+			<div class="chat-configs-content" :style="{width: fullscreen + '%', height: fullscreen + '%'}" @click.stop>
+				<div class="title">
+					<h2>{{ t(`views.ChatConfigs.${props.type || "chat"}Setup`) }}</h2>
+					<Button @click="fullscreen = fullscreen === 80 ? 95 : 80">
+						<SVGIcon :name="`#icon-zoom${fullscreen === 80 ? 'In' : 'Out'}Window`" size="2em"/>
+					</Button>
+				</div>
 				<div class="chat-configs-content-container">
 					<div class="container">
 						<div class="item" style="grid-template-columns: 1fr 40%">
 							<p>{{ t("views.ChatConfigs.chatTitle") }}</p>
 							<div class="top-title">
-								<p v-show="!editingTitle.show" @click="titleInput" :title="chatTitle">{{ chatTitle }}</p>
+								<p v-show="!editingTitle.show" @click="titleInput" :title="chatTitle">
+									{{ chatTitle }}
+								</p>
 								<input
 									type="text"
 									v-show="editingTitle.show"
@@ -792,7 +828,6 @@ onMounted(async () => {
 							handle=".move"
 							animation="200"
 							ghost-class="dragging-ghost"
-							chosen-class="dragging-chosen"
 							@end="onDragEnd">
 							<template #item="{element}">
 								<div class="chat-record-item">
@@ -996,17 +1031,28 @@ onMounted(async () => {
 	top: 50%;
 	left: 50%;
 	padding: 20px;
-	width: 80%;
-	height: 80%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%) scale(1);
 	background-color: var(--background-color);
 	border-radius: 12px;
 	display: grid;
 	grid-template-rows: 50px 1fr 50px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	z-index: 5;
 
-	h2 {
-		text-align: center;
+	.title {
+		margin-bottom: 20px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		h2 {
+			flex: 1;
+			text-align: center;
+		}
+
+		button {
+			padding: 5px;
+		}
 	}
 
 	.chat-configs-content-container {
@@ -1048,12 +1094,10 @@ onMounted(async () => {
 	}
 }
 
-.dragging-chosen {
-	background-color: var(--theme-color);
-}
-
 .dragging-ghost {
+	padding: 2px 5px;
 	opacity: 0.5;
+	border-radius: 10px;
 	background-color: var(--theme-color);
 }
 
