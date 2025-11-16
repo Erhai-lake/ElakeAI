@@ -230,6 +230,7 @@ const remove = () => {
 
 .current {
 	border: 1px solid red !important;
+	transition: border 0.3s ease-in-out;
 }
 
 .system-message-card {

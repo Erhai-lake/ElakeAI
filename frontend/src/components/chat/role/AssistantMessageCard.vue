@@ -438,7 +438,6 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="less">
-
 @media screen and (max-width: 768px) {
 	.message-info {
 		display: none;
@@ -447,6 +446,7 @@ onMounted(async () => {
 
 .current {
 	border: 1px solid red !important;
+	transition: border 0.3s ease-in-out;
 }
 
 .chatBubble {
