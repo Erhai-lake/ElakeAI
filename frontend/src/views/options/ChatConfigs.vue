@@ -18,25 +18,11 @@ const name = "ChatConfigs"
 
 const props = defineProps({
 	/**
-	 * 聊天ID
+	 * 聊天配置
 	 */
-	chatKey: {
-		type: String,
-		default: null
-	},
-	/**
-	 * 是否显示配置弹窗
-	 */
-	display: {
-		type: Boolean,
-		default: false
-	},
-	/**
-	 * 配置类型
-	 */
-	type: {
-		type: String,
-		default: "chat"
+	chatConfigs: {
+		type: Object,
+		default: () => ({})
 	}
 })
 
@@ -257,10 +243,10 @@ const loadGlobalConfig = async () => {
 const loadChatData = async () => {
 	try {
 		let getChatData = null
-		if (props.type === "chat") {
-			getChatData = await Dexie.chats.get(props.chatKey)
-		} else if (props.type === "mask") {
-			getChatData = await Dexie.masks.get(props.chatKey)
+		if (props.chatConfigs.type === "chat") {
+			getChatData = await Dexie.chats.get(props.chatConfigs.chatKey)
+		} else if (props.chatConfigs.type === "mask") {
+			getChatData = await Dexie.masks.get(props.chatConfigs.chatKey)
 		}
 		if (getChatData && getChatData.data) {
 			chatData.value = getChatData.data
@@ -319,12 +305,12 @@ const saveTitle = async () => {
 	try {
 		const NEW_TITLE = editingTitle.value.value
 		chatTitle.value = NEW_TITLE
-		if (props.type === "chat") {
-			await Dexie.chats.update(props.chatKey, {title: NEW_TITLE})
+		if (props.chatConfigs.type === "chat") {
+			await Dexie.chats.update(props.chatConfigs.chatKey, {title: NEW_TITLE})
 			EventBus.emit("[update] chatListUpdate")
 			EventBus.emit("[update] chatTitle", NEW_TITLE)
-		} else if (props.type === "mask") {
-			await Dexie.masks.update(props.chatKey, {title: NEW_TITLE})
+		} else if (props.chatConfigs.type === "mask") {
+			await Dexie.masks.update(props.chatConfigs.chatKey, {title: NEW_TITLE})
 			EventBus.emit("[update] maskListUpdate")
 		}
 		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.titleUpdated")}`)
@@ -514,11 +500,11 @@ const share = () => {
 		return
 	}
 	sharePreview.value = {
-		chatKey: props.chatKey,
+		chatKey: props.chatConfigs.chatKey,
 		shareTitle: chatTitle.value,
 		shareChoice: sharePreview.value.shareChoice,
 		display: true,
-		type: props.type
+		type: props.chatConfigs.type
 	}
 }
 
@@ -528,15 +514,15 @@ const share = () => {
 const save = async () => {
 	try {
 		// 检查是否为面具
-		if (props.type === "chat") {
-			await Dexie.chats.update(props.chatKey, {
+		if (props.chatConfigs.type === "chat") {
+			await Dexie.chats.update(props.chatConfigs.chatKey, {
 				data: JSON.parse(JSON.stringify(chatData.value)),
 				configs: JSON.parse(JSON.stringify(configs.value))
 			})
 			EventBus.emit("[update] initChatView")
 			EventBus.emit("[update] chatListUpdate")
-		} else if (props.type === "mask") {
-			await Dexie.masks.update(props.chatKey, {
+		} else if (props.chatConfigs.type === "mask") {
+			await Dexie.masks.update(props.chatConfigs.chatKey, {
 				data: JSON.parse(JSON.stringify(chatData.value)),
 				configs: JSON.parse(JSON.stringify(configs.value))
 			})
@@ -584,7 +570,7 @@ const saveMask = async () => {
 /**
  * 监听display变化
  */
-watch(() => props.display, async (newVal) => {
+watch(() => props.chatConfigs.display, async (newVal) => {
 	await init()
 	if (newVal) {
 		await loadChatData()
@@ -596,7 +582,7 @@ watch(() => props.display, async (newVal) => {
 onMounted(async () => {
 	EventBus.on("[function] showSharePreview", showSharePreview)
 	await init()
-	if (props.chatKey) {
+	if (props.chatConfigs.chatKey) {
 		await loadChatData()
 		page.value = 1
 		getChatRecords(page.value, "asc")
@@ -611,10 +597,10 @@ onUnmounted(() => {
 <template>
 	<SharePreview :share-title="chatTitle" :share-configs="sharePreview"/>
 	<transition name="fade">
-		<div class="chat-configs" v-if="display" @click="close">
+		<div class="chat-configs" v-if="chatConfigs.display" @click="close">
 			<div class="chat-configs-content" :style="{width: fullscreen + '%', height: fullscreen + '%'}" @click.stop>
 				<div class="title">
-					<h2>{{ t(`views.ChatConfigs.${props.type || "chat"}Setup`) }}</h2>
+					<h2>{{ t(`views.ChatConfigs.${chatConfigs.type || "chat"}Setup`) }}</h2>
 					<Button @click="fullscreen = fullscreen === 80 ? 95 : 80">
 						<SVGIcon :name="`#icon-zoom${fullscreen === 80 ? 'In' : 'Out'}Window`" size="2em"/>
 					</Button>

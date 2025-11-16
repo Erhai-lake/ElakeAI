@@ -469,7 +469,7 @@ onUnmounted(() => {
 		<template v-if="!loading.status">
 			<Sidebar/>
 			<div class="RouterView">
-				<ChatConfigs :chat-key="chatSetup.chatKey" :display="chatSetup.display" :type="chatSetup.type"/>
+				<ChatConfigs :chat-configs="chatSetup"/>
 				<router-view/>
 			</div>
 			<Button
