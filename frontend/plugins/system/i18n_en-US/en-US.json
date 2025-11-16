@@ -235,6 +235,22 @@
 					"getError": "Failed to get PlantUML URL",
 					"applyError": "Failed to apply PlantUML URL"
 				}
+			},
+			"SharePreview": {
+				"toast": {
+					"getError": "Failed to get share content",
+					"writeToClipboard": "Written to clipboard",
+					"copyError": "Copy failed",
+					"downloadSuccess": "Download successful",
+					"downloadError": "Download failed"
+				},
+				"close": "Close",
+				"shareTitle": "Share Title",
+				"shareType": "Share Type",
+				"preview": "Preview",
+				"copy": "Copy",
+				"download": "Download",
+				"numberOfConversations": "A total of {num} conversations"
 			}
 		},
 		"Role": {
@@ -544,10 +560,6 @@
 				"getGlobalConfigError": "Failed to get global config",
 				"titleUpdated": "Title updated successfully",
 				"titleUpdateError": "Failed to update title",
-				"writeToClipboard": "Written to clipboard",
-				"copyError": "Copy failed",
-				"downloadSuccess": "Download successful",
-				"downloadError": "Download failed",
 				"getError": "Failed to get chat configuration",
 				"shareIsEmpty": "Share list cannot be empty",
 				"saveSuccess": "Chat configuration saved successfully",
@@ -558,14 +570,9 @@
 			"chatSetup": "Current Chat Config",
 			"maskSetup": "Current Mask Config",
 			"chatTitle": "Chat Title",
-			"shareTitle": "Share Title",
-			"shareType": "Share Type",
 			"selectAll": "Select all",
 			"cancelSelectAll": "Cancel select all",
-			"preview": "Preview",
-			"copy": "Copy",
-			"download": "Download",
-			"numberOfConversations": "A total of {num} conversations",
+			"share": "Share",
 			"selectPage": "Select current page",
 			"cancelSelectPage": "Cancel select current page",
 			"addChatRecord": "New",

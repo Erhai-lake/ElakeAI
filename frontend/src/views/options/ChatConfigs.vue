@@ -1,5 +1,5 @@
 <script setup>
-import {computed, nextTick, onMounted, ref, watch} from "vue"
+import {computed, nextTick, onMounted, onUnmounted, ref, watch} from "vue"
 import Button from "@/components/input/Button.vue"
 import InputNumber from "@/components/input/InputNumber.vue"
 import {toastRegistry} from "@/services/plugin/api/ToastClass"
@@ -12,12 +12,7 @@ import EventBus from "@/services/EventBus"
 import {publicRegistry} from "@/services/plugin/api/PublicClass"
 import InputText from "@/components/input/InputText.vue"
 import draggable from "vuedraggable"
-import SystemMessageCard from "@/components/chat/role/SystemMessageCard.vue"
-import AssistantMessageCard from "@/components/chat/role/AssistantMessageCard.vue"
-import UserMessageCard from "@/components/chat/role/UserMessageCard.vue"
-import html2canvas from "html2canvas"
-import Loading from "@/components/Loading.vue"
-import CodeBlockRenderer from "@/components/chat/renderer/CodeBlockRenderer.vue"
+import SharePreview from "@/components/options/SharePreview.vue"
 
 const name = "ChatConfigs"
 
@@ -139,24 +134,13 @@ const roleList = ref([
 /**
  * 分享配置
  */
-const share = ref({
-	shareChoice: [],
+const sharePreview = ref({
+	chatKey: "",
 	shareTitle: "",
-	shareList: [
-		{title: "png"},
-		{title: "text"},
-		{title: "json"}
-	],
-	share: {title: "png"},
-	sharePreview: false,
-	content: "",
-	loading: false
+	shareChoice: [],
+	display: false,
+	type: "chat"
 })
-
-/**
- * 分享图片元素
- */
-const sharePng = ref(null)
 
 /**
  * 翻译
@@ -208,15 +192,6 @@ const updateOrderSelected = (orderItem) => {
 }
 
 /**
- * 更新分享类型
- * @param shareType {Object} - 分享类型
- */
-const updateShareSelected = (shareType) => {
-	share.value.share = shareType
-	share.value.content = ""
-}
-
-/**
  * 初始化组件
  */
 const init = async () => {
@@ -232,14 +207,12 @@ const init = async () => {
 	page.value = 1
 	totalPages.value = 0
 	order.value = orderList.value[0]
-	share.value = {
+	sharePreview.value = {
+		chatKey: "",
+		shareTitle: "",
 		shareChoice: [],
-		shareTitle: t("components.AIInput.newChat"),
-		shareList: share.value.shareList,
-		share: {title: "png"},
-		sharePreview: false,
-		content: "",
-		loading: false
+		display: false,
+		type: "chat"
 	}
 }
 
@@ -295,7 +268,6 @@ const loadChatData = async () => {
 		}
 		if (getChatData) {
 			chatTitle.value = getChatData.title || t("components.AIInput.newChat")
-			share.value.shareTitle = getChatData.title || t("components.AIInput.newChat")
 			if (getChatData.configs) configs.value = getChatData.configs
 		}
 	} catch (error) {
@@ -490,13 +462,22 @@ const move = (id, type) => {
 }
 
 /**
+ * 分享通信回调
+ * @param data - 分享预览数据
+ */
+const showSharePreview = (data) => {
+	if (!data) return
+	sharePreview.value = data
+}
+
+/**
  * 选择分享
  */
 const selectShare = (element) => {
-	if (share.value.shareChoice.includes(element.id)) {
-		share.value.shareChoice = share.value.shareChoice.filter(item => item !== element.id)
+	if (sharePreview.value.shareChoice.includes(element.id)) {
+		sharePreview.value.shareChoice = sharePreview.value.shareChoice.filter(item => item !== element.id)
 	} else {
-		share.value.shareChoice.push(element.id)
+		sharePreview.value.shareChoice.push(element.id)
 	}
 }
 
@@ -504,10 +485,10 @@ const selectShare = (element) => {
  * 选择所有
  */
 const selectAll = () => {
-	if (share.value.shareChoice.length === chatData.value.length) {
-		share.value.shareChoice = []
+	if (sharePreview.value.shareChoice.length === chatData.value.length) {
+		sharePreview.value.shareChoice = []
 	} else {
-		share.value.shareChoice = chatData.value.map(item => item.id)
+		sharePreview.value.shareChoice = chatData.value.map(item => item.id)
 	}
 }
 
@@ -516,123 +497,28 @@ const selectAll = () => {
  */
 const selectPage = () => {
 	const CURRENT_PAGE_IDS = chatRecords.value.map(item => item.id)
-	const ALL_SELECTED = CURRENT_PAGE_IDS.every(id => share.value.shareChoice.includes(id))
+	const ALL_SELECTED = CURRENT_PAGE_IDS.every(id => sharePreview.value.shareChoice.includes(id))
 	if (ALL_SELECTED) {
-		share.value.shareChoice = share.value.shareChoice.filter(id => !CURRENT_PAGE_IDS.includes(id))
+		sharePreview.value.shareChoice = sharePreview.value.shareChoice.filter(id => !CURRENT_PAGE_IDS.includes(id))
 	} else {
-		share.value.shareChoice = [...new Set([...share.value.shareChoice, ...CURRENT_PAGE_IDS])]
+		sharePreview.value.shareChoice = [...new Set([...sharePreview.value.shareChoice, ...CURRENT_PAGE_IDS])]
 	}
 }
 
 /**
- * 预览
+ * 分享
  */
-const preview = () => {
-	if (share.value.shareChoice.length === 0) {
+const share = () => {
+	if (sharePreview.value.shareChoice.length === 0) {
 		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.shareIsEmpty")}`)
 		return
 	}
-	share.value.sharePreview = true
-	const SELECTED_MESSAGES = chatData.value.filter(item => share.value.shareChoice.includes(item.id))
-	if (share.value.share.title === "png") {
-		share.value.content = SELECTED_MESSAGES
-	} else if (share.value.share.title === "text") {
-		let text = `# ${share.value.shareTitle}\n\n`
-		SELECTED_MESSAGES.forEach(item => {
-			text += `## ${item.message.role}`
-			if (item.model) {
-				text += ` [${item.model.platform}] [${item.model.model}]`
-			}
-			text += `:\n${item.message.content}\n\n`
-		})
-		share.value.content = text
-	} else if (share.value.share.title === "json") {
-		let json = {
-			message: []
-		}
-		SELECTED_MESSAGES.forEach(item => {
-			json.message.push({
-				role: item.message.role,
-				content: item.message.content,
-				model: item.model
-			})
-		})
-		share.value.content = JSON.stringify(json, null, 4)
-	} else {
-		share.value.content = SELECTED_MESSAGES.map(item => item.message.content).join("\n\n")
-	}
-}
-
-/**
- * 复制
- */
-const copy = async () => {
-	share.value.loading = true
-	try {
-		if (share.value.share.title === "png") {
-			const EL = sharePng.value
-			if (!EL) return
-			const CANVAS = await html2canvas(EL, {
-				backgroundColor: null,
-				useCORS: true,
-				scale: 2
-			})
-			CANVAS.toBlob(async (blob) => {
-				if (!blob) return
-				await navigator.clipboard.write([
-					new ClipboardItem({"image/png": blob})
-				])
-			})
-		} else if (share.value.share.title === "text") {
-			await navigator.clipboard.writeText(share.value.content)
-		} else if (share.value.share.title === "json") {
-			await navigator.clipboard.writeText(JSON.stringify(JSON.parse(share.value.content)))
-		}
-		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.writeToClipboard")}`)
-	} catch (error) {
-		Logger.error(`[${name}] 复制失败`, error)
-		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.copyError")}`)
-	} finally {
-		share.value.loading = false
-	}
-}
-
-/**
- * 下载
- */
-const download = async () => {
-	share.value.loading = true
-	try {
-		const DOWNLOAD_A = document.createElement("a")
-		let blob = null
-		let fileName = ""
-		if (share.value.share.title === "png") {
-			const EL = sharePng.value
-			if (!EL) return
-			const CANVAS = await html2canvas(EL, {
-				backgroundColor: null,
-				useCORS: true,
-				scale: 2
-			})
-			blob = await new Promise((resolve) => CANVAS.toBlob((b) => resolve(b), "image/png"))
-			fileName = `${share.value.shareTitle}.png`
-		} else if (share.value.share.title === "text") {
-			blob = new Blob([share.value.content], {type: "text/plain;charset=utf-8"})
-			fileName = `${share.value.shareTitle}.txt`
-		} else if (share.value.share.title === "json") {
-			blob = new Blob([JSON.stringify(JSON.parse(share.value.content))], {type: "application/json;charset=utf-8"})
-			fileName = `${share.value.shareTitle}.json`
-		}
-		DOWNLOAD_A.href = URL.createObjectURL(blob)
-		DOWNLOAD_A.download = fileName
-		DOWNLOAD_A.click()
-		URL.revokeObjectURL(DOWNLOAD_A.href)
-		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.downloadSuccess")}`)
-	} catch (error) {
-		Logger.error(`[${name}] 下载失败`, error)
-		toastRegistry.error(`[${name}] ${t("views.ChatConfigs.toast.downloadError")}`)
-	} finally {
-		share.value.loading = false
+	sharePreview.value = {
+		chatKey: props.chatKey,
+		shareTitle: chatTitle.value,
+		shareChoice: sharePreview.value.shareChoice,
+		display: true,
+		type: props.type
 	}
 }
 
@@ -656,7 +542,7 @@ const save = async () => {
 			})
 			EventBus.emit("[update] maskListUpdate")
 		}
-		close()
+		await close()
 		toastRegistry.success(`[${name}] ${t("views.ChatConfigs.toast.saveSuccess")}`)
 	} catch (error) {
 		Logger.error(`[${name}] 保存聊天配置失败`, error)
@@ -708,6 +594,7 @@ watch(() => props.display, async (newVal) => {
 })
 
 onMounted(async () => {
+	EventBus.on("[function] showSharePreview", showSharePreview)
 	await init()
 	if (props.chatKey) {
 		await loadChatData()
@@ -715,63 +602,16 @@ onMounted(async () => {
 		getChatRecords(page.value, "asc")
 	}
 })
+
+onUnmounted(() => {
+	EventBus.off("[function] showSharePreview", showSharePreview)
+})
 </script>
 
 <template>
+	<SharePreview :share-title="chatTitle" :share-configs="sharePreview"/>
 	<transition name="fade">
-		<div v-if="share.sharePreview" class="share-preview">
-			<Button @click="share.sharePreview = false">{{ t("views.ChatConfigs.close") }}</Button>
-			<div class="function">
-				<Button @click="copy">{{ t("views.ChatConfigs.copy") }}</Button>
-				<Button @click="download">{{ t("views.ChatConfigs.download") }}</Button>
-			</div>
-			<Loading :loading="share.loading">
-				<div v-if="share.share.title === 'png'" class="share" ref="sharePng">
-					<div class="head">
-						<p class="title">{{ share.shareTitle }}</p>
-						<p class="time">
-							{{ t("views.ChatConfigs.numberOfConversations", {num: share.content.length}) }}
-						</p>
-					</div>
-					<div
-						v-for="message in share.content"
-						:key="message.id"
-						class="message"
-						:data-message-id="message.id">
-						<SystemMessageCard
-							v-if="message.message.role === 'system'"
-							:message="message"
-							currentMessageId="0"
-							:controls="false"/>
-						<AssistantMessageCard
-							v-if="message.message.role === 'assistant'"
-							:message="message"
-							currentMessageId="0"
-							:controls="false"/>
-						<UserMessageCard
-							v-if="message.message.role === 'user'"
-							:message="message"
-							currentMessageId="0"
-							:controls="false"/>
-					</div>
-				</div>
-				<CodeBlockRenderer
-					v-else-if="share.share.title === 'text'"
-					class="share"
-					:code="decodeURIComponent(share.content)"
-					language="plaintext"
-					:copy="false"/>
-				<CodeBlockRenderer
-					v-else-if="share.share.title === 'json'"
-					class="share"
-					:code="decodeURIComponent(share.content)"
-					language="json"
-					:copy="false"/>
-			</Loading>
-		</div>
-	</transition>
-	<transition name="fade">
-		<div class="chat-configs" v-show="display" @click="close">
+		<div class="chat-configs" v-if="display" @click="close">
 			<div class="chat-configs-content" :style="{width: fullscreen + '%', height: fullscreen + '%'}" @click.stop>
 				<div class="title">
 					<h2>{{ t(`views.ChatConfigs.${props.type || "chat"}Setup`) }}</h2>
@@ -801,25 +641,15 @@ onMounted(async () => {
 						<div class="share">
 							<Button @click="selectAll">
 								{{
-									t(`views.ChatConfigs.${share.shareChoice.length === chatData.length ? 'cancelSelectAll' : 'selectAll'}`)
+									t(`views.ChatConfigs.${sharePreview.shareChoice.length === chatData.length ? 'cancelSelectAll' : 'selectAll'}`)
 								}}
 							</Button>
 							<Button @click="selectPage">
 								{{
-									t(`views.ChatConfigs.${chatRecords.map(item => item.id).every(id => share.shareChoice.includes(id)) ? 'cancelSelectPage' : 'selectPage'}`)
+									t(`views.ChatConfigs.${chatRecords.map(item => item.id).every(id => sharePreview.shareChoice.includes(id)) ? 'cancelSelectPage' : 'selectPage'}`)
 								}}
 							</Button>
-							<InputText
-								v-model="share.shareTitle"
-								:placeholder="t('views.ChatConfigs.shareTitle')"
-								:title="t('views.ChatConfigs.shareTitle')"/>
-							<Selector
-								unique-key="title"
-								:selector-list="share.shareList"
-								:selector-selected="share.share"
-								@select="updateShareSelected"
-								:title="t('views.ChatConfigs.shareType')"/>
-							<Button @click="preview">{{ t("views.ChatConfigs.preview") }}</Button>
+							<Button @click="share">{{ t("views.ChatConfigs.share") }}</Button>
 						</div>
 						<hr>
 						<draggable
@@ -856,7 +686,7 @@ onMounted(async () => {
 									</Button>
 									<label>
 										<input type="checkbox"
-											   :checked="share.shareChoice.includes(element.id)"
+											   :checked="sharePreview.shareChoice.includes(element.id)"
 											   @change="selectShare(element)">
 										<span class="custom-checkbox"></span>
 									</label>
@@ -940,8 +770,8 @@ onMounted(async () => {
 								:step="0.1"/>
 						</div>
 					</div>
-					<!--					<div class="container">-->
-					<!--					</div>-->
+					<!--<div class="container">-->
+					<!--</div>-->
 				</div>
 				<div class="but">
 					<Button @click="close">{{ t("views.ChatConfigs.close") }}</Button>
@@ -968,49 +798,6 @@ onMounted(async () => {
 .fade-enter-to,
 .fade-leave-from {
 	opacity: 1;
-}
-
-.share-preview {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	padding: 20px;
-	width: 80%;
-	height: 80%;
-	transform: translate(-50%, -50%);
-	background-color: var(--background-color);
-	border-radius: 12px;
-	display: grid;
-	grid-template-rows: auto auto 1fr;
-	gap: 10px;
-	z-index: 6;
-	overflow: hidden auto;
-
-	.share {
-		padding: 20px 50px;
-		box-sizing: border-box;
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		gap: 30px;
-		user-select: none;
-		font-size: 16px;
-		line-height: 1.5;
-		word-wrap: break-word;
-		overflow-wrap: break-word;
-		white-space: pre-wrap;
-	}
-
-	.function {
-		display: flex;
-		justify-content: center;
-		gap: 10px;
-
-		Button {
-			flex: 1;
-		}
-	}
 }
 
 .chat-configs {
@@ -1199,38 +986,8 @@ onMounted(async () => {
 	width: 100%;
 	border-radius: 20px;
 	display: grid;
-	grid-template-columns: repeat(5, auto);
+	grid-template-columns: repeat(3, auto);
 	gap: 10px;
-
-	.head {
-		padding: 0 20px;
-		box-sizing: border-box;
-		height: 65px;
-		border-radius: 20px;
-		border: 1px solid var(--border-color);
-		box-shadow: 0 6px 15px 0 var(--box-shadow-color);
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		overflow: hidden;
-
-		.title {
-			font-size: 20px;
-			font-weight: bold;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			cursor: pointer;
-		}
-
-		.time {
-			font-size: 14px;
-			color: var(--text-secondary-color);
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-	}
 }
 
 .pagination {

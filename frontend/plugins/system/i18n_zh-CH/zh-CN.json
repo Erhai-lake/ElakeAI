@@ -235,6 +235,22 @@
 					"getError": "获取PlantUML URL失败",
 					"applyError": "应用PlantUML URL失败"
 				}
+			},
+			"SharePreview": {
+				"toast": {
+					"getError": "获取分享内容失败",
+					"writeToClipboard": "已复制到剪贴板",
+					"copyError": "复制失败",
+					"downloadSuccess": "下载成功",
+					"downloadError": "下载失败"
+				},
+				"close": "关闭",
+				"shareTitle": "分享标题",
+				"shareType": "分享类型",
+				"preview": "预览",
+				"copy": "复制",
+				"download": "下载",
+				"numberOfConversations": "共 {num} 条对话"
 			}
 		},
 		"Role": {
@@ -544,10 +560,6 @@
 				"getGlobalConfigError": "获取全局配置失败",
 				"titleUpdated": "标题更新成功",
 				"titleUpdateError": "标题更新失败",
-				"writeToClipboard": "已写入到剪贴板",
-				"copyError": "复制失败",
-				"downloadSuccess": "下载成功",
-				"downloadError": "下载失败",
 				"getError": "获取聊天配置失败",
 				"shareIsEmpty": "分享列表不能为空",
 				"saveSuccess": "保存聊天配置成功",
@@ -558,16 +570,11 @@
 			"chatSetup": "当前聊天配置",
 			"maskSetup": "当前面具配置",
 			"chatTitle": "聊天标题",
-			"shareTitle": "分享标题",
-			"shareType": "分享类型",
 			"selectAll": "全选",
 			"cancelSelectAll": "取消全选",
 			"selectPage": "选择当前页",
 			"cancelSelectPage": "取消选择当前页",
-			"preview": "预览",
-			"copy": "复制",
-			"download": "下载",
-			"numberOfConversations": "共 {num} 条对话",
+			"share": "分享",
 			"addChatRecord": "新增",
 			"asc": "正序",
 			"desc": "倒序",

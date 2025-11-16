@@ -686,12 +686,12 @@ onUnmounted(() => {
 	flex-direction: column;
 	gap: 30px;
 	overflow: hidden auto;
-}
 
-.message {
-	border-radius: 12px;
-	display: flex;
-	flex-direction: column;
+	.message {
+		border-radius: 12px;
+		display: flex;
+		flex-direction: column;
+	}
 }
 
 .input-area {
