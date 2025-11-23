@@ -422,9 +422,7 @@
 				"getChatLogError": "Failed to get chat log",
 				"mermaidRenderingError": "Mermaid rendering failed",
 				"mermaidInitializationError": "Mermaid initialization failed",
-				"removeMessageSuccess": "Message removed successfully",
 				"removeMessageError": "Failed to remove message",
-				"editMessageSuccess": "Message edited successfully",
 				"editMessageError": "Failed to edit message"
 			},
 			"functionalControls": {

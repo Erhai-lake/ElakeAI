@@ -422,9 +422,7 @@
 				"getChatLogError": "获取聊天记录失败",
 				"mermaidRenderingError": "Mermaid渲染失败",
 				"mermaidInitializationError": "Mermaid初始化失败",
-				"removeMessageSuccess": "移除消息成功",
 				"removeMessageError": "移除消息失败",
-				"editMessageSuccess": "编辑消息成功",
 				"editMessageError": "编辑消息失败"
 			},
 			"functionalControls": {

@@ -35,7 +35,7 @@ const levelList = ref([
 /**
  * 日志级别选择器
  */
-const levelSelector = ref("error")
+const levelSelector = ref("warn")
 
 /**
  * 日志列表
@@ -60,6 +60,18 @@ const logList = ref(null)
  */
 const t = (key, params = {}) => {
 	return i18nRegistry.translate(key, params)
+}
+
+/**
+ * 获取日志级别选择器
+ */
+const getLevelSelector = async () => {
+	try {
+		const LOG_LEVEL = await Dexie.configs.get("logLevel")
+		levelSelector.value = LOG_LEVEL ? LOG_LEVEL.value : "warn"
+	} catch (error) {
+		Logger.error(`[${name}] 日志级别获取失败`, error)
+	}
 }
 
 /**
@@ -176,6 +188,8 @@ const exportLogs = () => {
 
 onMounted(() => {
 	EventBus.on("[update] logUpdate", loadLogs)
+	// 获取日志级别选择器
+	getLevelSelector()
 	// 加载日志
 	loadLogs()
 })
@@ -247,6 +261,7 @@ onUnmounted(() => {
 	overflow-y: auto;
 	padding: 5px;
 	border-top: 1px solid var(--border-color);
+	user-select: text;
 
 	.log-item {
 		margin-bottom: 5px;

@@ -20,8 +20,8 @@ import InputText from "@/components/input/InputText.vue"
 import ChatThemesSelect from "@/components/options/ChatThemesSelect.vue"
 import ChatBatchSize from "@/components/options/ChatBatchSize.vue"
 import BackgroundImage from "@/components/options/BackgroundImage.vue"
-import LogoImage from "@/components/options/LogoImage.vue";
-import LeftMenuTitle from "@/components/options/LeftMenuTitle.vue";
+import LogoImage from "@/components/options/LogoImage.vue"
+import LeftMenuTitle from "@/components/options/LeftMenuTitle.vue"
 
 const name = "DevTools"
 

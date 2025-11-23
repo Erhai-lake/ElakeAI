@@ -285,6 +285,8 @@ const stop = async () => {
 		await nextTick(() => {
 			adjustTextareaHeight()
 		})
+		EventBus.emit("[stream] streamStop", route.params.key)
+		EventBus.emit("[update] chatListUpdate")
 	} catch (error) {
 		stopStatus.value = true
 		Logger.error(`[${name}] 停止失败`, error)

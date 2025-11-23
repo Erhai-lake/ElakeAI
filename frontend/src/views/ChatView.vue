@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted, nextTick, markRaw } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import {ref, watch, onMounted, onUnmounted, nextTick, markRaw} from "vue"
+import {useRoute, useRouter} from "vue-router"
 import Loading from "@/components/Loading.vue"
 import AIInput from "@/components/AIInput.vue"
 import EventBus from "@/services/EventBus"
-import { i18nRegistry } from "@/services/plugin/api/I18nClass"
-import { toastRegistry } from "@/services/plugin/api/ToastClass"
+import {i18nRegistry} from "@/services/plugin/api/I18nClass"
+import {toastRegistry} from "@/services/plugin/api/ToastClass"
 import RightClickMenu from "@/components/RightClickMenu.vue"
 import SVGIcon from "@/components/SVGIcon.vue"
 import Dexie from "@/services/Dexie"
@@ -91,7 +91,7 @@ const t = (key, params = {}) => {
  * 角色到组件
  */
 const roleToComponent = () => {
-	const MODULES = import.meta.glob("@/components/chat/role/*.vue", { eager: true })
+	const MODULES = import.meta.glob("@/components/chat/role/*.vue", {eager: true})
 	const MESSAGE_COMPONENT_MAP = {}
 	for (const PATH in MODULES) {
 		const COMPONENT = MODULES[PATH].default
@@ -410,7 +410,7 @@ const streamComplete = async (message) => {
 		}
 	}
 	try {
-		// 如果是第一条AI回复且是默认标题
+		// 如果是默认标题
 		if (data.value.title === t("components.AIInput.newChat")) {
 			// 如果没有AI回复, 则不更新标题
 			if (!data.value.data?.length) return
@@ -427,13 +427,27 @@ const streamComplete = async (message) => {
 			const TITLE = KEYWORDS.length > 0 ? KEYWORDS.slice(0, 3).join(" ") : data.value.title
 			if (TITLE !== data.value.title) {
 				data.value.title = TITLE
-				await Dexie.chats.update(data.value.key, { title: TITLE })
+				await Dexie.chats.update(data.value.key, {title: TITLE})
 				EventBus.emit("[update] chatListUpdate")
 			}
 		}
 	} catch (error) {
 		Logger.error(`[${name}] 标题更新错误`, error)
 		toastRegistry.error(`[${name}] ${t("views.ChatView.toast.titleUpdateError")}`)
+	}
+}
+
+/**
+ * 停止消息流
+ */
+const streamStop = async (key) => {
+	if (key !== data.value.key) return
+	for (let i = data.value.data.length - 1; i >= 0; i--) {
+		const MESSAGE = data.value.data[i]
+		if (MESSAGE.status !== "done" && MESSAGE.message.role === "user") {
+			await removeMessage(MESSAGE.id)
+			return
+		}
 	}
 }
 
@@ -464,7 +478,7 @@ const checkLastMessage = () => {
 	if (data.value.data?.length) {
 		const LAST_MESSAGE = data.value.data[data.value.data.length - 1]
 		if (LAST_MESSAGE.status) {
-			EventBus.emit("[update] stopStatusUpdate", LAST_MESSAGE.status !== "done")
+			// EventBus.emit("[update] stopStatusUpdate", LAST_MESSAGE.status !== "done")
 		}
 	}
 }
@@ -483,8 +497,7 @@ const editMessage = async (id, content) => {
 		}
 		// 更新数据库中的消息
 		const DATA = JSON.parse(JSON.stringify(data.value.data))
-		await Dexie.chats.update(data.value.key, { data: DATA })
-		toastRegistry.success(`[${name}] ${t("views.ChatView.toast.editMessageSuccess")}`)
+		await Dexie.chats.update(data.value.key, {data: DATA})
 	} catch (error) {
 		Logger.error(`[${name}] 消息编辑错误`, error)
 		toastRegistry.error(`[${name}] ${t("views.ChatView.toast.editMessageError")}`)
@@ -504,8 +517,7 @@ const removeMessage = async (id) => {
 		}
 		// 更新数据库中的消息
 		const DATA = JSON.parse(JSON.stringify(data.value.data))
-		await Dexie.chats.update(data.value.key, { data: DATA })
-		toastRegistry.success(`[${name}] ${t("views.ChatView.toast.removeMessageSuccess")}`)
+		await Dexie.chats.update(data.value.key, {data: DATA})
 		// 更新侧边栏
 		EventBus.emit("[update] chatListUpdate")
 	} catch (error) {
@@ -526,6 +538,7 @@ onMounted(async () => {
 	EventBus.on("[stream] userMessage", userMessage)
 	EventBus.on("[stream] streamStream", streamStream)
 	EventBus.on("[stream] streamComplete", streamComplete)
+	EventBus.on("[stream] streamStop", streamStop)
 	EventBus.on("[function] removeMessage", removeMessage)
 	EventBus.on("[function] editMessage", editMessage)
 	EventBus.on("[update] inputChange", inputChange)
@@ -548,6 +561,7 @@ onUnmounted(() => {
 	EventBus.off("[stream] userMessage", userMessage)
 	EventBus.off("[stream] streamStream", streamStream)
 	EventBus.off("[stream] streamComplete", streamComplete)
+	EventBus.off("[stream] streamStop", streamStop)
 	EventBus.off("[function] removeMessage", removeMessage)
 	EventBus.off("[function] editMessage", editMessage)
 	EventBus.off("[update] inputChange", inputChange)
