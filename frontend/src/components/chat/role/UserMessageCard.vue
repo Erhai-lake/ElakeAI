@@ -262,15 +262,6 @@ const adjustTextareaHeight = () => {
 }
 
 /**
- * 当 textarea 失去焦点时隐藏输入框
- */
-const handleTextareaBlur = () => {
-	setTimeout(() => {
-		editingContent.value.show = false
-	}, 200)
-}
-
-/**
  * 移除消息
  */
 const remove = () => {
@@ -320,8 +311,7 @@ onMounted(async () => {
 				v-model="editingContent.value"
 				class="content-input"
 				ref="textarea"
-				@input="adjustTextareaHeight"
-				@blur="handleTextareaBlur"></textarea>
+				@input="adjustTextareaHeight"></textarea>
 		</div>
 		<div class="message-bottom">
 			<div class="functional-controls" v-if="controls">

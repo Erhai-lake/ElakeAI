@@ -419,7 +419,7 @@ const streamComplete = async (message) => {
 			const KEYWORDS = AI_CONTENT
 					// 移除HTML标签
 					.replace(/<[^>]+>/g, '')
-					// 提取中文关键词(至少2个中文字符）
+					// 提取中文关键词(至少2个中文字符)
 					.match(/[\u4e00-\u9fa5]{2,}/g)
 				// 提取英文关键词(至少4个英文字符）
 				|| AI_CONTENT.match(/\b\w{4,}\b/g)
